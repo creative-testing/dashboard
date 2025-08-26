@@ -168,6 +168,7 @@ def fetch_90d_data():
         impressions = int(insights.get("impressions", 0))
         clicks = int(insights.get("clicks", 0))
         ctr = float(insights.get("ctr", 0))
+        cpm = float(insights.get("cpm", 0))  # Ajout explicite du CPM
         reach = int(insights.get("reach", 0))
         frequency = float(insights.get("frequency", 0))
         
@@ -199,6 +200,7 @@ def fetch_90d_data():
             "impressions": impressions,
             "clicks": clicks,
             "ctr": ctr,
+            "cpm": cpm,
             "reach": reach,
             "frequency": frequency,
             "purchases": purchases,
