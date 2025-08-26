@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creative Testing Agent - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f7;
+            color: #1d1d1f;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 18px;
+        }
+        
+        .period-selector {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0 0;
+        }
+        
+        .period-btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .period-btn.active, .period-btn:hover {
+            background: white;
+            color: #667eea;
+            border-color: white;
+            transform: translateY(-2px);
+        }
+        
+        /* Account Selector */
+        .account-selector {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 15px 0 0;
+        }
+        
+        .account-btn {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 13px;
+        }
+        
+        .account-btn.active, .account-btn:hover {
+            background: rgba(255,255,255,0.9);
+            color: #667eea;
+            border-color: rgba(255,255,255,0.9);
+        }
+        
+        /* Real Analysis Badge */
+        .real-analysis-badge {
+            background: #00a854;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: -40px 20px 40px;
+            position: relative;
+        }
+        
+        .kpi-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .kpi-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .kpi-icon.blue { background: #e6f2ff; color: #0066cc; }
+        .kpi-icon.green { background: #e6f9e6; color: #00a854; }
+        .kpi-icon.purple { background: #f3e6ff; color: #7928ca; }
+        .kpi-icon.yellow { background: #fff4e6; color: #ff9500; }
+        
+        .kpi-content h3 {
+            font-size: 28px;
+            margin-bottom: 4px;
+        }
+        
+        .kpi-content p {
+            color: #86868b;
+            font-size: 14px;
+        }
+        
+        .main-table-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+            margin-bottom: 40px;
+        }
+        
+        .main-table-card h2 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .main-table-card p {
+            color: #86868b;
+            margin-bottom: 24px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        thead th {
+            background: #f5f5f7;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            color: #1d1d1f;
+            border-bottom: 2px solid #e0e0e2;
+        }
+        
+        tbody td {
+            padding: 16px 12px;
+            border-bottom: 1px solid #f0f0f2;
+            font-size: 14px;
+        }
+        
+        tbody tr:hover {
+            background: #fafafa;
+        }
+        
+        .ad-name {
+            font-weight: 500;
+            color: #1d1d1f;
+        }
+        
+        .metric {
+            font-weight: 600;
+        }
+        
+        .roas-high { color: #00a854; }
+        .roas-medium { color: #ff9500; }
+        .roas-low { color: #ff3b30; }
+        
+        .format-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .format-video { background: #e6f2ff; color: #0066cc; }
+        .format-image { background: #e6f9e6; color: #00a854; }
+        .format-unknown { background: #f0f0f2; color: #86868b; }
+        
+        .media-link {
+            text-decoration: none;
+            font-size: 18px;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+        
+        .media-link:hover {
+            opacity: 1;
+        }
+        
+        .chart-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        @media (max-width: 768px) {
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+            height: 400px;
+        }
+        
+        .chart-card h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 320px;
+        }
+        
+        /* Graphiques CSS purs */
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            height: 200px;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .bar {
+            flex: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0 8px;
+            border-radius: 8px 8px 0 0;
+            position: relative;
+            min-height: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .bar:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .bar-value {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: 600;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        
+        .bar-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: #86868b;
+            white-space: nowrap;
+        }
+        
+        .donut-chart {
+            position: relative;
+            padding: 20px;
+        }
+        
+        .donut-svg {
+            width: 180px;
+            height: 180px;
+            margin: 0 auto;
+            display: block;
+        }
+        
+        
+        .legend {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            font-size: 13px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-width: 0;
+        }
+        
+        .legend-item span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+        
+        /* Coming Soon section */
+        .coming-soon {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+            margin-top: 40px;
+            border: 2px dashed #e0e0e2;
+        }
+        
+        .coming-soon h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #1d1d1f;
+        }
+        
+        .coming-soon > p {
+            color: #86868b;
+            margin-bottom: 24px;
+        }
+        
+        .coming-soon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .coming-soon-item {
+            padding: 20px;
+            background: #f5f5f7;
+            border-radius: 8px;
+        }
+        
+        .coming-soon-item h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #1d1d1f;
+        }
+        
+        .coming-soon-item p {
+            font-size: 14px;
+            color: #86868b;
+        }
+        
+        /* Preview Section Styles */
+        .preview-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+            margin-bottom: 40px;
+            position: relative;
+            border: 2px dashed #e0e0e2;
+        }
+        
+        .preview-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #ff9500;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .preview-content {
+            opacity: 1.0;
+            pointer-events: none;
+            user-select: none;
+        }
+        
+        .unlock-message {
+            text-align: center;
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .unlock-message h3 {
+            color: #1d1d1f;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+        
+        .unlock-message p {
+            color: #6c757d;
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        
+        .nomenclature-example {
+            background: #667eea;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin: 15px 0;
+            display: inline-block;
+        }
+        
+        .unlock-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: transform 0.2s ease;
+            font-size: 16px;
+        }
+        
+        .unlock-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        /* Creator cards styles */
+        .creator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            padding: 20px;
+        }
+        
+        .creator-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+        
+        .creator-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .creator-avatar {
+            font-size: 32px;
+            margin-bottom: 8px;
+            padding: 8px;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .creator-avatar.male {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .creator-avatar.female {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .creator-name {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #1d1d1f;
+        }
+        
+        .creator-stats {
+            font-size: 12px;
+            color: #6c757d;
+            line-height: 1.4;
+        }
+        
+        .creator-roas {
+            font-weight: 700;
+            color: #00a854;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 Creative Testing Dashboard</h1>
+        <p id="header-subtitle">Análisis de rendimiento creativo • Datos hasta: 25/08/2025</p>
+        
+        <div class="period-selector">
+            <button class="period-btn" onclick="switchPeriod(this, 3)">3 días</button>
+            <button class="period-btn active" onclick="switchPeriod(this, 7)">7 días</button>
+            <button class="period-btn" onclick="switchPeriod(this, 14)">14 días</button>
+            <button class="period-btn" onclick="switchPeriod(this, 30)">30 días</button>
+            <button class="period-btn" onclick="switchPeriod(this, 90)">90 días</button>
+        </div>
+        
+        <div class="account-selector">
+            <button class="account-btn active" onclick="switchAccount(this, 'global')">📊 Global</button>
+            <button class="account-btn" onclick="switchAccount(this, 'petcare')">🐕 Petcare <span class="real-analysis-badge">REAL</span></button>
+            <button class="account-btn" style="opacity: 0.6;" disabled>🔒 Más cuentas</button>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-content">
+                    <h3>1609</h3>
+                    <p>Anuncios Activos</p>
+                </div>
+                <div class="kpi-icon blue">📊</div>
+            </div>
+            
+            <div class="kpi-card">
+                <div class="kpi-content">
+                    <h3>$1,569,802</h3>
+                    <p>Inversión Total (MXN)</p>
+                </div>
+                <div class="kpi-icon green">💰</div>
+            </div>
+            
+            <div class="kpi-card">
+                <div class="kpi-content">
+                    <h3>3.42</h3>
+                    <p>ROAS Promedio</p>
+                </div>
+                <div class="kpi-icon purple">📈</div>
+            </div>
+            
+            <div class="kpi-card">
+                <div class="kpi-content">
+                    <h3>28,131,552</h3>
+                    <p>Impresiones Totales</p>
+                </div>
+                <div class="kpi-icon yellow">👁️</div>
+            </div>
+        </div>
+        
+        <div class="chart-grid">
+            <div class="chart-card">
+                <h3>💰 Top 5 Cuentas por Inversión</h3>
+                <div class="bar-chart">
+                    <div class="bar" style="height: 100.0%">
+                        <span class="bar-value">$236k</span>
+                        <span class="bar-label">Chabacano </span>
+                    </div>
+                    <div class="bar" style="height: 63.65769961648871%">
+                        <span class="bar-value">$150k</span>
+                        <span class="bar-label">VITDAYMX</span>
+                    </div>
+                    <div class="bar" style="height: 50.73332220430585%">
+                        <span class="bar-value">$120k</span>
+                        <span class="bar-label">Charm Fact</span>
+                    </div>
+                    <div class="bar" style="height: 40.22805222606504%">
+                        <span class="bar-value">$95k</span>
+                        <span class="bar-label">PUBLICIDAD</span>
+                    </div>
+                    <div class="bar" style="height: 36.15435836867869%">
+                        <span class="bar-value">$85k</span>
+                        <span class="bar-label">Entiii</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chart-card">
+                <h3>📊 Distribución por Formato</h3>
+                <div class="donut-chart">
+                    <svg class="donut-svg" viewBox="0 0 180 180">
+                        <circle cx="90" cy="90" r="60" fill="none" stroke="#667eea" 
+                                stroke-width="30" stroke-dasharray="191 377" 
+                                stroke-dashoffset="-0" transform="rotate(-90 90 90)"></circle>
+                        <circle cx="90" cy="90" r="60" fill="none" stroke="#00a854" 
+                                stroke-width="30" stroke-dasharray="128 377" 
+                                stroke-dashoffset="-191" transform="rotate(-90 90 90)"></circle>
+                        <circle cx="90" cy="90" r="60" fill="none" stroke="#7928ca" 
+                                stroke-width="30" stroke-dasharray="49 377" 
+                                stroke-dashoffset="-319" transform="rotate(-90 90 90)"></circle>
+                        <circle cx="90" cy="90" r="60" fill="none" stroke="#86868b" 
+                                stroke-width="30" stroke-dasharray="9 377" 
+                                stroke-dashoffset="-368" transform="rotate(-90 90 90)"></circle>
+                        <circle cx="90" cy="90" r="30" fill="white"></circle>
+                    </svg>
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #667eea"></div>
+                            <span>VIDEO (816) • ROAS: 2.85</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #00a854"></div>
+                            <span>IMAGE (547) • ROAS: 3.24</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #7928ca"></div>
+                            <span>INSTAGRAM (207) • ROAS: 3.76</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #86868b"></div>
+                            <span>OTROS (39)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-table-card">
+            <h2>Top 10 Anuncios por ROAS</h2>
+            <p>Solo anuncios con inversión mayor a $3,000 MXN</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Anuncio</th>
+                        <th>Cuenta</th>
+                        <th>Formato</th>
+                        <th>ROAS</th>
+                        <th>Inversión</th>
+                        <th>CTR</th>
+                        <th>Ver</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="ad-name">video | Creadora | inhouse | 3...</td>
+                        <td>Pautas Citlali Joyas</td>
+                        <td><span class="format-badge format-video">VIDEO</span></td>
+                        <td class="metric roas-high">11.90</td>
+                        <td class="metric">$4,367</td>
+                        <td>3.73%</td>
+                        <td><a href="https://www.facebook.com/watch/?v=1259504028645569" target="_blank" class="media-link">🎬</a></td>
+                    </tr>
+                    <tr>
+                        <td class="ad-name">Aniversario...</td>
+                        <td>Ana Sol Carrera</td>
+                        <td><span class="format-badge format-unknown">UNKNOWN</span></td>
+                        <td class="metric roas-high">11.12</td>
+                        <td class="metric">$5,673</td>
+                        <td>0.71%</td>
+                        <td>—</td>
+                    </tr>
+                    <tr>
+                        <td class="ad-name">17.06.25-v2_h123-Isolate-MOI - Copia...</td>
+                        <td>Essentiasl Mx</td>
+                        <td><span class="format-badge format-video">VIDEO</span></td>
+                        <td class="metric roas-high">10.50</td>
+                        <td class="metric">$4,511</td>
+                        <td>0.94%</td>
+                        <td><a href="https://www.facebook.com/watch/?v=1039576621712946" target="_blank" class="media-link">🎬</a></td>
+                    </tr>
+                    <tr>
+                        <td class="ad-name">Estaticos - Agosto 22...</td>
+                        <td>Charm Factory - Ads Alche</td>
+                        <td><span class="format-badge format-image">IMAGE</span></td>
+                        <td class="metric roas-high">7.99</td>
+                        <td class="metric">$3,302</td>
+                        <td>1.29%</td>
+                        <td><a href="https://scontent.fsdu13-1.fna.fbcdn.net/v/t45.1600-4/534473928_1983753199119302_5690379743082317490_n.png?stp=dst-jpg_tt6&_nc_cat=103&ccb=1-7&_nc_sid=890911&_nc_ohc=hziKHzxRMjsQ7kNvwHrjlDs&_nc_oc=AdkbBCRgLU34JaZie4mJB8GcNK31dmvLYanNZadeqgKAjK-4zHTrSIuV1AULZfbdXsw&_nc_zt=1&_nc_ht=scontent.fsdu13-1.fna&edm=AAwGEdEEAAAA&_nc_gid=nTAZizyeYlovr96lLZweww&oh=00_AfUUjUar77wdE3UKg_qrJRqlVtRsaHfF8ymwGGk_II69bQ&oe=68B3872F" target="_blank" class="media-link">🖼️</a></td>
+                    </tr>
+                    <tr>
+                        <td class="ad-name">Hook 1...</td>
+                        <td>Kocare Beauty</td>
+                        <td><span class="format-badge format-instagram">INSTAGRAM</span></td>
+                        <td class="metric roas-high">7.56</td>
+                        <td class="metric">$4,386</td>
+                        <td>2.12%</td>
+                        <td><a href="https://www.instagram.com/p/DMy7dZSMJKH/" target="_blank" class="media-link">🖼️</a></td>
+                    </tr>
+                    <tr>
+                        <td class="ad-name">Hook1 - Copy...</td>
+                        <td>Chabacano 1</td>
+                        <td><span class="format-badge format-image">IMAGE</span></td>
+                        <td class="metric roas-high">7.39</td>
+                        <td class="metric">$3,468</td>
+                        <td>1.11%</td>
+                        <td><a href="https://scontent.fsdu13-1.fna.fbcdn.net/v/t45.1600-4/454601043_120213209611970247_1757152159245297555_n.png?stp=dst-jpg_tt6&_nc_cat=102&ccb=1-7&_nc_sid=890911&_nc_ohc=q-K_FA2K9ZgQ7kNvwEHbN_R&_nc_oc=AdmVhD_BJys8qK6dAwJcFV8nmlkHHA0akAo_Wa4xrRaTz74DrjSzzyS0HuG0rHsi0xE&_nc_zt=1&_nc_ht=scontent.fsdu13-1.fna&edm=AAwGEdEEAAAA&_nc_gid=eNDyX87G3aJMkW-uPjCdNA&oh=00_AfVVygSiBp-31C8yeOEekIeCjLjn20u130sBvv2e7rOXhQ&oe=68B38E42" target="_blank" class="media-link">🖼️</a></td>
+                    </tr>
+                    <tr>
+                        <td class="ad-name">Imagen 1...</td>
+                        <td>Chabacano 1</td>
+                        <td><span class="format-badge format-image">IMAGE</span></td>
+                        <td class="metric roas-high">7.14</td>
+                        <td class="metric">$3,287</td>
+                        <td>1.63%</td>
+                        <td><a href="https://scontent.fsdu13-1.fna.fbcdn.net/v/t45.1600-4/476815954_120218124362870247_3660302703167646447_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=890911&_nc_ohc=Ve5QUy9YpjUQ7kNvwHRrkw8&_nc_oc=Adljk93lzd6f6m0mBV1QHYNsCWp7UaOgZOuwWD0X7GuVvyO0MQ_Yo05ySUsYHLly-J4&_nc_zt=1&_nc_ht=scontent.fsdu13-1.fna&edm=AAwGEdEEAAAA&_nc_gid=eNDyX87G3aJMkW-uPjCdNA&oh=00_AfXRbd1--DKZjL_EiNgEzedhFhNKbSITQIt_kSqzpLW20w&oe=68B39F35" target="_blank" class="media-link">🖼️</a></td>
+                    </tr>
+                    <tr>
+                        <td class="ad-name">Hook 1,2 y3...</td>
+                        <td>Regula</td>
+                        <td><span class="format-badge format-image">IMAGE</span></td>
+                        <td class="metric roas-high">6.71</td>
+                        <td class="metric">$6,723</td>
+                        <td>0.89%</td>
+                        <td><a href="https://scontent.fsdu13-1.fna.fbcdn.net/v/t45.1600-4/532567125_1145820754265063_3966431700177067799_n.png?stp=dst-jpg_tt6&_nc_cat=110&ccb=1-7&_nc_sid=890911&_nc_ohc=HN3636VW97sQ7kNvwFbAz4i&_nc_oc=Adl5Lmn4TNaosLg_K_cCka2smMPQoN_UmLKu8HiYusoqo_z2h9OWVOYik-Qcp-74XX8&_nc_zt=1&_nc_ht=scontent.fsdu13-1.fna&edm=AAwGEdEEAAAA&_nc_gid=xzLJZJ2Ylo_Fs4avhHfznQ&oh=00_AfXe7CcPeB6ZjLmZ82urMwwd46UNkzCJKM3mY1aaqBhstw&oe=68B396B2" target="_blank" class="media-link">🖼️</a></td>
+                    </tr>
+                    <tr>
+                        <td class="ad-name">Batch 68  hook 1...</td>
+                        <td>Chabacano 1</td>
+                        <td><span class="format-badge format-video">VIDEO</span></td>
+                        <td class="metric roas-high">6.45</td>
+                        <td class="metric">$3,472</td>
+                        <td>1.68%</td>
+                        <td><a href="https://www.facebook.com/watch/?v=1014737480484127" target="_blank" class="media-link">🎬</a></td>
+                    </tr>
+                    <tr>
+                        <td class="ad-name">Hook2...</td>
+                        <td>Cuenta Comercial 2</td>
+                        <td><span class="format-badge format-instagram">INSTAGRAM</span></td>
+                        <td class="metric roas-high">6.10</td>
+                        <td class="metric">$4,129</td>
+                        <td>1.65%</td>
+                        <td><a href="https://www.instagram.com/p/DI_eyLfMJPV/" target="_blank" class="media-link">🖼️</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- TABLA EFICIENCIA POR FORMATO -->
+        <div class="main-table-card">
+            <h2>📊 Eficiencia por Tipo de Formato</h2>
+            <p id="formato-subtitle">Análisis comparativo de rendimiento por formato creativo</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Formato</th>
+                        <th>Cantidad</th>
+                        <th>Inversión Total</th>
+                        <th>ROAS Promedio</th>
+                        <th>CTR Promedio</th>
+                        <th>CPM Promedio</th>
+                    </tr>
+                </thead>
+                <tbody id="formato-table">
+                    <!-- Será llenado por JavaScript -->
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- TABLA COMPARACIÓN SEMANA A SEMANA -->
+        <div class="main-table-card">
+            <h2>📈 Comparación Semana a Semana</h2>
+            <p>Comparación entre semana actual (19-25 ago) vs semana anterior (12-18 ago)</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Métrica</th>
+                        <th>Semana Actual</th>
+                        <th>Semana Anterior</th>
+                        <th>Cambio</th>
+                    </tr>
+                </thead>
+                <tbody id="comparison-table">
+                    <!-- Será llenado por JavaScript -->
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- SECTION PREVIEW FAKE -->
+        <div class="preview-section">
+            <div class="preview-badge">PREVIEW</div>
+            
+            <h2>🔮 Análisis Avanzado por Nomenclatura</h2>
+            <p style="color: #86868b; margin-bottom: 25px;">Vista previa de cómo se verá el dashboard una vez aplicada la nomenclatura estándar</p>
+            
+            <div class="preview-content">
+                <div class="chart-grid">
+                    <div class="chart-card">
+                        <h3>📊 Performance por Ángulo Creativo</h3>
+                        <div class="bar-chart">
+                            <div class="bar" style="height: 100%; background: linear-gradient(135deg, #00a854 0%, #28a745 100%);">
+                                <span class="bar-value">ROAS 4.2</span>
+                                <span class="bar-label">Inflamación</span>
+                            </div>
+                            <div class="bar" style="height: 85%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                <span class="bar-value">ROAS 3.8</span>
+                                <span class="bar-label">Energía</span>
+                            </div>
+                            <div class="bar" style="height: 70%; background: linear-gradient(135deg, #ff9500 0%, #ff8c00 100%);">
+                                <span class="bar-value">ROAS 3.1</span>
+                                <span class="bar-label">Digestión</span>
+                            </div>
+                            <div class="bar" style="height: 55%; background: linear-gradient(135deg, #7928ca 0%, #9c27b0 100%);">
+                                <span class="bar-value">ROAS 2.7</span>
+                                <span class="bar-label">Proteína</span>
+                            </div>
+                            <div class="bar" style="height: 45%; background: linear-gradient(135deg, #6c757d 0%, #868e96 100%);">
+                                <span class="bar-value">ROAS 2.3</span>
+                                <span class="bar-label">Antienvejecimiento</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <h3>👥 Performance por Creador</h3>
+                        <div class="creator-grid">
+                            <div class="creator-card">
+                                <div class="creator-avatar male">👨</div>
+                                <div class="creator-name">Carlos (30)</div>
+                                <div class="creator-stats">
+                                    ROAS: <span class="creator-roas">4.1x</span><br>
+                                    22 ads
+                                </div>
+                            </div>
+                            <div class="creator-card">
+                                <div class="creator-avatar female">👩</div>
+                                <div class="creator-name">Ana (25)</div>
+                                <div class="creator-stats">
+                                    ROAS: <span class="creator-roas">3.5x</span><br>
+                                    18 ads
+                                </div>
+                            </div>
+                            <div class="creator-card">
+                                <div class="creator-avatar male">👨</div>
+                                <div class="creator-name">Luis (35)</div>
+                                <div class="creator-stats">
+                                    ROAS: <span class="creator-roas">2.9x</span><br>
+                                    14 ads
+                                </div>
+                            </div>
+                            <div class="creator-card">
+                                <div class="creator-avatar female">👩</div>
+                                <div class="creator-name">María (28)</div>
+                                <div class="creator-stats">
+                                    ROAS: <span class="creator-roas">2.4x</span><br>
+                                    11 ads
+                                </div>
+                            </div>
+                            <div class="creator-card">
+                                <div class="creator-avatar male">👨</div>
+                                <div class="creator-name">Miguel (32)</div>
+                                <div class="creator-stats">
+                                    ROAS: <span class="creator-roas">2.1x</span><br>
+                                    8 ads
+                                </div>
+                            </div>
+                            <div class="creator-card">
+                                <div class="creator-avatar female">👩</div>
+                                <div class="creator-name">Sofia (27)</div>
+                                <div class="creator-stats">
+                                    ROAS: <span class="creator-roas">1.9x</span><br>
+                                    6 ads
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Charger toutes les données au démarrage
+        let periodsData = {};
+        let prevWeekData = {};
+        let petcareData = {};
+        let currentPeriod = 7;
+        let currentAccount = 'global';
+        
+        async function loadAllData() {
+            try {
+                // Charger les 5 fichiers JSON (3/7/14/30/90) 
+                const periods = [3, 7, 14, 30, 90];  // ✅ Toutes les périodes Pablo
+                for (const period of periods) {
+                    const response = await fetch(`../../hybrid_data_${period}d.json`);
+                    periodsData[period] = await response.json();
+                }
+                
+                // Charger semaine précédente
+                const prevResponse = await fetch('../../hybrid_data_prev_week.json');
+                prevWeekData = await prevResponse.json();
+                
+                // Charger vraies analyses Petcare  
+                const petcareResponse = await fetch('../../petcare_parsed_analysis.json');
+                petcareData = await petcareResponse.json();
+                
+                // Charger config dates pour interface intelligente
+                const configResponse = await fetch('../../refresh_config.json');
+                const refreshConfig = await configResponse.json();
+                
+                // Mettre à jour le header avec dates précises
+                const headerSubtitle = document.getElementById('header-subtitle');
+                if (headerSubtitle && refreshConfig) {
+                    const refDate = new Date(refreshConfig.reference_date + 'T00:00:00').toLocaleDateString('es-ES');
+                    const updateTime = new Date(refreshConfig.last_update).toLocaleDateString('es-ES');
+                    headerSubtitle.textContent = `Datos hasta: ${refDate} • Actualizado: ${updateTime}`;
+                }
+                
+                console.log('📊 Données chargées:', Object.keys(periodsData), 'config dates');
+                
+                // Initialiser avec 7 jours, mode global
+                updateDashboard(7);
+                
+            } catch (error) {
+                console.error('❌ Erreur chargement données:', error);
+            }
+        }
+        
+        function switchPeriod(button, days) {
+            currentPeriod = days;
+            
+            // ✅ Mettre à jour les boutons (corrigé)
+            document.querySelectorAll('.period-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            button.classList.add('active');
+            
+            // Mettre à jour le contenu
+            updateDashboard(days);
+        }
+        
+        function switchAccount(button, account) {
+            currentAccount = account;
+            
+            // Mettre à jour les boutons compte
+            document.querySelectorAll('.account-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            button.classList.add('active');
+            
+            // Mettre à jour le titre
+            const headerTitle = document.querySelector('.header h1');
+            if (account === 'petcare') {
+                headerTitle.innerHTML = '🐕 Petcare - Análisis Avanzado <span class="real-analysis-badge">REAL DATA</span>';
+            } else {
+                headerTitle.textContent = '🚀 Creative Testing Dashboard';
+            }
+            
+            // Mettre à jour le contenu selon le compte
+            updateDashboard(currentPeriod);
+        }
+        
+        function updateDashboard(days) {
+            if (currentAccount === 'petcare') {
+                // Mode Petcare : Utiliser les vraies analyses par angle
+                updatePetcareDashboard();
+            } else {
+                // Mode Global : Utiliser les données multi-périodes
+                const data = periodsData[days];
+                if (!data) {
+                    console.error(`Pas de données pour ${days} jours`);
+                    return;
+                }
+                
+                // Réafficher les tables cachées en mode Global
+                const formatTableCard = document.querySelector('#formato-table')?.closest('.main-table-card');
+                const comparisonTableCard = document.querySelector('#comparison-table')?.closest('.main-table-card');
+                if (formatTableCard) formatTableCard.style.display = 'block';
+                if (comparisonTableCard) comparisonTableCard.style.display = 'block';
+                
+                updateKPIs(data);
+                updateCharts(data);
+                updateTable(data);
+                updateFormatTable(data);
+                updateComparisonTable();
+            }
+        }
+        
+        function updateKPIs(data) {
+            const ads = data.ads;
+            const totalSpend = ads.reduce((sum, ad) => sum + ad.spend, 0);
+            const totalRevenue = ads.reduce((sum, ad) => sum + ad.purchase_value, 0);  // ✅ Valor Conversión
+            const significantAds = ads.filter(ad => ad.spend > 3000);
+            
+            // ✅ ROAS pondéré par spend (correct)
+            const totalSignificantRevenue = significantAds.reduce((sum, ad) => sum + ad.purchase_value, 0);
+            const totalSignificantSpend = significantAds.reduce((sum, ad) => sum + ad.spend, 0);
+            const avgRoas = totalSignificantSpend > 0 ? totalSignificantRevenue / totalSignificantSpend : 0;
+            
+            // ✅ Mettre à jour labels selon Pablo
+            const kpiLabels = document.querySelectorAll('.kpi-content p');
+            if (kpiLabels.length >= 4) {
+                kpiLabels[0].textContent = 'Anuncios Activos';
+                kpiLabels[1].textContent = 'Inversión Total (MXN)';
+                kpiLabels[2].textContent = 'ROAS Promedio';
+                kpiLabels[3].textContent = 'Valor Conversión';  // ✅ Changé depuis Impresiones
+            }
+            
+            // Mettre à jour les valeurs dans les KPI cards
+            const kpiCards = document.querySelectorAll('.kpi-content h3');
+            if (kpiCards.length >= 4) {
+                kpiCards[0].textContent = ads.length.toLocaleString();
+                kpiCards[1].textContent = `$${Math.round(totalSpend).toLocaleString()}`;
+                kpiCards[2].textContent = avgRoas.toFixed(2);
+                kpiCards[3].textContent = `$${Math.round(totalRevenue).toLocaleString()}`;  // ✅ Valor Conversión
+            }
+        }
+        
+        function updateCharts(data) {
+            const ads = data.ads;
+            
+            // Top 5 comptes par spend
+            const accountSpend = {};
+            ads.forEach(ad => {
+                if (!accountSpend[ad.account_name]) accountSpend[ad.account_name] = 0;
+                accountSpend[ad.account_name] += ad.spend;
+            });
+            
+            const topAccounts = Object.entries(accountSpend)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5);
+            
+            const maxSpend = topAccounts[0] ? topAccounts[0][1] : 1;
+            
+            // Mettre à jour le graphique des comptes
+            const barChart = document.querySelector('.bar-chart');
+            if (barChart) {
+                barChart.innerHTML = topAccounts.map(([name, spend]) => `
+                    <div class="bar" style="height: ${(spend/maxSpend*100)}%">
+                        <span class="bar-value">$${Math.round(spend/1000)}k</span>
+                        <span class="bar-label">${name.substring(0, 10)}</span>
+                    </div>
+                `).join('');
+            }
+            
+            // Mettre à jour seulement la légende des formats avec ROAS
+            const formatStats = data.format_distribution || {};
+            const formatRoas = calculateFormatRoas(ads);
+            
+            const legend = document.querySelector('.legend');
+            if (legend) {
+                legend.innerHTML = Object.entries(formatStats)
+                    .filter(([fmt]) => fmt !== 'CAROUSEL') // Supprimer CAROUSEL
+                    .map(([fmt, count]) => {
+                        const roas = formatRoas[fmt] || 0;
+                        // Raccourcir les noms
+                        const shortName = fmt === 'INSTAGRAM' ? 'IG' : 
+                                         fmt === 'UNKNOWN' ? 'OTROS' : fmt;
+                        return `
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: ${getFormatColor(fmt)}"></div>
+                                <span>${shortName} (${count})${roas > 0 ? ` • ROAS:${roas.toFixed(2)}` : ''}</span>
+                            </div>
+                        `;
+                    }).join('');
+            }
+        }
+        
+        function calculateFormatRoas(ads) {
+            const formatMetrics = {};
+            
+            ads.forEach(ad => {
+                const fmt = ad.format;
+                if (!formatMetrics[fmt]) {
+                    formatMetrics[fmt] = { totalSpend: 0, totalRevenue: 0 };
+                }
+                formatMetrics[fmt].totalSpend += ad.spend;
+                formatMetrics[fmt].totalRevenue += ad.purchase_value;
+            });
+            
+            // ✅ ROAS pondéré par spend (correct)
+            const formatRoas = {};
+            Object.keys(formatMetrics).forEach(fmt => {
+                const { totalSpend, totalRevenue } = formatMetrics[fmt];
+                formatRoas[fmt] = totalSpend > 0 ? totalRevenue / totalSpend : 0;
+            });
+            
+            return formatRoas;
+        }
+        
+        function getFormatColor(format) {
+            const colors = {
+                'VIDEO': '#667eea',
+                'IMAGE': '#00a854',
+                'INSTAGRAM': '#7928ca',
+                'UNKNOWN': '#86868b',
+                'CAROUSEL': '#ff9500'
+            };
+            return colors[format] || '#ccc';
+        }
+        
+        function updateTable(data) {
+            const ads = data.ads;
+            const significantAds = ads.filter(ad => ad.spend > 3000);
+            significantAds.sort((a, b) => b.roas - a.roas);
+            const topAds = significantAds.slice(0, 10);
+            
+            // Mettre à jour le titre de la table
+            const tableTitle = document.querySelector('.main-table-card h2');
+            if (tableTitle) {
+                tableTitle.textContent = `Top 10 Anuncios por ROAS (${currentPeriod} días)`;
+            }
+            
+            const tableSubtitle = document.querySelector('.main-table-card p');
+            if (tableSubtitle) {
+                tableSubtitle.textContent = `${topAds.length} de ${ads.length.toLocaleString()} anuncios con inversión > $3,000 MXN`;
+            }
+            
+            // Mettre à jour le tbody
+            const tableBody = document.querySelector('#ads-table, tbody');
+            if (tableBody) {
+                tableBody.innerHTML = topAds.map(ad => {
+                    const roasClass = ad.roas > 3 ? 'roas-high' : ad.roas > 1.5 ? 'roas-medium' : 'roas-low';
+                    const formatClass = `format-${ad.format.toLowerCase()}`;
+                    
+                    let mediaLink = '—';
+                    if (ad.media_url) {
+                        const icon = ad.format === 'VIDEO' ? '🎬' : '🖼️';
+                        mediaLink = `<a href="${ad.media_url}" target="_blank" class="media-link">${icon}</a>`;
+                    }
+                    
+                    return `
+                        <tr>
+                            <td class="ad-name">${ad.ad_name}</td>
+                            <td>${ad.account_name.substring(0, 25)}</td>
+                            <td><span class="format-badge ${formatClass}">${ad.format}</span></td>
+                            <td class="metric ${roasClass}">${ad.roas.toFixed(2)}</td>
+                            <td class="metric">$${Math.round(ad.spend).toLocaleString()}</td>
+                            <td>${ad.ctr.toFixed(2)}%</td>
+                            <td>${mediaLink}</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+        }
+        
+        function updateFormatTable(data) {
+            const ads = data.ads;
+            
+            // Calculer métriques par format
+            const formatMetrics = {};
+            
+            ads.forEach(ad => {
+                const fmt = ad.format;
+                if (!formatMetrics[fmt]) {
+                    formatMetrics[fmt] = {
+                        count: 0,
+                        totalSpend: 0,
+                        totalRoas: 0,
+                        totalCtr: 0,
+                        totalCpm: 0,
+                        validRoas: 0,
+                        validCtr: 0,
+                        validCpm: 0
+                    };
+                }
+                
+                formatMetrics[fmt].count += 1;
+                formatMetrics[fmt].totalSpend += ad.spend;
+                
+                if (ad.roas > 0) {
+                    formatMetrics[fmt].totalRoas += ad.roas;
+                    formatMetrics[fmt].validRoas += 1;
+                }
+                if (ad.ctr > 0) {
+                    formatMetrics[fmt].totalCtr += ad.ctr;
+                    formatMetrics[fmt].validCtr += 1;
+                }
+                if (ad.cpm > 0) {
+                    formatMetrics[fmt].totalCpm += ad.cpm;
+                    formatMetrics[fmt].validCpm += 1;
+                }
+            });
+            
+            // Remplir le tableau
+            const formatTable = document.getElementById('formato-table');
+            if (formatTable) {
+                formatTable.innerHTML = Object.entries(formatMetrics)
+                    .sort((a, b) => b[1].totalSpend - a[1].totalSpend)
+                    .map(([fmt, metrics]) => {
+                        const avgRoas = metrics.validRoas > 0 ? (metrics.totalRoas / metrics.validRoas) : 0;
+                        const avgCtr = metrics.validCtr > 0 ? (metrics.totalCtr / metrics.validCtr) : 0;
+                        const avgCpm = metrics.validCpm > 0 ? (metrics.totalCpm / metrics.validCpm) : 0;
+                        
+                        const formatClass = `format-${fmt.toLowerCase()}`;
+                        
+                        return `
+                            <tr>
+                                <td><span class="format-badge ${formatClass}">${fmt}</span></td>
+                                <td class="metric">${metrics.count.toLocaleString()}</td>
+                                <td class="metric">$${Math.round(metrics.totalSpend).toLocaleString()}</td>
+                                <td class="metric">${avgRoas.toFixed(2)}</td>
+                                <td>${avgCtr.toFixed(2)}%</td>
+                                <td>${avgCpm > 0 ? '$' + Math.round(avgCpm) : 'N/A'}</td>
+                            </tr>
+                        `;
+                    }).join('');
+            }
+        }
+        
+        function updateComparisonTable() {
+            const currentData = periodsData[7]; // Semaine actuelle (7 jours)
+            const prevData = prevWeekData;
+            
+            if (!currentData || !prevData) {
+                console.error('Données manquantes pour comparaison');
+                return;
+            }
+            
+            const current = currentData.ads;
+            const previous = prevData.ads;
+            
+            // ✅ Fonction d'agrégation pondérée (correcte)
+            const aggregate = (ads) => {
+                const totalSpend = ads.reduce((sum, ad) => sum + ad.spend, 0);
+                const totalRevenue = ads.reduce((sum, ad) => sum + ad.purchase_value, 0);
+                const totalImpressions = ads.reduce((sum, ad) => sum + ad.impressions, 0);
+                const totalClicks = ads.reduce((sum, ad) => sum + ad.clicks, 0);
+                
+                return {
+                    spend: totalSpend,
+                    roas: totalSpend > 0 ? totalRevenue / totalSpend : 0,
+                    ctr: totalImpressions > 0 ? (totalClicks / totalImpressions * 100) : 0
+                };
+            };
+            
+            const currentMetrics = aggregate(current);
+            const prevMetrics = aggregate(previous);
+            
+            // Calculer changements
+            const spendChange = ((currentMetrics.spend - prevMetrics.spend) / prevMetrics.spend * 100);
+            const roasChange = ((currentMetrics.roas - prevMetrics.roas) / prevMetrics.roas * 100);
+            const ctrChange = ((currentMetrics.ctr - prevMetrics.ctr) / prevMetrics.ctr * 100);
+            const adsChange = ((current.length - previous.length) / previous.length * 100);
+            
+            function formatChange(change) {
+                const symbol = change > 0 ? '+' : '';
+                const color = change > 0 ? '#00a854' : change < 0 ? '#ff3b30' : '#6c757d';
+                return `<span style="color: ${color}; font-weight: 600;">${symbol}${change.toFixed(1)}%</span>`;
+            }
+            
+            const comparisonTable = document.getElementById('comparison-table');
+            if (comparisonTable) {
+                comparisonTable.innerHTML = `
+                    <tr>
+                        <td class="metric">Anuncios Activos</td>
+                        <td class="metric">${current.length.toLocaleString()}</td>
+                        <td class="metric">${previous.length.toLocaleString()}</td>
+                        <td>${formatChange(adsChange)}</td>
+                    </tr>
+                    <tr>
+                        <td class="metric">Inversión Total</td>
+                        <td class="metric">$${Math.round(currentMetrics.spend).toLocaleString()}</td>
+                        <td class="metric">$${Math.round(prevMetrics.spend).toLocaleString()}</td>
+                        <td>${formatChange(spendChange)}</td>
+                    </tr>
+                    <tr>
+                        <td class="metric">ROAS Promedio</td>
+                        <td class="metric">${currentMetrics.roas.toFixed(2)}</td>
+                        <td class="metric">${prevMetrics.roas.toFixed(2)}</td>
+                        <td>${formatChange(roasChange)}</td>
+                    </tr>
+                    <tr>
+                        <td class="metric">CTR Promedio</td>
+                        <td class="metric">${currentMetrics.ctr.toFixed(2)}%</td>
+                        <td class="metric">${prevMetrics.ctr.toFixed(2)}%</td>
+                        <td>${formatChange(ctrChange)}</td>
+                    </tr>
+                `;
+            }
+        }
+        
+        function updatePetcareDashboard() {
+            // Mode Petcare : Remplacer tout par les vraies analyses
+            if (!petcareData) {
+                console.error('Données Petcare non disponibles');
+                return;
+            }
+            
+            const angles = petcareData.angle_performance || [];
+            const types = petcareData.type_performance || [];
+            
+            // 1. Mettre à jour les KPIs pour Petcare
+            const totalAds = angles.reduce((sum, angle) => sum + angle.ads_count, 0);
+            const totalSpend = angles.reduce((sum, angle) => sum + angle.spend, 0);
+            const totalRevenue = angles.reduce((sum, angle) => sum + (angle.spend * angle.roas), 0);
+            const avgRoas = totalSpend > 0 ? totalRevenue / totalSpend : 0;
+            
+            const kpiCards = document.querySelectorAll('.kpi-content h3');
+            if (kpiCards.length >= 4) {
+                kpiCards[0].textContent = totalAds.toString();
+                kpiCards[1].textContent = `$${Math.round(totalSpend).toLocaleString()}`;
+                kpiCards[2].textContent = avgRoas.toFixed(2);
+                kpiCards[3].textContent = `$${Math.round(totalRevenue).toLocaleString()}`;  // Valor conversión
+            }
+            
+            // 2. Remplacer les graphiques par analyses réelles
+            const chartGrid = document.querySelector('.chart-grid');
+            if (chartGrid) {
+                chartGrid.innerHTML = `
+                    <div class="chart-card">
+                        <h3>🏆 Performance Real por Ángulo</h3>
+                        <div class="bar-chart">
+                            ${angles.slice(0, 5).map(angle => {
+                                const maxRoas = Math.max(...angles.map(a => a.roas));
+                                const height = (angle.roas / maxRoas * 100);
+                                const color = angle.roas > 5 ? '#00a854' : angle.roas > 3 ? '#667eea' : '#ff9500';
+                                
+                                return `
+                                    <div class="bar" style="height: ${height}%; background: linear-gradient(135deg, ${color} 0%, ${color}dd 100%);">
+                                        <span class="bar-value">ROAS ${angle.roas.toFixed(1)}</span>
+                                        <span class="bar-label">${angle.angle.split(' ')[0]}</span>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                        <div style="margin-top: 15px; font-size: 12px; color: #6c757d; text-align: center;">
+                            📊 Datos reales Petcare • Nomenclatura Martin
+                        </div>
+                    </div>
+                    
+                    <div class="chart-card">
+                        <h3>🔄 Nuevo vs Iteración (Real)</h3>
+                        <div class="creator-grid">
+                            ${types.map(type => {
+                                const isNuevo = type.type === 'Nuevo';
+                                const bgColor = isNuevo ? '#667eea' : '#ff9500';
+                                const icon = isNuevo ? '🆕' : '🔄';
+                                
+                                return `
+                                    <div class="creator-card">
+                                        <div class="creator-avatar" style="background: ${bgColor};">${icon}</div>
+                                        <div class="creator-name">${type.type}</div>
+                                        <div class="creator-stats">
+                                            ROAS: <span class="creator-roas">${type.roas.toFixed(1)}x</span><br>
+                                            ${type.ads_count} ads
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                            <div class="creator-card" style="opacity: 0.6;">
+                                <div class="creator-avatar" style="background: #ddd;">🔒</div>
+                                <div class="creator-name">Creadores</div>
+                                <div class="creator-stats" style="font-size: 11px;">
+                                    Próximamente<br>
+                                    con nomenclatura
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // 3. Mettre à jour la table avec données Petcare  
+            const tableTitle = document.querySelector('.main-table-card h2');
+            if (tableTitle) {
+                tableTitle.innerHTML = '🐕 Top Ángulos Petcare por ROAS <span class="real-analysis-badge">DATOS REALES</span>';
+            }
+            
+            const tableSubtitle = document.querySelector('.main-table-card p');
+            if (tableSubtitle) {
+                tableSubtitle.textContent = `${angles.length} ángulos detectados con nomenclatura de Martin`;
+            }
+            
+            const tableBody = document.querySelector('#ads-table, tbody');
+            if (tableBody) {
+                tableBody.innerHTML = angles.map(angle => {
+                    const roasClass = angle.roas > 5 ? 'roas-high' : angle.roas > 3 ? 'roas-medium' : 'roas-low';
+                    
+                    const status = angle.roas > 4 ? '🔥 Ganador' : 
+                                  angle.roas > 2.5 ? '✅ Bueno' : 
+                                  angle.roas > 1.5 ? '⚠️ Regular' : '❌ Perdedor';
+                    
+                    return `
+                        <tr>
+                            <td class="ad-name">${angle.angle}</td>
+                            <td>Petcare</td>
+                            <td><span class="format-badge format-mixed">MIXED</span></td>
+                            <td class="metric ${roasClass}">${angle.roas.toFixed(2)}</td>
+                            <td class="metric">$${Math.round(angle.spend).toLocaleString()}</td>
+                            <td>${angle.ctr.toFixed(2)}%</td>
+                            <td>${status}</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+            
+            // 4. Cacher les tables qui ne s'appliquent pas en mode Petcare
+            const formatTable = document.getElementById('formato-table');
+            const comparisonTable = document.getElementById('comparison-table');
+            const formatTableCard = formatTable?.closest('.main-table-card');
+            const comparisonTableCard = comparisonTable?.closest('.main-table-card');
+            
+            if (formatTableCard) formatTableCard.style.display = 'none';
+            if (comparisonTableCard) comparisonTableCard.style.display = 'none';
+        }
+        
+        // Charger les données au démarrage
+        document.addEventListener('DOMContentLoaded', loadAllData);
+    </script>
+</body>
+</html>
