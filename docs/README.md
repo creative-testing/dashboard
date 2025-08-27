@@ -87,7 +87,7 @@ Pipeline complet et cohérent:
 
 **Netlify**: Dashboard accessible via URL
 **Fichiers requis**: 
-- `dashboards/current/dashboard_recovery.html` (canonique)
+- `dashboards/current/index.html` (canonique)
 - `data/current/hybrid_data_*.json` (source de vérité)
 - `data/current/hybrid_data_prev_week.json`
 
@@ -101,7 +101,7 @@ Notes:
 - `META_ACCOUNT_IDS` (optionnel): CSV de comptes (`act_...`) à utiliser si `/me/adaccounts` est limité.
 
 ## 🧹 Nettoyage et structure
-- Dashboard canonique: `dashboards/current/dashboard_recovery.html`
+- Dashboard canonique: `dashboards/current/index.html`
 - Dashboards archivés: anciens prototypes (`dashboard_fresh.html`, `dashboard_merged.html`, `dashboard_stable_base.html`)
 - Scripts legacy/alternatifs déplacés sous `scripts/archive/` (ex: `dashboard_fresh_data.py`, `fetch_hybrid_optimized.py`, `fetch_90d_turbo.py`, `quick_fix_creatives.py`)
 - Utils archivés: `scripts/archive/utils/` (ex: `analyze_periods.py`, `compare_accounts.py`, `meta_insights.py`, `smart_analyzer.py`, `get_everything.py`, ...)
