@@ -91,12 +91,21 @@ Pipeline complet et cohérent:
 - `data/current/hybrid_data_*.json` (source de vérité)
 - `data/current/hybrid_data_prev_week.json`
 
-Note: `dashboard_final.html` a été retiré. Utiliser uniquement `dashboard_recovery.html`.
+Notes:
+- `dashboard_final.html` a été retiré. Utiliser uniquement `dashboard_recovery.html`.
+- Les JSON à la racine ne sont plus utilisés. `MIRROR_TO_ROOT=false` par défaut; activer uniquement si nécessaire pour compat.
 
 ## 🔐 Configuration (Env)
 
 - `FACEBOOK_ACCESS_TOKEN`: token Meta/Facebook avec accès aux comptes nécessaires.
 - `META_ACCOUNT_IDS` (optionnel): CSV de comptes (`act_...`) à utiliser si `/me/adaccounts` est limité.
+- `USE_THUMBNAIL_FALLBACK` (par défaut `true`): si `false`, l'enrichissement n'utilise pas `thumbnail_url` en dernier recours.
+
+## 🧹 Nettoyage et structure
+- Dashboard canonique: `dashboards/current/dashboard_recovery.html`
+- Dashboards archivés: anciens prototypes (`dashboard_fresh.html`, `dashboard_merged.html`, `dashboard_stable_base.html`)
+- Scripts legacy/alternatifs déplacés sous `scripts/archive/` (ex: `dashboard_fresh_data.py`, `fetch_hybrid_optimized.py`, `fetch_90d_turbo.py`, `quick_fix_creatives.py`)
+- Outils manuels conservés: `fix_creatives.py`, `turbo_fix_creatives.py` (utilitaires ponctuels, l'enrichissement principal est intégré au master)
 
 ---
 *Développé avec Claude Code - Optimisé pour Creative Testing*

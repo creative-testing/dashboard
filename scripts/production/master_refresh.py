@@ -210,14 +210,15 @@ def master_refresh():
 
     active_accounts = [acc for acc in accounts if (acc.get("account_status") == 1 or acc.get("account_status") == "1")]
     
-    # Debug: log how many accounts we saw
-    print(f"👀 Adaccounts renvoyés: {len(accounts)}")
-    if accounts[:3]:
-        try:
-            sample = [{k: a.get(k) for k in ("id","name","account_status")} for a in accounts[:3]]
-            print(f"   échantillon: {sample}")
-        except Exception:
-            pass
+    # Debug (optional)
+    if os.getenv('DEBUG_REFRESH'):
+        print(f"👀 Adaccounts renvoyés: {len(accounts)}")
+        if accounts[:3]:
+            try:
+                sample = [{k: a.get(k) for k in ("id","name","account_status")} for a in accounts[:3]]
+                print(f"   échantillon: {sample}")
+            except Exception:
+                pass
 
     # Fallback: explicit account IDs via env if nothing returned
     if not active_accounts:
@@ -333,7 +334,8 @@ def master_refresh():
         print(f"⚠️ Impossible d'enrichir media_url: {e}")
 
     # 5. Miroir de compatibilité vers la racine (source de vérité = data/current)
-    if total_ads_all > 0:
+    mirror_flag = os.getenv('MIRROR_TO_ROOT', 'false').lower() in ('1','true','yes','on')
+    if total_ads_all > 0 and mirror_flag:
         try:
             print("\n🔁 Miroir des fichiers vers la racine (compatibilité)...")
             files = [
@@ -354,7 +356,10 @@ def master_refresh():
         except Exception as e:
             print(f"⚠️ Miroir racine échoué: {e}")
     else:
-        print("⚠️ 0 annonces récupérées: pas de miroir vers la racine pour protéger les fichiers existants.")
+        if total_ads_all == 0:
+            print("⚠️ 0 annonces récupérées: pas de miroir vers la racine pour protéger les fichiers existants.")
+        elif not mirror_flag:
+            print("ℹ️ MIRROR_TO_ROOT désactivé: pas de copie des JSON vers la racine.")
 
     return results_summary
 

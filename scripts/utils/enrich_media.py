@@ -21,6 +21,7 @@ import requests
 from dotenv import load_dotenv
 
 load_dotenv()
+USE_THUMBNAIL_FALLBACK = (os.getenv("USE_THUMBNAIL_FALLBACK", "true").lower() in ("1","true","yes","on"))
 
 GRAPH_URL = "https://graph.facebook.com/v23.0"
 
@@ -128,7 +129,7 @@ def _process_period_json(path: str, token: str, max_workers: int = 20) -> Dict[s
                     sid = creative.get("effective_object_story_id") or creative.get("object_story_id")
                     if sid:
                         unresolved_story_ids.add(sid)
-                    elif creative.get("thumbnail_url"):
+                    elif USE_THUMBNAIL_FALLBACK and creative.get("thumbnail_url"):
                         ad["format"] = ad.get("format") or "IMAGE"
                         ad["media_url"] = creative["thumbnail_url"]
                         fixed_count += 1
@@ -319,7 +320,7 @@ def enrich_media_urls_union(base_dir: str = "data/current", periods: List[int] =
                     ad['format'] = ad.get('format', 'POST')
                     ad['media_url'] = sid_to_permalink[sid]
                     fixed += 1
-                elif c.get('thumbnail_url'):
+                elif USE_THUMBNAIL_FALLBACK and c.get('thumbnail_url'):
                     ad['format'] = ad.get('format') or 'IMAGE'
                     ad['media_url'] = c['thumbnail_url']
                     fixed += 1
