@@ -139,6 +139,11 @@ def fix_period_turbo(period, base_dir="."):
                             )
                             if sid:
                                 unresolved_story_ids.add(sid)
+                            elif creative.get("thumbnail_url"):
+                                # dernier recours: utiliser l'image miniature
+                                ad['format'] = ad.get('format') or 'IMAGE'
+                                ad['media_url'] = creative["thumbnail_url"]
+                                fixed_count += 1
 
                 # Fallback: tenter de récupérer des permalinks d'histoires
                 if unresolved_story_ids:
@@ -176,7 +181,8 @@ def fix_period_turbo(period, base_dir="."):
             media_count += 1
     
     print(f"  ✅ {fixed_count} ads corrigés")
-    print(f"  📊 {media_count}/{len(ads)} ads avec media_url ({media_count*100//len(ads)}%)")
+    pct = (media_count * 100 // len(ads)) if ads else 0
+    print(f"  📊 {media_count}/{len(ads)} ads avec media_url ({pct}%)")
     print(f"  📊 Distribution formats:")
     for fmt, count in sorted(format_stats.items()):
         pct = count * 100 // len(ads)

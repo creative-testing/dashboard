@@ -14,7 +14,7 @@ from glob import glob
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
 from collections import defaultdict
-import time
+import time as _time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 load_dotenv()
@@ -43,6 +43,7 @@ def fetch_account_insights_optimized(account, token, since_date, until_date):
             "access_token": token,
             "level": "ad",
             "time_range": f'{{"since":"{since_date}","until":"{until_date}"}}',
+            "time_increment": 1,
             "fields": "ad_id,ad_name,campaign_name,adset_name,impressions,spend,clicks,ctr,cpm,reach,frequency,actions,action_values,cost_per_action_type",
             "filtering": '[{"field":"impressions","operator":"GREATER_THAN","value":"0"}]',
             "limit": 1000
@@ -53,13 +54,29 @@ def fetch_account_insights_optimized(account, token, since_date, until_date):
         current_url = url
         page = 0
         
+        backoff = 1
         while current_url and page < 30:  # Limite sécurité
-            if page == 0:
-                response = requests.get(current_url, params=params)
-            else:
-                response = requests.get(current_url)
-            
-            data = response.json()
+            try:
+                if page == 0:
+                    response = requests.get(current_url, params=params)
+                else:
+                    response = requests.get(current_url)
+                try:
+                    data = response.json()
+                except Exception:
+                    data = {}
+                # rate limit handling
+                if response.status_code != 200:
+                    msg = str(data)
+                    if '#80004' in msg or 'too many calls' in msg.lower() or response.status_code == 429:
+                        import time, random
+                        delay = min(30, backoff) + random.random()
+                        time.sleep(delay)
+                        backoff *= 2
+                        continue
+                    break
+            except Exception:
+                break
             
             if "data" in data:
                 ads = data["data"]
@@ -153,172 +170,120 @@ def master_refresh():
     print(f"🕐 Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"💻 Optimisé pour MacBook M1 Pro")
     
-    start_master = time.time()
+    start_master = _time.time()
     
     # 1. Comptes (une seule fois)
     print(f"\n📊 Récupération comptes...")
-    accounts_response = requests.get("https://graph.facebook.com/v23.0/me/adaccounts", params={
+    # Adaccounts pagination
+    accounts = []
+    url = "https://graph.facebook.com/v23.0/me/adaccounts"
+    params = {
         "access_token": token,
         "fields": "id,name,account_status",
-        "limit": 100
-    })
+        "limit": 100,
+    }
+    retry = 0
+    while url:
+        resp = requests.get(url, params=params)
+        try:
+            data = resp.json()
+        except Exception:
+            data = {}
+        if resp.status_code != 200:
+            print(f"⚠️ adaccounts HTTP {resp.status_code}: {str(data)[:200]}")
+            # simple backoff on rate limits
+            if data and isinstance(data, dict) and 'error' in data:
+                msg = str(data['error'])
+                if '#80004' in msg or 'too many calls' in msg.lower():
+                    import time
+                    delay = min(30, 2 ** retry)
+                    print(f"⏳ Rate limit: attente {delay}s et nouvelle tentative...")
+                    time.sleep(delay)
+                    retry += 1
+                    if retry <= 3:
+                        continue
+            break
+        accounts.extend(data.get("data", []) or [])
+        # follow next
+        url = data.get("paging", {}).get("next")
+        params = None  # next already has params
+
+    active_accounts = [acc for acc in accounts if (acc.get("account_status") == 1 or acc.get("account_status") == "1")]
     
-    accounts = accounts_response.json().get("data", [])
-    active_accounts = [acc for acc in accounts if acc.get("account_status") == 1]
-    
+    # Debug: log how many accounts we saw
+    print(f"👀 Adaccounts renvoyés: {len(accounts)}")
+    if accounts[:3]:
+        try:
+            sample = [{k: a.get(k) for k in ("id","name","account_status")} for a in accounts[:3]]
+            print(f"   échantillon: {sample}")
+        except Exception:
+            pass
+
+    # Fallback: explicit account IDs via env if nothing returned
+    if not active_accounts:
+        env_ids = os.getenv("META_ACCOUNT_IDS", "").strip()
+        if env_ids:
+            print("⚠️ Aucun compte actif listé via /me/adaccounts, utilisation de META_ACCOUNT_IDS")
+            active_accounts = [{"id": acc.strip(), "name": acc.strip(), "account_status": 1} for acc in env_ids.split(',') if acc.strip()]
     print(f"✅ {len(active_accounts)} comptes actifs")
     
-    # 2. Refresh chaque période
+    # 2. Mode baseline journalier 90j + agrégations locales (moins d'appels)
     results_summary = {}
-    
-    for period in [3, 7, 14, 30, 90]:  # Pablo's request
-        since_date, until_date = calculate_period_dates(period, reference_date)
-        
-        print(f"\n🔄 PÉRIODE {period}J ({since_date} → {until_date})")
-        print("-" * 50)
-        
-        period_start = time.time()
-        
-        # Insights parallèles
-        print(f"   📊 Insights parallèles...")
-        all_insights = []
-        
-        with ThreadPoolExecutor(max_workers=25) as executor:  # M1 Pro optimized
-            futures = [
-                executor.submit(fetch_account_insights_optimized, acc, token, since_date, until_date)
-                for acc in active_accounts
-            ]
-            
-            for future in as_completed(futures):
-                account_insights = future.result()
-                all_insights.extend(account_insights)
-        
-        print(f"   ✅ {len(all_insights)} insights")
-        
-        # Creatives parallèles
-        print(f"   🎨 Creatives parallèles...")
-        ad_ids = [ad.get("ad_id") for ad in all_insights if ad.get("ad_id")]
-        creatives_by_ad = fetch_creatives_parallel(ad_ids, token)
-        
-        print(f"   ✅ {len(creatives_by_ad)} creatives")
-        
-        # Processing
-        processed_ads = []
-        format_stats = defaultdict(int)
-        
-        for insights in all_insights:
-            ad_id = insights.get("ad_id")
-            if not ad_id:
-                continue
-            
-            # Format detection
-            format_type = "UNKNOWN"
-            media_url = ""
-            
-            if ad_id in creatives_by_ad:
-                creative = creatives_by_ad[ad_id]
-                
-                if creative.get("video_id"):
-                    format_type = "VIDEO"
-                    media_url = f"https://www.facebook.com/watch/?v={creative['video_id']}"
-                elif creative.get("image_url"):
-                    format_type = "IMAGE" 
-                    media_url = creative["image_url"]
-                elif creative.get("instagram_permalink_url"):
-                    format_type = "INSTAGRAM"
-                    media_url = creative["instagram_permalink_url"]
-            
-            format_stats[format_type] += 1
-            
-            # Métriques complètes
-            spend = float(insights.get("spend", 0))
-            impressions = int(insights.get("impressions", 0))
-            clicks = int(insights.get("clicks", 0))
-            ctr = float(insights.get("ctr", 0))
-            cpm = float(insights.get("cpm", 0))
-            reach = int(insights.get("reach", 0))
-            frequency = float(insights.get("frequency", 0))
-            
-            # CPA pour Pablo
-            cpa = 0
-            cost_per_actions = insights.get("cost_per_action_type", [])
-            for cpa_item in cost_per_actions:
-                if cpa_item.get("action_type") in ["purchase", "omni_purchase"]:
-                    cpa = float(cpa_item.get("value", 0))
-                    break
-            
-            # Conversions
-            purchases = 0
-            purchase_value = 0
-            actions = insights.get("actions", [])
-            action_values = insights.get("action_values", [])
-            
-            for action in actions:
-                if action.get("action_type") in ["purchase", "omni_purchase"]:
-                    purchases = int(action.get("value", 0))
-                    break
-            
-            for action_value in action_values:
-                if action_value.get("action_type") in ["purchase", "omni_purchase"]:
-                    purchase_value = float(action_value.get("value", 0))
-                    break
-            
-            roas = (purchase_value / spend) if spend > 0 else 0
-            
-            ad_data = {
-                "account_name": insights.get("account_name"),
-                "ad_name": insights.get("ad_name"),
-                "ad_id": ad_id,
-                "campaign_name": insights.get("campaign_name", ""),
-                "format": format_type,
-                "spend": spend,
-                "impressions": impressions,
-                "clicks": clicks,
-                "ctr": ctr,
-                "cpm": cpm,
-                "cpa": cpa,
-                "reach": reach,
-                "frequency": frequency,
-                "purchases": purchases,
-                "purchase_value": purchase_value,
-                "roas": roas,
-                "media_url": media_url
-            }
-            
-            processed_ads.append(ad_data)
-        
-        # Sauvegarder avec métadonnées intelligentes
-        output = {
-            "metadata": {
-                "timestamp": datetime.now().isoformat(),
-                "reference_date": reference_date,
-                "period_days": period,
-                "date_range": f"{since_date} to {until_date}",
-                "method": "master_coherent_refresh",
-                "total_ads": len(processed_ads),
-                "ads_with_creative": len(creatives_by_ad)
-            },
-            "format_distribution": dict(format_stats),
-            "ads": processed_ads
-        }
-        
-        filename = f"data/current/hybrid_data_{period}d.json"
-        with open(filename, 'w', encoding='utf-8') as f:
-            json.dump(output, f, indent=2, ensure_ascii=False)
-        
-        period_time = time.time() - period_start
-        total_spend = sum(ad['spend'] for ad in processed_ads)
-        
-        print(f"   ✅ {period}j: {len(processed_ads)} ads, ${total_spend:,.0f} MXN en {period_time:.1f}s")
-        
+    print("\n🧱 Baseline journalière 90j (time_increment=1)...")
+    start_baseline = _time.time()
+
+    # Fenêtre 90 jours
+    since_date_90, until_date_90 = calculate_period_dates(90, reference_date)
+
+    # Collecte journalière pour chaque compte
+    daily_rows = []
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        futs = [
+            executor.submit(fetch_account_insights_optimized, acc, token, since_date_90, until_date_90)
+            for acc in active_accounts
+        ]
+        for fut in as_completed(futs):
+            daily_rows.extend(fut.result())
+
+    # Taguer chaque ligne avec une date si non présente (Meta renvoie souvent date_start/date_stop ou des buckets)
+    for r in daily_rows:
+        # si disponible, garder la granularité/jour (Meta inclut souvent date_start/date_stop par bucket)
+        r['date'] = r.get('date_start') or r.get('date') or ''
+
+    baseline = {
+        'metadata': {
+            'timestamp': datetime.now().isoformat(),
+            'reference_date': reference_date,
+            'date_range': f"{since_date_90} to {until_date_90}",
+            'method': 'baseline_90d_daily',
+            'total_rows': len(daily_rows)
+        },
+        'daily_ads': daily_rows
+    }
+    os.makedirs('data/current', exist_ok=True)
+    with open('data/current/baseline_90d_daily.json', 'w', encoding='utf-8') as f:
+        json.dump(baseline, f, indent=2, ensure_ascii=False)
+    print(f"   ✅ Baseline 90j: {len(daily_rows)} lignes en {_time.time()-start_baseline:.1f}s")
+
+    # Agrégations locales vers 3/7/14/30/90
+    print("\n🧮 Agrégation locale vers périodes...")
+    # Import local pour éviter problèmes de chemins
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+    from utils.aggregate_periods import aggregate_from_baseline  # type: ignore
+    periods = [3,7,14,30,90]
+    for period in periods:
+        out = aggregate_from_baseline('data/current/baseline_90d_daily.json', period_days=period, reference_date=reference_date)
+        with open(f'data/current/hybrid_data_{period}d.json', 'w', encoding='utf-8') as f:
+            json.dump(out, f, indent=2, ensure_ascii=False)
         results_summary[period] = {
-            'ads': len(processed_ads),
-            'spend': total_spend,
-            'time': period_time
+            'ads': out['metadata'].get('total_ads', 0),
+            'spend': sum(a.get('spend',0) for a in out.get('ads',[])),
+            'time': 0.0,
         }
+        print(f"   ✅ {period}j: {results_summary[period]['ads']} ads agrégées")
     
     # Résumé final
-    master_time = time.time() - start_master
+    master_time = _time.time() - start_master
     
     print(f"\n" + "=" * 70)
     print(f"🎉 MASTER REFRESH TERMINÉ")
@@ -342,6 +307,9 @@ def master_refresh():
     
     print(f"\n💾 Config sauvegardée pour interface")
 
+    # Si aucune annonce n'a été récupérée, éviter d'écraser des fichiers valides
+    total_ads_all = sum(v.get('ads', 0) for v in results_summary.values())
+
     # 3. Récupération semaine précédente (pour comparaison)
     try:
         print("\n📆 Refresh semaine précédente (comparaison)...")
@@ -350,34 +318,43 @@ def master_refresh():
     except Exception as e:
         print(f"⚠️ Impossible de rafraîchir la semaine précédente: {e}")
 
-    # 4. Enrichissement media_url (turbo) sur data/current
+    # 4. Enrichissement media_url (intégré)
     try:
-        print("\n🎬 Enrichissement media_url (turbo) sur data/current...")
-        subprocess.run([sys.executable, 'scripts/production/turbo_fix_creatives.py', '--dir', 'data/current'], check=True)
-        print("✅ Enrichissement media_url OK")
+        print("\n🎬 Enrichissement media_url (intégré) sur data/current...")
+        # Import paresseux pour éviter problèmes de path
+        sys.path.append(os.path.join(os.path.dirname(__file__), '..'))  # add scripts/
+        from utils.enrich_media import enrich_media_urls_union  # type: ignore
+        stats = enrich_media_urls_union(base_dir='data/current', periods=[3,7,14,30,90], max_workers=10, only_missing=True)
+        print("✅ Enrichissement media_url OK:")
+        for k,v in stats.items():
+            if k.startswith('_'): continue
+            print(f"   {k}d: {v.get('with_media',0)}/{v.get('total',0)}")
     except Exception as e:
         print(f"⚠️ Impossible d'enrichir media_url: {e}")
 
     # 5. Miroir de compatibilité vers la racine (source de vérité = data/current)
-    try:
-        print("\n🔁 Miroir des fichiers vers la racine (compatibilité)...")
-        files = [
-            *(f"data/current/hybrid_data_{p}d.json" for p in [3, 7, 14, 30, 90]),
-            "data/current/hybrid_data_prev_week.json",
-            "data/current/refresh_config.json",
-        ]
-        # Petcare (facultatif)
-        petcare_json = 'data/current/petcare_parsed_analysis.json'
-        if os.path.exists(petcare_json):
-            files.append(petcare_json)
+    if total_ads_all > 0:
+        try:
+            print("\n🔁 Miroir des fichiers vers la racine (compatibilité)...")
+            files = [
+                *(f"data/current/hybrid_data_{p}d.json" for p in [3, 7, 14, 30, 90]),
+                "data/current/hybrid_data_prev_week.json",
+                "data/current/refresh_config.json",
+            ]
+            # Petcare (facultatif)
+            petcare_json = 'data/current/petcare_parsed_analysis.json'
+            if os.path.exists(petcare_json):
+                files.append(petcare_json)
 
-        for src in files:
-            if os.path.exists(src):
-                dst = os.path.basename(src)
-                shutil.copy2(src, dst)
-        print("✅ Miroir racine OK")
-    except Exception as e:
-        print(f"⚠️ Miroir racine échoué: {e}")
+            for src in files:
+                if os.path.exists(src):
+                    dst = os.path.basename(src)
+                    shutil.copy2(src, dst)
+            print("✅ Miroir racine OK")
+        except Exception as e:
+            print(f"⚠️ Miroir racine échoué: {e}")
+    else:
+        print("⚠️ 0 annonces récupérées: pas de miroir vers la racine pour protéger les fichiers existants.")
 
     return results_summary
 

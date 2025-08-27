@@ -43,8 +43,10 @@ Pipeline complet et cohérent:
 - Fetch toutes les périodes (3/7/14/30/90) → écrit sous `data/current/`
 - Génère `refresh_config.json` pour l'interface
 - Rafraîchit la semaine précédente
-- Enrichit rapidement les `media_url` (turbo, parallélisé)
-- Miroir de compatibilité des JSONs vers la racine du repo
+- Enrichit les `media_url` (phase d'enrichissement intégrée)
+  - Union des `ad_id` sur toutes les périodes → un seul appel massifié aux créatives (moins d'appels)
+  - Fallback story permalink + (option) thumbnail en dernier recours
+- Miroir de compatibilité des JSONs vers la racine du repo (seulement si données non vides)
 
 ## 📈 Données Actuelles
 
@@ -85,15 +87,16 @@ Pipeline complet et cohérent:
 
 **Netlify**: Dashboard accessible via URL
 **Fichiers requis**: 
-- `index.html` (dashboard)
+- `dashboards/current/dashboard_recovery.html` (canonique)
 - `data/current/hybrid_data_*.json` (source de vérité)
 - `data/current/hybrid_data_prev_week.json`
 
-Les dashboards lisent désormais uniquement `data/current`. Un miroir automatique vers la racine est produit pour compatibilité.
+Note: `dashboard_final.html` a été retiré. Utiliser uniquement `dashboard_recovery.html`.
 
 ## 🔐 Configuration (Env)
 
 - `FACEBOOK_ACCESS_TOKEN`: token Meta/Facebook avec accès aux comptes nécessaires.
+- `META_ACCOUNT_IDS` (optionnel): CSV de comptes (`act_...`) à utiliser si `/me/adaccounts` est limité.
 
 ---
 *Développé avec Claude Code - Optimisé pour Creative Testing*
