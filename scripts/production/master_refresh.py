@@ -138,7 +138,9 @@ def fetch_creatives_parallel(ad_ids, token):
 def master_refresh():
     """Fonction master : refresh tout avec cohérence"""
     
-    token = os.getenv("FB_TOKEN")
+    token = os.getenv("FACEBOOK_ACCESS_TOKEN")
+    if not token:
+        raise SystemExit("FACEBOOK_ACCESS_TOKEN not set. Define it in .env")
     reference_date = get_reference_date()
     
     print("🚀 MASTER REFRESH - SOLUTION INTELLIGENTE")

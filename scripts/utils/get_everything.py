@@ -14,7 +14,9 @@ def get_absolutely_everything():
     print("🚀 RÉCUPÉRATION DE TOUTES LES DONNÉES DISPONIBLES")
     print("=" * 80)
     
-    token = os.getenv("FB_TOKEN")
+    token = os.getenv("FACEBOOK_ACCESS_TOKEN")
+    if not token:
+        raise SystemExit("FACEBOOK_ACCESS_TOKEN not set. Define it in .env")
     account_id = "act_297112083495970"
     
     # 1. RÉCUPÉRER LES INSIGHTS AVEC TOUS LES CHAMPS

@@ -53,7 +53,7 @@ class BrandConfig:
 
 class MetaConfig:
     """Configuration pour l'API Meta/Facebook"""
-    ACCESS_TOKEN = os.getenv("FB_TOKEN")  # UN SEUL TOKEN pour éviter la confusion !
+    ACCESS_TOKEN = os.getenv("FACEBOOK_ACCESS_TOKEN")
     ACCOUNT_ID = os.getenv("META_ACCOUNT_ID", "").replace("act_", "")  # Nettoyer le préfixe si présent
     API_VERSION = os.getenv("API_VERSION", "v23.0")
     BASE_URL = f"https://graph.facebook.com/{API_VERSION}"

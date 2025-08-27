@@ -545,7 +545,7 @@
         
         <div class="account-selector">
             <button class="account-btn active" onclick="switchAccount(this, 'global')">📊 Global</button>
-            <button class="account-btn" onclick="switchAccount(this, 'petcare')">🐕 Petcare <span class="real-analysis-badge">REAL</span></button>
+            <button id="petcare-btn" class="account-btn" onclick="switchAccount(this, 'petcare')">🐕 Petcare <span class="real-analysis-badge">REAL</span></button>
             <button class="account-btn" style="opacity: 0.6;" disabled>🔒 Más cuentas</button>
         </div>
     </div>
@@ -899,6 +899,20 @@
     </div>
     
     <script>
+        // Helper: try multiple paths for local JSON
+        async function loadJSON(paths) {
+            for (const path of paths) {
+                try {
+                    const res = await fetch(path);
+                    if (res.ok) {
+                        return await res.json();
+                    }
+                } catch (e) {
+                    // continue
+                }
+            }
+            throw new Error('All sources failed: ' + paths.join(', '));
+        }
         // Charger toutes les données au démarrage
         let periodsData = {};
         let prevWeekData = {};
@@ -908,24 +922,36 @@
         
         async function loadAllData() {
             try {
-                // Charger les 5 fichiers JSON (3/7/14/30/90) 
-                const periods = [3, 7, 14, 30, 90];  // ✅ Toutes les périodes Pablo
+                // Charger les 5 fichiers JSON (3/7/14/30/90)
+                const periods = [3, 7, 14, 30, 90];
                 for (const period of periods) {
-                    const response = await fetch(`../../hybrid_data_${period}d.json`);
-                    periodsData[period] = await response.json();
+                    periodsData[period] = await loadJSON([
+                        `../../hybrid_data_${period}d.json`,
+                        `../../data/current/hybrid_data_${period}d.json`
+                    ]);
                 }
                 
                 // Charger semaine précédente
-                const prevResponse = await fetch('../../hybrid_data_prev_week.json');
-                prevWeekData = await prevResponse.json();
+                prevWeekData = await loadJSON([
+                    '../../hybrid_data_prev_week.json',
+                    '../../data/current/hybrid_data_prev_week.json'
+                ]);
                 
                 // Charger vraies analyses Petcare  
-                const petcareResponse = await fetch('../../petcare_parsed_analysis.json');
-                petcareData = await petcareResponse.json();
+                try {
+                    petcareData = await loadJSON([
+                        '../../data/current/petcare_parsed_analysis.json',
+                        '../../petcare_parsed_analysis.json'
+                    ]);
+                } catch (e) {
+                    petcareData = null;
+                }
                 
                 // Charger config dates pour interface intelligente
-                const configResponse = await fetch('../../refresh_config.json');
-                const refreshConfig = await configResponse.json();
+                const refreshConfig = await loadJSON([
+                    '../../data/current/refresh_config.json',
+                    '../../refresh_config.json'
+                ]);
                 
                 // Mettre à jour le header avec dates précises
                 const headerSubtitle = document.getElementById('header-subtitle');
@@ -937,6 +963,14 @@
                 
                 console.log('📊 Données chargées:', Object.keys(periodsData), 'config dates');
                 
+                // Désactiver bouton Petcare si données manquantes
+                const petcareBtn = document.getElementById('petcare-btn');
+                if (petcareBtn && !petcareData) {
+                    petcareBtn.disabled = true;
+                    petcareBtn.style.opacity = '0.6';
+                    petcareBtn.title = 'Datos Petcare no disponibles';
+                }
+
                 // Initialiser avec 7 jours, mode global
                 updateDashboard(7);
                 
@@ -947,6 +981,10 @@
         
         function switchPeriod(button, days) {
             currentPeriod = days;
+            try {
+                const n = periodsData[days] && periodsData[days].ads ? periodsData[days].ads.length : 0;
+                console.log('🔄 Switching period ->', days, 'days; ads:', n);
+            } catch (e) { console.warn('switchPeriod log error', e); }
             
             // ✅ Mettre à jour les boutons (corrigé)
             document.querySelectorAll('.period-btn').forEach(btn => {
@@ -990,6 +1028,7 @@
                     console.error(`Pas de données pour ${days} jours`);
                     return;
                 }
+                console.log('✅ Rendering period', days, 'ads:', data.ads ? data.ads.length : 'n/a');
                 
                 // Réafficher les tables cachées en mode Global
                 const formatTableCard = document.querySelector('#formato-table')?.closest('.main-table-card');
@@ -1228,7 +1267,7 @@
         }
         
         function updateComparisonTable() {
-            const currentData = periodsData[7]; // Semaine actuelle (7 jours)
+            const currentData = periodsData[currentPeriod];
             const prevData = prevWeekData;
             
             if (!currentData || !prevData) {

@@ -119,7 +119,9 @@ def fetch_creative_batch(ad_ids_batch, token):
 def fetch_90d_turbo():
     """Fetch 90j en mode TURBO avec parallélisation aggressive"""
     
-    token = os.getenv("FB_TOKEN")
+    token = os.getenv("FACEBOOK_ACCESS_TOKEN")
+    if not token:
+        raise SystemExit("FACEBOOK_ACCESS_TOKEN not set. Define it in .env")
     
     print("🚀 FETCH 90J TURBO - PARALLÉLISATION AGGRESSIVE")
     print("=" * 70)

@@ -19,7 +19,9 @@ load_dotenv()
 def fetch_petcare_with_parsing():
     """Fetch Petcare avec parsing des angles pour vraies analyses"""
     
-    token = os.getenv("FB_TOKEN")
+    token = os.getenv("FACEBOOK_ACCESS_TOKEN")
+    if not token:
+        raise SystemExit("FACEBOOK_ACCESS_TOKEN not set. Define it in .env")
     
     print("🚀 FETCH PETCARE AVEC PARSING D'ANGLES")
     print("=" * 60)

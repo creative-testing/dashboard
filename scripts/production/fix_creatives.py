@@ -11,6 +11,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 ACCESS_TOKEN = os.getenv("FACEBOOK_ACCESS_TOKEN")
+if not ACCESS_TOKEN:
+    raise SystemExit("FACEBOOK_ACCESS_TOKEN not set. Define it in .env")
 GRAPH_URL = "https://graph.facebook.com/v23.0"
 
 def fetch_creatives_for_ads(ad_ids):

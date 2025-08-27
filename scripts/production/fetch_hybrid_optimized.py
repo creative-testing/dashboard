@@ -17,7 +17,9 @@ load_dotenv()
 def fetch_hybrid_data():
     """Récupère TOUTES les annonces avec formats réels quand disponibles"""
     
-    token = os.getenv("FB_TOKEN")
+    token = os.getenv("FACEBOOK_ACCESS_TOKEN")
+    if not token:
+        raise SystemExit("FACEBOOK_ACCESS_TOKEN not set. Define it in .env")
     
     print("🚀 SOLUTION HYBRIDE : INSIGHTS + FORMATS RÉELS")
     print("=" * 70)

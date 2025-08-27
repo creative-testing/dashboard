@@ -11,7 +11,9 @@ import time
 
 load_dotenv()
 
-ACCESS_TOKEN = os.getenv("FACEBOOK_ACCESS_TOKEN")  # Nom standard et explicite
+ACCESS_TOKEN = os.getenv("FACEBOOK_ACCESS_TOKEN")
+if not ACCESS_TOKEN:
+    raise SystemExit("FACEBOOK_ACCESS_TOKEN not set. Define it in .env")
 GRAPH_URL = "https://graph.facebook.com/v23.0"
 
 def fix_period(period):

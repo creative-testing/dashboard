@@ -8,10 +8,13 @@ import requests
 from dotenv import load_dotenv
 from concurrent.futures import ThreadPoolExecutor
 import time
+import argparse
 
 load_dotenv()
 
 ACCESS_TOKEN = os.getenv("FACEBOOK_ACCESS_TOKEN")
+if not ACCESS_TOKEN:
+    raise SystemExit("FACEBOOK_ACCESS_TOKEN not set. Define it in .env")
 GRAPH_URL = "https://graph.facebook.com/v23.0"
 
 def fetch_chunk_creatives(ad_ids):
@@ -36,9 +39,9 @@ def fetch_chunk_creatives(ad_ids):
     
     return {}
 
-def fix_period_turbo(period):
+def fix_period_turbo(period, base_dir="."):
     """Fix turbo avec parallélisation"""
-    filename = f'hybrid_data_{period}d.json'
+    filename = os.path.join(base_dir, f'hybrid_data_{period}d.json')
     
     print(f"\n⚡ TURBO FIX {filename}...")
     
@@ -122,22 +125,31 @@ def fix_period_turbo(period):
 
 def main():
     """Turbo fix toutes les périodes"""
+    parser = argparse.ArgumentParser(description="Turbo fix creatives to populate media_url fast")
+    parser.add_argument("--dir", dest="base_dir", default=".", help="Répertoire des JSON (par défaut: .)")
+    args = parser.parse_args()
+
+    base_dir = args.base_dir
+
     print("⚡⚡⚡ TURBO FIX CREATIVES - Ultra rapide")
     print("=" * 60)
-    
+    print(f"📂 Répertoire: {os.path.abspath(base_dir)}")
+
     periods = [7, 3, 14, 30, 90]
-    
+
     start = time.time()
     total_fixed = 0
-    
+
     for period in periods:
-        if os.path.exists(f'hybrid_data_{period}d.json'):
-            fixed = fix_period_turbo(period)
+        path = os.path.join(base_dir, f'hybrid_data_{period}d.json')
+        if os.path.exists(path):
+            fixed = fix_period_turbo(period, base_dir=base_dir)
             total_fixed += fixed
-    
+
     elapsed = time.time() - start
     print(f"\n🎉 TOTAL: {total_fixed} ads corrigés en {elapsed:.1f} secondes!")
-    print(f"⚡ Performance: {total_fixed/elapsed:.0f} ads/seconde")
+    if elapsed > 0:
+        print(f"⚡ Performance: {total_fixed/elapsed:.0f} ads/seconde")
 
 if __name__ == "__main__":
     main()

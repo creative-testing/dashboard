@@ -15,7 +15,9 @@ load_dotenv()
 def fetch_prev_week_data():
     """Récupère les données de la semaine précédente (12-18 août)"""
     
-    token = os.getenv("FB_TOKEN")
+    token = os.getenv("FACEBOOK_ACCESS_TOKEN")
+    if not token:
+        raise SystemExit("FACEBOOK_ACCESS_TOKEN not set. Define it in .env")
     
     print("🚀 FETCH SEMAINE PRÉCÉDENTE (12-18 AOÛT)")
     print("=" * 70)

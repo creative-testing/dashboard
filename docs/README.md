@@ -81,5 +81,9 @@ Récupération semaine précédente pour comparaisons temporelles.
 - `hybrid_data_*.json` (données périodes)
 - `hybrid_data_prev_week.json` (comparaison)
 
+## 🔐 Configuration (Env)
+
+- `FACEBOOK_ACCESS_TOKEN`: token Meta/Facebook avec accès aux comptes nécessaires.
+
 ---
 *Développé avec Claude Code - Optimisé pour Creative Testing*
