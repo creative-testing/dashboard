@@ -33,10 +33,10 @@ Solution hybride combinant /insights et /ads endpoints.
 - **Méthode**: Batch API pour rapidité
 - **Résultat**: Données complètes sans perte d'annonces
 
-### `fetch_prev_week.py`
-Récupération semaine précédente pour comparaisons temporelles.
-- **Période**: 12-18 août (7 jours précis)
-- **Comparaison**: Équitable avec semaine actuelle (19-25 août)
+### Semaine précédente (intégré)
+Calculée localement depuis la baseline 90j journalière (aucun appel API).
+– Période: bloc 7 jours précédent la semaine actuelle (référence-7 → référence-1)
+– Écriture: `data/current/hybrid_data_prev_week.json`
 
 ### `master_refresh.py` (orchestrateur)
 Pipeline complet et cohérent:
@@ -106,7 +106,7 @@ Notes:
 - Dashboards archivés: anciens prototypes (`dashboard_fresh.html`, `dashboard_merged.html`, `dashboard_stable_base.html`)
 - Scripts legacy/alternatifs déplacés sous `scripts/archive/` (ex: `dashboard_fresh_data.py`, `fetch_hybrid_optimized.py`, `fetch_90d_turbo.py`, `quick_fix_creatives.py`)
 - Utils archivés: `scripts/archive/utils/` (ex: `analyze_periods.py`, `compare_accounts.py`, `meta_insights.py`, `smart_analyzer.py`, `get_everything.py`, ...)
-- Outil manuel conservé: `fix_creatives.py` (utilitaire ponctuel; l'enrichissement principal est intégré au master)
+– Enrichissement médias: intégré au master (`utils/enrich_media.py`).
 
 ---
 *Développé avec Claude Code - Optimisé pour Creative Testing*

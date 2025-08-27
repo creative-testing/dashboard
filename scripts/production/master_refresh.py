@@ -311,13 +311,19 @@ def master_refresh():
     # Si aucune annonce n'a été récupérée, éviter d'écraser des fichiers valides
     total_ads_all = sum(v.get('ads', 0) for v in results_summary.values())
 
-    # 3. Récupération semaine précédente (pour comparaison)
+    # 3. Semaine précédente depuis la baseline (comparaison locale, sans appel API)
     try:
-        print("\n📆 Refresh semaine précédente (comparaison)...")
-        subprocess.run([sys.executable, 'scripts/production/fetch_prev_week.py'], check=True)
-        print("✅ Semaine précédente OK")
+        print("\n📆 Semaine précédente depuis baseline (comparaison)...")
+        # semaine précédente = bloc de 7 jours juste avant la semaine actuelle
+        prev_ref_dt = datetime.strptime(reference_date, '%Y-%m-%d') - timedelta(days=7)
+        prev_ref = prev_ref_dt.strftime('%Y-%m-%d')
+        from utils.aggregate_periods import aggregate_from_baseline  # type: ignore
+        prev_week = aggregate_from_baseline('data/current/baseline_90d_daily.json', period_days=7, reference_date=prev_ref)
+        with open('data/current/hybrid_data_prev_week.json', 'w', encoding='utf-8') as f:
+            json.dump(prev_week, f, indent=2, ensure_ascii=False)
+        print("✅ Semaine précédente (locale) OK")
     except Exception as e:
-        print(f"⚠️ Impossible de rafraîchir la semaine précédente: {e}")
+        print(f"⚠️ Impossible de générer la semaine précédente: {e}")
 
     # 4. Enrichissement media_url (intégré)
     try:
