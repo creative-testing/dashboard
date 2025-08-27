@@ -105,6 +105,7 @@ Notes:
 - Dashboard canonique: `dashboards/current/dashboard_recovery.html`
 - Dashboards archivés: anciens prototypes (`dashboard_fresh.html`, `dashboard_merged.html`, `dashboard_stable_base.html`)
 - Scripts legacy/alternatifs déplacés sous `scripts/archive/` (ex: `dashboard_fresh_data.py`, `fetch_hybrid_optimized.py`, `fetch_90d_turbo.py`, `quick_fix_creatives.py`)
+- Utils archivés: `scripts/archive/utils/` (ex: `analyze_periods.py`, `compare_accounts.py`, `meta_insights.py`, `smart_analyzer.py`, `get_everything.py`, ...)
 - Outils manuels conservés: `fix_creatives.py`, `turbo_fix_creatives.py` (utilitaires ponctuels, l'enrichissement principal est intégré au master)
 
 ---
