@@ -7,6 +7,10 @@ Solution définitive pour cohérence des données
 import os
 import requests
 import json
+import sys
+import subprocess
+import shutil
+from glob import glob
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
 from collections import defaultdict
@@ -337,6 +341,44 @@ def master_refresh():
         json.dump(config_output, f, indent=2)
     
     print(f"\n💾 Config sauvegardée pour interface")
+
+    # 3. Récupération semaine précédente (pour comparaison)
+    try:
+        print("\n📆 Refresh semaine précédente (comparaison)...")
+        subprocess.run([sys.executable, 'scripts/production/fetch_prev_week.py'], check=True)
+        print("✅ Semaine précédente OK")
+    except Exception as e:
+        print(f"⚠️ Impossible de rafraîchir la semaine précédente: {e}")
+
+    # 4. Enrichissement media_url (turbo) sur data/current
+    try:
+        print("\n🎬 Enrichissement media_url (turbo) sur data/current...")
+        subprocess.run([sys.executable, 'scripts/production/turbo_fix_creatives.py', '--dir', 'data/current'], check=True)
+        print("✅ Enrichissement media_url OK")
+    except Exception as e:
+        print(f"⚠️ Impossible d'enrichir media_url: {e}")
+
+    # 5. Miroir de compatibilité vers la racine (source de vérité = data/current)
+    try:
+        print("\n🔁 Miroir des fichiers vers la racine (compatibilité)...")
+        files = [
+            *(f"data/current/hybrid_data_{p}d.json" for p in [3, 7, 14, 30, 90]),
+            "data/current/hybrid_data_prev_week.json",
+            "data/current/refresh_config.json",
+        ]
+        # Petcare (facultatif)
+        petcare_json = 'data/current/petcare_parsed_analysis.json'
+        if os.path.exists(petcare_json):
+            files.append(petcare_json)
+
+        for src in files:
+            if os.path.exists(src):
+                dst = os.path.basename(src)
+                shutil.copy2(src, dst)
+        print("✅ Miroir racine OK")
+    except Exception as e:
+        print(f"⚠️ Miroir racine échoué: {e}")
+
     return results_summary
 
 if __name__ == "__main__":

@@ -899,19 +899,12 @@
     </div>
     
     <script>
-        // Helper: try multiple paths for local JSON
+        // Helper: single source (data/current)
         async function loadJSON(paths) {
-            for (const path of paths) {
-                try {
-                    const res = await fetch(path);
-                    if (res.ok) {
-                        return await res.json();
-                    }
-                } catch (e) {
-                    // continue
-                }
-            }
-            throw new Error('All sources failed: ' + paths.join(', '));
+            const path = Array.isArray(paths) ? paths[0] : paths;
+            const res = await fetch(path);
+            if (!res.ok) throw new Error('Load failed: ' + path);
+            return await res.json();
         }
         // Charger toutes les données au démarrage
         let periodsData = {};
@@ -925,33 +918,29 @@
                 // Charger les 5 fichiers JSON (3/7/14/30/90)
                 const periods = [3, 7, 14, 30, 90];
                 for (const period of periods) {
-                    periodsData[period] = await loadJSON([
-                        `../../hybrid_data_${period}d.json`,
+                    periodsData[period] = await loadJSON(
                         `../../data/current/hybrid_data_${period}d.json`
-                    ]);
+                    );
                 }
                 
                 // Charger semaine précédente
-                prevWeekData = await loadJSON([
-                    '../../hybrid_data_prev_week.json',
+                prevWeekData = await loadJSON(
                     '../../data/current/hybrid_data_prev_week.json'
-                ]);
+                );
                 
                 // Charger vraies analyses Petcare  
                 try {
-                    petcareData = await loadJSON([
-                        '../../data/current/petcare_parsed_analysis.json',
-                        '../../petcare_parsed_analysis.json'
-                    ]);
+                    petcareData = await loadJSON(
+                        '../../data/current/petcare_parsed_analysis.json'
+                    );
                 } catch (e) {
                     petcareData = null;
                 }
                 
                 // Charger config dates pour interface intelligente
-                const refreshConfig = await loadJSON([
-                    '../../data/current/refresh_config.json',
-                    '../../refresh_config.json'
-                ]);
+                const refreshConfig = await loadJSON(
+                    '../../data/current/refresh_config.json'
+                );
                 
                 // Mettre à jour le header avec dates précises
                 const headerSubtitle = document.getElementById('header-subtitle');

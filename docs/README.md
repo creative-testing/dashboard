@@ -38,6 +38,14 @@ Récupération semaine précédente pour comparaisons temporelles.
 - **Période**: 12-18 août (7 jours précis)
 - **Comparaison**: Équitable avec semaine actuelle (19-25 août)
 
+### `master_refresh.py` (orchestrateur)
+Pipeline complet et cohérent:
+- Fetch toutes les périodes (3/7/14/30/90) → écrit sous `data/current/`
+- Génère `refresh_config.json` pour l'interface
+- Rafraîchit la semaine précédente
+- Enrichit rapidement les `media_url` (turbo, parallélisé)
+- Miroir de compatibilité des JSONs vers la racine du repo
+
 ## 📈 Données Actuelles
 
 ### Périodes Disponibles
@@ -78,8 +86,10 @@ Récupération semaine précédente pour comparaisons temporelles.
 **Netlify**: Dashboard accessible via URL
 **Fichiers requis**: 
 - `index.html` (dashboard)
-- `hybrid_data_*.json` (données périodes)
-- `hybrid_data_prev_week.json` (comparaison)
+- `data/current/hybrid_data_*.json` (source de vérité)
+- `data/current/hybrid_data_prev_week.json`
+
+Les dashboards lisent désormais uniquement `data/current`. Un miroir automatique vers la racine est produit pour compatibilité.
 
 ## 🔐 Configuration (Env)
 

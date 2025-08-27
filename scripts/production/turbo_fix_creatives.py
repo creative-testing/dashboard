@@ -26,7 +26,13 @@ def fetch_chunk_creatives(ad_ids):
     url = f"{GRAPH_URL}/"
     params = {
         "ids": ids_str,
-        "fields": "creative{video_id,image_url,instagram_permalink_url}",
+        # élargir les champs pour fallback (story/permalink)
+        "fields": (
+            "creative{"
+            "id,video_id,image_url,instagram_permalink_url,"
+            "effective_object_story_id,object_story_id,object_type,thumbnail_url"
+            "}"
+        ),
         "access_token": ACCESS_TOKEN
     }
     
@@ -38,6 +44,35 @@ def fetch_chunk_creatives(ad_ids):
         pass
     
     return {}
+
+def fetch_permalinks_for_story_ids(story_ids):
+    """Fetch permalink_url pour une liste d'IDs d'histoires (PAGEID_POSTID, video, etc.)."""
+    out = {}
+    if not story_ids:
+        return out
+    # batch via ids param (50 par chunk pour rester safe)
+    ids = list(story_ids)
+    for i in range(0, len(ids), 50):
+        chunk = ids[i:i+50]
+        try:
+            resp = requests.get(
+                f"{GRAPH_URL}/",
+                params={
+                    "ids": ",".join(chunk),
+                    "fields": "permalink_url",
+                    "access_token": ACCESS_TOKEN,
+                },
+                timeout=10,
+            )
+            if resp.status_code == 200:
+                data = resp.json()
+                if isinstance(data, dict):
+                    for k, v in data.items():
+                        if isinstance(v, dict) and v.get("permalink_url"):
+                            out[k] = v["permalink_url"]
+        except:
+            pass
+    return out
 
 def fix_period_turbo(period, base_dir="."):
     """Fix turbo avec parallélisation"""
@@ -75,6 +110,9 @@ def fix_period_turbo(period, base_dir="."):
                 creatives_data = future.result(timeout=30)
                 
                 # Appliquer les résultats
+                # Collecte pour fallback permalinks si nécessaire
+                unresolved_story_ids = set()
+
                 for ad in chunk:
                     ad_id = ad.get('ad_id')
                     if ad_id in creatives_data and 'creative' in creatives_data[ad_id]:
@@ -93,6 +131,29 @@ def fix_period_turbo(period, base_dir="."):
                             ad['format'] = "INSTAGRAM"
                             ad['media_url'] = creative["instagram_permalink_url"]
                             fixed_count += 1
+                        else:
+                            # fallback: tenter le permalink de l'histoire
+                            sid = (
+                                creative.get("effective_object_story_id")
+                                or creative.get("object_story_id")
+                            )
+                            if sid:
+                                unresolved_story_ids.add(sid)
+
+                # Fallback: tenter de récupérer des permalinks d'histoires
+                if unresolved_story_ids:
+                    sid_to_permalink = fetch_permalinks_for_story_ids(unresolved_story_ids)
+                    if sid_to_permalink:
+                        for ad in chunk:
+                            if ad.get('media_url'):
+                                continue
+                            ad_id = ad.get('ad_id')
+                            creative = creatives_data.get(ad_id, {}).get('creative', {})
+                            sid = creative.get("effective_object_story_id") or creative.get("object_story_id")
+                            if sid and sid in sid_to_permalink:
+                                ad['format'] = ad.get('format', 'POST')
+                                ad['media_url'] = sid_to_permalink[sid]
+                                fixed_count += 1
                 
                 # Progress
                 if idx % 10 == 0:
