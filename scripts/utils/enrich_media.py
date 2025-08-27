@@ -5,7 +5,6 @@ Media enrichment utilities for Creative Testing Dashboard.
 Extracted from turbo_fix_creatives with improvements:
 - Wider creative fields
 - Fallback to story permalinks
-- Last-resort thumbnail_url
 
 Usage (as library):
     from utils.enrich_media import enrich_media_urls
@@ -21,7 +20,6 @@ import requests
 from dotenv import load_dotenv
 
 load_dotenv()
-USE_THUMBNAIL_FALLBACK = (os.getenv("USE_THUMBNAIL_FALLBACK", "true").lower() in ("1","true","yes","on"))
 
 GRAPH_URL = "https://graph.facebook.com/v23.0"
 
@@ -42,7 +40,7 @@ def _fetch_chunk_creatives(ad_ids: Iterable[str], token: str) -> Dict[str, dict]
         "fields": (
             "creative{"  # widen for fallbacks
             "id,video_id,image_url,instagram_permalink_url,"
-            "effective_object_story_id,object_story_id,object_type,thumbnail_url"
+            "effective_object_story_id,object_story_id,object_type"
             "}"
         ),
         "access_token": token,
@@ -129,10 +127,7 @@ def _process_period_json(path: str, token: str, max_workers: int = 20) -> Dict[s
                     sid = creative.get("effective_object_story_id") or creative.get("object_story_id")
                     if sid:
                         unresolved_story_ids.add(sid)
-                    elif USE_THUMBNAIL_FALLBACK and creative.get("thumbnail_url"):
-                        ad["format"] = ad.get("format") or "IMAGE"
-                        ad["media_url"] = creative["thumbnail_url"]
-                        fixed_count += 1
+                    
 
             if unresolved_story_ids:
                 sid_to_permalink = _fetch_permalinks_for_story_ids(unresolved_story_ids, token)
@@ -244,7 +239,7 @@ def enrich_media_urls_union(base_dir: str = "data/current", periods: List[int] =
             "fields": (
                 "creative{"
                 "id,video_id,image_url,instagram_permalink_url,"
-                "effective_object_story_id,object_story_id,object_type,thumbnail_url"
+                "effective_object_story_id,object_story_id,object_type"
                 "}"
             ),
             "access_token": token,
@@ -320,10 +315,7 @@ def enrich_media_urls_union(base_dir: str = "data/current", periods: List[int] =
                     ad['format'] = ad.get('format', 'POST')
                     ad['media_url'] = sid_to_permalink[sid]
                     fixed += 1
-                elif USE_THUMBNAIL_FALLBACK and c.get('thumbnail_url'):
-                    ad['format'] = ad.get('format') or 'IMAGE'
-                    ad['media_url'] = c['thumbnail_url']
-                    fixed += 1
+                
 
         with open(os.path.join(base_dir, f"hybrid_data_{p}d.json"), 'w', encoding='utf-8') as f:
             json.dump(payload, f, indent=2, ensure_ascii=False)

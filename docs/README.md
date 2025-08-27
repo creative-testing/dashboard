@@ -45,7 +45,7 @@ Pipeline complet et cohérent:
 - Rafraîchit la semaine précédente
 - Enrichit les `media_url` (phase d'enrichissement intégrée)
   - Union des `ad_id` sur toutes les périodes → un seul appel massifié aux créatives (moins d'appels)
-  - Fallback story permalink + (option) thumbnail en dernier recours
+  - Fallback story permalink
 - Miroir de compatibilité des JSONs vers la racine du repo (seulement si données non vides)
 
 ## 📈 Données Actuelles
@@ -99,7 +99,6 @@ Notes:
 
 - `FACEBOOK_ACCESS_TOKEN`: token Meta/Facebook avec accès aux comptes nécessaires.
 - `META_ACCOUNT_IDS` (optionnel): CSV de comptes (`act_...`) à utiliser si `/me/adaccounts` est limité.
-- `USE_THUMBNAIL_FALLBACK` (par défaut `true`): si `false`, l'enrichissement n'utilise pas `thumbnail_url` en dernier recours.
 
 ## 🧹 Nettoyage et structure
 - Dashboard canonique: `dashboards/current/dashboard_recovery.html`
