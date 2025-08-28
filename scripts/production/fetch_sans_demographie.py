@@ -75,17 +75,32 @@ def fetch_account_insights(account, token, since_date, until_date):
                     ad['account_name'] = account_name
                     ad['account_id'] = account_id
                     
-                    # Extraire purchases
-                    purchases = 0
-                    purchase_value = 0.0
-                    
-                    for action in ad.get('actions', []):
-                        if 'purchase' in action.get('action_type', ''):
-                            purchases += int(action.get('value', 0))
-                    
-                    for value in ad.get('action_values', []):
-                        if 'purchase' in value.get('action_type', ''):
-                            purchase_value += float(value.get('value', 0))
+                    # Extraire purchases (éviter les doubles comptages)
+                    # Stratégie: prendre UNE métrique canonique par ordre de préférence
+                    PURCHASE_KEYS = [
+                        'omni_purchase',
+                        'purchase',
+                        'offsite_conversion.fb_pixel_purchase',
+                        'onsite_web_purchase',
+                        'onsite_web_app_purchase',
+                        'web_in_store_purchase',
+                        'web_app_in_store_purchase',
+                    ]
+
+                    def _first_present_value(items, keys):
+                        mapping = {i.get('action_type', ''): i.get('value', 0) for i in (items or [])}
+                        for k in keys:
+                            if k in mapping:
+                                try:
+                                    return float(mapping[k] or 0)
+                                except Exception:
+                                    return 0.0
+                        return 0.0
+
+                    # Comptage d'achats
+                    purchases = int(_first_present_value(ad.get('actions', []), PURCHASE_KEYS))
+                    # Valeur d'achats (CA)
+                    purchase_value = float(_first_present_value(ad.get('action_values', []), PURCHASE_KEYS))
                     
                     ad['purchases'] = purchases
                     ad['purchase_value'] = purchase_value
@@ -264,7 +279,8 @@ def main():
     
     response = requests.get(url, params=params, timeout=30)
     if response.status_code != 200:
-        logger.error("Erreur récupération comptes")
+        logger.error(f"Erreur récupération comptes: {response.status_code}")
+        logger.error(f"Détail: {response.text[:500]}")
         sys.exit(1)
     
     accounts = response.json().get("data", [])
