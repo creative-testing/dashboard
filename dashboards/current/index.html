@@ -1954,11 +1954,14 @@
                 
                 // Trouver la première option qui commence par ces lettres
                 const options = menu.querySelectorAll('.dropdown-option');
-                for (let option of options) {
+                for (let i = 0; i < options.length; i++) {
+                    const option = options[i];
                     const text = option.textContent.toLowerCase();
                     if (text.startsWith(keyboardBuffer)) {
-                        // Scroll vers cette option
-                        option.scrollIntoView({ block: 'nearest' });
+                        // Scroll le menu (pas la page!) pour mettre cette option en haut
+                        const optionTop = option.offsetTop;
+                        menu.scrollTop = optionTop;
+                        
                         // La surligner temporairement
                         options.forEach(o => o.style.background = '');
                         option.style.background = '#f5f5f7';
