@@ -760,7 +760,7 @@
             <div class="kpi-card">
                 <div class="kpi-content">
                     <h3>1609</h3>
-                    <p>Anuncios Activos</p>
+                    <p>Anuncios con Inversión</p>
                 </div>
                 <div class="kpi-icon blue">📊</div>
             </div>
@@ -1381,9 +1381,21 @@
                 return;
             }
             console.log('✅ Rendering period', days, 'ads:', data.ads ? data.ads.length : 'n/a');
-            // Build a view data with filtered ads and recomputed distribution
-            const viewAds = filterAdsByAccount(data.ads || []);
-            const viewData = { ...data, ads: viewAds, format_distribution: computeFormatDistribution(viewAds) };
+            
+            // NOUVEAU: Filtrer AVANT d'agréger pour garder les bonnes métriques
+            const filteredByAccount = filterAdsByAccount(data.ads || []);
+            const originalCount = filteredByAccount.length;
+            const aggregatedAds = aggregateAdsByAdId(filteredByAccount);
+            console.log(`📊 Agrégation pour ${currentAccountName}: ${originalCount} lignes journalières → ${aggregatedAds.length} ads uniques`);
+            
+            // Maintenant viewAds = aggregatedAds (déjà filtrés)
+            const viewAds = aggregatedAds;
+            const viewData = { 
+                ...data, 
+                ads: viewAds, 
+                format_distribution: computeFormatDistribution(viewAds),
+                originalAdsCount: originalCount  // Passer le nombre original
+            };
 
             updateKPIs(viewData);
             updateCharts(viewData);
@@ -1400,8 +1412,8 @@
         
         function updateKPIs(data) {
             const ads = data.ads || [];
-            // Compter seulement les ads ACTIVES
-            const activeAds = ads.filter(ad => ad.effective_status === 'ACTIVE').length;
+            // Un ad est "actif sur la période" s'il a eu du spend (donc il tournait)
+            const activeAds = ads.filter(ad => parseFloat(ad.spend || 0) > 0).length;
             const totalAds = ads.length;
             // Convertir spend de string à number
             const totalSpend = ads.reduce((sum, ad) => sum + parseFloat(ad.spend || 0), 0);
@@ -1413,10 +1425,10 @@
             // Mettre à jour les valeurs dans les KPI cards (5 cartes désormais)
             const kpiCards = document.querySelectorAll('.kpi-content');
             if (kpiCards.length >= 5) {
-                // KPI 1: Anuncios Activos avec total
+                // KPI 1: Anuncios con Inversión (ceux qui ont eu du spend)
                 kpiCards[0].innerHTML = `
                     <h3 style="margin-bottom: 5px;">${activeAds.toLocaleString()}</h3>
-                    <p style="margin-bottom: 2px;">Anuncios Activos</p>
+                    <p style="margin-bottom: 2px;">Anuncios con Inversión</p>
                     <p style="font-size: 11px; color: #86868b; margin: 0;">${totalAds.toLocaleString()} total</p>
                 `;
                 
@@ -1951,7 +1963,7 @@
             if (comparisonTable) {
                 comparisonTable.innerHTML = `
                     <tr>
-                        <td class="metric">Anuncios Activos</td>
+                        <td class="metric">Anuncios con Inversión</td>
                         <td class="metric">${current.length.toLocaleString()}</td>
                         <td class="metric">${previous.length.toLocaleString()}</td>
                         <td>${formatChange(adsChange)}</td>
@@ -1980,6 +1992,57 @@
         
         // State filter compte
         let currentAccountName = 'Todos';
+
+        // NOUVELLE FONCTION: Agréger les données journalières par ad_id
+        function aggregateAdsByAdId(ads) {
+            if (!ads || ads.length === 0) return [];
+            
+            const aggregated = {};
+            
+            ads.forEach(ad => {
+                const id = ad.ad_id;
+                
+                if (!aggregated[id]) {
+                    // Première occurrence - copier toutes les métadonnées
+                    aggregated[id] = { ...ad };
+                    // S'assurer que les valeurs numériques sont des nombres
+                    aggregated[id].spend = parseFloat(ad.spend || 0);
+                    aggregated[id].impressions = parseFloat(ad.impressions || 0);
+                    aggregated[id].clicks = parseFloat(ad.clicks || 0);
+                    aggregated[id].purchases = ad.purchases || 0;
+                    aggregated[id].purchase_value = ad.purchase_value || 0;
+                } else {
+                    // Occurrences suivantes - additionner les métriques
+                    aggregated[id].spend += parseFloat(ad.spend || 0);
+                    aggregated[id].impressions += parseFloat(ad.impressions || 0);
+                    aggregated[id].clicks += parseFloat(ad.clicks || 0);
+                    aggregated[id].purchases += (ad.purchases || 0);
+                    aggregated[id].purchase_value += (ad.purchase_value || 0);
+                    
+                    // Garder la date de début la plus ancienne
+                    if (ad.created_time && ad.created_time < aggregated[id].created_time) {
+                        aggregated[id].created_time = ad.created_time;
+                    }
+                }
+            });
+            
+            // Recalculer les métriques dérivées
+            Object.values(aggregated).forEach(ad => {
+                // Recalculer ROAS avec les totaux agrégés
+                ad.roas = ad.spend > 0 ? (ad.purchase_value / ad.spend) : 0;
+                
+                // Recalculer CPA avec les totaux agrégés
+                ad.cpa = ad.purchases > 0 ? (ad.spend / ad.purchases) : 0;
+                
+                // Recalculer CTR avec les totaux agrégés
+                ad.ctr = ad.impressions > 0 ? ((ad.clicks / ad.impressions) * 100) : 0;
+                
+                // S'assurer que spend est une string pour la compatibilité
+                ad.spend = ad.spend.toString();
+            });
+            
+            return Object.values(aggregated);
+        }
 
         // Helpers de filtrage/distribution
         function filterAdsByAccount(ads) {
