@@ -1334,7 +1334,8 @@
                 if (barChart) {
                     barChart.innerHTML = topAds.map(ad => {
                         const spend = parseFloat(ad.spend || 0);
-                        const roasClass = ad.roas > 3 ? '#00a854' : ad.roas > 1.5 ? '#ff9500' : '#ff3b30';
+                        // Mêmes seuils que les icônes : 2.5+ vert, 1.5+ orange, <1.5 rouge
+                        const roasClass = ad.roas >= 2.5 ? '#00a854' : ad.roas >= 1.5 ? '#ff9500' : '#ff3b30';
                         return `
                             <div class="bar" style="height: ${(spend/maxSpend*100)}%; background: linear-gradient(135deg, ${roasClass} 0%, ${roasClass}99 100%);">
                                 <span class="bar-value">$${Math.round(spend/1000)}k</span>
