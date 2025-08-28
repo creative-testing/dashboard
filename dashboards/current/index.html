@@ -730,7 +730,7 @@
 <body>
     <div class="header">
         <h1>🚀 Creative Testing Dashboard</h1>
-        <p>Análisis de rendimiento creativo • Datos hasta: 25/08/2025</p>
+        <p>Análisis de rendimiento creativo • Última actualización: <span id="data-date">Cargando...</span></p>
         
         <div class="period-selector">
             <button class="period-btn" onclick="switchPeriod(this, 3)">3 días</button>
@@ -1226,6 +1226,9 @@
                 updateDashboard(7);
                 console.log('✅ 7j chargé et affiché');
                 
+                // Mettre à jour la date avec les données
+                updateDataDate();
+                
                 // Charger le reste progressivement en arrière-plan
                 loadJSON('../../data/current/hybrid_data_3d.json')
                     .then(data => { 
@@ -1285,6 +1288,29 @@
                 
             } catch (error) {
                 console.error('❌ Erreur chargement données:', error);
+            }
+        }
+        
+        async function updateDataDate() {
+            // Récupérer la vraie date depuis refresh_config.json
+            const dateElement = document.getElementById('data-date');
+            if (dateElement) {
+                try {
+                    const config = await loadJSON('../../data/current/refresh_config.json');
+                    if (config && config.reference_date) {
+                        // Convertir 2025-08-27 en 27/08/2025
+                        const parts = config.reference_date.split('-');
+                        dateElement.textContent = `${parts[2]}/${parts[1]}/${parts[0]}`;
+                    }
+                } catch (error) {
+                    // Fallback à hier si le fichier n'existe pas
+                    const yesterday = new Date();
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    const day = String(yesterday.getDate()).padStart(2, '0');
+                    const month = String(yesterday.getMonth() + 1).padStart(2, '0');
+                    const year = yesterday.getFullYear();
+                    dateElement.textContent = `${day}/${month}/${year}`;
+                }
             }
         }
         
