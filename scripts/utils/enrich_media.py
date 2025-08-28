@@ -13,11 +13,16 @@ Usage (as library):
 import os
 import json
 import time
-from typing import Dict, List, Iterable
+from typing import Dict, List, Iterable, Optional
 from concurrent.futures import ThreadPoolExecutor
 
 import requests
 from dotenv import load_dotenv
+try:
+    # Optional: nomenclature parsing
+    from utils.parse_nomenclature import parse_martin_nomenclature  # type: ignore
+except Exception:
+    parse_martin_nomenclature = None  # type: ignore
 
 load_dotenv()
 
@@ -38,6 +43,7 @@ def _fetch_chunk_creatives(ad_ids: Iterable[str], token: str) -> Dict[str, dict]
     params = {
         "ids": ",".join(ad_ids),
         "fields": (
+            "status,effective_status,created_time,"  # top-level ad meta
             "creative{"  # widen for fallbacks
             "id,video_id,image_url,instagram_permalink_url,"
             "effective_object_story_id,object_story_id,object_type"
@@ -261,7 +267,13 @@ def enrich_media_urls_union(base_dir: str = "data/current", periods: List[int] =
             for ad_id, obj in (data or {}).items():
                 c = obj.get('creative') if isinstance(obj, dict) else None
                 if c:
-                    creative_map[ad_id] = c
+                    # include ad-level meta with creative for easier downstream use
+                    creative_map[ad_id] = {
+                        'creative': c,
+                        'status': obj.get('status'),
+                        'effective_status': obj.get('effective_status'),
+                        'created_time': obj.get('created_time'),
+                    }
                     sid = c.get("effective_object_story_id") or c.get("object_story_id")
                     if not (c.get('video_id') or c.get('image_url') or c.get('instagram_permalink_url')) and sid:
                         unresolved_story_ids.add(sid)
@@ -291,31 +303,49 @@ def enrich_media_urls_union(base_dir: str = "data/current", periods: List[int] =
         fixed = 0
         ads = payload.get('ads', [])
         for ad in ads:
-            if ad.get('media_url'):
-                continue
             aid = ad.get('ad_id')
-            c = creative_map.get(aid)
+            meta = creative_map.get(aid)
+            c = meta.get('creative') if isinstance(meta, dict) else None
             if not c:
                 continue
-            if c.get('video_id'):
+            # attach ad metadata regardless of media
+            if isinstance(meta, dict):
+                if meta.get('status') and 'status' not in ad:
+                    ad['status'] = meta.get('status')
+                if meta.get('effective_status') and 'effective_status' not in ad:
+                    ad['effective_status'] = meta.get('effective_status')
+                if meta.get('created_time') and 'created_time' not in ad:
+                    ad['created_time'] = meta.get('created_time')
+            # Only fill media_url if missing
+            if not ad.get('media_url') and c.get('video_id'):
                 ad['format'] = 'VIDEO'
                 ad['media_url'] = f"https://www.facebook.com/watch/?v={c['video_id']}"
                 fixed += 1
-            elif c.get('image_url'):
+            elif not ad.get('media_url') and c.get('image_url'):
                 ad['format'] = 'IMAGE'
                 ad['media_url'] = c['image_url']
                 fixed += 1
-            elif c.get('instagram_permalink_url'):
+            elif not ad.get('media_url') and c.get('instagram_permalink_url'):
                 ad['format'] = 'INSTAGRAM'
                 ad['media_url'] = c['instagram_permalink_url']
                 fixed += 1
-            else:
+            elif not ad.get('media_url'):
                 sid = c.get('effective_object_story_id') or c.get('object_story_id')
                 if sid and sid in sid_to_permalink:
                     ad['format'] = ad.get('format', 'POST')
                     ad['media_url'] = sid_to_permalink[sid]
                     fixed += 1
-                
+            # Parse nomenclature (optional) from ad_name
+            if parse_martin_nomenclature and ad.get('ad_name'):
+                try:
+                    parsed = parse_martin_nomenclature(ad['ad_name'])
+                    ad['nomenclature_type'] = parsed.get('type')
+                    ad['nomenclature_angle'] = parsed.get('angle')
+                    ad['nomenclature_version'] = parsed.get('version')
+                    ad['nomenclature_format'] = parsed.get('format')
+                    ad['nomenclature_valid'] = parsed.get('is_nomenclature', False)
+                except Exception:
+                    pass
 
         with open(os.path.join(base_dir, f"hybrid_data_{p}d.json"), 'w', encoding='utf-8') as f:
             json.dump(payload, f, indent=2, ensure_ascii=False)
@@ -329,4 +359,85 @@ def enrich_media_urls_union(base_dir: str = "data/current", periods: List[int] =
     return results
 
 
-__all__ = ["enrich_media_urls", "enrich_media_urls_union"]
+def enrich_media_for_file(json_path: str, token: Optional[str] = None, max_workers: int = 10) -> Dict[str, int]:
+    """Enrich a single JSON file (similar to union path) for prev_week or custom files."""
+    if token is None:
+        token = _get_token()
+    with open(json_path, 'r', encoding='utf-8') as f:
+        payload = json.load(f)
+    ads: List[dict] = payload.get('ads', [])
+    ids = [a.get('ad_id') for a in ads if a.get('ad_id')]
+    # fetch creatives map
+    creative_map: Dict[str, dict] = {}
+    unresolved_story_ids = set()
+    chunks = [ids[i:i+50] for i in range(0, len(ids), 50)]
+    with ThreadPoolExecutor(max_workers=max_workers) as ex:
+        futs = [ex.submit(_fetch_chunk_creatives, ch, token) for ch in chunks]
+        for fut in futs:
+            data = fut.result() or {}
+            for ad_id, obj in data.items():
+                c = obj.get('creative') if isinstance(obj, dict) else None
+                if c:
+                    creative_map[ad_id] = {
+                        'creative': c,
+                        'status': obj.get('status'),
+                        'effective_status': obj.get('effective_status'),
+                        'created_time': obj.get('created_time'),
+                    }
+                    sid = c.get('effective_object_story_id') or c.get('object_story_id')
+                    if not (c.get('video_id') or c.get('image_url') or c.get('instagram_permalink_url')) and sid:
+                        unresolved_story_ids.add(sid)
+    sid_to_permalink: Dict[str, str] = {}
+    if unresolved_story_ids:
+        for i in range(0, len(unresolved_story_ids), 50):
+            chunk = list(unresolved_story_ids)[i:i+50]
+            r = _request_with_backoff('GET', f"{GRAPH_URL}/", params={'ids': ",".join(chunk), 'fields': 'permalink_url', 'access_token': token})
+            if r.status_code == 200:
+                try:
+                    data = r.json() or {}
+                    for k, v in data.items():
+                        if isinstance(v, dict) and v.get('permalink_url'):
+                            sid_to_permalink[k] = v['permalink_url']
+                except Exception:
+                    pass
+    fixed = 0
+    for ad in ads:
+        aid = ad.get('ad_id')
+        meta = creative_map.get(aid)
+        c = meta.get('creative') if isinstance(meta, dict) else None
+        if not c:
+            continue
+        # attach meta
+        if meta.get('status') and 'status' not in ad:
+            ad['status'] = meta['status']
+        if meta.get('effective_status') and 'effective_status' not in ad:
+            ad['effective_status'] = meta['effective_status']
+        if meta.get('created_time') and 'created_time' not in ad:
+            ad['created_time'] = meta['created_time']
+        if not ad.get('media_url'):
+            if c.get('video_id'):
+                ad['format'] = 'VIDEO'; ad['media_url'] = f"https://www.facebook.com/watch/?v={c['video_id']}"; fixed+=1
+            elif c.get('image_url'):
+                ad['format'] = 'IMAGE'; ad['media_url'] = c['image_url']; fixed+=1
+            elif c.get('instagram_permalink_url'):
+                ad['format'] = 'INSTAGRAM'; ad['media_url'] = c['instagram_permalink_url']; fixed+=1
+            else:
+                sid = c.get('effective_object_story_id') or c.get('object_story_id')
+                if sid and sid in sid_to_permalink:
+                    ad['format'] = ad.get('format', 'POST'); ad['media_url'] = sid_to_permalink[sid]; fixed+=1
+        if parse_martin_nomenclature and ad.get('ad_name'):
+            try:
+                parsed = parse_martin_nomenclature(ad['ad_name'])
+                ad['nomenclature_type'] = parsed.get('type')
+                ad['nomenclature_angle'] = parsed.get('angle')
+                ad['nomenclature_version'] = parsed.get('version')
+                ad['nomenclature_format'] = parsed.get('format')
+                ad['nomenclature_valid'] = parsed.get('is_nomenclature', False)
+            except Exception:
+                pass
+    with open(json_path, 'w', encoding='utf-8') as f:
+        json.dump(payload, f, indent=2, ensure_ascii=False)
+    return {'total': len(ads), 'with_media': sum(1 for a in ads if a.get('media_url')), 'fixed': fixed}
+
+
+__all__ = ["enrich_media_urls", "enrich_media_urls_union", "enrich_media_for_file"]

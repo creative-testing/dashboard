@@ -45,7 +45,7 @@ def fetch_account_insights_optimized(account, token, since_date, until_date):
             "time_range": f'{{"since":"{since_date}","until":"{until_date}"}}',
             "time_increment": 1,
             "fields": "ad_id,ad_name,campaign_name,adset_name,impressions,spend,clicks,ctr,cpm,reach,frequency,actions,action_values,cost_per_action_type",
-            "filtering": '[{"field":"impressions","operator":"GREATER_THAN","value":"0"}]',
+            "filtering": json.dumps([{ "field": "impressions", "operator": "GREATER_THAN", "value": 0 }]),
             "limit": 1000
         }
         
@@ -101,6 +101,21 @@ def fetch_account_insights_optimized(account, token, since_date, until_date):
         
     except Exception as e:
         return []
+
+def fetch_account_insights_chunked(account, token, reference_date):
+    """Fetch daily insights for 90d in 3 chunks to reduce API strain."""
+    ref = datetime.strptime(reference_date, '%Y-%m-%d')
+    def fmt(d): return d.strftime('%Y-%m-%d')
+    chunks = []
+    # [ref-89..ref-60], [ref-59..ref-30], [ref-29..ref]
+    chunks.append((fmt(ref - timedelta(days=89)), fmt(ref - timedelta(days=60))))
+    chunks.append((fmt(ref - timedelta(days=59)), fmt(ref - timedelta(days=30))))
+    chunks.append((fmt(ref - timedelta(days=29)), fmt(ref)))
+    rows = []
+    for since, until in chunks:
+        part = fetch_account_insights_optimized(account, token, since, until)
+        rows.extend(part)
+    return rows
 
 def fetch_creatives_parallel(ad_ids, token):
     """Fetch creatives en parallèle"""
@@ -209,6 +224,33 @@ def master_refresh():
         params = None  # next already has params
 
     active_accounts = [acc for acc in accounts if (acc.get("account_status") == 1 or acc.get("account_status") == "1")]
+
+    # Écrire un index des comptes pour l'UI (liste complète et actifs)
+    try:
+        os.makedirs('data/current', exist_ok=True)
+        accounts_index = {
+            'timestamp': datetime.now().isoformat(),
+            'total': len(accounts),
+            'active_total': len(active_accounts),
+            'accounts': [
+                {
+                    'id': acc.get('id'),
+                    'name': acc.get('name', ''),
+                    'account_status': acc.get('account_status')
+                } for acc in accounts
+            ],
+            'active_accounts': [
+                {
+                    'id': acc.get('id'),
+                    'name': acc.get('name', ''),
+                    'account_status': acc.get('account_status')
+                } for acc in active_accounts
+            ]
+        }
+        with open('data/current/accounts_index.json', 'w', encoding='utf-8') as f:
+            json.dump(accounts_index, f, indent=2, ensure_ascii=False)
+    except Exception as e:
+        print(f"⚠️ Impossible d'écrire accounts_index.json: {e}")
     
     # Debug (optional)
     if os.getenv('DEBUG_REFRESH'):
@@ -227,6 +269,14 @@ def master_refresh():
             print("⚠️ Aucun compte actif listé via /me/adaccounts, utilisation de META_ACCOUNT_IDS")
             active_accounts = [{"id": acc.strip(), "name": acc.strip(), "account_status": 1} for acc in env_ids.split(',') if acc.strip()]
     print(f"✅ {len(active_accounts)} comptes actifs")
+
+    # Debug/Isolation: filtrer par noms explicitement demandés
+    only_names = os.getenv('ONLY_ACCOUNT_NAMES', '').strip()
+    if only_names:
+        wanted = set(n.strip() for n in only_names.split(',') if n.strip())
+        before = len(active_accounts)
+        active_accounts = [acc for acc in active_accounts if acc.get('name') in wanted]
+        print(f"🔎 Filtrage ONLY_ACCOUNT_NAMES: {before} -> {len(active_accounts)}")
     
     # 2. Mode baseline journalier 90j + agrégations locales (moins d'appels)
     results_summary = {}
@@ -238,13 +288,17 @@ def master_refresh():
 
     # Collecte journalière pour chaque compte
     daily_rows = []
-    with ThreadPoolExecutor(max_workers=8) as executor:
-        futs = [
-            executor.submit(fetch_account_insights_optimized, acc, token, since_date_90, until_date_90)
-            for acc in active_accounts
-        ]
+    use_chunked = bool(os.getenv('FETCH_CHUNKED', 'true').lower() in ('1','true','yes','on'))
+    with ThreadPoolExecutor(max_workers=6 if use_chunked else 8) as executor:
+        if use_chunked:
+            futs = [executor.submit(fetch_account_insights_chunked, acc, token, reference_date) for acc in active_accounts]
+        else:
+            futs = [executor.submit(fetch_account_insights_optimized, acc, token, since_date_90, until_date_90) for acc in active_accounts]
         for fut in as_completed(futs):
-            daily_rows.extend(fut.result())
+            try:
+                daily_rows.extend(fut.result())
+            except Exception:
+                pass
 
     # Taguer chaque ligne avec une date si non présente (Meta renvoie souvent date_start/date_stop ou des buckets)
     for r in daily_rows:
@@ -325,17 +379,22 @@ def master_refresh():
     except Exception as e:
         print(f"⚠️ Impossible de générer la semaine précédente: {e}")
 
-    # 4. Enrichissement media_url (intégré)
+    # 4. Enrichissement media_url (intégré) + métadonnées ad + nomenclature
     try:
         print("\n🎬 Enrichissement media_url (intégré) sur data/current...")
         # Import paresseux pour éviter problèmes de path
         sys.path.append(os.path.join(os.path.dirname(__file__), '..'))  # add scripts/
-        from utils.enrich_media import enrich_media_urls_union  # type: ignore
-        stats = enrich_media_urls_union(base_dir='data/current', periods=[3,7,14,30,90], max_workers=10, only_missing=True)
+        from utils.enrich_media import enrich_media_urls_union, enrich_media_for_file  # type: ignore
+        stats = enrich_media_urls_union(base_dir='data/current', periods=[3,7,14,30,90], max_workers=10, only_missing=False)
         print("✅ Enrichissement media_url OK:")
         for k,v in stats.items():
             if k.startswith('_'): continue
             print(f"   {k}d: {v.get('with_media',0)}/{v.get('total',0)}")
+        # enrichir également la semaine précédente
+        prev_path = 'data/current/hybrid_data_prev_week.json'
+        if os.path.exists(prev_path):
+            prev_stats = enrich_media_for_file(prev_path, max_workers=10)
+            print(f"   prev_week: {prev_stats.get('with_media',0)}/{prev_stats.get('total',0)}")
     except Exception as e:
         print(f"⚠️ Impossible d'enrichir media_url: {e}")
 
