@@ -353,6 +353,7 @@
             justify-content: space-around;
             height: 200px;
             padding: 20px;
+            padding-bottom: 60px; /* Plus d'espace en bas pour le ROAS */
             position: relative;
         }
         
@@ -1290,38 +1291,110 @@
         function updateCharts(data) {
             const ads = data.ads || [];
             
-            // Top 5 comptes par spend
-            const accountSpend = {};
-            ads.forEach(ad => {
-                if (!accountSpend[ad.account_name]) accountSpend[ad.account_name] = 0;
-                accountSpend[ad.account_name] += parseFloat(ad.spend || 0);
-            });
-            
-            const topAccounts = Object.entries(accountSpend)
-                .sort((a, b) => b[1] - a[1])
-                .slice(0, 5);
-            
-            const maxSpend = topAccounts[0] ? topAccounts[0][1] : 1;
-            
-            // Mettre à jour le graphique des comptes
+            // Changer le titre et le contenu selon la sélection
+            const chartTitle = document.querySelector('.chart-card h3');
             const barChart = document.querySelector('.bar-chart');
-            if (barChart) {
-                barChart.innerHTML = topAccounts.map(([name, spend]) => `
-                    <div class="bar" style="height: ${(spend/maxSpend*100)}%">
-                        <span class="bar-value">$${Math.round(spend/1000)}k</span>
-                        <span class="bar-label">${name.substring(0, 10)}</span>
-                    </div>
-                `).join('');
+            
+            if (currentAccountName === 'Todos') {
+                // Mode TODOS: Top 5 comptes par spend
+                if (chartTitle) chartTitle.textContent = '💰 Top 5 Cuentas por Inversión';
+                
+                const accountSpend = {};
+                ads.forEach(ad => {
+                    if (!accountSpend[ad.account_name]) accountSpend[ad.account_name] = 0;
+                    accountSpend[ad.account_name] += parseFloat(ad.spend || 0);
+                });
+                
+                const topAccounts = Object.entries(accountSpend)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 5);
+                
+                const maxSpend = topAccounts[0] ? topAccounts[0][1] : 1;
+                
+                if (barChart) {
+                    barChart.innerHTML = topAccounts.map(([name, spend]) => `
+                        <div class="bar" style="height: ${(spend/maxSpend*100)}%">
+                            <span class="bar-value">$${Math.round(spend/1000)}k</span>
+                            <span class="bar-label">${name.substring(0, 10)}</span>
+                        </div>
+                    `).join('');
+                }
+            } else {
+                // Mode COMPTE SPÉCIFIQUE: Top 5 anuncios par spend
+                if (chartTitle) chartTitle.textContent = `🎯 Top 5 Anuncios de ${currentAccountName.substring(0, 20)}`;
+                
+                // Filtrer et trier les anuncios par spend
+                const topAds = ads
+                    .filter(ad => parseFloat(ad.spend || 0) > 0)
+                    .sort((a, b) => parseFloat(b.spend || 0) - parseFloat(a.spend || 0))
+                    .slice(0, 5);
+                
+                const maxSpend = topAds[0] ? parseFloat(topAds[0].spend) : 1;
+                
+                if (barChart) {
+                    barChart.innerHTML = topAds.map(ad => {
+                        const spend = parseFloat(ad.spend || 0);
+                        const roasClass = ad.roas > 3 ? '#00a854' : ad.roas > 1.5 ? '#ff9500' : '#ff3b30';
+                        return `
+                            <div class="bar" style="height: ${(spend/maxSpend*100)}%; background: linear-gradient(135deg, ${roasClass} 0%, ${roasClass}99 100%);">
+                                <span class="bar-value">$${Math.round(spend/1000)}k</span>
+                                <span class="bar-label" title="${ad.ad_name}">${ad.ad_name.substring(0, 10)}</span>
+                            </div>
+                        `;
+                    }).join('');
+                    
+                    // Ajouter une légende ROAS séparée sous le graphique avec icônes
+                    barChart.innerHTML += `
+                        <div style="position: absolute; bottom: -50px; left: 0; right: 0; display: flex; justify-content: space-around; font-size: 11px; color: #86868b;">
+                            ${topAds.map(ad => {
+                                // Seuils ajustés : 2.5+ excellent, 1.5+ bien, <1.5 à améliorer
+                                const icon = ad.roas >= 2.5 ? '✅' : ad.roas >= 1.5 ? '⚠️' : '❌';
+                                const color = ad.roas >= 2.5 ? '#00a854' : ad.roas >= 1.5 ? '#ff9500' : '#ff3b30';
+                                return `<span style="color: ${color}">ROAS ${ad.roas.toFixed(1)} ${icon}</span>`;
+                            }).join('')}
+                        </div>
+                    `;
+                }
             }
             
-            // Mettre à jour seulement la légende des formats avec ROAS
+            // Mettre à jour le donut chart ET la légende des formats avec ROAS
             const formatStats = data.format_distribution || {};
             const formatRoas = calculateFormatRoas(ads);
             
+            // Filtrer CAROUSEL dès le début pour éviter l'espace vide
+            const filteredFormats = Object.entries(formatStats)
+                .filter(([fmt]) => fmt !== 'CAROUSEL');
+            
+            // Calculer le total APRÈS le filtrage
+            const total = filteredFormats.reduce((sum, [_, count]) => sum + count, 0);
+            const circumference = 2 * Math.PI * 60; // rayon = 60
+            
+            // Générer le SVG dynamiquement
+            const donutSvg = document.querySelector('.donut-svg');
+            if (donutSvg && total > 0) {
+                let offset = 0;
+                const segments = filteredFormats
+                    .map(([format, count]) => {
+                        const percentage = count / total;
+                        const dashLength = circumference * percentage;
+                        const currentOffset = offset;
+                        offset += dashLength;
+                        
+                        return `<circle cx="90" cy="90" r="60" 
+                                fill="none" 
+                                stroke="${getFormatColor(format)}" 
+                                stroke-width="30" 
+                                stroke-dasharray="${dashLength} ${circumference}" 
+                                stroke-dashoffset="-${currentOffset}" 
+                                transform="rotate(-90 90 90)"></circle>`;
+                    }).join('');
+                
+                donutSvg.innerHTML = segments + '<circle cx="90" cy="90" r="30" fill="white"></circle>';
+            }
+            
             const legend = document.querySelector('.legend');
             if (legend) {
-                legend.innerHTML = Object.entries(formatStats)
-                    .filter(([fmt]) => fmt !== 'CAROUSEL') // Supprimer CAROUSEL
+                legend.innerHTML = filteredFormats
                     .map(([fmt, count]) => {
                         const roas = formatRoas[fmt] || 0;
                         // Raccourcir les noms
