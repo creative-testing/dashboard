@@ -20,7 +20,7 @@
         }
         
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 50%, #1e40af 100%);
             color: white;
             padding: 40px 20px;
             text-align: center;
@@ -57,9 +57,81 @@
         
         .period-btn.active, .period-btn:hover {
             background: white;
-            color: #667eea;
+            color: #2563eb;
             border-color: white;
             transform: translateY(-2px);
+        }
+        
+        #account-select {
+            transition: all 0.3s ease;
+        }
+        
+        #account-select:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        
+        #account-select:focus {
+            background: white;
+            color: #2563eb;
+            border-color: white;
+        }
+        
+        #account-select option {
+            background: #2563eb;
+            color: white;
+        }
+        
+        .dropdown-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .dropdown-btn:hover {
+            background: rgba(255,255,255,0.3) !important;
+            transform: translateY(-2px);
+        }
+        
+        .dropdown-menu {
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .dropdown-option {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            color: #1d1d1f;
+            font-size: 14px;
+            border-bottom: 1px solid #f0f0f2;
+        }
+        
+        .dropdown-option:hover {
+            background: #f5f5f7;
+        }
+        
+        .dropdown-option.active {
+            background: #2563eb;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .dropdown-option:first-child {
+            border-radius: 12px 12px 0 0;
+        }
+        
+        .dropdown-option:last-child {
+            border-radius: 0 0 12px 12px;
+            border-bottom: none;
         }
         
         /* Account selector - ajouté sans toucher au reste */
@@ -105,10 +177,44 @@
         
         .kpi-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(6, 1fr);
             gap: 20px;
             margin: -40px 20px 40px;
             position: relative;
+        }
+        
+        /* Première ligne : 3 KPI principaux */
+        .kpi-card:nth-child(1),
+        .kpi-card:nth-child(2),
+        .kpi-card:nth-child(3) {
+            grid-column: span 2;
+        }
+        
+        /* Deuxième ligne : 2 KPI centrés */
+        .kpi-card:nth-child(4) {
+            grid-column: 2 / span 2;
+        }
+        
+        .kpi-card:nth-child(5) {
+            grid-column: span 2;
+        }
+        
+        @media (max-width: 1200px) {
+            .kpi-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .kpi-card {
+                grid-column: span 1 !important;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .kpi-card {
+                grid-column: span 1 !important;
+            }
         }
         
         .kpi-card {
@@ -299,7 +405,7 @@
         
         /* Export button */
         .export-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
             color: white;
             border: none;
             padding: 10px 20px;
@@ -359,7 +465,7 @@
         
         .bar {
             flex: 1;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
             margin: 0 8px;
             border-radius: 8px 8px 0 0;
             position: relative;
@@ -542,7 +648,7 @@
         }
         
         .unlock-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
             color: white;
             border: none;
             padding: 14px 28px;
@@ -594,7 +700,7 @@
         }
         
         .creator-avatar.male {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
         }
         
         .creator-avatar.female {
@@ -633,11 +739,18 @@
             <button class="period-btn" onclick="switchPeriod(this, 90)">90 días</button>
         </div>
         
-        <div class="account-selector" style="margin-top:10px; display:flex; gap:12px; align-items:center;">
-            <label for="account-select" style="font-weight:600; color:#334155;">Cuenta:</label>
-            <select id="account-select" style="padding:8px 10px; border-radius:8px; border:1px solid #e5e7eb; min-width:240px;">
-                <option value="Todos" selected>Todos</option>
-            </select>
+        <div class="account-selector" style="margin-top:15px; display:flex; justify-content:center; gap:8px; align-items:center;">
+            <div class="custom-dropdown" style="position: relative;">
+                <button id="account-dropdown-btn" class="dropdown-btn" style="background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.3); color: white; padding: 10px 20px; padding-right: 35px; border-radius: 25px; cursor: pointer; font-weight: 600; font-size: 14px; min-width: 150px; max-width: 280px; outline: none; text-align: center; position: relative;">
+                    <span id="account-dropdown-text">Todas las cuentas</span>
+                    <svg style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); transition: transform 0.3s;" width="12" height="12" viewBox="0 0 20 20" fill="white">
+                        <path d="M10 12L6 8h8z"/>
+                    </svg>
+                </button>
+                <div id="account-dropdown-menu" class="dropdown-menu" style="display: none; position: absolute; top: 100%; left: 0; right: 0; margin-top: 5px; background: white; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); max-height: 400px; overflow-y: auto; z-index: 1000;">
+                    <!-- Options will be added dynamically -->
+                </div>
+            </div>
         </div>
     </div>
     
@@ -1435,11 +1548,11 @@
         
         function getFormatColor(format) {
             const colors = {
-                'VIDEO': '#667eea',
-                'IMAGE': '#00a854',
-                'INSTAGRAM': '#7928ca',
-                'UNKNOWN': '#86868b',
-                'CAROUSEL': '#ff9500'
+                'VIDEO': '#0ea5e9',      // Bleu clair
+                'IMAGE': '#2563eb',      // Bleu moyen
+                'INSTAGRAM': '#1e40af',  // Bleu foncé
+                'UNKNOWN': '#94a3b8',    // Gris-bleu
+                'CAROUSEL': '#06b6d4'    // Cyan
             };
             return colors[format] || '#ccc';
         }
@@ -1448,11 +1561,16 @@
         let currentTableData = [];
         let filteredTableData = [];
         
+        // Variables de pagination
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        
         function updateTable(data) {
             const ads = data.ads || [];
             // Afficher TOUS les anuncios triés par ROAS décroissant
             currentTableData = [...ads].sort((a, b) => b.roas - a.roas);
             filteredTableData = currentTableData; // Par défaut, pas de filtre
+            currentPage = 1; // Réinitialiser à la première page
             
             renderTable();
         }
@@ -1464,12 +1582,18 @@
                 tableTitle.textContent = `Historial de Anuncios (${currentPeriod} días)`;
             }
             
+            // Calculer la pagination
+            const totalPages = Math.ceil(filteredTableData.length / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const pageData = filteredTableData.slice(startIndex, endIndex);
+            
             const tableSubtitle = document.querySelector('.main-table-card p');
             if (tableSubtitle) {
                 const filterInfo = filteredTableData.length < currentTableData.length 
                     ? ` (${filteredTableData.length} filtrados de ${currentTableData.length})`
                     : '';
-                tableSubtitle.textContent = `${filteredTableData.length.toLocaleString()} anuncios${filterInfo}`;
+                tableSubtitle.textContent = `Mostrando ${startIndex + 1}-${Math.min(endIndex, filteredTableData.length)} de ${filteredTableData.length.toLocaleString()} anuncios${filterInfo}`;
             }
             
             // Charger les données sauvegardées depuis localStorage
@@ -1478,7 +1602,7 @@
             // Mettre à jour le tbody
             const tableBody = document.querySelector('#ads-table tbody');
             if (tableBody) {
-                tableBody.innerHTML = filteredTableData.map(ad => {
+                tableBody.innerHTML = pageData.map(ad => {
                     const roasClass = ad.roas > 3 ? 'roas-high' : ad.roas > 1.5 ? 'roas-medium' : 'roas-low';
                     const formatClass = `format-${ad.format.toLowerCase()}`;
                     
@@ -1527,6 +1651,61 @@
                         </tr>
                     `;
                 }).join('');
+            }
+            
+            // Ajouter les contrôles de pagination
+            renderPaginationControls(totalPages);
+        }
+        
+        function renderPaginationControls(totalPages) {
+            // Créer ou récupérer le conteneur de pagination
+            let paginationContainer = document.querySelector('.pagination-controls');
+            if (!paginationContainer) {
+                paginationContainer = document.createElement('div');
+                paginationContainer.className = 'pagination-controls';
+                paginationContainer.style.cssText = `
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    gap: 10px;
+                    margin-top: 20px;
+                    padding: 15px;
+                `;
+                const tableCard = document.querySelector('.main-table-card');
+                if (tableCard) {
+                    tableCard.appendChild(paginationContainer);
+                }
+            }
+            
+            // Pagination simple et minimaliste
+            paginationContainer.innerHTML = `
+                <button onclick="changePage(1)" ${currentPage === 1 ? 'disabled' : ''} 
+                        style="padding: 8px 12px; border: 1px solid #e0e0e2; background: white; border-radius: 6px; cursor: pointer; ${currentPage === 1 ? 'opacity: 0.5; cursor: not-allowed;' : ''}">
+                    ←
+                </button>
+                <button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} 
+                        style="padding: 8px 12px; border: 1px solid #e0e0e2; background: white; border-radius: 6px; cursor: pointer; ${currentPage === 1 ? 'opacity: 0.5; cursor: not-allowed;' : ''}">
+                    Anterior
+                </button>
+                <span style="padding: 8px 16px; background: #f5f5f7; border-radius: 6px;">
+                    Página <strong>${currentPage}</strong> de <strong>${totalPages}</strong>
+                </span>
+                <button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''} 
+                        style="padding: 8px 12px; border: 1px solid #e0e0e2; background: white; border-radius: 6px; cursor: pointer; ${currentPage === totalPages ? 'opacity: 0.5; cursor: not-allowed;' : ''}">
+                    Siguiente
+                </button>
+                <button onclick="changePage(${totalPages})" ${currentPage === totalPages ? 'disabled' : ''} 
+                        style="padding: 8px 12px; border: 1px solid #e0e0e2; background: white; border-radius: 6px; cursor: pointer; ${currentPage === totalPages ? 'opacity: 0.5; cursor: not-allowed;' : ''}">
+                    →
+                </button>
+            `;
+        }
+        
+        function changePage(page) {
+            const totalPages = Math.ceil(filteredTableData.length / itemsPerPage);
+            if (page >= 1 && page <= totalPages) {
+                currentPage = page;
+                renderTable();
             }
         }
         
@@ -1692,8 +1871,9 @@
             return dist;
         }
         function buildAccountOptions() {
-            const sel = document.getElementById('account-select');
-            if (!sel) return;
+            const menu = document.getElementById('account-dropdown-menu');
+            if (!menu) return;
+            
             let names = [];
             if (accountsIndex && Array.isArray(accountsIndex.accounts)) {
                 names = accountsIndex.accounts.map(a => a.name).filter(Boolean).sort();
@@ -1706,17 +1886,137 @@
                 });
                 names = Array.from(allNames).sort();
             }
-            sel.innerHTML = `<option value=\"Todos\">Todos</option>` + names.map(n => `<option value=\"${n}\">${n}</option>`).join('');
-            sel.value = currentAccountName || 'Todos';
+            
+            // Construire le menu dropdown
+            let menuHTML = `<div class="dropdown-option ${currentAccountName === 'Todos' ? 'active' : ''}" data-value="Todos">Todas las cuentas</div>`;
+            names.forEach(n => {
+                const displayName = n.length > 28 ? n.substring(0, 25) + '...' : n;
+                menuHTML += `<div class="dropdown-option ${currentAccountName === n ? 'active' : ''}" data-value="${n}" title="${n}">${displayName}</div>`;
+            });
+            menu.innerHTML = menuHTML;
+            
+            // Ajouter les event listeners aux options
+            menu.querySelectorAll('.dropdown-option').forEach(option => {
+                option.addEventListener('click', (e) => {
+                    const value = e.target.getAttribute('data-value');
+                    selectAccount(value);
+                    closeDropdown();
+                });
+            });
         }
-
-        // Écouteur select compte
-        document.addEventListener('change', (e) => {
-            if (e.target && e.target.id === 'account-select') {
-                currentAccountName = e.target.value || 'Todos';
-                updateDashboard(currentPeriod);
+        
+        function selectAccount(value) {
+            currentAccountName = value;
+            const btnText = document.getElementById('account-dropdown-text');
+            if (btnText) {
+                btnText.textContent = value === 'Todos' ? 'Todas las cuentas' : 
+                                     (value.length > 28 ? value.substring(0, 25) + '...' : value);
+            }
+            updateDashboard(currentPeriod);
+        }
+        
+        let keyboardBuffer = '';
+        let keyboardTimer = null;
+        
+        function toggleDropdown() {
+            const menu = document.getElementById('account-dropdown-menu');
+            const btn = document.getElementById('account-dropdown-btn');
+            const arrow = btn.querySelector('svg');
+            
+            if (menu.style.display === 'none' || !menu.style.display) {
+                menu.style.display = 'block';
+                arrow.style.transform = 'translateY(-50%) rotate(180deg)';
+                btn.style.background = 'white';
+                btn.style.color = '#2563eb';
+                btn.style.borderColor = 'white';
+                
+                // Activer la navigation clavier
+                document.addEventListener('keydown', handleKeyboardNavigation);
+            } else {
+                closeDropdown();
+            }
+        }
+        
+        function handleKeyboardNavigation(e) {
+            const menu = document.getElementById('account-dropdown-menu');
+            if (menu.style.display === 'none' || !menu.style.display) return;
+            
+            // Navigation par lettres
+            if (e.key.length === 1 && e.key.match(/[a-zA-Z0-9]/)) {
+                // Accumuler les lettres tapées
+                keyboardBuffer += e.key.toLowerCase();
+                
+                // Reset le buffer après 1 seconde
+                clearTimeout(keyboardTimer);
+                keyboardTimer = setTimeout(() => {
+                    keyboardBuffer = '';
+                }, 1000);
+                
+                // Trouver la première option qui commence par ces lettres
+                const options = menu.querySelectorAll('.dropdown-option');
+                for (let option of options) {
+                    const text = option.textContent.toLowerCase();
+                    if (text.startsWith(keyboardBuffer)) {
+                        // Scroll vers cette option
+                        option.scrollIntoView({ block: 'nearest' });
+                        // La surligner temporairement
+                        options.forEach(o => o.style.background = '');
+                        option.style.background = '#f5f5f7';
+                        break;
+                    }
+                }
             }
             
+            // Escape pour fermer
+            if (e.key === 'Escape') {
+                closeDropdown();
+            }
+            
+            // Enter pour sélectionner l'option survolée
+            if (e.key === 'Enter') {
+                const hoveredOption = menu.querySelector('.dropdown-option:hover');
+                if (hoveredOption) {
+                    const value = hoveredOption.getAttribute('data-value');
+                    selectAccount(value);
+                    closeDropdown();
+                }
+            }
+        }
+        
+        function closeDropdown() {
+            const menu = document.getElementById('account-dropdown-menu');
+            const btn = document.getElementById('account-dropdown-btn');
+            const arrow = btn.querySelector('svg');
+            
+            menu.style.display = 'none';
+            arrow.style.transform = 'translateY(-50%)';
+            btn.style.background = 'rgba(255,255,255,0.2)';
+            btn.style.color = 'white';
+            btn.style.borderColor = 'rgba(255,255,255,0.3)';
+            
+            // Désactiver la navigation clavier
+            document.removeEventListener('keydown', handleKeyboardNavigation);
+            keyboardBuffer = '';
+        }
+
+        // Event listeners pour le dropdown custom
+        document.addEventListener('DOMContentLoaded', () => {
+            const btn = document.getElementById('account-dropdown-btn');
+            if (btn) {
+                btn.addEventListener('click', toggleDropdown);
+            }
+            
+            // Fermer le dropdown si on clique ailleurs
+            document.addEventListener('click', (e) => {
+                const dropdown = document.querySelector('.custom-dropdown');
+                if (dropdown && !dropdown.contains(e.target)) {
+                    closeDropdown();
+                }
+            });
+        });
+        
+        // Écouteur pour les selects de résultats
+        document.addEventListener('change', (e) => {
             // Sauvegarder les résultats (Ganador/Perdedor)
             if (e.target && e.target.classList.contains('result-select')) {
                 const adId = e.target.getAttribute('data-ad-id');
