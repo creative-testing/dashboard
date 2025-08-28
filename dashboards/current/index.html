@@ -470,7 +470,7 @@
             margin: 0 8px;
             border-radius: 8px 8px 0 0;
             position: relative;
-            min-height: 20px;
+            min-height: 5px;
             transition: all 0.3s ease;
         }
         
@@ -681,9 +681,11 @@
         /* Creator cards styles */
         .creator-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
             padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
         }
         
         .creator-card {
@@ -1076,55 +1078,6 @@
         </div>
         
         <!-- SECTION DEMOGRAPHICS -->
-        <div class="demographics-section" style="background: white; border-radius: 12px; padding: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.07); margin-bottom: 40px;">
-            <h2>📊 Análisis Demográfico</h2>
-            <p style="color: #86868b; margin-bottom: 20px;">Distribución del gasto por edad y género</p>
-            
-            <div id="demographics-content">
-                <div style="padding: 40px; text-align: center; background: #f5f5f7; border-radius: 8px;">
-                    <p style="color: #86868b; margin-bottom: 15px;">
-                        📈 Los datos demográficos se cargarán bajo demanda para optimizar el rendimiento
-                    </p>
-                    <button id="load-demographics" class="export-btn" style="background: linear-gradient(135deg, #00a854 0%, #28a745 100%);">
-                        Cargar Análisis Demográfico
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Template para cuando se carguen los datos -->
-            <div id="demographics-loaded" style="display: none;">
-                <div class="chart-grid">
-                    <div class="chart-card">
-                        <h3>👥 Distribución por Edad</h3>
-                        <div id="age-distribution"></div>
-                    </div>
-                    <div class="chart-card">
-                        <h3>⚧ Distribución por Género</h3>
-                        <div id="gender-distribution"></div>
-                    </div>
-                </div>
-                
-                <div style="margin-top: 20px;">
-                    <h3 style="font-size: 16px; margin-bottom: 15px;">Tabla Detallada por Segmento</h3>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Segmento</th>
-                                <th>Inversión</th>
-                                <th>ROAS</th>
-                                <th>CTR</th>
-                                <th>CPA</th>
-                                <th>Conversiones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="demographics-table">
-                            <!-- Será llenado dinámicamente -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        
         <!-- SECTION NOMENCLATURA PETCARE -->
         <div class="preview-section" id="petcare-section" style="display: none;">
             <div class="preview-badge" style="background: #00a854;">PETCARE 2 - DATOS REALES</div>
@@ -1133,34 +1086,75 @@
             <p style="color: #86868b; margin-bottom: 25px;">Análisis real basado en la nomenclatura implementada (27% de ads con nomenclatura)</p>
             
             <div class="preview-content">
-                <div class="chart-grid">
-                    <div class="chart-card">
-                        <h3>📊 Top 5 Ángulos Creativos (min $500 spend)</h3>
-                        <div class="bar-chart" id="petcare-angles-chart">
-                            <div class="bar" style="height: 100%; background: linear-gradient(135deg, #00a854 0%, #28a745 100%);">
-                                <span class="bar-value">ROAS 4.9</span>
-                                <span class="bar-label">Problemas Digestivos • $1.6K</span>
-                            </div>
-                            <div class="bar" style="height: 61%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                                <span class="bar-value">ROAS 3.0</span>
-                                <span class="bar-label">Lamido de patas • $2.3K</span>
-                            </div>
-                            <div class="bar" style="height: 43%; background: linear-gradient(135deg, #ff9500 0%, #ff8c00 100%);">
-                                <span class="bar-value">ROAS 2.1</span>
-                                <span class="bar-label">Bienestar General • $4.2K</span>
-                            </div>
-                            <div class="bar" style="height: 36%; background: linear-gradient(135deg, #7928ca 0%, #9c27b0 100%);">
-                                <span class="bar-value">ROAS 1.8</span>
-                                <span class="bar-label">RESTOCK • $1.4K</span>
-                            </div>
-                            <div class="bar" style="height: 28%; background: linear-gradient(135deg, #6c757d 0%, #868e96 100%);">
-                                <span class="bar-value">ROAS 1.4</span>
-                                <span class="bar-label">Olor a chetos • $5.2K</span>
-                            </div>
+                <!-- PRIMERA FILA: Todos los 9 ángulos -->
+                <div class="chart-card" style="margin-bottom: 30px;">
+                    <h3>📊 Todos los Ángulos Creativos (9 ángulos identificados)</h3>
+                    <div class="bar-chart" id="petcare-angles-chart" style="padding-bottom: 120px; position: relative;">
+                        <!-- Ordenados por spend (mayor a menor) -->
+                        <!-- Picazón - Mayor spend -->
+                        <div class="bar" style="height: 100%; background: linear-gradient(135deg, #ff3b30 0%, #ff3b3099 100%);">
+                            <span class="bar-value">$8.8K</span>
+                            <span class="bar-label">Picazón</span>
+                        </div>
+                        <!-- Olor A Chetos -->
+                        <div class="bar" style="height: 89%; background: linear-gradient(135deg, #ff3b30 0%, #ff3b3099 100%);">
+                            <span class="bar-value">$7.9K</span>
+                            <span class="bar-label">Olor A Chetos</span>
+                        </div>
+                        <!-- Probióticos Baratos -->
+                        <div class="bar" style="height: 81%; background: linear-gradient(135deg, #ff9500 0%, #ff950099 100%);">
+                            <span class="bar-value">$7.2K</span>
+                            <span class="bar-label">Probióticos Baratos</span>
+                        </div>
+                        <!-- Bienestar General -->
+                        <div class="bar" style="height: 57%; background: linear-gradient(135deg, #ff9500 0%, #ff950099 100%);">
+                            <span class="bar-value">$5.0K</span>
+                            <span class="bar-label">Bienestar General</span>
+                        </div>
+                        <!-- Restock -->
+                        <div class="bar" style="height: 18%; background: linear-gradient(135deg, #00a854 0%, #00a85499 100%);">
+                            <span class="bar-value">$1.6K</span>
+                            <span class="bar-label">Restock</span>
+                        </div>
+                        <!-- Lamido de Patas -->
+                        <div class="bar" style="height: 17%; background: linear-gradient(135deg, #00a854 0%, #00a85499 100%);">
+                            <span class="bar-value">$1.5K</span>
+                            <span class="bar-label">Lamido de Patas</span>
+                        </div>
+                        <!-- Problemas Digestivos -->
+                        <div class="bar" style="height: 15%; background: linear-gradient(135deg, #00a854 0%, #00a85499 100%);">
+                            <span class="bar-value">$1.3K</span>
+                            <span class="bar-label">Problemas Digestivos</span>
+                        </div>
+                        <!-- Ansiedad - vraiment petit -->
+                        <div class="bar" style="height: 3.2%; background: linear-gradient(135deg, #ff3b30 0%, #ff3b3099 100%);">
+                            <span class="bar-value">$283</span>
+                            <span class="bar-label">Ansiedad</span>
+                        </div>
+                        <!-- Dolor Al Caminar - le plus petit -->
+                        <div class="bar" style="height: 1.9%; background: linear-gradient(135deg, #00a854 0%, #00a85499 100%);">
+                            <span class="bar-value">$171</span>
+                            <span class="bar-label">Dolor Al Caminar</span>
+                        </div>
+                        
+                        <!-- Línea de ROAS debajo -->
+                        <div style="position: absolute; bottom: -50px; left: 0; right: 0; display: flex; justify-content: space-around; font-size: 11px; color: #86868b;">
+                            <span style="color: #ff3b30">1.2 ❌</span>
+                            <span style="color: #ff3b30">0.8 ❌</span>
+                            <span style="color: #ff9500">1.5 ⚠️</span>
+                            <span style="color: #ff9500">2.0 ⚠️</span>
+                            <span style="color: #00a854">5.0 ✅</span>
+                            <span style="color: #00a854">4.3 ✅</span>
+                            <span style="color: #00a854">6.4 ✅</span>
+                            <span style="color: #ff3b30">0.6 ❌</span>
+                            <span style="color: #00a854">7.8 ✅</span>
                         </div>
                     </div>
-                    
-                    <div class="chart-card">
+                </div>
+                
+                <!-- SEGUNDA FILA: Performance por creador y insights -->
+                <div style="display: flex; justify-content: center; width: 100%;">
+                    <div class="chart-card" style="max-width: 800px; width: 100%;">
                         <h3>👥 Performance por Creador (Datos Reales)</h3>
                         <div class="creator-grid" id="petcare-creators-grid">
                             <div class="creator-card">
@@ -1206,6 +1200,56 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- SECTION DEMOGRAPHICS (déplacée à la fin) -->
+        <div class="demographics-section" style="background: white; border-radius: 12px; padding: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.07); margin-bottom: 40px;">
+            <h2>📊 Análisis Demográfico</h2>
+            <p style="color: #86868b; margin-bottom: 20px;">Distribución del gasto por edad y género</p>
+            
+            <div id="demographics-content">
+                <div style="padding: 40px; text-align: center; background: #f5f5f7; border-radius: 8px;">
+                    <p style="color: #86868b; margin-bottom: 15px;">
+                        📈 Los datos demográficos se cargarán bajo demanda para optimizar el rendimiento
+                    </p>
+                    <button id="load-demographics" class="export-btn" style="background: linear-gradient(135deg, #00a854 0%, #28a745 100%);">
+                        Cargar Análisis Demográfico
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Template para cuando se carguen los datos -->
+            <div id="demographics-loaded" style="display: none;">
+                <div class="chart-grid">
+                    <div class="chart-card">
+                        <h3>👥 Distribución por Edad</h3>
+                        <div id="age-distribution"></div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>⚧ Distribución por Género</h3>
+                        <div id="gender-distribution"></div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <h3 style="font-size: 16px; margin-bottom: 15px;">Tabla Detallada por Segmento</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Segmento</th>
+                                <th>Inversión</th>
+                                <th>ROAS</th>
+                                <th>CTR</th>
+                                <th>CPA</th>
+                                <th>Conversiones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="demographics-table">
+                            <!-- Será llenado dinámicamente -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
