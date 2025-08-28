@@ -1427,9 +1427,8 @@
             if (kpiCards.length >= 5) {
                 // KPI 1: Anuncios con Inversión (ceux qui ont eu du spend)
                 kpiCards[0].innerHTML = `
-                    <h3 style="margin-bottom: 5px;">${activeAds.toLocaleString()}</h3>
-                    <p style="margin-bottom: 2px;">Anuncios con Inversión</p>
-                    <p style="font-size: 11px; color: #86868b; margin: 0;">${totalAds.toLocaleString()} total</p>
+                    <h3>${activeAds.toLocaleString()}</h3>
+                    <p>Anuncios con Inversión</p>
                 `;
                 
                 // Autres KPIs restent simples
