@@ -225,6 +225,96 @@
             opacity: 1;
         }
         
+        /* Status badges */
+        .status-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-badge.active {
+            background: #d4f4dd;
+            color: #00a854;
+        }
+        
+        .status-badge.paused {
+            background: #ffe5e5;
+            color: #ff3b30;
+        }
+        
+        /* Editable fields */
+        .hypothesis-input {
+            width: 100%;
+            padding: 4px 8px;
+            border: 1px solid #e0e0e2;
+            border-radius: 6px;
+            font-size: 13px;
+            font-family: inherit;
+        }
+        
+        .hypothesis-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .result-select {
+            width: 100%;
+            padding: 4px 8px;
+            border: 1px solid #e0e0e2;
+            border-radius: 6px;
+            font-size: 13px;
+            font-family: inherit;
+            cursor: pointer;
+        }
+        
+        .result-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        /* Filter row styles */
+        .filter-row th {
+            background: #f8f9fa;
+            padding: 8px;
+            border-bottom: 2px solid #e0e0e2;
+        }
+        
+        .table-filter {
+            width: 100%;
+            padding: 4px 6px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: inherit;
+        }
+        
+        .table-filter:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        /* Export button */
+        .export-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
         .chart-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -661,19 +751,63 @@
         </div>
         
         <div class="main-table-card">
-            <h2>Top 10 Anuncios por ROAS</h2>
-            <p>Solo anuncios con inversión mayor a $3,000 MXN</p>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div>
+                    <h2>Top 10 Anuncios por ROAS</h2>
+                    <p>Solo anuncios con inversión mayor a $3,000 MXN</p>
+                </div>
+                <button id="export-excel" class="export-btn">
+                    📊 Exportar a Excel
+                </button>
+            </div>
             
-            <table>
+            <table id="ads-table">
                 <thead>
                     <tr>
                         <th>Anuncio</th>
-                        <th>Cuenta</th>
+                        <th>Estado</th>
                         <th>Formato</th>
+                        <th>Fecha Inicio</th>
+                        <th>Importe Gastado</th>
                         <th>ROAS</th>
-                        <th>Inversión</th>
-                        <th>CTR</th>
+                        <th>CPA</th>
+                        <th>Compras</th>
                         <th>Ver</th>
+                        <th>Hipótesis</th>
+                        <th>Resultado</th>
+                    </tr>
+                    <tr class="filter-row">
+                        <th><input type="text" class="table-filter" data-column="0" placeholder="Filtrar..."></th>
+                        <th>
+                            <select class="table-filter" data-column="1">
+                                <option value="">Todos</option>
+                                <option value="ACTIVE">Activo</option>
+                                <option value="PAUSED">Pausado</option>
+                            </select>
+                        </th>
+                        <th>
+                            <select class="table-filter" data-column="2">
+                                <option value="">Todos</option>
+                                <option value="VIDEO">Video</option>
+                                <option value="IMAGE">Image</option>
+                                <option value="INSTAGRAM">Instagram</option>
+                                <option value="UNKNOWN">Otros</option>
+                            </select>
+                        </th>
+                        <th><input type="date" class="table-filter" data-column="3"></th>
+                        <th><input type="number" class="table-filter" data-column="4" placeholder="Min..."></th>
+                        <th><input type="number" class="table-filter" data-column="5" placeholder="Min..." step="0.01"></th>
+                        <th><input type="number" class="table-filter" data-column="6" placeholder="Max..."></th>
+                        <th><input type="number" class="table-filter" data-column="7" placeholder="Min..."></th>
+                        <th></th>
+                        <th><input type="text" class="table-filter" data-column="9" placeholder="Filtrar..."></th>
+                        <th>
+                            <select class="table-filter" data-column="10">
+                                <option value="">Todos</option>
+                                <option value="ganador">Ganador</option>
+                                <option value="perdedor">Perdedor</option>
+                            </select>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -811,6 +945,56 @@
                     <!-- Será llenado por JavaScript -->
                 </tbody>
             </table>
+        </div>
+        
+        <!-- SECTION DEMOGRAPHICS -->
+        <div class="demographics-section" style="background: white; border-radius: 12px; padding: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.07); margin-bottom: 40px;">
+            <h2>📊 Análisis Demográfico</h2>
+            <p style="color: #86868b; margin-bottom: 20px;">Distribución del gasto por edad y género</p>
+            
+            <div id="demographics-content">
+                <div style="padding: 40px; text-align: center; background: #f5f5f7; border-radius: 8px;">
+                    <p style="color: #86868b; margin-bottom: 15px;">
+                        📈 Los datos demográficos se cargarán bajo demanda para optimizar el rendimiento
+                    </p>
+                    <button id="load-demographics" class="export-btn" style="background: linear-gradient(135deg, #00a854 0%, #28a745 100%);">
+                        Cargar Análisis Demográfico
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Template para cuando se carguen los datos -->
+            <div id="demographics-loaded" style="display: none;">
+                <div class="chart-grid">
+                    <div class="chart-card">
+                        <h3>👥 Distribución por Edad</h3>
+                        <div id="age-distribution"></div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>⚧ Distribución por Género</h3>
+                        <div id="gender-distribution"></div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <h3 style="font-size: 16px; margin-bottom: 15px;">Tabla Detallada por Segmento</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Segmento</th>
+                                <th>Inversión</th>
+                                <th>ROAS</th>
+                                <th>CTR</th>
+                                <th>CPA</th>
+                                <th>Conversiones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="demographics-table">
+                            <!-- Será llenado dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
         
         <!-- SECTION PREVIEW FAKE -->
@@ -1077,6 +1261,7 @@
             const ads = data.ads || [];
             // Compter seulement les ads ACTIVES
             const activeAds = ads.filter(ad => ad.effective_status === 'ACTIVE').length;
+            const totalAds = ads.length;
             // Convertir spend de string à number
             const totalSpend = ads.reduce((sum, ad) => sum + parseFloat(ad.spend || 0), 0);
             const totalRevenue = ads.reduce((sum, ad) => sum + (ad.purchase_value || 0), 0);
@@ -1085,13 +1270,20 @@
             const cpa = totalPurchases > 0 ? (totalSpend / totalPurchases) : 0;
             
             // Mettre à jour les valeurs dans les KPI cards (5 cartes désormais)
-            const kpiCards = document.querySelectorAll('.kpi-content h3');
+            const kpiCards = document.querySelectorAll('.kpi-content');
             if (kpiCards.length >= 5) {
-                kpiCards[0].textContent = activeAds.toLocaleString();
-                kpiCards[1].textContent = `$${Math.round(totalSpend).toLocaleString()}`;
-                kpiCards[2].textContent = avgRoas.toFixed(2);
-                kpiCards[3].textContent = `$${Math.round(totalRevenue).toLocaleString()}`;
-                kpiCards[4].textContent = cpa > 0 ? `$${cpa.toFixed(2)}` : 'N/A';
+                // KPI 1: Anuncios Activos avec total
+                kpiCards[0].innerHTML = `
+                    <h3 style="margin-bottom: 5px;">${activeAds.toLocaleString()}</h3>
+                    <p style="margin-bottom: 2px;">Anuncios Activos</p>
+                    <p style="font-size: 11px; color: #86868b; margin: 0;">${totalAds.toLocaleString()} total</p>
+                `;
+                
+                // Autres KPIs restent simples
+                kpiCards[1].querySelector('h3').textContent = `$${Math.round(totalSpend).toLocaleString()}`;
+                kpiCards[2].querySelector('h3').textContent = avgRoas.toFixed(2);
+                kpiCards[3].querySelector('h3').textContent = `$${Math.round(totalRevenue).toLocaleString()}`;
+                kpiCards[4].querySelector('h3').textContent = cpa > 0 ? `$${cpa.toFixed(2)}` : 'N/A';
             }
         }
         
@@ -1178,27 +1370,41 @@
             return colors[format] || '#ccc';
         }
         
+        // Stocker les données actuelles pour le filtrage
+        let currentTableData = [];
+        let filteredTableData = [];
+        
         function updateTable(data) {
             const ads = data.ads || [];
-            const significantAds = ads.filter(ad => parseFloat(ad.spend || 0) > 3000);
-            significantAds.sort((a, b) => b.roas - a.roas);
-            const topAds = significantAds.slice(0, 10);
+            // Afficher TOUS les anuncios triés par ROAS décroissant
+            currentTableData = [...ads].sort((a, b) => b.roas - a.roas);
+            filteredTableData = currentTableData; // Par défaut, pas de filtre
             
+            renderTable();
+        }
+        
+        function renderTable() {
             // Mettre à jour le titre de la table
             const tableTitle = document.querySelector('.main-table-card h2');
             if (tableTitle) {
-                tableTitle.textContent = `Top 10 Anuncios por ROAS (${currentPeriod} días)`;
+                tableTitle.textContent = `Historial de Anuncios (${currentPeriod} días)`;
             }
             
             const tableSubtitle = document.querySelector('.main-table-card p');
             if (tableSubtitle) {
-                tableSubtitle.textContent = `${topAds.length} de ${ads.length.toLocaleString()} anuncios con inversión > $3,000 MXN`;
+                const filterInfo = filteredTableData.length < currentTableData.length 
+                    ? ` (${filteredTableData.length} filtrados de ${currentTableData.length})`
+                    : '';
+                tableSubtitle.textContent = `${filteredTableData.length.toLocaleString()} anuncios${filterInfo}`;
             }
             
+            // Charger les données sauvegardées depuis localStorage
+            const savedData = JSON.parse(localStorage.getItem('adHypotheses') || '{}');
+            
             // Mettre à jour le tbody
-            const tableBody = document.querySelector('#ads-table, tbody');
+            const tableBody = document.querySelector('#ads-table tbody');
             if (tableBody) {
-                tableBody.innerHTML = topAds.map(ad => {
+                tableBody.innerHTML = filteredTableData.map(ad => {
                     const roasClass = ad.roas > 3 ? 'roas-high' : ad.roas > 1.5 ? 'roas-medium' : 'roas-low';
                     const formatClass = `format-${ad.format.toLowerCase()}`;
                     
@@ -1208,15 +1414,42 @@
                         mediaLink = `<a href="${ad.media_url}" target="_blank" class="media-link">${icon}</a>`;
                     }
                     
+                    // Déterminer le badge d'état
+                    const statusBadge = ad.effective_status === 'ACTIVE' 
+                        ? '<span class="status-badge active">ACTIVO</span>'
+                        : '<span class="status-badge paused">PAUSADO</span>';
+                    
+                    // Formater la date de début
+                    const startDate = ad.created_time ? new Date(ad.created_time).toLocaleDateString('es-MX', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: '2-digit'
+                    }) : '—';
+                    
+                    // Récupérer les valeurs sauvegardées
+                    const savedAd = savedData[ad.ad_id] || {};
+                    const hypothesis = savedAd.hypothesis || '';
+                    const result = savedAd.result || '';
+                    
                     return `
-                        <tr>
-                            <td class="ad-name">${ad.ad_name}</td>
-                            <td>${ad.account_name.substring(0, 25)}</td>
+                        <tr data-ad-id="${ad.ad_id}">
+                            <td class="ad-name" title="${ad.ad_name}">${ad.ad_name.substring(0, 40)}...</td>
+                            <td>${statusBadge}</td>
                             <td><span class="format-badge ${formatClass}">${ad.format}</span></td>
-                            <td class="metric ${roasClass}">${ad.roas.toFixed(2)}</td>
+                            <td>${startDate}</td>
                             <td class="metric">$${Math.round(parseFloat(ad.spend || 0)).toLocaleString()}</td>
-                            <td>${((parseFloat(ad.clicks || 0) / parseFloat(ad.impressions || 1)) * 100).toFixed(2)}%</td>
+                            <td class="metric ${roasClass}">${ad.roas.toFixed(2)}</td>
+                            <td class="metric">$${ad.cpa > 0 ? ad.cpa.toFixed(0) : '—'}</td>
+                            <td class="metric">${ad.purchases || 0}</td>
                             <td>${mediaLink}</td>
+                            <td><input type="text" class="hypothesis-input" placeholder="Agregar hipótesis..." value="${hypothesis}" data-ad-id="${ad.ad_id}"></td>
+                            <td>
+                                <select class="result-select" data-ad-id="${ad.ad_id}">
+                                    <option value="">—</option>
+                                    <option value="ganador" ${result === 'ganador' ? 'selected' : ''}>✅ Ganador</option>
+                                    <option value="perdedor" ${result === 'perdedor' ? 'selected' : ''}>❌ Perdedor</option>
+                                </select>
+                            </td>
                         </tr>
                     `;
                 }).join('');
@@ -1409,7 +1642,243 @@
                 currentAccountName = e.target.value || 'Todos';
                 updateDashboard(currentPeriod);
             }
+            
+            // Sauvegarder les résultats (Ganador/Perdedor)
+            if (e.target && e.target.classList.contains('result-select')) {
+                const adId = e.target.getAttribute('data-ad-id');
+                const value = e.target.value;
+                
+                const savedData = JSON.parse(localStorage.getItem('adHypotheses') || '{}');
+                if (!savedData[adId]) savedData[adId] = {};
+                savedData[adId].result = value;
+                localStorage.setItem('adHypotheses', JSON.stringify(savedData));
+            }
+            
+            // Filtres de table (pour les selects)
+            if (e.target && e.target.classList.contains('table-filter')) {
+                applyTableFilters();
+            }
         });
+        
+        // Écouteur pour les inputs d'hypothèse
+        document.addEventListener('input', (e) => {
+            if (e.target && e.target.classList.contains('hypothesis-input')) {
+                const adId = e.target.getAttribute('data-ad-id');
+                const value = e.target.value;
+                
+                const savedData = JSON.parse(localStorage.getItem('adHypotheses') || '{}');
+                if (!savedData[adId]) savedData[adId] = {};
+                savedData[adId].hypothesis = value;
+                localStorage.setItem('adHypotheses', JSON.stringify(savedData));
+            }
+            
+            // Filtres de table
+            if (e.target && e.target.classList.contains('table-filter')) {
+                applyTableFilters();
+            }
+        });
+        
+        // Export to Excel functionality
+        function exportToExcel() {
+            const savedData = JSON.parse(localStorage.getItem('adHypotheses') || '{}');
+            
+            // Prepare CSV content
+            let csv = '\ufeff'; // UTF-8 BOM for Excel
+            csv += 'Anuncio,Cuenta,Estado,Formato,Fecha Inicio,Importe Gastado,ROAS,CPA,Compras,CTR,CPM,Hipótesis,Resultado\n';
+            
+            filteredTableData.forEach(ad => {
+                const hypothesis = savedData[ad.ad_id]?.hypothesis || '';
+                const result = savedData[ad.ad_id]?.result || '';
+                const startDate = ad.created_time ? new Date(ad.created_time).toLocaleDateString('es-MX') : '';
+                const ctr = (parseFloat(ad.clicks || 0) / parseFloat(ad.impressions || 1) * 100).toFixed(2);
+                
+                // Escape commas and quotes in text fields
+                const escapeCsv = (text) => {
+                    text = String(text); // Ensure it's a string
+                    if (text.includes(',') || text.includes('"') || text.includes('\n')) {
+                        return '"' + text.replace(/"/g, '""') + '"';
+                    }
+                    return text;
+                };
+                
+                csv += [
+                    escapeCsv(ad.ad_name),
+                    escapeCsv(ad.account_name),
+                    ad.effective_status,
+                    ad.format,
+                    startDate,
+                    Math.round(parseFloat(ad.spend || 0)),
+                    ad.roas.toFixed(2),
+                    ad.cpa > 0 ? ad.cpa.toFixed(0) : '',
+                    ad.purchases || 0,
+                    ctr,
+                    ad.cpm > 0 ? ad.cpm.toFixed(0) : '',
+                    escapeCsv(hypothesis),
+                    result === 'ganador' ? 'Ganador' : result === 'perdedor' ? 'Perdedor' : ''
+                ].join(',') + '\n';
+            });
+            
+            // Create blob and download
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', `creative_testing_${currentPeriod}d_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // Add event listener for export button and demographics
+        document.addEventListener('click', (e) => {
+            if (e.target && e.target.id === 'export-excel') {
+                exportToExcel();
+            }
+            
+            if (e.target && e.target.id === 'load-demographics') {
+                loadDemographics();
+            }
+        });
+        
+        // Demographics loading function (placeholder)
+        async function loadDemographics() {
+            const btn = document.getElementById('load-demographics');
+            const originalText = btn.textContent;
+            btn.textContent = '⏳ Cargando...';
+            btn.disabled = true;
+            
+            // Simulación - en producción esto llamaría a la API con breakdowns
+            setTimeout(() => {
+                // Sample data for demonstration
+                const ageData = [
+                    { range: '18-24', spend: 125000, roas: 2.8, ctr: 1.2 },
+                    { range: '25-34', spend: 245000, roas: 3.5, ctr: 1.5 },
+                    { range: '35-44', spend: 189000, roas: 4.1, ctr: 1.8 },
+                    { range: '45-54', spend: 98000, roas: 3.2, ctr: 1.3 },
+                    { range: '55-64', spend: 67000, roas: 2.9, ctr: 1.1 },
+                    { range: '65+', spend: 34000, roas: 2.5, ctr: 0.9 }
+                ];
+                
+                const genderData = [
+                    { gender: 'Mujeres', spend: 456000, roas: 3.7, percentage: 60 },
+                    { gender: 'Hombres', spend: 302000, roas: 2.9, percentage: 40 }
+                ];
+                
+                // Show demographics section
+                document.getElementById('demographics-content').style.display = 'none';
+                document.getElementById('demographics-loaded').style.display = 'block';
+                
+                // Populate age distribution
+                const ageDiv = document.getElementById('age-distribution');
+                const maxSpend = Math.max(...ageData.map(d => d.spend));
+                ageDiv.innerHTML = ageData.map(d => `
+                    <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                        <span style="width: 60px; font-size: 13px;">${d.range}</span>
+                        <div style="flex: 1; margin: 0 10px; background: #f0f0f2; border-radius: 4px; height: 24px; position: relative;">
+                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); height: 100%; width: ${(d.spend/maxSpend*100)}%; border-radius: 4px;"></div>
+                        </div>
+                        <span style="font-size: 13px; width: 80px; text-align: right;">$${(d.spend/1000).toFixed(0)}k</span>
+                    </div>
+                `).join('');
+                
+                // Populate gender distribution
+                const genderDiv = document.getElementById('gender-distribution');
+                genderDiv.innerHTML = `
+                    <div style="display: flex; justify-content: space-around; margin: 20px 0;">
+                        ${genderData.map(d => `
+                            <div style="text-align: center;">
+                                <div style="font-size: 48px; margin-bottom: 10px;">${d.gender === 'Mujeres' ? '👩' : '👨'}</div>
+                                <div style="font-size: 24px; font-weight: 700; color: #667eea;">${d.percentage}%</div>
+                                <div style="font-size: 14px; color: #6c757d;">${d.gender}</div>
+                                <div style="font-size: 16px; margin-top: 5px;">$${(d.spend/1000).toFixed(0)}k</div>
+                                <div style="font-size: 14px; color: #00a854;">ROAS ${d.roas}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                
+                // Populate demographics table
+                const tableBody = document.getElementById('demographics-table');
+                tableBody.innerHTML = ageData.map(d => `
+                    <tr>
+                        <td>${d.range} años</td>
+                        <td class="metric">$${(d.spend).toLocaleString()}</td>
+                        <td class="metric" style="color: ${d.roas > 3 ? '#00a854' : '#ff9500'}">${d.roas.toFixed(2)}</td>
+                        <td>${d.ctr}%</td>
+                        <td>$${(d.spend/d.roas/50).toFixed(0)}</td>
+                        <td>${Math.round(d.spend/d.roas/1000)}</td>
+                    </tr>
+                `).join('');
+                
+                // Add message about real data
+                const note = document.createElement('p');
+                note.style.cssText = 'margin-top: 15px; padding: 10px; background: #fff3cd; border-radius: 6px; font-size: 13px; color: #856404;';
+                note.innerHTML = '⚠️ Nota: Estos son datos de ejemplo. Para datos reales, se requiere una llamada adicional a la API con breakdown por edad/género.';
+                document.getElementById('demographics-loaded').appendChild(note);
+            }, 1500);
+        }
+        
+        // Fonction de filtrage
+        function applyTableFilters() {
+            const filters = document.querySelectorAll('.table-filter');
+            const savedData = JSON.parse(localStorage.getItem('adHypotheses') || '{}');
+            
+            filteredTableData = currentTableData.filter(ad => {
+                let pass = true;
+                
+                filters.forEach(filter => {
+                    const column = parseInt(filter.getAttribute('data-column'));
+                    const value = filter.value.toLowerCase().trim();
+                    
+                    if (!value) return;
+                    
+                    switch(column) {
+                        case 0: // Nombre del anuncio
+                            if (!ad.ad_name.toLowerCase().includes(value)) pass = false;
+                            break;
+                        case 1: // Estado
+                            if (value && ad.effective_status !== value) pass = false;
+                            break;
+                        case 2: // Formato
+                            if (value && ad.format !== value) pass = false;
+                            break;
+                        case 3: // Fecha inicio
+                            if (value && ad.created_time) {
+                                const adDate = new Date(ad.created_time).toISOString().split('T')[0];
+                                if (adDate < value) pass = false;
+                            }
+                            break;
+                        case 4: // Spend mínimo
+                            if (value && parseFloat(ad.spend || 0) < parseFloat(value)) pass = false;
+                            break;
+                        case 5: // ROAS mínimo
+                            if (value && ad.roas < parseFloat(value)) pass = false;
+                            break;
+                        case 6: // CPA máximo
+                            if (value && ad.cpa > parseFloat(value)) pass = false;
+                            break;
+                        case 7: // Compras mínimas
+                            if (value && (ad.purchases || 0) < parseInt(value)) pass = false;
+                            break;
+                        case 9: // Hipótesis
+                            const hypothesis = savedData[ad.ad_id]?.hypothesis || '';
+                            if (!hypothesis.toLowerCase().includes(value)) pass = false;
+                            break;
+                        case 10: // Resultado
+                            const result = savedData[ad.ad_id]?.result || '';
+                            if (value && result !== value) pass = false;
+                            break;
+                    }
+                });
+                
+                return pass;
+            });
+            
+            renderTable();
+        }
 
         // Charger les données au démarrage
         document.addEventListener('DOMContentLoaded', async () => {
