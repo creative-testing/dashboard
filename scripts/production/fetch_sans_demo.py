@@ -338,6 +338,13 @@ def main():
     for status, count in sorted(status_counts.items(), key=lambda x: x[1], reverse=True)[:5]:
         print(f"  - {status}: {count} ads")
     
+    # 6. Backup automatique avant d'écraser
+    if os.path.exists('data/current/baseline_90d_daily.json'):
+        backup_dir = f'data/backups/backup_{reference_date.replace("-", "")}'
+        os.makedirs(backup_dir, exist_ok=True)
+        os.system(f'cp -r data/current/* {backup_dir}/ 2>/dev/null')
+        print(f"📦 Backup créé dans {backup_dir}")
+    
     # 6. Sauvegarder les données
     os.makedirs('data/current', exist_ok=True)
     
