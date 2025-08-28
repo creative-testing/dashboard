@@ -1113,90 +1113,83 @@
             </div>
         </div>
         
-        <!-- SECTION PREVIEW FAKE -->
-        <div class="preview-section">
-            <div class="preview-badge">PREVIEW</div>
+        <!-- SECTION NOMENCLATURA PETCARE -->
+        <div class="preview-section" id="petcare-section" style="display: none;">
+            <div class="preview-badge" style="background: #00a854;">PETCARE 2 - DATOS REALES</div>
             
-            <h2>🔮 Análisis Avanzado por Nomenclatura</h2>
-            <p style="color: #86868b; margin-bottom: 25px;">Vista previa de cómo se verá el dashboard una vez aplicada la nomenclatura estándar</p>
+            <h2>🐕 Análisis por Nomenclatura - Petcare 2</h2>
+            <p style="color: #86868b; margin-bottom: 25px;">Análisis real basado en la nomenclatura implementada (27% de ads con nomenclatura)</p>
             
             <div class="preview-content">
                 <div class="chart-grid">
                     <div class="chart-card">
-                        <h3>📊 Performance por Ángulo Creativo</h3>
-                        <div class="bar-chart">
+                        <h3>📊 Top 5 Ángulos Creativos (min $500 spend)</h3>
+                        <div class="bar-chart" id="petcare-angles-chart">
                             <div class="bar" style="height: 100%; background: linear-gradient(135deg, #00a854 0%, #28a745 100%);">
-                                <span class="bar-value">ROAS 4.2</span>
-                                <span class="bar-label">Inflamación</span>
+                                <span class="bar-value">ROAS 4.9</span>
+                                <span class="bar-label">Problemas Digestivos • $1.6K</span>
                             </div>
-                            <div class="bar" style="height: 85%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                                <span class="bar-value">ROAS 3.8</span>
-                                <span class="bar-label">Energía</span>
+                            <div class="bar" style="height: 61%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                <span class="bar-value">ROAS 3.0</span>
+                                <span class="bar-label">Lamido de patas • $2.3K</span>
                             </div>
-                            <div class="bar" style="height: 70%; background: linear-gradient(135deg, #ff9500 0%, #ff8c00 100%);">
-                                <span class="bar-value">ROAS 3.1</span>
-                                <span class="bar-label">Digestión</span>
+                            <div class="bar" style="height: 43%; background: linear-gradient(135deg, #ff9500 0%, #ff8c00 100%);">
+                                <span class="bar-value">ROAS 2.1</span>
+                                <span class="bar-label">Bienestar General • $4.2K</span>
                             </div>
-                            <div class="bar" style="height: 55%; background: linear-gradient(135deg, #7928ca 0%, #9c27b0 100%);">
-                                <span class="bar-value">ROAS 2.7</span>
-                                <span class="bar-label">Proteína</span>
+                            <div class="bar" style="height: 36%; background: linear-gradient(135deg, #7928ca 0%, #9c27b0 100%);">
+                                <span class="bar-value">ROAS 1.8</span>
+                                <span class="bar-label">RESTOCK • $1.4K</span>
                             </div>
-                            <div class="bar" style="height: 45%; background: linear-gradient(135deg, #6c757d 0%, #868e96 100%);">
-                                <span class="bar-value">ROAS 2.3</span>
-                                <span class="bar-label">Antienvejecimiento</span>
+                            <div class="bar" style="height: 28%; background: linear-gradient(135deg, #6c757d 0%, #868e96 100%);">
+                                <span class="bar-value">ROAS 1.4</span>
+                                <span class="bar-label">Olor a chetos • $5.2K</span>
                             </div>
                         </div>
                     </div>
                     
                     <div class="chart-card">
-                        <h3>👥 Performance por Creador</h3>
-                        <div class="creator-grid">
-                            <div class="creator-card">
-                                <div class="creator-avatar male">👨</div>
-                                <div class="creator-name">Carlos (30)</div>
-                                <div class="creator-stats">
-                                    ROAS: <span class="creator-roas">4.1x</span><br>
-                                    22 ads
-                                </div>
-                            </div>
+                        <h3>👥 Performance por Creador (Datos Reales)</h3>
+                        <div class="creator-grid" id="petcare-creators-grid">
                             <div class="creator-card">
                                 <div class="creator-avatar female">👩</div>
-                                <div class="creator-name">Ana (25)</div>
-                                <div class="creator-stats">
-                                    ROAS: <span class="creator-roas">3.5x</span><br>
-                                    18 ads
-                                </div>
-                            </div>
-                            <div class="creator-card">
-                                <div class="creator-avatar male">👨</div>
-                                <div class="creator-name">Luis (35)</div>
-                                <div class="creator-stats">
-                                    ROAS: <span class="creator-roas">2.9x</span><br>
-                                    14 ads
-                                </div>
-                            </div>
-                            <div class="creator-card">
-                                <div class="creator-avatar female">👩</div>
-                                <div class="creator-name">María (28)</div>
-                                <div class="creator-stats">
-                                    ROAS: <span class="creator-roas">2.4x</span><br>
-                                    11 ads
-                                </div>
-                            </div>
-                            <div class="creator-card">
-                                <div class="creator-avatar male">👨</div>
-                                <div class="creator-name">Miguel (32)</div>
+                                <div class="creator-name">Melissa</div>
                                 <div class="creator-stats">
                                     ROAS: <span class="creator-roas">2.1x</span><br>
-                                    8 ads
+                                    7 ads • $4.2K
                                 </div>
                             </div>
                             <div class="creator-card">
-                                <div class="creator-avatar female">👩</div>
-                                <div class="creator-name">Sofia (27)</div>
+                                <div class="creator-avatar male">👨</div>
+                                <div class="creator-name">Martin</div>
                                 <div class="creator-stats">
-                                    ROAS: <span class="creator-roas">1.9x</span><br>
-                                    6 ads
+                                    ROAS: <span class="creator-roas">1.1x</span><br>
+                                    7 ads • $4.1K
+                                </div>
+                            </div>
+                            <div class="creator-card">
+                                <div class="creator-avatar" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">🤖</div>
+                                <div class="creator-name">Voz IA</div>
+                                <div class="creator-stats">
+                                    ROAS: <span class="creator-roas">1.0x</span><br>
+                                    7 ads • $6.0K
+                                </div>
+                            </div>
+                            <div class="creator-card" style="grid-column: span 3; margin-top: 20px; background: #f5f5f7; padding: 20px;">
+                                <h4 style="margin-bottom: 10px;">📈 Insights Clave Petcare:</h4>
+                                <div style="display: flex; justify-content: space-around; text-align: center;">
+                                    <div>
+                                        <div style="font-size: 24px; font-weight: 700; color: #00a854;">86%</div>
+                                        <div style="font-size: 12px; color: #86868b;">Nuevo vs 14% Iteración</div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size: 24px; font-weight: 700; color: #667eea;">1.86x</div>
+                                        <div style="font-size: 12px; color: #86868b;">ROAS Nuevos</div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size: 24px; font-weight: 700; color: #ff9500;">159/595</div>
+                                        <div style="font-size: 12px; color: #86868b;">Ads con nomenclatura</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1371,6 +1364,12 @@
             updateTable(viewData);
             updateFormatTable(viewData);
             updateComparisonTable();
+            
+            // Afficher/masquer la section Petcare selon le compte sélectionné
+            const petcareSection = document.getElementById('petcare-section');
+            if (petcareSection) {
+                petcareSection.style.display = currentAccountName === 'Petcare 2' ? 'block' : 'none';
+            }
         }
         
         function updateKPIs(data) {
