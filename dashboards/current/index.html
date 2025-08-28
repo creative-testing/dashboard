@@ -895,8 +895,8 @@
                         <th>
                             <select class="table-filter" data-column="1">
                                 <option value="">Todos</option>
-                                <option value="ACTIVE">Activo</option>
-                                <option value="PAUSED">Pausado</option>
+                                <option value="active">Activo</option>
+                                <option value="paused">Pausado</option>
                             </select>
                         </th>
                         <th>
@@ -1709,6 +1709,75 @@
             }
         }
         
+        // Fonction de filtrage du tableau (définie globalement)
+        window.applyTableFilters = function() {
+            console.log('applyTableFilters appelée');
+            const filters = document.querySelectorAll('.table-filter');
+            const filterValues = {};
+            
+            filters.forEach(filter => {
+                const column = parseInt(filter.getAttribute('data-column'));
+                filterValues[column] = filter.value.toLowerCase();
+            });
+            
+            console.log('Valeurs des filtres:', filterValues);
+            console.log('Nombre de données avant filtre:', currentTableData.length);
+            
+            // Debug: voir les valeurs de effective_status
+            if (filterValues[1]) {
+                console.log('Filtre Estado:', filterValues[1]);
+                console.log('Valeurs effective_status uniques:', [...new Set(currentTableData.map(ad => ad.effective_status))]);
+                console.log('Exemple de données:', currentTableData.slice(0, 3).map(ad => ({ 
+                    name: ad.ad_name, 
+                    status: ad.effective_status 
+                })));
+            }
+            
+            // Filtrer les données
+            filteredTableData = currentTableData.filter(ad => {
+                // Filtre colonne 0: Nom de l'annonce
+                if (filterValues[0] && !ad.ad_name.toLowerCase().includes(filterValues[0])) return false;
+                
+                // Filtre colonne 1: État (active/paused)
+                if (filterValues[1]) {
+                    // Plus flexible : accepter ACTIVE/PAUSED ou toute autre valeur
+                    const statusMatch = filterValues[1] === 'active' ? ad.effective_status === 'ACTIVE' : 
+                                       filterValues[1] === 'paused' ? (ad.effective_status === 'PAUSED' || ad.effective_status !== 'ACTIVE') : true;
+                    if (!statusMatch) return false;
+                }
+                
+                // Filtre colonne 2: Format
+                if (filterValues[2] && ad.format.toLowerCase() !== filterValues[2]) return false;
+                
+                // Filtre colonne 3: Date (à implémenter si nécessaire)
+                
+                // Filtre colonne 4: Montant dépensé minimum
+                if (filterValues[4] && parseFloat(ad.spend) < parseFloat(filterValues[4])) return false;
+                
+                // Filtre colonne 5: ROAS minimum
+                if (filterValues[5] && ad.roas < parseFloat(filterValues[5])) return false;
+                
+                // Filtre colonne 6: CPA maximum
+                if (filterValues[6] && ad.cpa > parseFloat(filterValues[6])) return false;
+                
+                // Filtre colonne 7: Achats minimum
+                if (filterValues[7] && (ad.purchases || 0) < parseInt(filterValues[7])) return false;
+                
+                // Filtre colonne 9: Hypothèse
+                const savedData = JSON.parse(localStorage.getItem('adHypotheses') || '{}');
+                const adData = savedData[ad.ad_id] || {};
+                if (filterValues[9] && !adData.hypothesis?.toLowerCase().includes(filterValues[9])) return false;
+                
+                // Filtre colonne 10: Résultat
+                if (filterValues[10] && adData.result !== filterValues[10]) return false;
+                
+                return true;
+            });
+            
+            currentPage = 1; // Retour à la première page après filtrage
+            renderTable();
+        }
+        
         function updateFormatTable(data) {
             const ads = data.ads || [];
             
@@ -2018,8 +2087,14 @@
             });
         });
         
-        // Écouteur pour les selects de résultats
+        // Écouteur pour les selects (filtres et résultats)
         document.addEventListener('change', (e) => {
+            // Filtres de tableau
+            if (e.target && e.target.classList.contains('table-filter')) {
+                console.log('Filtre changé:', e.target, 'Valeur:', e.target.value);
+                window.applyTableFilters();
+            }
+            
             // Sauvegarder les résultats (Ganador/Perdedor)
             if (e.target && e.target.classList.contains('result-select')) {
                 const adId = e.target.getAttribute('data-ad-id');
@@ -2030,15 +2105,16 @@
                 savedData[adId].result = value;
                 localStorage.setItem('adHypotheses', JSON.stringify(savedData));
             }
-            
-            // Filtres de table (pour les selects)
-            if (e.target && e.target.classList.contains('table-filter')) {
-                applyTableFilters();
-            }
         });
         
-        // Écouteur pour les inputs d'hypothèse
+        // Écouteur pour les inputs text (filtres et hypothèses)
         document.addEventListener('input', (e) => {
+            // Filtres de tableau (text inputs)
+            if (e.target && e.target.classList.contains('table-filter')) {
+                window.applyTableFilters();
+            }
+            
+            // Sauvegarder les hypothèses
             if (e.target && e.target.classList.contains('hypothesis-input')) {
                 const adId = e.target.getAttribute('data-ad-id');
                 const value = e.target.value;
