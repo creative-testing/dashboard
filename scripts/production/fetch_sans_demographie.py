@@ -428,21 +428,46 @@ def main():
         
         print(f"  ✅ {period}j: {len(period_ads)} ads ({active_ads} actives), ${total_spend:,.0f} MXN")
     
-    # 8. Semaine précédente (placeholder pour l'instant)
+    # 8. Semaine précédente (génération automatique à partir du baseline)
+    prev_week_end = datetime.strptime(reference_date, '%Y-%m-%d') - timedelta(days=7)
+    prev_week_start = prev_week_end - timedelta(days=6)
+    
+    # Filtrer les ads de la semaine précédente
+    prev_week_ads = [
+        ad for ad in all_data 
+        if ad.get('date') and prev_week_start <= datetime.strptime(ad['date'], '%Y-%m-%d') <= prev_week_end
+    ]
+    
+    # Calculer les métriques de la semaine précédente
+    prev_total_spend = sum(float(ad.get('spend', 0)) for ad in prev_week_ads)
+    prev_total_purchases = sum(int(ad.get('purchases', 0)) for ad in prev_week_ads)
+    prev_total_value = sum(float(ad.get('purchase_value', 0)) for ad in prev_week_ads)
+    prev_active_ads = sum(1 for ad in prev_week_ads if ad.get('effective_status') == 'ACTIVE')
+    
     prev_output = {
         'metadata': {
             'timestamp': datetime.now().isoformat(),
-            'reference_date': (datetime.strptime(reference_date, '%Y-%m-%d') - timedelta(days=7)).strftime('%Y-%m-%d'),
+            'reference_date': prev_week_end.strftime('%Y-%m-%d'),
+            'date_range': f"{prev_week_start.strftime('%Y-%m-%d')} to {prev_week_end.strftime('%Y-%m-%d')}",
             'period_days': 7,
-            'total_ads': 0,
+            'total_ads': len(prev_week_ads),
+            'active_ads': prev_active_ads,
+            'total_spend': prev_total_spend,
+            'total_purchases': prev_total_purchases,
+            'total_conversion_value': prev_total_value,
+            'avg_roas': prev_total_value / prev_total_spend if prev_total_spend > 0 else 0,
+            'avg_cpa': prev_total_spend / prev_total_purchases if prev_total_purchases > 0 else 0,
             'has_demographics': False,
             'has_creatives': True
         },
-        'ads': []
+        'ads': prev_week_ads
     }
     
     with open('data/current/hybrid_data_prev_week.json', 'w', encoding='utf-8') as f:
         json.dump(prev_output, f, indent=2, ensure_ascii=False)
+    
+    if prev_week_ads:
+        print(f"  ✅ Semaine précédente: {len(prev_week_ads)} ads, ${prev_total_spend:,.0f} MXN")
     
     # 9. Config
     with open('data/current/refresh_config.json', 'w', encoding='utf-8') as f:
