@@ -883,7 +883,7 @@
                         <th>Estado</th>
                         <th>Formato</th>
                         <th>Fecha Inicio</th>
-                        <th>Importe Gastado Min</th>
+                        <th>Importe Gastado</th>
                         <th>ROAS</th>
                         <th>CPA</th>
                         <th>Compras</th>
@@ -910,7 +910,7 @@
                             </select>
                         </th>
                         <th><input type="date" class="table-filter" data-column="3"></th>
-                        <th><input type="number" class="table-filter" data-column="4" placeholder="Min..." value="2000"></th>
+                        <th><input type="number" class="table-filter" data-column="4" placeholder="Min..."></th>
                         <th><input type="number" class="table-filter" data-column="5" placeholder="Min..." step="0.01"></th>
                         <th><input type="number" class="table-filter" data-column="6" placeholder="Max..."></th>
                         <th><input type="number" class="table-filter" data-column="7" placeholder="Min..."></th>
@@ -1568,18 +1568,14 @@
         
         function updateTable(data) {
             const ads = data.ads || [];
-            // Afficher TOUS les anuncios triés par ROAS décroissant
-            currentTableData = [...ads].sort((a, b) => b.roas - a.roas);
+            // Afficher TOUS les anuncios triés par Importe Gastado décroissant
+            currentTableData = [...ads].sort((a, b) => parseFloat(b.spend || 0) - parseFloat(a.spend || 0));
             filteredTableData = currentTableData; // Par défaut, pas de filtre
             currentPage = 1; // Réinitialiser à la première page
             
-            // Appliquer le filtre de spend minimum (200 par défaut)
+            // Appliquer les filtres si nécessaire
             const spendFilter = document.querySelector('.table-filter[data-column="4"]');
-            if (spendFilter) {
-                // S'assurer que la valeur est 2000 si vide
-                if (!spendFilter.value) {
-                    spendFilter.value = '2000';
-                }
+            if (spendFilter && spendFilter.value) {
                 // Appliquer le filtre après avoir défini currentTableData
                 setTimeout(() => {
                     window.applyTableFilters();
