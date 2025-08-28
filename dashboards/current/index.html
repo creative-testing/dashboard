@@ -457,9 +457,9 @@
             display: flex;
             align-items: flex-end;
             justify-content: space-around;
-            height: 200px;
+            height: 240px;
             padding: 20px;
-            padding-bottom: 60px; /* Plus d'espace en bas pour le ROAS */
+            padding-bottom: 80px; /* Plus d'espace en bas pour les labels */
             position: relative;
         }
         
@@ -490,12 +490,13 @@
         
         .bar-label {
             position: absolute;
-            bottom: -25px;
+            bottom: -30px;
             left: 50%;
             transform: translateX(-50%);
             font-size: 12px;
             color: #86868b;
             white-space: nowrap;
+            text-align: center;
         }
         
         .donut-chart {
@@ -882,7 +883,7 @@
                         <th>Estado</th>
                         <th>Formato</th>
                         <th>Fecha Inicio</th>
-                        <th>Importe Gastado</th>
+                        <th>Importe Gastado Min</th>
                         <th>ROAS</th>
                         <th>CPA</th>
                         <th>Compras</th>
@@ -902,14 +903,14 @@
                         <th>
                             <select class="table-filter" data-column="2">
                                 <option value="">Todos</option>
-                                <option value="VIDEO">Video</option>
-                                <option value="IMAGE">Image</option>
-                                <option value="INSTAGRAM">Instagram</option>
-                                <option value="UNKNOWN">Otros</option>
+                                <option value="video">Video</option>
+                                <option value="image">Image</option>
+                                <option value="carousel">Carousel</option>
+                                <option value="unknown">Otros</option>
                             </select>
                         </th>
                         <th><input type="date" class="table-filter" data-column="3"></th>
-                        <th><input type="number" class="table-filter" data-column="4" placeholder="Min..."></th>
+                        <th><input type="number" class="table-filter" data-column="4" placeholder="Min..." value="2000"></th>
                         <th><input type="number" class="table-filter" data-column="5" placeholder="Min..." step="0.01"></th>
                         <th><input type="number" class="table-filter" data-column="6" placeholder="Max..."></th>
                         <th><input type="number" class="table-filter" data-column="7" placeholder="Min..."></th>
@@ -1572,7 +1573,20 @@
             filteredTableData = currentTableData; // Par défaut, pas de filtre
             currentPage = 1; // Réinitialiser à la première page
             
-            renderTable();
+            // Appliquer le filtre de spend minimum (200 par défaut)
+            const spendFilter = document.querySelector('.table-filter[data-column="4"]');
+            if (spendFilter) {
+                // S'assurer que la valeur est 2000 si vide
+                if (!spendFilter.value) {
+                    spendFilter.value = '2000';
+                }
+                // Appliquer le filtre après avoir défini currentTableData
+                setTimeout(() => {
+                    window.applyTableFilters();
+                }, 100);
+            } else {
+                renderTable();
+            }
         }
         
         function renderTable() {
@@ -1723,6 +1737,13 @@
             console.log('Valeurs des filtres:', filterValues);
             console.log('Nombre de données avant filtre:', currentTableData.length);
             
+            // Debug des formats disponibles
+            if (filterValues[2]) {
+                const formats = [...new Set(currentTableData.map(ad => ad.format))];
+                console.log('Formats disponibles dans les données:', formats);
+                console.log('Format recherché:', filterValues[2]);
+            }
+            
             // Debug: voir les valeurs de effective_status
             if (filterValues[1]) {
                 console.log('Filtre Estado:', filterValues[1]);
@@ -1749,7 +1770,21 @@
                 // Filtre colonne 2: Format
                 if (filterValues[2] && ad.format.toLowerCase() !== filterValues[2]) return false;
                 
-                // Filtre colonne 3: Date (à implémenter si nécessaire)
+                // Filtre colonne 3: Date
+                if (filterValues[3]) {
+                    // Convertir la date de l'annonce (format: "30/06/25") en date comparable
+                    const adDateStr = new Date(ad.created_time).toLocaleDateString('es-MX', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: '2-digit'
+                    });
+                    // Convertir en format YYYY-MM-DD pour comparaison
+                    const [day, month, year] = adDateStr.split('/');
+                    const adDate = `20${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+                    
+                    // La date du filtre est déjà en format YYYY-MM-DD
+                    if (adDate !== filterValues[3]) return false;
+                }
                 
                 // Filtre colonne 4: Montant dépensé minimum
                 if (filterValues[4] && parseFloat(ad.spend) < parseFloat(filterValues[4])) return false;
