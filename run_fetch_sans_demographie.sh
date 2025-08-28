@@ -18,7 +18,7 @@ mkdir -p logs
 
 # Timestamp pour les logs
 TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-LOG_FILE="logs/fetch_sans_demo_${TIMESTAMP}.log"
+LOG_FILE="logs/fetch_sans_demographie_${TIMESTAMP}.log"
 
 echo -e "${YELLOW}📅 Configuration:${NC}"
 echo "  - Période: $FETCH_DAYS jours"
@@ -33,7 +33,7 @@ echo -e "${YELLOW}🔄 Lancement du script...${NC}"
 echo ""
 
 # Exécuter le script
-python3 scripts/production/fetch_sans_demo.py 2>&1 | tee "$LOG_FILE"
+python3 scripts/production/fetch_sans_demographie.py 2>&1 | tee "$LOG_FILE"
 
 # Vérifier le code de retour
 if [ ${PIPESTATUS[0]} -eq 0 ]; then

@@ -2,6 +2,7 @@
 """
 Script ROBUSTE SANS démographies - Récupère TOUT sauf age/gender
 Combine insights + creatives + media URLs
+Nom du script : fetch_sans_demographie.py
 """
 import os
 import requests
