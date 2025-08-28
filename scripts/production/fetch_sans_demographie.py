@@ -3,6 +3,10 @@
 Script ROBUSTE SANS démographies - Récupère TOUT sauf age/gender
 Combine insights + creatives + media URLs
 Nom du script : fetch_sans_demographie.py
+
+⚠️ IMPORTANT: Ce script nécessite un TIMEOUT MINIMUM de 20 minutes
+   à cause des rate limits Facebook (#80004). 
+   Utilisation recommandée : python fetch_sans_demographie.py --timeout 1200
 """
 import os
 import requests

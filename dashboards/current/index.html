@@ -1032,8 +1032,9 @@
                         <th>Cantidad</th>
                         <th>Inversión Total</th>
                         <th>ROAS Promedio</th>
+                        <th>CPA</th>
+                        <th>Compras</th>
                         <th>CTR Promedio</th>
-                        <th>CPM Promedio</th>
                     </tr>
                 </thead>
                 <tbody id="formato-table">
@@ -1823,15 +1824,15 @@
                         totalSpend: 0,
                         totalRoas: 0,
                         totalCtr: 0,
-                        totalCpm: 0,
+                        totalPurchases: 0,
                         validRoas: 0,
-                        validCtr: 0,
-                        validCpm: 0
+                        validCtr: 0
                     };
                 }
                 
                 formatMetrics[fmt].count += 1;
                 formatMetrics[fmt].totalSpend += parseFloat(ad.spend || 0);
+                formatMetrics[fmt].totalPurchases += (ad.purchases || 0);
                 
                 if (ad.roas > 0) {
                     formatMetrics[fmt].totalRoas += ad.roas;
@@ -1841,10 +1842,6 @@
                 if (ctr > 0) {
                     formatMetrics[fmt].totalCtr += ctr;
                     formatMetrics[fmt].validCtr += 1;
-                }
-                if (ad.cpm > 0) {
-                    formatMetrics[fmt].totalCpm += ad.cpm;
-                    formatMetrics[fmt].validCpm += 1;
                 }
             });
             
@@ -1856,7 +1853,7 @@
                     .map(([fmt, metrics]) => {
                         const avgRoas = metrics.validRoas > 0 ? (metrics.totalRoas / metrics.validRoas) : 0;
                         const avgCtr = metrics.validCtr > 0 ? (metrics.totalCtr / metrics.validCtr) : 0;
-                        const avgCpm = metrics.validCpm > 0 ? (metrics.totalCpm / metrics.validCpm) : 0;
+                        const cpa = metrics.totalPurchases > 0 ? (metrics.totalSpend / metrics.totalPurchases) : 0;
                         
                         const formatClass = `format-${fmt.toLowerCase()}`;
                         
@@ -1866,8 +1863,9 @@
                                 <td class="metric">${metrics.count.toLocaleString()}</td>
                                 <td class="metric">$${Math.round(metrics.totalSpend).toLocaleString()}</td>
                                 <td class="metric">${avgRoas.toFixed(2)}</td>
+                                <td class="metric">${cpa > 0 ? '$' + cpa.toFixed(2) : 'N/A'}</td>
+                                <td class="metric">${metrics.totalPurchases.toLocaleString()}</td>
                                 <td>${avgCtr.toFixed(2)}%</td>
-                                <td>${avgCpm > 0 ? '$' + Math.round(avgCpm) : 'N/A'}</td>
                             </tr>
                         `;
                     }).join('');
@@ -1900,13 +1898,12 @@
             const aggregate = (ads) => {
                 const totalSpend = ads.reduce((sum, ad) => sum + parseFloat(ad.spend || 0), 0);
                 const totalRevenue = ads.reduce((sum, ad) => sum + ad.purchase_value, 0);
-                const totalImpressions = ads.reduce((sum, ad) => sum + parseFloat(ad.impressions || 0), 0);
-                const totalClicks = ads.reduce((sum, ad) => sum + parseFloat(ad.clicks || 0), 0);
+                const totalPurchases = ads.reduce((sum, ad) => sum + (ad.purchases || 0), 0);
                 
                 return {
                     spend: totalSpend,
                     roas: totalSpend > 0 ? totalRevenue / totalSpend : 0,
-                    ctr: totalImpressions > 0 ? (totalClicks / totalImpressions * 100) : 0
+                    cpa: totalPurchases > 0 ? totalSpend / totalPurchases : 0
                 };
             };
             
@@ -1916,7 +1913,7 @@
             // Calculer changements
             const spendChange = ((currentMetrics.spend - prevMetrics.spend) / prevMetrics.spend * 100);
             const roasChange = ((currentMetrics.roas - prevMetrics.roas) / prevMetrics.roas * 100);
-            const ctrChange = ((currentMetrics.ctr - prevMetrics.ctr) / prevMetrics.ctr * 100);
+            const cpaChange = prevMetrics.cpa > 0 ? ((currentMetrics.cpa - prevMetrics.cpa) / prevMetrics.cpa * 100) : 0;
             const adsChange = ((current.length - previous.length) / previous.length * 100);
             
             function formatChange(change) {
@@ -1947,10 +1944,10 @@
                         <td>${formatChange(roasChange)}</td>
                     </tr>
                     <tr>
-                        <td class="metric">CTR Promedio</td>
-                        <td class="metric">${currentMetrics.ctr.toFixed(2)}%</td>
-                        <td class="metric">${prevMetrics.ctr.toFixed(2)}%</td>
-                        <td>${formatChange(ctrChange)}</td>
+                        <td class="metric">CPA Promedio</td>
+                        <td class="metric">${currentMetrics.cpa > 0 ? '$' + currentMetrics.cpa.toFixed(2) : 'N/A'}</td>
+                        <td class="metric">${prevMetrics.cpa > 0 ? '$' + prevMetrics.cpa.toFixed(2) : 'N/A'}</td>
+                        <td>${prevMetrics.cpa > 0 ? formatChange(cpaChange) : 'N/A'}</td>
                     </tr>
                 `;
             }
