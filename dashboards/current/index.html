@@ -291,6 +291,10 @@
             font-size: 14px;
         }
         
+        tbody td:nth-child(8) {
+            text-align: center;
+        }
+        
         tbody tr:hover {
             background: #fafafa;
         }
@@ -298,6 +302,13 @@
         .ad-name {
             font-weight: 500;
             color: #1d1d1f;
+            max-width: 280px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            word-break: break-word;
         }
         
         .metric {
@@ -401,6 +412,13 @@
         .table-filter:focus {
             outline: none;
             border-color: #667eea;
+        }
+        
+        /* Date input plus compact */
+        .table-filter[type="date"] {
+            width: 90px;
+            font-size: 11px;
+            padding: 3px 4px;
         }
         
         /* Export button - plus discret */
@@ -1092,7 +1110,7 @@
                     <div class="bar-chart" id="petcare-angles-chart" style="padding-bottom: 120px; position: relative;">
                         <!-- Ordenados por spend (mayor a menor) -->
                         <!-- Picazón - Mayor spend -->
-                        <div class="bar" style="height: 100%; background: linear-gradient(135deg, #ff3b30 0%, #ff3b3099 100%);">
+                        <div class="bar" style="height: 100%; background: linear-gradient(135deg, #ff9500 0%, #ff950099 100%);">
                             <span class="bar-value">$8.8K</span>
                             <span class="bar-label">Picazón</span>
                         </div>
@@ -1107,7 +1125,7 @@
                             <span class="bar-label">Probióticos Baratos</span>
                         </div>
                         <!-- Bienestar General -->
-                        <div class="bar" style="height: 57%; background: linear-gradient(135deg, #ff9500 0%, #ff950099 100%);">
+                        <div class="bar" style="height: 57%; background: linear-gradient(135deg, #00a854 0%, #00a85499 100%);">
                             <span class="bar-value">$5.0K</span>
                             <span class="bar-label">Bienestar General</span>
                         </div>
@@ -1139,10 +1157,10 @@
                         
                         <!-- Línea de ROAS debajo -->
                         <div style="position: absolute; bottom: -50px; left: 0; right: 0; display: flex; justify-content: space-around; font-size: 11px; color: #86868b;">
-                            <span style="color: #ff3b30">1.2 ❌</span>
+                            <span style="color: #ff9500">1.2 ⚠️</span>
                             <span style="color: #ff3b30">0.8 ❌</span>
                             <span style="color: #ff9500">1.5 ⚠️</span>
-                            <span style="color: #ff9500">2.0 ⚠️</span>
+                            <span style="color: #00a854">2.0 ✅</span>
                             <span style="color: #00a854">5.0 ✅</span>
                             <span style="color: #00a854">4.3 ✅</span>
                             <span style="color: #00a854">6.4 ✅</span>
@@ -1205,36 +1223,29 @@
         </div>
         
         <!-- SECTION DEMOGRAPHICS (déplacée à la fin) -->
-        <div class="demographics-section" style="background: white; border-radius: 12px; padding: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.07); margin-bottom: 40px;">
-            <h2>📊 Análisis Demográfico</h2>
-            <p style="color: #86868b; margin-bottom: 20px;">Distribución del gasto por edad y género</p>
+        <div class="demographics-section" style="display: none; background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.07); margin-bottom: 30px;">
+            <h2 style="margin-bottom: 10px;">📊 Análisis Demográfico</h2>
+            <p style="color: #86868b; margin-bottom: 15px; font-size: 14px;">Distribución del gasto por edad y género</p>
             
             <div id="demographics-content">
-                <div style="padding: 40px; text-align: center; background: #f5f5f7; border-radius: 8px;">
-                    <p style="color: #86868b; margin-bottom: 15px;">
+                <div style="padding: 25px; text-align: center; background: #f5f5f7; border-radius: 8px;">
+                    <p style="color: #86868b; margin-bottom: 12px; font-size: 14px;">
                         📈 Los datos demográficos se cargarán bajo demanda para optimizar el rendimiento
                     </p>
-                    <button id="load-demographics" class="export-btn" style="background: linear-gradient(135deg, #00a854 0%, #28a745 100%);">
-                        Cargar Análisis Demográfico
+                    <button id="load-demographics" style="background: linear-gradient(135deg, #4a9eff 0%, #667eea 100%); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 8px rgba(74, 158, 255, 0.3);" 
+                            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(74, 158, 255, 0.4)'" 
+                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(74, 158, 255, 0.3)'">
+                        📊 Cargar Análisis Demográfico
                     </button>
                 </div>
             </div>
             
             <!-- Template para cuando se carguen los datos -->
             <div id="demographics-loaded" style="display: none;">
-                <div class="chart-grid">
-                    <div class="chart-card">
-                        <h3>👥 Distribución por Edad</h3>
-                        <div id="age-distribution"></div>
-                    </div>
-                    <div class="chart-card">
-                        <h3>⚧ Distribución por Género</h3>
-                        <div id="gender-distribution"></div>
-                    </div>
-                </div>
+                <div id="segments-distribution" style="margin-bottom: 15px;"></div>
                 
-                <div style="margin-top: 20px;">
-                    <h3 style="font-size: 16px; margin-bottom: 15px;">Tabla Detallada por Segmento</h3>
+                <div style="margin-top: 15px;">
+                    <h3 style="font-size: 16px; margin-bottom: 12px;">Tabla Detallada por Segmento</h3>
                     <table>
                         <thead>
                             <tr>
@@ -1544,8 +1555,8 @@
                 if (barChart) {
                     barChart.innerHTML = topAds.map(ad => {
                         const spend = parseFloat(ad.spend || 0);
-                        // Mêmes seuils que les icônes : 2.5+ vert, 1.5+ orange, <1.5 rouge
-                        const roasClass = ad.roas >= 2.5 ? '#00a854' : ad.roas >= 1.5 ? '#ff9500' : '#ff3b30';
+                        // Seuils ajustés : 2.0+ vert, 1.2+ orange, <1.2 rouge
+                        const roasClass = ad.roas >= 2.0 ? '#00a854' : ad.roas >= 1.2 ? '#ff9500' : '#ff3b30';
                         return `
                             <div class="bar" style="height: ${(spend/maxSpend*100)}%; background: linear-gradient(135deg, ${roasClass} 0%, ${roasClass}99 100%);">
                                 <span class="bar-value">$${Math.round(spend/1000)}k</span>
@@ -1558,9 +1569,9 @@
                     barChart.innerHTML += `
                         <div style="position: absolute; bottom: -50px; left: 0; right: 0; display: flex; justify-content: space-around; font-size: 11px; color: #86868b;">
                             ${topAds.map(ad => {
-                                // Seuils ajustés : 2.5+ excellent, 1.5+ bien, <1.5 à améliorer
-                                const icon = ad.roas >= 2.5 ? '✅' : ad.roas >= 1.5 ? '⚠️' : '❌';
-                                const color = ad.roas >= 2.5 ? '#00a854' : ad.roas >= 1.5 ? '#ff9500' : '#ff3b30';
+                                // Seuils ajustés : 2.0+ excellent, 1.2+ bien, <1.2 à améliorer
+                                const icon = ad.roas >= 2.0 ? '✅' : ad.roas >= 1.2 ? '⚠️' : '❌';
+                                const color = ad.roas >= 2.0 ? '#00a854' : ad.roas >= 1.2 ? '#ff9500' : '#ff3b30';
                                 return `<span style="color: ${color}">ROAS ${ad.roas.toFixed(1)} ${icon}</span>`;
                             }).join('')}
                         </div>
@@ -1709,7 +1720,7 @@
             const tableBody = document.querySelector('#ads-table tbody');
             if (tableBody) {
                 tableBody.innerHTML = pageData.map(ad => {
-                    const roasClass = ad.roas > 3 ? 'roas-high' : ad.roas > 1.5 ? 'roas-medium' : 'roas-low';
+                    const roasClass = ad.roas >= 2.0 ? 'roas-high' : ad.roas >= 1.2 ? 'roas-medium' : 'roas-low';
                     const formatClass = `format-${ad.format.toLowerCase()}`;
                     
                     let mediaLink = '—';
@@ -1737,7 +1748,7 @@
                     
                     return `
                         <tr data-ad-id="${ad.ad_id}">
-                            <td class="ad-name" title="${ad.ad_name}">${ad.ad_name.substring(0, 40)}...</td>
+                            <td class="ad-name" title="${ad.ad_name}">${ad.ad_name}</td>
                             <td>${statusBadge}</td>
                             <td><span class="format-badge ${formatClass}">${ad.format}</span></td>
                             <td>${startDate}</td>
@@ -2152,6 +2163,13 @@
                 btnText.textContent = value === 'Todos' ? 'Todas las cuentas' : 
                                      (value.length > 28 ? value.substring(0, 25) + '...' : value);
             }
+            
+            // Masquer/afficher la section démographique selon le compte
+            const demographicsSection = document.querySelector('.demographics-section');
+            if (demographicsSection) {
+                demographicsSection.style.display = value === 'Todos' ? 'none' : 'block';
+            }
+            
             updateDashboard(currentPeriod);
         }
         
@@ -2367,15 +2385,53 @@
             }
         });
         
-        // Demographics loading function (placeholder)
+        // Demographics loading function - REAL API CALL
         async function loadDemographics() {
             const btn = document.getElementById('load-demographics');
             const originalText = btn.textContent;
             btn.textContent = '⏳ Cargando...';
             btn.disabled = true;
             
-            // Simulación - en producción esto llamaría a la API con breakdowns
-            setTimeout(() => {
+            try {
+                // Obtenir l'account ID actuel
+                let accountId = null;
+                if (currentAccountName && currentAccountName !== 'Todos') {
+                    // Trouver l'ID du compte sélectionné
+                    const account = accountsIndex?.accounts?.find(a => a.name === currentAccountName);
+                    accountId = account?.id;
+                }
+                
+                if (!accountId) {
+                    alert('Por favor selecciona una cuenta específica');
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                    return;
+                }
+                
+                // Obtenir la période actuelle
+                const period = currentPeriod || 7;
+                
+                // Exécuter le script Python pour fetcher les données
+                console.log(`Fetching demographics for ${accountId} (${period} days)...`);
+                
+                // Pour l'instant, lire le fichier pré-généré
+                // En production, on pourrait exécuter: python api/demographics_simple.py ${accountId} ${period}
+                const response = await fetch('../../data/temp/current_demographics.json');
+                
+                if (!response.ok) {
+                    throw new Error(`Failed to load demographics data`);
+                }
+                
+                const data = await response.json();
+                
+                // Process and display real data
+                displayDemographicsData(data);
+                
+            } catch (error) {
+                console.error('Error loading demographics:', error);
+                
+                // Fallback to demo data if API not available
+                setTimeout(() => {
                 // Sample data for demonstration
                 const ageData = [
                     { range: '18-24', spend: 125000, roas: 2.8, ctr: 1.2 },
@@ -2430,7 +2486,7 @@
                     <tr>
                         <td>${d.range} años</td>
                         <td class="metric">$${(d.spend).toLocaleString()}</td>
-                        <td class="metric" style="color: ${d.roas > 3 ? '#00a854' : '#ff9500'}">${d.roas.toFixed(2)}</td>
+                        <td class="metric" style="color: ${d.roas >= 2.0 ? '#00a854' : d.roas >= 1.2 ? '#ff9500' : '#ff3b30'}">${d.roas.toFixed(2)}</td>
                         <td>${d.ctr}%</td>
                         <td>$${(d.spend/d.roas/50).toFixed(0)}</td>
                         <td>${Math.round(d.spend/d.roas/1000)}</td>
@@ -2443,6 +2499,64 @@
                 note.innerHTML = '⚠️ Nota: Estos son datos de ejemplo. Para datos reales, se requiere una llamada adicional a la API con breakdown por edad/género.';
                 document.getElementById('demographics-loaded').appendChild(note);
             }, 1500);
+            }
+        }
+        
+        // Function to display real demographics data from API
+        function displayDemographicsData(data) {
+            if (!data || !data.segments) return;
+            
+            // Show demographics section
+            document.getElementById('demographics-content').style.display = 'none';
+            document.getElementById('demographics-loaded').style.display = 'block';
+            
+            // Display table with all segments (EXACTLY like Facebook's view)
+            // Using more lenient ROAS thresholds:
+            // ROAS >= 2.0 = green ✅
+            // ROAS >= 1.2 = orange ⚠️  
+            // ROAS < 1.2 = red ❌
+            const tableBody = document.getElementById('demographics-table');
+            tableBody.innerHTML = data.segments.map(seg => {
+                const roasColor = seg.roas >= 2.0 ? '#00a854' : seg.roas >= 1.2 ? '#ff9500' : '#ff3b30';
+                const roasIcon = seg.roas >= 2.0 ? '✅' : seg.roas >= 1.2 ? '⚠️' : '❌';
+                return `
+                    <tr>
+                        <td style="font-weight: 500;">${seg.age} ${seg.gender}</td>
+                        <td style="font-weight: 600;">$${seg.spend.toLocaleString('es-MX', {minimumFractionDigits: 2})}</td>
+                        <td style="color: ${roasColor}; font-weight: 600;">${seg.roas.toFixed(2)} ${roasIcon}</td>
+                        <td>${seg.ctr.toFixed(2)}%</td>
+                        <td>$${seg.cpa > 0 ? seg.cpa.toFixed(2) : 'N/A'}</td>
+                        <td>${seg.purchases}</td>
+                    </tr>
+                `;
+            }).join('');
+            
+            // Clear the segments chart div (no longer showing redundant chart)
+            const segmentsDiv = document.getElementById('segments-distribution');
+            
+            // Add summary stats only
+            const totalSpend = data.segments.reduce((sum, s) => sum + s.spend, 0);
+            const totalPurchases = data.segments.reduce((sum, s) => sum + s.purchases, 0);
+            const avgRoas = totalSpend > 0 ? (data.segments.reduce((sum, s) => sum + s.purchase_value, 0) / totalSpend) : 0;
+            
+            segmentsDiv.innerHTML = `
+                <div style="padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-around; text-align: center;">
+                        <div>
+                            <div style="font-size: 20px; font-weight: 700; color: #1d1d1f;">$${(totalSpend/1000).toFixed(1)}k</div>
+                            <div style="font-size: 12px; color: #86868b;">Inversión Total</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 20px; font-weight: 700; color: ${avgRoas >= 2.0 ? '#00a854' : avgRoas >= 1.2 ? '#ff9500' : '#ff3b30'};">${avgRoas.toFixed(2)}</div>
+                            <div style="font-size: 12px; color: #86868b;">ROAS Promedio</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 20px; font-weight: 700; color: #667eea;">${totalPurchases}</div>
+                            <div style="font-size: 12px; color: #86868b;">Conversiones</div>
+                        </div>
+                    </div>
+                </div>
+            `;
         }
         
         // Fonction de filtrage
