@@ -495,6 +495,22 @@ def main():
     if len(all_data) > 0:
         print(f"\n✨ Succès! Dashboard prêt avec {len(all_data)} ads")
         print(f"⚠️ Démographies: À récupérer à la demande dans le dashboard")
+        
+        # Run compression pipeline
+        print(f"\n🗜️  Running compression pipeline...")
+        try:
+            import subprocess
+            result = subprocess.run(
+                [sys.executable, "scripts/production/compress_after_fetch.py", "--input-dir", "data/current"],
+                capture_output=True,
+                text=True
+            )
+            if result.returncode == 0:
+                print("✅ Data compressed and copied to optimized dashboard")
+            else:
+                print(f"⚠️ Compression failed: {result.stderr}")
+        except Exception as e:
+            print(f"⚠️ Could not run compression: {e}")
     else:
         print(f"\n⚠️ Aucune donnée récupérée, vérifiez le token")
 
