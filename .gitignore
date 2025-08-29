@@ -1,6 +1,5 @@
 *.csv
 *.json
-*.html
 __pycache__/
 .env
 venv/
@@ -12,3 +11,7 @@ venv/
 # Logs
 *.log
 logs/
+
+# HTML files - ignore all except dashboards
+*.html
+!dashboards/**/*.html
