@@ -189,23 +189,59 @@ async function loadOptimizedData() {
             window.periodsData = {};
         }
         
-        ['3d', '7d', '14d', '30d', '90d'].forEach(period => {
-            const converted = adapter.convertToOldFormat(period);
-            if (converted) {
-                // Store with numeric keys (3, 7, 14, 30, 90) not strings
-                const numericKey = parseInt(period.replace('d', ''));
-                window.periodsData[numericKey] = converted;
-                console.log(`✅ Converted ${period}: ${converted.ads.length} ads`);
-            }
-        });
+        // Convert ONLY 7d first for fast initial load
+        const initialPeriod = '7d';
+        const initialConverted = adapter.convertToOldFormat(initialPeriod);
+        if (initialConverted) {
+            window.periodsData[7] = initialConverted;
+            console.log(`✅ Converted ${initialPeriod}: ${initialConverted.ads.length} ads (initial load)`);
+        }
         
-        // Load REAL previous week data
-        try {
-            console.log('📥 Loading previous week data...');
-            const prevWeekResponse = await fetch('./data/optimized/prev_week_original.json');
-            console.log('Prev week fetch response:', prevWeekResponse.status);
-            if (prevWeekResponse.ok) {
-                const prevWeekRawData = await prevWeekResponse.json();
+        // Store adapter for background loading
+        window.dataAdapter = adapter;
+        
+        // Load other periods in background after initial display
+        setTimeout(() => {
+            console.log('🔄 Loading other periods in background...');
+            ['3d', '14d', '30d', '90d'].forEach(period => {
+                const numericKey = parseInt(period.replace('d', ''));
+                if (!window.periodsData[numericKey]) {
+                    const converted = adapter.convertToOldFormat(period);
+                    if (converted) {
+                        window.periodsData[numericKey] = converted;
+                        console.log(`✅ Background loaded ${period}: ${converted.ads.length} ads`);
+                    }
+                }
+            });
+            console.log('✅ All periods loaded in background');
+        }, 100); // Start after UI is rendered
+        
+        // Keep the on-demand function as fallback
+        window.loadPeriodData = function(periodDays) {
+            const periodStr = periodDays + 'd';
+            if (!window.periodsData[periodDays] && window.dataAdapter) {
+                console.log(`⏳ Loading ${periodStr} data on demand...`);
+                const converted = window.dataAdapter.convertToOldFormat(periodStr);
+                if (converted) {
+                    window.periodsData[periodDays] = converted;
+                    console.log(`✅ Loaded ${periodStr}: ${converted.ads.length} ads`);
+                }
+            }
+            return window.periodsData[periodDays];
+        };
+        
+        // Load REAL previous week data IN BACKGROUND (don't block initial display)
+        setTimeout(async () => {
+            try {
+                console.log('📥 Loading previous week data in background...');
+                // Try compressed version first, fallback to original
+                let prevWeekResponse = await fetch('./data/optimized/prev_week_compressed.json');
+                if (!prevWeekResponse.ok) {
+                    prevWeekResponse = await fetch('./data/optimized/prev_week_original.json');
+                }
+                console.log('Prev week fetch response:', prevWeekResponse.status);
+                if (prevWeekResponse.ok) {
+                    const prevWeekRawData = await prevWeekResponse.json();
                 console.log('Prev week raw data loaded:', prevWeekRawData.ads ? prevWeekRawData.ads.length : 0, 'ads');
                 
                 // Aggregate the previous week data by ad_id (same as we do for current data)
@@ -256,12 +292,18 @@ async function loadOptimizedData() {
                 };
                 
                 console.log('✅ Loaded REAL previous week data:', prevAds.length, 'ads');
+                
+                // Trigger update of comparison table if dashboard is already loaded
+                if (window.updateComparisonTable) {
+                    window.updateComparisonTable();
+                }
             } else {
                 console.error('❌ Previous week data not OK, status:', prevWeekResponse.status);
             }
         } catch (error) {
             console.error('❌ Error loading previous week data:', error);
         }
+        }, 500); // Load after initial display
         
         // Also store raw optimized data for direct access if needed
         window.optimizedData = { meta, agg, summary, adapter };

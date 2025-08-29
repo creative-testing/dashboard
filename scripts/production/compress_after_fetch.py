@@ -76,7 +76,7 @@ def run_compression(input_dir=None):
     print("📋 Copying files to dashboard...")
     dashboard_dir.mkdir(parents=True, exist_ok=True)
     
-    files_to_copy = ['meta_v1.json', 'agg_v1.json', 'summary_v1.json', 'manifest.json']
+    files_to_copy = ['meta_v1.json', 'agg_v1.json', 'summary_v1.json', 'manifest.json', 'prev_week_compressed.json']
     for file in files_to_copy:
         src = output_dir / file
         dst = dashboard_dir / file
@@ -86,17 +86,7 @@ def run_compression(input_dir=None):
         else:
             print(f"  ✗ {file} not found")
     
-    # 5. Copy previous week data if exists
-    prev_week_src = Path(input_dir) / "hybrid_data_prev_week.json"
-    if prev_week_src.exists():
-        print("📅 Copying previous week data...")
-        prev_week_dst = dashboard_dir / "prev_week_original.json"
-        shutil.copy2(prev_week_src, prev_week_dst)
-        print(f"  ✓ Previous week data ({prev_week_src.stat().st_size / 1024 / 1024:.1f}MB)")
-    else:
-        print("⚠️  No previous week data found")
-    
-    # 6. Report sizes
+    # 5. Report sizes
     print("\n📊 Compression results:")
     print("─" * 40)
     

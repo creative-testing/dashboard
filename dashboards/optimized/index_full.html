@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Creative Testing Agent - Dashboard</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>📊</text></svg>">
     <style>
         
         * {
@@ -1434,7 +1435,14 @@
         }
         
         function updateDashboard(days) {
-            const data = periodsData[days];
+            // Load period data on demand if not already loaded
+            let data = periodsData[days];
+            if (!data && window.loadPeriodData) {
+                console.log(`⏳ Loading ${days}d data on demand...`);
+                data = window.loadPeriodData(days);
+                periodsData[days] = data;
+            }
+            
             if (!data) {
                 console.error(`Pas de données pour ${days} jours`);
                 return;
@@ -1967,10 +1975,11 @@
             }
         }
         
-        function updateComparisonTable() {
+        // Expose globally for async update
+        window.updateComparisonTable = function updateComparisonTable() {
             // ALWAYS use 7-day data for weekly comparison, regardless of selected period
             const currentData = periodsData[7];  // Always compare last 7 days
-            const prevData = prevWeekData;
+            const prevData = window.prevWeekData || prevWeekData;  // Check global variable
             
             // Vérifier que les données sont disponibles
             if (!currentData || !currentData.ads) {
@@ -2169,8 +2178,27 @@
             
             // Masquer/afficher la section démographique selon le compte
             const demographicsSection = document.querySelector('.demographics-section');
+            
             if (demographicsSection) {
-                demographicsSection.style.display = value === 'Todos' ? 'none' : 'block';
+                // Afficher seulement pour Petcare (case insensitive)
+                if (value.toLowerCase().includes('petcare')) {
+                    demographicsSection.style.display = 'block';
+                } else {
+                    // Cacher TOUTE la section démographique
+                    demographicsSection.style.display = 'none';
+                    
+                    // Réinitialiser l'état pour la prochaine utilisation
+                    const demographicsContent = document.getElementById('demographics-content');
+                    const demographicsLoaded = document.getElementById('demographics-loaded');
+                    
+                    // Réafficher le bouton et cacher les données
+                    if (demographicsContent) {
+                        demographicsContent.style.display = 'block';
+                    }
+                    if (demographicsLoaded) {
+                        demographicsLoaded.style.display = 'none';
+                    }
+                }
             }
             
             updateDashboard(currentPeriod);
@@ -2433,19 +2461,20 @@
                 ];
                 
                 // REAL Demographics Data for Petcare 2 from Meta Ads API (Aug 21-27, 2025)
+                // Triés par Inversión décroissante (du plus grand au plus petit)
                 const petcareRealDemographics = [
-                    { gender: "female", age: "18-24", spend: 328.58, impressions: 4920, clicks: 55, purchases: 1, purchase_value: 795.00, roas: 2.42, ctr: 1.12, cpa: 328.58 },
-                    { gender: "male", age: "18-24", spend: 149.74, impressions: 2442, clicks: 26, purchases: 0, purchase_value: 0.00, roas: 0.00, ctr: 1.06, cpa: 0.00 },
-                    { gender: "female", age: "25-34", spend: 4762.88, impressions: 43433, clicks: 613, purchases: 7, purchase_value: 7797.95, roas: 1.64, ctr: 1.41, cpa: 680.41 },
-                    { gender: "male", age: "25-34", spend: 2319.44, impressions: 26521, clicks: 304, purchases: 3, purchase_value: 3795.55, roas: 1.64, ctr: 1.15, cpa: 773.15 },
-                    { gender: "female", age: "35-44", spend: 9955.84, impressions: 64270, clicks: 1205, purchases: 20, purchase_value: 22684.40, roas: 2.28, ctr: 1.87, cpa: 497.79 },
-                    { gender: "male", age: "35-44", spend: 4741.60, impressions: 41465, clicks: 613, purchases: 9, purchase_value: 8766.40, roas: 1.85, ctr: 1.48, cpa: 526.84 },
                     { gender: "female", age: "45-54", spend: 10769.37, impressions: 52800, clicks: 1445, purchases: 15, purchase_value: 14577.75, roas: 1.35, ctr: 2.74, cpa: 717.96 },
-                    { gender: "male", age: "45-54", spend: 5130.40, impressions: 31905, clicks: 699, purchases: 10, purchase_value: 12060.85, roas: 2.35, ctr: 2.19, cpa: 513.04 },
+                    { gender: "female", age: "35-44", spend: 9955.84, impressions: 64270, clicks: 1205, purchases: 20, purchase_value: 22684.40, roas: 2.28, ctr: 1.87, cpa: 497.79 },
                     { gender: "female", age: "55-64", spend: 5600.79, impressions: 21402, clicks: 779, purchases: 8, purchase_value: 7808.20, roas: 1.39, ctr: 3.64, cpa: 700.10 },
+                    { gender: "male", age: "45-54", spend: 5130.40, impressions: 31905, clicks: 699, purchases: 10, purchase_value: 12060.85, roas: 2.35, ctr: 2.19, cpa: 513.04 },
+                    { gender: "female", age: "25-34", spend: 4762.88, impressions: 43433, clicks: 613, purchases: 7, purchase_value: 7797.95, roas: 1.64, ctr: 1.41, cpa: 680.41 },
+                    { gender: "male", age: "35-44", spend: 4741.60, impressions: 41465, clicks: 613, purchases: 9, purchase_value: 8766.40, roas: 1.85, ctr: 1.48, cpa: 526.84 },
                     { gender: "male", age: "55-64", spend: 3383.39, impressions: 16652, clicks: 418, purchases: 9, purchase_value: 7044.65, roas: 2.08, ctr: 2.51, cpa: 375.93 },
+                    { gender: "male", age: "25-34", spend: 2319.44, impressions: 26521, clicks: 304, purchases: 3, purchase_value: 3795.55, roas: 1.64, ctr: 1.15, cpa: 773.15 },
                     { gender: "female", age: "65+", spend: 2251.24, impressions: 7098, clicks: 317, purchases: 4, purchase_value: 4211.20, roas: 1.87, ctr: 4.47, cpa: 562.81 },
-                    { gender: "male", age: "65+", spend: 1068.19, impressions: 5210, clicks: 160, purchases: 1, purchase_value: 2369.30, roas: 2.22, ctr: 3.07, cpa: 1068.19 }
+                    { gender: "male", age: "65+", spend: 1068.19, impressions: 5210, clicks: 160, purchases: 1, purchase_value: 2369.30, roas: 2.22, ctr: 3.07, cpa: 1068.19 },
+                    { gender: "female", age: "18-24", spend: 328.58, impressions: 4920, clicks: 55, purchases: 1, purchase_value: 795.00, roas: 2.42, ctr: 1.12, cpa: 328.58 },
+                    { gender: "male", age: "18-24", spend: 149.74, impressions: 2442, clicks: 26, purchases: 0, purchase_value: 0.00, roas: 0.00, ctr: 1.06, cpa: 0.00 }
                 ].filter(seg => seg.purchases > 0 || seg.spend > 100); // Only show segments with purchases or significant spend
                 
                 return {

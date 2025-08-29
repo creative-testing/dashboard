@@ -55,6 +55,13 @@ def transform_data(input_dir, output_dir):
         if os.path.exists(file_path):
             periods_data[period_name] = load_json(file_path)
     
+    # Also load and compress prev_week if exists
+    prev_week_data = None
+    prev_week_path = f"{input_dir}/hybrid_data_prev_week.json"
+    if os.path.exists(prev_week_path):
+        print(f"  Loading prev_week data...")
+        prev_week_data = load_json(prev_week_path)
+    
     if not periods_data:
         print("❌ No data files found!")
         return False
@@ -236,6 +243,58 @@ def transform_data(input_dir, output_dir):
     save_json(agg_data, f"{output_dir}/agg_v1.json")
     save_json(summary_data, f"{output_dir}/summary_v1.json")
     save_json(manifest_data, f"{output_dir}/manifest.json")
+    
+    # Compress prev_week if available
+    if prev_week_data:
+        print("\n🗜️  Compressing previous week data...")
+        # Aggregate prev_week by ad_id
+        prev_week_aggregated = defaultdict(lambda: {
+            'impressions': 0,
+            'clicks': 0,
+            'spend': 0.0,
+            'purchases': 0,
+            'purchase_value': 0.0,
+            'reach': 0
+        })
+        
+        for ad in prev_week_data.get('ads', []):
+            ad_id = ad['ad_id']
+            prev_week_aggregated[ad_id]['impressions'] += int(ad.get('impressions', 0))
+            prev_week_aggregated[ad_id]['clicks'] += int(ad.get('clicks', 0))
+            prev_week_aggregated[ad_id]['spend'] += float(ad.get('spend', 0))
+            prev_week_aggregated[ad_id]['purchases'] += int(ad.get('purchases', 0))
+            prev_week_aggregated[ad_id]['purchase_value'] += float(ad.get('purchase_value', 0))
+            prev_week_aggregated[ad_id]['reach'] += int(ad.get('reach', 0))
+            
+            # Keep first occurrence metadata
+            if 'ad_name' not in prev_week_aggregated[ad_id]:
+                prev_week_aggregated[ad_id].update({
+                    'ad_id': ad_id,
+                    'ad_name': ad.get('ad_name', ''),
+                    'campaign_name': ad.get('campaign_name', ''),
+                    'campaign_id': ad.get('campaign_id', ''),
+                    'adset_name': ad.get('adset_name', ''),
+                    'adset_id': ad.get('adset_id', ''),
+                    'account_name': ad.get('account_name', ''),
+                    'account_id': ad.get('account_id', ''),
+                    'effective_status': ad.get('effective_status', ''),
+                    'format': ad.get('format', ''),
+                    'media_url': ad.get('media_url', ''),
+                    'created_time': ad.get('created_time', '')
+                })
+        
+        # Convert back to list format
+        prev_week_compressed = {
+            'period': 'prev_week',
+            'ads': list(prev_week_aggregated.values())
+        }
+        
+        save_json(prev_week_compressed, f"{output_dir}/prev_week_compressed.json")
+        
+        # Show compression stats
+        original_size = os.path.getsize(prev_week_path) / 1024 / 1024
+        compressed_size = os.path.getsize(f"{output_dir}/prev_week_compressed.json") / 1024 / 1024
+        print(f"  ✓ Previous week: {original_size:.1f}MB → {compressed_size:.1f}MB ({(1-compressed_size/original_size)*100:.1f}% reduction)")
     
     # Calculate space savings
     print("\n📊 Transformation complete!")
