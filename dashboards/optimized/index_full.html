@@ -760,6 +760,32 @@
             font-weight: 700;
             color: #00a854;
         }
+        
+        /* ---- Sorting + pagination + dropdown search ---- */
+        thead th.sortable { cursor: pointer; user-select: none; }
+        thead th .sort-ind { font-size: 12px; opacity: 0.75; margin-left: 6px; }
+
+        .pagination-controls .page-size {
+          display: inline-flex; align-items: center; gap: 6px; margin-right: 10px;
+          font-size: 12px; color: #6c757d;
+        }
+        .pagination-controls select {
+          padding: 6px 8px; border: 1px solid #e0e0e2; border-radius: 6px; font-size: 12px;
+          background: white; cursor: pointer;
+        }
+
+        .dropdown-search {
+          position: sticky; top: 0; background: white; padding: 8px 10px;
+          border-bottom: 1px solid #f0f0f2; z-index: 1;
+        }
+        .dropdown-search input {
+          width: 100%; padding: 8px 10px; border: 1px solid #e0e0e2; border-radius: 8px; font-size: 13px;
+        }
+
+        .share-badge {
+          margin-top: 10px; font-weight: 600; opacity: 0.9;
+          background: rgba(0,0,0,0.12); display: inline-block; padding: 6px 10px; border-radius: 10px;
+        }
     </style>
     <script src="data_adapter.js"></script>
 </head>
@@ -1630,37 +1656,54 @@
             const donutSvg = document.querySelector('.donut-svg');
             if (donutSvg && total > 0) {
                 let offset = 0;
-                const segments = filteredFormats
-                    .map(([format, count]) => {
-                        const percentage = count / total;
-                        const dashLength = circumference * percentage;
-                        const currentOffset = offset;
-                        offset += dashLength;
-                        
-                        return `<circle cx="90" cy="90" r="60" 
-                                fill="none" 
-                                stroke="${getFormatColor(format)}" 
-                                stroke-width="30" 
-                                stroke-dasharray="${dashLength} ${circumference}" 
-                                stroke-dashoffset="-${currentOffset}" 
-                                transform="rotate(-90 90 90)"></circle>`;
-                    }).join('');
-                
-                donutSvg.innerHTML = segments + '<circle cx="90" cy="90" r="30" fill="white"></circle>';
+                let segments = '';
+                let labels = '';
+
+                filteredFormats.forEach(([format, count]) => {
+                    const pct = count / total;
+                    const dashLength = circumference * pct;
+                    const currentOffset = offset;
+                    offset += dashLength;
+
+                    // Segment
+                    segments += `<circle cx="90" cy="90" r="60"
+                                    fill="none"
+                                    stroke="${getFormatColor(format)}"
+                                    stroke-width="30"
+                                    stroke-dasharray="${dashLength} ${circumference}"
+                                    stroke-dashoffset="-${currentOffset}"
+                                    transform="rotate(-90 90 90)"></circle>`;
+
+                    // Label % (au centre de l'arc). Masquer <5% pour éviter le chevauchement
+                    const pctInt = Math.round(pct * 100);
+                    if (pctInt >= 5) {
+                        const mid = currentOffset + dashLength / 2;
+                        const angle = (mid / circumference) * 2 * Math.PI - Math.PI / 2; // -90°
+                        const rLabel = 60; // rayon milieu de l'anneau (stroke=30 => milieu à r=60)
+                        const x = 90 + Math.cos(angle) * rLabel;
+                        const y = 90 + Math.sin(angle) * rLabel;
+                        labels += `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}"
+                                       text-anchor="middle" dominant-baseline="middle"
+                                       font-size="13" font-weight="700" fill="white"
+                                       stroke="#1d1d1f" stroke-width="0.5">${pctInt}%</text>`;
+                    }
+                });
+
+                donutSvg.innerHTML = segments + '<circle cx="90" cy="90" r="30" fill="white"></circle>' + labels;
             }
             
+            // Légende: ajouter aussi le pourcentage
             const legend = document.querySelector('.legend');
             if (legend) {
                 legend.innerHTML = filteredFormats
                     .map(([fmt, count]) => {
                         const roas = formatRoas[fmt] || 0;
-                        // Raccourcir les noms
-                        const shortName = fmt === 'INSTAGRAM' ? 'IG' : 
-                                         fmt === 'UNKNOWN' ? 'OTROS' : fmt;
+                        const pct = Math.round((count / total) * 100);
+                        const shortName = fmt === 'INSTAGRAM' ? 'IG' : (fmt === 'UNKNOWN' ? 'OTROS' : fmt);
                         return `
                             <div class="legend-item">
                                 <div class="legend-color" style="background: ${getFormatColor(fmt)}"></div>
-                                <span>${shortName} (${count})${roas > 0 ? ` • ROAS:${roas.toFixed(2)}` : ''}</span>
+                                <span>${shortName} (${count}, ${pct}%)${roas > 0 ? ` • ROAS:${roas.toFixed(2)}` : ''}</span>
                             </div>
                         `;
                     }).join('');
@@ -1706,12 +1749,80 @@
         
         // Variables de pagination
         let currentPage = 1;
-        const itemsPerPage = 10;
+        // Pagination: mémoriser le choix utilisateur (10/25/50/100)
+        let itemsPerPage = parseInt(localStorage.getItem('adsPageSize') || '10', 10);
+        
+        // État du tri: par défaut "plus récent d'abord" (Fecha Inicio)
+        let sortState = JSON.parse(localStorage.getItem('adsSort') || 'null') || { key: 'date', dir: 'desc' };
+        
+        // Helpers pour le tri
+        function num(v){ return parseFloat(v || 0); }
+        function cmp(a,b){ return a<b ? -1 : a>b ? 1 : 0; }
+        function parseDateSafe(d){ return d ? new Date(d).getTime() : 0; }
+
+        // Applique le tri courant à un tableau d'annonces
+        function applySort(arr){
+          const dir = sortState.dir === 'asc' ? 1 : -1;
+          const key = sortState.key;
+          return [...arr].sort((a,b)=>{
+            switch(key){
+              case 'spend':      return dir * (num(a.spend) - num(b.spend));
+              case 'roas':       return dir * ((a.roas || 0) - (b.roas || 0));
+              case 'cpa':        return dir * ((a.cpa  || 0) - (b.cpa  || 0));
+              case 'purchases':  return dir * ((a.purchases || 0) - (b.purchases || 0));
+              case 'date':       return dir * (parseDateSafe(a.created_time) - parseDateSafe(b.created_time));
+              case 'ad':
+              default:           return dir * cmp((a.ad_name||'').toLowerCase(), (b.ad_name||'').toLowerCase());
+            }
+          });
+        }
+
+        // Installe les listeners de tri sur l'en-tête de table
+        function initTableSorting(){
+          const headRow = document.querySelector('#ads-table thead tr:first-child');
+          if(!headRow) return;
+          const map = [
+            { idx:0, key:'ad',        label:'Anuncio' },
+            { idx:3, key:'date',      label:'Fecha Inicio' },
+            { idx:4, key:'spend',     label:'Importe Gastado' },
+            { idx:5, key:'roas',      label:'ROAS' },
+            { idx:6, key:'cpa',       label:'CPA' },
+            { idx:7, key:'purchases', label:'Compras' }
+          ];
+
+          map.forEach(({idx,key,label})=>{
+            const th = headRow.children[idx];
+            if(!th) return;
+            th.classList.add('sortable');
+            th.setAttribute('data-sort-key', key);
+            th.addEventListener('click', ()=>{
+              if (sortState.key === key) { sortState.dir = (sortState.dir === 'asc' ? 'desc' : 'asc'); }
+              else { sortState = { key, dir:'desc' }; }
+              localStorage.setItem('adsSort', JSON.stringify(sortState));
+              currentPage = 1;
+              renderTable();
+              renderSortIndicators(headRow, map);
+            });
+          });
+          renderSortIndicators(headRow, map);
+        }
+
+        function renderSortIndicators(headRow, map){
+          map.forEach(({idx,key,label})=>{
+            const th = headRow.children[idx];
+            if (!th) return;
+            if (sortState.key === key) {
+              th.innerHTML = `${label} <span class="sort-ind">${sortState.dir === 'asc' ? '▲' : '▼'}</span>`;
+            } else {
+              th.innerHTML = label;
+            }
+          });
+        }
         
         function updateTable(data) {
             const ads = data.ads || [];
-            // Afficher TOUS les anuncios triés par Importe Gastado décroissant
-            currentTableData = [...ads].sort((a, b) => parseFloat(b.spend || 0) - parseFloat(a.spend || 0));
+            // Par défaut: tri par "Fecha Inicio" (plus récent → plus ancien)
+            currentTableData = applySort(ads);
             filteredTableData = currentTableData; // Par défaut, pas de filtre
             currentPage = 1; // Réinitialiser à la première page
             
@@ -1734,18 +1845,21 @@
                 tableTitle.textContent = `Historial de Anuncios (${currentPeriod} días)`;
             }
             
+            // Appliquer le tri aux données filtrées
+            const sortedData = applySort(filteredTableData);
+            
             // Calculer la pagination
-            const totalPages = Math.ceil(filteredTableData.length / itemsPerPage);
+            const totalPages = Math.ceil(sortedData.length / itemsPerPage);
             const startIndex = (currentPage - 1) * itemsPerPage;
             const endIndex = startIndex + itemsPerPage;
-            const pageData = filteredTableData.slice(startIndex, endIndex);
+            const pageData = sortedData.slice(startIndex, endIndex);
             
             const tableSubtitle = document.querySelector('.main-table-card p');
             if (tableSubtitle) {
                 const filterInfo = filteredTableData.length < currentTableData.length 
                     ? ` (${filteredTableData.length} filtrados de ${currentTableData.length})`
                     : '';
-                tableSubtitle.textContent = `Mostrando ${startIndex + 1}-${Math.min(endIndex, filteredTableData.length)} de ${filteredTableData.length.toLocaleString()} anuncios${filterInfo}`;
+                tableSubtitle.textContent = `Mostrando ${startIndex + 1}-${Math.min(endIndex, sortedData.length)} de ${sortedData.length.toLocaleString()} anuncios${filterInfo}`;
             }
             
             // Charger les données sauvegardées depuis localStorage
@@ -1810,47 +1924,45 @@
         }
         
         function renderPaginationControls(totalPages) {
-            // Créer ou récupérer le conteneur de pagination
             let paginationContainer = document.querySelector('.pagination-controls');
             if (!paginationContainer) {
                 paginationContainer = document.createElement('div');
                 paginationContainer.className = 'pagination-controls';
                 paginationContainer.style.cssText = `
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    gap: 10px;
-                    margin-top: 20px;
-                    padding: 15px;
+                    display:flex; justify-content:center; align-items:center; gap:10px; margin-top:20px; padding:15px; flex-wrap:wrap;
                 `;
                 const tableCard = document.querySelector('.main-table-card');
-                if (tableCard) {
-                    tableCard.appendChild(paginationContainer);
-                }
+                if (tableCard) tableCard.appendChild(paginationContainer);
             }
-            
-            // Pagination simple et minimaliste
+
             paginationContainer.innerHTML = `
-                <button onclick="changePage(1)" ${currentPage === 1 ? 'disabled' : ''} 
-                        style="padding: 8px 12px; border: 1px solid #e0e0e2; background: white; border-radius: 6px; cursor: pointer; ${currentPage === 1 ? 'opacity: 0.5; cursor: not-allowed;' : ''}">
-                    ←
-                </button>
-                <button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} 
-                        style="padding: 8px 12px; border: 1px solid #e0e0e2; background: white; border-radius: 6px; cursor: pointer; ${currentPage === 1 ? 'opacity: 0.5; cursor: not-allowed;' : ''}">
-                    Anterior
-                </button>
-                <span style="padding: 8px 16px; background: #f5f5f7; border-radius: 6px;">
-                    Página <strong>${currentPage}</strong> de <strong>${totalPages}</strong>
-                </span>
-                <button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''} 
-                        style="padding: 8px 12px; border: 1px solid #e0e0e2; background: white; border-radius: 6px; cursor: pointer; ${currentPage === totalPages ? 'opacity: 0.5; cursor: not-allowed;' : ''}">
-                    Siguiente
-                </button>
-                <button onclick="changePage(${totalPages})" ${currentPage === totalPages ? 'disabled' : ''} 
-                        style="padding: 8px 12px; border: 1px solid #e0e0e2; background: white; border-radius: 6px; cursor: pointer; ${currentPage === totalPages ? 'opacity: 0.5; cursor: not-allowed;' : ''}">
-                    →
-                </button>
+                <div class="page-size">
+                    Filas:
+                    <select id="page-size">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+                <button onclick="changePage(1)" ${currentPage === 1 ? 'disabled' : ''} style="padding: 8px 12px; border: 1px solid #e0e0e2; background: white; border-radius: 6px; ${currentPage === 1 ? 'opacity:0.5; cursor:not-allowed;' : 'cursor:pointer;'}">←</button>
+                <button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} style="padding: 8px 12px; border: 1px solid #e0e0e2; background: white; border-radius: 6px; ${currentPage === 1 ? 'opacity:0.5; cursor:not-allowed;' : 'cursor:pointer;'}">Anterior</button>
+                <span style="padding: 8px 16px; background: #f5f5f7; border-radius: 6px;">Página <strong>${currentPage}</strong> de <strong>${totalPages}</strong></span>
+                <button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''} style="padding: 8px 12px; border: 1px solid #e0e0e2; background: white; border-radius: 6px; ${currentPage === totalPages ? 'opacity:0.5; cursor:not-allowed;' : 'cursor:pointer;'}">Siguiente</button>
+                <button onclick="changePage(${totalPages})" ${currentPage === totalPages ? 'disabled' : ''} style="padding: 8px 12px; border: 1px solid #e0e0e2; background: white; border-radius: 6px; ${currentPage === totalPages ? 'opacity:0.5; cursor:not-allowed;' : 'cursor:pointer;'}">→</button>
             `;
+
+            // Appliquer la valeur et écouter les changements
+            const select = paginationContainer.querySelector('#page-size');
+            if (select) {
+                select.value = String(itemsPerPage);
+                select.addEventListener('change', (e)=>{
+                    itemsPerPage = parseInt(e.target.value, 10);
+                    localStorage.setItem('adsPageSize', String(itemsPerPage));
+                    currentPage = 1;
+                    renderTable();
+                });
+            }
         }
         
         function changePage(page) {
@@ -2156,12 +2268,11 @@
         function buildAccountOptions() {
             const menu = document.getElementById('account-dropdown-menu');
             if (!menu) return;
-            
+
             let names = [];
             if (accountsIndex && Array.isArray(accountsIndex.accounts)) {
                 names = accountsIndex.accounts.map(a => a.name).filter(Boolean).sort();
             } else {
-                // Fallback: union des comptes sur toutes les périodes chargées
                 const allNames = new Set();
                 [3,7,14,30,90].forEach(p => {
                     const d = periodsData[p];
@@ -2169,23 +2280,44 @@
                 });
                 names = Array.from(allNames).sort();
             }
-            
-            // Construire le menu dropdown
-            let menuHTML = `<div class="dropdown-option ${currentAccountName === 'Todos' ? 'active' : ''}" data-value="Todos">Todas las cuentas</div>`;
+
+            let optionsHTML = `<div class="dropdown-option ${currentAccountName === 'Todos' ? 'active' : ''}" data-value="Todos">Todas las cuentas</div>`;
             names.forEach(n => {
                 const displayName = n.length > 28 ? n.substring(0, 25) + '...' : n;
-                menuHTML += `<div class="dropdown-option ${currentAccountName === n ? 'active' : ''}" data-value="${n}" title="${n}">${displayName}</div>`;
+                optionsHTML += `<div class="dropdown-option ${currentAccountName === n ? 'active' : ''}" data-value="${n}" title="${n}">${displayName}</div>`;
             });
-            menu.innerHTML = menuHTML;
-            
-            // Ajouter les event listeners aux options
+
+            // Injecter la barre de recherche + options
+            menu.innerHTML = `
+              <div class="dropdown-search">
+                <input id="account-search" type="text" placeholder="Buscar cuenta...">
+              </div>
+              ${optionsHTML}
+            `;
+
+            // Listeners pour options
             menu.querySelectorAll('.dropdown-option').forEach(option => {
                 option.addEventListener('click', (e) => {
-                    const value = e.target.getAttribute('data-value');
+                    const value = e.currentTarget.getAttribute('data-value');
                     selectAccount(value);
                     closeDropdown();
                 });
             });
+
+            // Filtre en direct
+            const searchInput = document.getElementById('account-search');
+            if (searchInput) {
+                const filterOptions = () => {
+                    const q = searchInput.value.toLowerCase().trim();
+                    menu.querySelectorAll('.dropdown-option').forEach(opt => {
+                        const text = (opt.getAttribute('title') || opt.textContent || '').toLowerCase();
+                        opt.style.display = !q || text.includes(q) ? 'block' : 'none';
+                    });
+                };
+                searchInput.addEventListener('input', filterOptions);
+                // Focus auto quand le dropdown s'ouvre
+                setTimeout(()=> searchInput.focus(), 0);
+            }
         }
         
         function selectAccount(value) {
@@ -2195,6 +2327,9 @@
                 btnText.textContent = value === 'Todos' ? 'Todas las cuentas' : 
                                      (value.length > 28 ? value.substring(0, 25) + '...' : value);
             }
+            
+            // Gérer le bouton de partage
+            updateShareButton();
             
             // Masquer/afficher la section démographique selon le compte
             const demographicsSection = document.querySelector('.demographics-section');
@@ -2238,6 +2373,10 @@
                 btn.style.background = 'white';
                 btn.style.color = '#2563eb';
                 btn.style.borderColor = 'white';
+                
+                // Focus sur la recherche
+                const searchInput = document.getElementById('account-search');
+                if (searchInput) setTimeout(()=> searchInput.focus(), 0);
                 
                 // Activer la navigation clavier
                 document.addEventListener('keydown', handleKeyboardNavigation);
@@ -2309,6 +2448,115 @@
             // Désactiver la navigation clavier
             document.removeEventListener('keydown', handleKeyboardNavigation);
             keyboardBuffer = '';
+        }
+        
+        // Mode client: fonctions utilitaires
+        function getQueryParams(){
+            const p = new URLSearchParams(window.location.search);
+            return {
+                account: p.get('account') ? decodeURIComponent(p.get('account')) : null,
+                locked: p.get('locked') === '1'
+            };
+        }
+
+        function updateShareButton() {
+            // Supprimer le bouton existant s'il y en a un
+            const existingBtn = document.getElementById('share-btn');
+            if (existingBtn) {
+                existingBtn.remove();
+            }
+            
+            // Ajouter le bouton seulement si un compte spécifique est sélectionné
+            if (currentAccountName && currentAccountName !== 'Todos') {
+                addShareButton();
+            }
+        }
+        
+        function addShareButton(){
+            const container = document.querySelector('.account-selector');
+            if (!container) return;
+            const btn = document.createElement('button');
+            btn.id = 'share-btn';
+            btn.className = 'dropdown-btn';
+            btn.style.cssText = `
+                margin-left: 8px;
+                background: rgba(255,255,255,0.15);
+                border: 2px solid rgba(255,255,255,0.25);
+                color: white;
+                padding: 10px 18px;
+                border-radius: 25px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                font-weight: 600;
+                font-size: 14px;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+            `;
+            btn.innerHTML = `
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                </svg>
+                <span>Compartir</span>
+            `;
+            
+            // Hover effect
+            btn.onmouseover = () => {
+                btn.style.background = 'rgba(255,255,255,0.25)';
+                btn.style.borderColor = 'rgba(255,255,255,0.4)';
+                btn.style.transform = 'translateY(-2px)';
+            };
+            btn.onmouseout = () => {
+                btn.style.background = 'rgba(255,255,255,0.15)';
+                btn.style.borderColor = 'rgba(255,255,255,0.25)';
+                btn.style.transform = 'translateY(0)';
+            };
+            
+            btn.onclick = () => {
+                if (!currentAccountName || currentAccountName === 'Todos') {
+                    alert('Selecciona una cuenta primero');
+                    return;
+                }
+                const url = `${location.origin}${location.pathname}?account=${encodeURIComponent(currentAccountName)}&locked=1`;
+                if (navigator.clipboard) {
+                    navigator.clipboard.writeText(url).then(()=>{
+                        btn.innerHTML = `
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            <span>Copiado!</span>
+                        `;
+                        btn.style.background = 'rgba(76, 217, 100, 0.3)';
+                        btn.style.borderColor = 'rgba(76, 217, 100, 0.5)';
+                        setTimeout(()=> {
+                            btn.innerHTML = `
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                                </svg>
+                                <span>Compartir</span>
+                            `;
+                            btn.style.background = 'rgba(255,255,255,0.15)';
+                            btn.style.borderColor = 'rgba(255,255,255,0.25)';
+                        }, 2000);
+                    }).catch(()=>{
+                        prompt('Copia el enlace para compartir:', url);
+                    });
+                } else {
+                    prompt('Copia el enlace para compartir:', url);
+                }
+            };
+            container.appendChild(btn);
+        }
+
+        function showShareBadge(accName){
+            const hdr = document.querySelector('.header');
+            if (!hdr) return;
+            const badge = document.createElement('div');
+            badge.className = 'share-badge';
+            badge.textContent = `🔒 Modo cliente: ${accName}`;
+            hdr.appendChild(badge);
         }
 
         // Event listeners pour le dropdown custom
@@ -2730,8 +2978,32 @@
             const kpiCards = document.querySelectorAll('.kpi-content h3');
             kpiCards.forEach(card => card.textContent = '...');
             
+            // Mode client (URL)
+            const qp = getQueryParams();
+            if (qp.account) {
+                currentAccountName = qp.account; // verrouille le filtre dès le départ
+                const btnText = document.getElementById('account-dropdown-text');
+                if (btnText) btnText.textContent = currentAccountName.length > 28 ? currentAccountName.substring(0,25) + '...' : currentAccountName;
+            }
+            
             await loadAllData();
+            
+            // Sorting header listeners
+            initTableSorting();
+            
             buildAccountOptions();
+            
+            // Si locked=1, masquer le dropdown et afficher le badge
+            if (qp.locked) {
+                const dropdown = document.querySelector('.custom-dropdown');
+                if (dropdown) dropdown.style.display = 'none';
+                showShareBadge(currentAccountName || 'Cuenta');
+            } else {
+                // Bouton de partage visible seulement si un compte est sélectionné
+                if (currentAccountName && currentAccountName !== 'Todos') {
+                    addShareButton();
+                }
+            }
         });
     </script>
 </body>
