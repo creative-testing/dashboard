@@ -196,10 +196,18 @@ def transform_data(input_dir='data/current', output_dir='data/optimized'):
     print(f"  ✓ agg_v1.json ({len(ad_ids)} ads)")
     
     # meta_v1.json - Entity metadata
+    # Propager les nouvelles métadonnées de fraîcheur
+    reference_hour = baseline_data.get('metadata', {}).get('reference_hour')
+    buffer_hours = baseline_data.get('metadata', {}).get('buffer_hours')
+    includes_today = baseline_data.get('metadata', {}).get('includes_today', False)
+    
     meta_data = {
         "version": 1,
         "metadata": {
             "reference_date": reference_date,
+            "reference_hour": reference_hour,
+            "buffer_hours": buffer_hours,
+            "includes_today": includes_today,
             "last_update": datetime.now().isoformat(),
             "source": "baseline_90d_daily.json",
             "pipeline": "v2_direct_from_baseline"

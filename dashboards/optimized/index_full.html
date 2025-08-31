@@ -1386,14 +1386,23 @@
                     // Get reference date dynamically from data
                     let referenceDate;
                     let referenceDateStr;
+                    let referenceHour = null;
+                    let bufferHours = null;
+                    let includestoday = false;
                     
                     // Try to get from optimized data metadata
                     if (window.optimizedData && window.optimizedData.meta && window.optimizedData.meta.metadata) {
                         referenceDateStr = window.optimizedData.meta.metadata.reference_date;
+                        referenceHour = window.optimizedData.meta.metadata.reference_hour;
+                        bufferHours = window.optimizedData.meta.metadata.buffer_hours;
+                        includestoday = window.optimizedData.meta.metadata.includes_today;
                     } 
                     // Fallback to periodsData
                     else if (window.periodsData && window.periodsData[7] && window.periodsData[7].metadata) {
                         referenceDateStr = window.periodsData[7].metadata.reference_date;
+                        referenceHour = window.periodsData[7].metadata.reference_hour;
+                        bufferHours = window.periodsData[7].metadata.buffer_hours;
+                        includestoday = window.periodsData[7].metadata.includes_today;
                     }
                     // Final fallback to yesterday
                     else {
@@ -1405,7 +1414,23 @@
                     // Parse and format the date (avoid timezone issues by parsing manually)
                     const [year, month, day] = referenceDateStr.split('-');
                     referenceDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), 12, 0, 0);
-                    dateElement.textContent = `${day}/${month}/${year}`;
+                    
+                    // Format display with hour if available
+                    let displayText = `${day}/${month}/${year}`;
+                    if (referenceHour) {
+                        // Extract hour from reference_hour (format: "2024-08-29 15:00:00")
+                        const hourMatch = referenceHour.match(/(\d{2}):00:00$/);
+                        if (hourMatch) {
+                            displayText += ` ${hourMatch[1]}h`;
+                        }
+                    }
+                    if (includestoday) {
+                        displayText += ' (hoy parcial)';
+                    } else if (bufferHours) {
+                        displayText += ` (-${bufferHours}h)`;
+                    }
+                    
+                    dateElement.textContent = displayText;
                     
                     // Update comparison dates if element exists
                     if (comparisonDatesElement) {
@@ -1703,7 +1728,7 @@
                         return `
                             <div class="legend-item">
                                 <div class="legend-color" style="background: ${getFormatColor(fmt)}"></div>
-                                <span>${shortName} (${count}, ${pct}%)${roas > 0 ? ` • ROAS:${roas.toFixed(2)}` : ''}</span>
+                                <span>${shortName} (${count})${roas > 0 ? ` • ROAS:${roas.toFixed(2)}` : ''}</span>
                             </div>
                         `;
                     }).join('');

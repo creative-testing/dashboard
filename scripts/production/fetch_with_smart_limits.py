@@ -488,13 +488,34 @@ def main():
     active_accounts = [acc for acc in accounts if acc.get("account_status") == 1]
     print(f"✅ {len(active_accounts)} comptes actifs trouvés")
     
-    # Dates
-    reference_date = (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d')
-    days_to_fetch = int(os.getenv('FETCH_DAYS', '90'))
-    since_date = (datetime.strptime(reference_date, '%Y-%m-%d') - timedelta(days=days_to_fetch-1)).strftime('%Y-%m-%d')
-    until_date = reference_date
+    # Configuration de fraîcheur
+    BUFFER_HOURS = int(os.getenv('FRESHNESS_BUFFER_HOURS', '3'))
+    TAIL_BACKFILL_DAYS = int(os.getenv('TAIL_BACKFILL_DAYS', '3'))
+    BASELINE_DAYS = int(os.getenv('FETCH_DAYS', '90'))
     
-    print(f"\n📅 Période: {since_date} à {until_date} ({days_to_fetch} jours)")
+    # High-watermark date (données jusqu'à il y a BUFFER_HOURS heures)
+    high_watermark_datetime = datetime.now() - timedelta(hours=BUFFER_HOURS)
+    reference_date = high_watermark_datetime.strftime('%Y-%m-%d')
+    reference_hour = high_watermark_datetime.strftime('%Y-%m-%d %H:00:00')
+    
+    # Déterminer si on fait tail only ou baseline complet
+    run_baseline = os.getenv('RUN_BASELINE', '0') == '1'
+    
+    if run_baseline:
+        # Baseline complet (ex: nuit ou toutes les X heures)
+        days_to_fetch = BASELINE_DAYS
+        since_date = (datetime.strptime(reference_date, '%Y-%m-%d') - timedelta(days=days_to_fetch-1)).strftime('%Y-%m-%d')
+        until_date = reference_date
+        print(f"\n📚 Mode BASELINE: {since_date} à {until_date} ({days_to_fetch} jours)")
+    else:
+        # Tail refresh seulement (par défaut, plus fréquent)
+        days_to_fetch = TAIL_BACKFILL_DAYS
+        since_date = (datetime.strptime(reference_date, '%Y-%m-%d') - timedelta(days=days_to_fetch-1)).strftime('%Y-%m-%d')
+        until_date = reference_date
+        print(f"\n⚡ Mode TAIL: {since_date} à {until_date} ({days_to_fetch} jours, buffer {BUFFER_HOURS}h)")
+    
+    print(f"🕰️ Données jusqu'à: {reference_hour} (maintenant - {BUFFER_HOURS}h)")
+    print(f"📅 Période: {since_date} à {until_date} ({days_to_fetch} jours)")
     
     # Stratégie adaptative
     use_async = days_to_fetch > 30  # Async pour les grosses périodes
@@ -565,10 +586,51 @@ def main():
     print(f"\n💾 Sauvegarde de {len(all_data)} ads...")
     os.makedirs('data/current', exist_ok=True)
     
+    # Charger le baseline existant si mode tail
+    existing_baseline = None
+    if not run_baseline and os.path.exists('data/current/baseline_90d_daily.json'):
+        try:
+            with open('data/current/baseline_90d_daily.json', 'r', encoding='utf-8') as f:
+                existing_baseline = json.load(f)
+                print(f"\n🔄 Baseline existant chargé: {len(existing_baseline.get('daily_ads', []))} ads")
+        except Exception as e:
+            print(f"⚠️ Impossible de charger le baseline existant: {e}")
+    
+    # Upsert tail dans baseline si applicable
+    if existing_baseline and not run_baseline:
+        # Créer un index par (ad_id, date)
+        baseline_index = {}
+        for idx, ad in enumerate(existing_baseline.get('daily_ads', [])):
+            key = (ad.get('ad_id'), ad.get('date'))
+            if all(key):
+                baseline_index[key] = idx
+        
+        # Upsert les nouvelles données tail
+        updated_count = 0
+        added_count = 0
+        for ad in all_data:
+            key = (ad.get('ad_id'), ad.get('date'))
+            if all(key):
+                if key in baseline_index:
+                    # Remplacer l'existant
+                    existing_baseline['daily_ads'][baseline_index[key]] = ad
+                    updated_count += 1
+                else:
+                    # Ajouter nouveau
+                    existing_baseline['daily_ads'].append(ad)
+                    added_count += 1
+        
+        print(f"\n✅ Upsert terminé: {updated_count} mis à jour, {added_count} ajoutés")
+        all_data = existing_baseline['daily_ads']
+    
     baseline = {
         'metadata': {
             'timestamp': datetime.now().isoformat(),
             'reference_date': reference_date,
+            'reference_hour': reference_hour,
+            'buffer_hours': BUFFER_HOURS,
+            'tail_backfill_days': TAIL_BACKFILL_DAYS if not run_baseline else None,
+            'mode': 'baseline' if run_baseline else 'tail',
             'date_range': f"{since_date} to {until_date}",
             'method': 'fetch_smart_limits',
             'total_rows': len(all_data),
@@ -578,7 +640,8 @@ def main():
             'has_demographics': False,
             'has_creatives': True,
             'fetch_strategy': 'smart_limits',
-            'development_mode': development_mode
+            'development_mode': development_mode,
+            'includes_today': reference_date == datetime.now().strftime('%Y-%m-%d')
         },
         'daily_ads': all_data
     }
@@ -628,8 +691,11 @@ def main():
         print("\n🗜️ Lancement de la compression...")
         try:
             import subprocess
+            # Résoudre le chemin de manière robuste
+            here = os.path.dirname(os.path.abspath(__file__))
+            compress_script = os.path.normpath(os.path.join(here, "compress_after_fetch.py"))
             result = subprocess.run(
-                [sys.executable, "scripts/production/compress_after_fetch.py", "--input-dir", "data/current"],
+                [sys.executable, compress_script, "--input-dir", "data/current"],
                 capture_output=True,
                 text=True
             )
