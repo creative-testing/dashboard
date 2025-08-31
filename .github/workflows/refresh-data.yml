@@ -20,6 +20,8 @@ on:
 jobs:
   refresh-data:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Allow push to repository
     
     steps:
     - name: 📥 Checkout repository
