@@ -12,6 +12,11 @@ venv/
 *.log
 logs/
 
-# HTML files - ignore all except dashboards
+# HTML files - ignore all except dashboards and docs
 *.html
 !dashboards/**/*.html
+!docs/*.html
+!docs/**/*.html
+
+# Allow docs JSON files for GitHub Pages
+!docs/**/*.json
