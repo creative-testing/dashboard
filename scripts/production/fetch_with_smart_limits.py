@@ -488,6 +488,11 @@ def main():
     active_accounts = [acc for acc in accounts if acc.get("account_status") == 1]
     print(f"✅ {len(active_accounts)} comptes actifs trouvés")
     
+    # LOG DETAILED ACCOUNT INFO FOR DEBUGGING
+    print(f"\n📊 DETAILED ACCOUNT LIST:")
+    for acc in active_accounts:
+        print(f"  - {acc.get('name', 'Unknown')} (ID: {acc.get('id', 'N/A')})")
+    
     # Configuration de fraîcheur
     BUFFER_HOURS = int(os.getenv('FRESHNESS_BUFFER_HOURS', '3'))
     TAIL_BACKFILL_DAYS = int(os.getenv('TAIL_BACKFILL_DAYS', '3'))
@@ -680,7 +685,9 @@ def main():
     
     print(f"\n🎉 TERMINÉ en {(time.time() - start_time)/60:.1f} minutes!")
     print(f"💾 Tous les fichiers dans data/current/")
-    print(f"\n📊 Pour Pablo:")
+    print(f"\n📊 SUMMARY FOR DEBUGGING:")
+    print(f"  - Total unique ads fetched: {len(all_data)}")
+    print(f"  - Accounts processed: {len(set(ad.get('account_name', '') for ad in all_data))}")
     print(f"  - Active Ads: {sum(1 for ad in all_data if ad.get('effective_status') == 'ACTIVE')}")
     print(f"  - Total Investment: ${sum(float(ad.get('spend', 0)) for ad in all_data):,.0f} MXN")
     print(f"  - Conversion Value: ${sum(float(ad.get('purchase_value', 0)) for ad in all_data):,.0f} MXN")
