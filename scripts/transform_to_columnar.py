@@ -118,8 +118,9 @@ def transform_data(input_dir='data/current', output_dir='data/optimized'):
     # 3. Build columnar structures
     print("\n🏗️ Building columnar format...")
     
-    # Use 7d as the base period for columnar format (good balance of size/data)
-    base_period = '7d'
+    # Use 90d as the base to include ALL ads (not just 7d)
+    # This ensures we capture all ads that had any activity in the last 90 days
+    base_period = '90d'
     base_ads = aggregated_by_period[base_period]
     
     # Sort ads by spend (descending) for better compression
