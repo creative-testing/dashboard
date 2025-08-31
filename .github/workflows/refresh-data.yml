@@ -1,0 +1,111 @@
+name: 🤖 Auto Refresh Data
+
+on:
+  schedule:
+    # Toutes les 2 heures (UTC times)
+    # Mexico City est UTC-6, donc on ajuste
+    - cron: '0 12,14,16,18,20,22,0,2,4 * * *'  # 6h,8h,10h,12h,14h,16h,18h,20h,22h Mexico
+    
+  workflow_dispatch:  # Permet de lancer manuellement depuis GitHub
+    inputs:
+      mode:
+        description: 'Refresh mode'
+        required: true
+        default: 'tail'
+        type: choice
+        options:
+          - tail
+          - baseline
+
+jobs:
+  refresh-data:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: 🐍 Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: 📦 Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests python-dotenv
+    
+    - name: 🔍 Determine refresh mode
+      id: mode
+      run: |
+        # Si lancé manuellement, utiliser le choix de l'utilisateur
+        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          echo "MODE=${{ github.event.inputs.mode }}" >> $GITHUB_ENV
+        else
+          # Automatique: baseline à 3h du matin (9h UTC), sinon tail
+          HOUR=$(date -u +%H)
+          if [ "$HOUR" = "09" ]; then
+            echo "MODE=baseline" >> $GITHUB_ENV
+          else
+            echo "MODE=tail" >> $GITHUB_ENV
+          fi
+        fi
+    
+    - name: ⚡ Run Tail Refresh (3 days)
+      if: env.MODE == 'tail'
+      env:
+        FACEBOOK_ACCESS_TOKEN: ${{ secrets.FACEBOOK_ACCESS_TOKEN }}
+        FRESHNESS_BUFFER_HOURS: 2
+        TAIL_BACKFILL_DAYS: 3
+        RUN_BASELINE: 0
+      run: |
+        echo "🚀 Running TAIL refresh (3 days)..."
+        python3 scripts/production/fetch_with_smart_limits.py
+    
+    - name: 📚 Run Baseline Refresh (90 days)
+      if: env.MODE == 'baseline'
+      env:
+        FACEBOOK_ACCESS_TOKEN: ${{ secrets.FACEBOOK_ACCESS_TOKEN }}
+        FRESHNESS_BUFFER_HOURS: 2
+        RUN_BASELINE: 1
+        FETCH_DAYS: 90
+      timeout-minutes: 50
+      run: |
+        echo "🚀 Running BASELINE refresh (90 days)..."
+        python3 scripts/production/fetch_with_smart_limits.py
+    
+    - name: 🗜️ Compress data
+      if: success()
+      run: |
+        echo "Compressing data..."
+        python3 scripts/transform_to_columnar.py
+    
+    - name: 📋 Copy to dashboard
+      if: success()
+      run: |
+        mkdir -p dashboards/optimized/data/optimized
+        cp data/optimized/*.json dashboards/optimized/data/optimized/
+    
+    - name: 📤 Commit and push changes
+      if: success()
+      run: |
+        git config --global user.name "GitHub Actions Bot"
+        git config --global user.email "actions@github.com"
+        
+        git add data/optimized/*.json dashboards/optimized/data/optimized/*.json
+        
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+        else
+          git commit -m "🤖 Auto-refresh: $(date '+%Y-%m-%d %H:%M') UTC (${{ env.MODE }} mode)"
+          git push
+        fi
+    
+    - name: 📊 Report status
+      if: always()
+      run: |
+        echo "Refresh completed with status: ${{ job.status }}"
+        echo "Mode: ${{ env.MODE }}"
+        echo "Time: $(date '+%Y-%m-%d %H:%M:%S') UTC"

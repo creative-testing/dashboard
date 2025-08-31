@@ -3,12 +3,12 @@
 # À lancer 1 fois par nuit ou manuellement
 
 echo "📚 Lancement du refresh BASELINE COMPLET (90 jours)"
-echo "🕰️ Buffer: 3 heures depuis maintenant"
+echo "🕰️ Buffer: 2 heures depuis maintenant"
 echo "⚠️ ATTENTION: Ceci peut prendre 30-45 minutes"
 echo ""
 
 # Mode baseline complet
-export FRESHNESS_BUFFER_HOURS=3
+export FRESHNESS_BUFFER_HOURS=2
 export RUN_BASELINE=1
 export FETCH_DAYS=90
 

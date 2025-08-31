@@ -2,11 +2,11 @@
 # Script pour faire un refresh tail rapide (3 derniers jours)
 
 echo "⚡ Lancement du refresh TAIL (3 derniers jours)"
-echo "🕰️ Buffer: 3 heures depuis maintenant"
+echo "🕰️ Buffer: 2 heures depuis maintenant"
 echo ""
 
 # Mode tail (par défaut)
-export FRESHNESS_BUFFER_HOURS=3
+export FRESHNESS_BUFFER_HOURS=2
 export TAIL_BACKFILL_DAYS=3
 export RUN_BASELINE=0
 
