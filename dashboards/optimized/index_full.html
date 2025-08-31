@@ -330,6 +330,8 @@
         
         .format-video { background: #e6f2ff; color: #0066cc; }
         .format-image { background: #e6f9e6; color: #00a854; }
+        .format-carousel { background: #e6e8ff; color: #1e40af; }
+        .format-instagram { background: #fce7f3; color: #be185d; }
         .format-unknown { background: #f0f0f2; color: #86868b; }
         
         .media-link {
@@ -1284,6 +1286,22 @@
         let periodsData = {};
         let prevWeekData = null;  // Initialize as null, not empty object
         let currentPeriod = 7;
+        
+        // Fonction d'échappement HTML pour sécurité XSS
+        const escapeHtml = (text) => {
+            const div = document.createElement('div');
+            div.textContent = text || '';
+            return div.innerHTML;
+        };
+        
+        // Fonction CSV sécurisée contre injection
+        const escapeCsv = (text) => {
+            let s = String(text ?? '');
+            // Protection contre CSV injection Excel
+            if (/^[=+\-@]/.test(s)) s = "'" + s;
+            if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+            return s;
+        };
         let currentAccount = 'global';  // Nouveau: track du compte actuel
         let petcareData = {};  // Nouveau: données Petcare
         let accountsIndex = null; // Index complet des comptes si disponible
@@ -1399,14 +1417,14 @@
             
             // Vérifier si les données sont chargées
             if (!periodsData[days]) {
-                console.log(`⏳ Données ${days}j pas encore chargées...`);
-                button.textContent = `${days}j ⏳`;
+                console.log(`⏳ Datos ${days} días no cargados aún...`);
+                button.textContent = `${days} días ⏳`;
                 
                 // Attendre que les données soient chargées
                 const checkInterval = setInterval(() => {
                     if (periodsData[days]) {
                         clearInterval(checkInterval);
-                        button.textContent = `${days}j`;
+                        button.textContent = `${days} días`;
                         switchPeriod(button, days); // Réessayer
                     }
                 }, 500); // Vérifier toutes les 500ms
@@ -1414,7 +1432,7 @@
                 // Timeout après 30 secondes
                 setTimeout(() => {
                     clearInterval(checkInterval);
-                    button.textContent = `${days}j ❌`;
+                    button.textContent = `${days} días ❌`;
                 }, 30000);
                 return;
             }
@@ -1577,7 +1595,7 @@
                         return `
                             <div class="bar" style="height: ${(spend/maxSpend*100)}%; background: linear-gradient(135deg, ${roasClass} 0%, ${roasClass}99 100%);">
                                 <span class="bar-value">$${Math.round(spend/1000)}k</span>
-                                <span class="bar-label" title="${ad.ad_name}">${ad.ad_name.substring(0, 10)}</span>
+                                <span class="bar-label" title="${escapeHtml(ad.ad_name)}">${escapeHtml(ad.ad_name.substring(0, 10))}</span>
                             </div>
                         `;
                     }).join('');
@@ -1743,7 +1761,7 @@
                     let mediaLink = '—';
                     if (ad.media_url) {
                         const icon = ad.format === 'VIDEO' ? '🎬' : '🖼️';
-                        mediaLink = `<a href="${ad.media_url}" target="_blank" class="media-link">${icon}</a>`;
+                        mediaLink = `<a href="${ad.media_url}" target="_blank" rel="noopener noreferrer" class="media-link">${icon}</a>`;
                     }
                     
                     // Déterminer le badge d'état
@@ -1765,7 +1783,7 @@
                     
                     return `
                         <tr data-ad-id="${ad.ad_id}">
-                            <td class="ad-name" title="${ad.ad_name}">${ad.ad_name}</td>
+                            <td class="ad-name" title="${escapeHtml(ad.ad_name)}">${escapeHtml(ad.ad_name)}</td>
                             <td>${statusBadge}</td>
                             <td><span class="format-badge ${formatClass}">${ad.format}</span></td>
                             <td>${startDate}</td>
@@ -1843,93 +1861,75 @@
             }
         }
         
-        // Fonction de filtrage du tableau (définie globalement)
+        // Fonction de filtrage unifiée avec cache localStorage
+        let savedHypothesesCache = new Map();
+        function refreshHypothesesCache() {
+            try {
+                savedHypothesesCache = new Map(
+                    Object.entries(JSON.parse(localStorage.getItem('adHypotheses') || '{}'))
+                );
+            } catch {
+                savedHypothesesCache = new Map();
+            }
+        }
+        refreshHypothesesCache();
+        window.addEventListener('storage', e => { if (e.key === 'adHypotheses') refreshHypothesesCache(); });
+        
         window.applyTableFilters = function() {
-            console.log('applyTableFilters appelée');
-            const filters = document.querySelectorAll('.table-filter');
-            const filterValues = {};
-            
-            filters.forEach(filter => {
-                const column = parseInt(filter.getAttribute('data-column'));
-                filterValues[column] = filter.value.toLowerCase();
+            const filters = {};
+            document.querySelectorAll('.table-filter').forEach(el => {
+                filters[+el.dataset.column] = String(el.value || '').toLowerCase().trim();
             });
-            
-            console.log('Valeurs des filtres:', filterValues);
-            console.log('Nombre de données avant filtre:', currentTableData.length);
-            
-            // Debug des formats disponibles
-            if (filterValues[2]) {
-                const formats = [...new Set(currentTableData.map(ad => ad.format))];
-                console.log('Formats disponibles dans les données:', formats);
-                console.log('Format recherché:', filterValues[2]);
-            }
-            
-            // Debug: voir les valeurs de effective_status
-            if (filterValues[1]) {
-                console.log('Filtre Estado:', filterValues[1]);
-                console.log('Valeurs effective_status uniques:', [...new Set(currentTableData.map(ad => ad.effective_status))]);
-                console.log('Exemple de données:', currentTableData.slice(0, 3).map(ad => ({ 
-                    name: ad.ad_name, 
-                    status: ad.effective_status 
-                })));
-            }
-            
-            // Filtrer les données
+
             filteredTableData = currentTableData.filter(ad => {
-                // Filtre colonne 0: Nom de l'annonce
-                if (filterValues[0] && !ad.ad_name.toLowerCase().includes(filterValues[0])) return false;
-                
-                // Filtre colonne 1: État (active/paused)
-                if (filterValues[1]) {
-                    // Plus flexible : accepter ACTIVE/PAUSED ou toute autre valeur
-                    const statusMatch = filterValues[1] === 'active' ? ad.effective_status === 'ACTIVE' : 
-                                       filterValues[1] === 'paused' ? (ad.effective_status === 'PAUSED' || ad.effective_status !== 'ACTIVE') : true;
-                    if (!statusMatch) return false;
+                // 0: nom
+                if (filters[0] && !ad.ad_name.toLowerCase().includes(filters[0])) return false;
+
+                // 1: état ('active' / 'paused')
+                if (filters[1]) {
+                    const status = String(ad.effective_status || '').toLowerCase();
+                    if (filters[1] === 'active' && status !== 'active') return false;
+                    if (filters[1] === 'paused' && status === 'active') return false;
                 }
-                
-                // Filtre colonne 2: Format
-                if (filterValues[2] && ad.format.toLowerCase() !== filterValues[2]) return false;
-                
-                // Filtre colonne 3: Date
-                if (filterValues[3]) {
-                    // Convertir la date de l'annonce (format: "30/06/25") en date comparable
-                    const adDateStr = new Date(ad.created_time).toLocaleDateString('es-MX', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: '2-digit'
-                    });
-                    // Convertir en format YYYY-MM-DD pour comparaison
-                    const [day, month, year] = adDateStr.split('/');
-                    const adDate = `20${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-                    
-                    // La date du filtre est déjà en format YYYY-MM-DD
-                    if (adDate !== filterValues[3]) return false;
+
+                // 2: format exact en minuscules
+                if (filters[2] && String(ad.format || '').toLowerCase() !== filters[2]) return false;
+
+                // 3: date (égalité jour)
+                if (filters[3] && ad.created_time) {
+                    const adD = new Date(ad.created_time); adD.setHours(0,0,0,0);
+                    const fD  = new Date(filters[3]);      fD.setHours(0,0,0,0);
+                    if (adD.getTime() !== fD.getTime()) return false;
                 }
-                
-                // Filtre colonne 4: Montant dépensé minimum
-                if (filterValues[4] && parseFloat(ad.spend) < parseFloat(filterValues[4])) return false;
-                
-                // Filtre colonne 5: ROAS minimum
-                if (filterValues[5] && ad.roas < parseFloat(filterValues[5])) return false;
-                
-                // Filtre colonne 6: CPA maximum
-                if (filterValues[6] && ad.cpa > parseFloat(filterValues[6])) return false;
-                
-                // Filtre colonne 7: Achats minimum
-                if (filterValues[7] && (ad.purchases || 0) < parseInt(filterValues[7])) return false;
-                
-                // Filtre colonne 9: Hypothèse
-                const savedData = JSON.parse(localStorage.getItem('adHypotheses') || '{}');
-                const adData = savedData[ad.ad_id] || {};
-                if (filterValues[9] && !adData.hypothesis?.toLowerCase().includes(filterValues[9])) return false;
-                
-                // Filtre colonne 10: Résultat
-                if (filterValues[10] && adData.result !== filterValues[10]) return false;
-                
+
+                // 4: dépense min
+                if (filters[4] && parseFloat(ad.spend || 0) < parseFloat(filters[4])) return false;
+
+                // 5: ROAS min
+                if (filters[5] && (ad.roas || 0) < parseFloat(filters[5])) return false;
+
+                // 6: CPA max
+                if (filters[6] && (ad.cpa || 0) > parseFloat(filters[6])) return false;
+
+                // 7: achats min
+                if (filters[7] && (ad.purchases || 0) < parseInt(filters[7])) return false;
+
+                // 9: hypothèse (localStorage)
+                if (filters[9]) {
+                    const hyp = (savedHypothesesCache.get(ad.ad_id)?.hypothesis || '').toLowerCase();
+                    if (!hyp.includes(filters[9])) return false;
+                }
+
+                // 10: résultat (ganador/perdedor)
+                if (filters[10]) {
+                    const res = savedHypothesesCache.get(ad.ad_id)?.result || '';
+                    if (res !== filters[10]) return false;
+                }
+
                 return true;
             });
-            
-            currentPage = 1; // Retour à la première page après filtrage
+
+            currentPage = 1;
             renderTable();
         }
         
@@ -2385,14 +2385,7 @@
                 const startDate = ad.created_time ? new Date(ad.created_time).toLocaleDateString('es-MX') : '';
                 const ctr = (parseFloat(ad.clicks || 0) / parseFloat(ad.impressions || 1) * 100).toFixed(2);
                 
-                // Escape commas and quotes in text fields
-                const escapeCsv = (text) => {
-                    text = String(text); // Ensure it's a string
-                    if (text.includes(',') || text.includes('"') || text.includes('\n')) {
-                        return '"' + text.replace(/"/g, '""') + '"';
-                    }
-                    return text;
-                };
+                // Utilise escapeCsv définie ligne 1298 (plus sécurisée)
                 
                 csv += [
                     escapeCsv(ad.ad_name),
@@ -2729,63 +2722,7 @@
         }
         
         // Fonction de filtrage
-        function applyTableFilters() {
-            const filters = document.querySelectorAll('.table-filter');
-            const savedData = JSON.parse(localStorage.getItem('adHypotheses') || '{}');
-            
-            filteredTableData = currentTableData.filter(ad => {
-                let pass = true;
-                
-                filters.forEach(filter => {
-                    const column = parseInt(filter.getAttribute('data-column'));
-                    const value = filter.value.toLowerCase().trim();
-                    
-                    if (!value) return;
-                    
-                    switch(column) {
-                        case 0: // Nombre del anuncio
-                            if (!ad.ad_name.toLowerCase().includes(value)) pass = false;
-                            break;
-                        case 1: // Estado
-                            if (value && ad.effective_status !== value) pass = false;
-                            break;
-                        case 2: // Formato
-                            if (value && ad.format !== value) pass = false;
-                            break;
-                        case 3: // Fecha inicio
-                            if (value && ad.created_time) {
-                                const adDate = new Date(ad.created_time).toISOString().split('T')[0];
-                                if (adDate < value) pass = false;
-                            }
-                            break;
-                        case 4: // Spend mínimo
-                            if (value && parseFloat(ad.spend || 0) < parseFloat(value)) pass = false;
-                            break;
-                        case 5: // ROAS mínimo
-                            if (value && ad.roas < parseFloat(value)) pass = false;
-                            break;
-                        case 6: // CPA máximo
-                            if (value && ad.cpa > parseFloat(value)) pass = false;
-                            break;
-                        case 7: // Compras mínimas
-                            if (value && (ad.purchases || 0) < parseInt(value)) pass = false;
-                            break;
-                        case 9: // Hipótesis
-                            const hypothesis = savedData[ad.ad_id]?.hypothesis || '';
-                            if (!hypothesis.toLowerCase().includes(value)) pass = false;
-                            break;
-                        case 10: // Resultado
-                            const result = savedData[ad.ad_id]?.result || '';
-                            if (value && result !== value) pass = false;
-                            break;
-                    }
-                });
-                
-                return pass;
-            });
-            
-            renderTable();
-        }
+        // Fonction de filtrage supprimée - utilise window.applyTableFilters définie ligne 1862
 
         // Charger les données au démarrage
         document.addEventListener('DOMContentLoaded', async () => {
