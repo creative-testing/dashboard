@@ -110,7 +110,17 @@ jobs:
           echo "No changes to commit"
         else
           git commit -m "🤖 Auto-refresh: $(date '+%Y-%m-%d %H:%M') UTC (${{ env.MODE }} mode)"
-          git push
+          
+          # Pull before push to handle conflicts
+          git pull --rebase origin master || git pull --no-rebase origin master
+          
+          # Push with retry logic
+          for i in 1 2 3; do
+            git push && break
+            echo "Push attempt $i failed, retrying..."
+            sleep 2
+            git pull --rebase origin master || git pull --no-rebase origin master
+          done
         fi
     
     - name: 📊 Report status
