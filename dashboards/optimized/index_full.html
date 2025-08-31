@@ -1339,9 +1339,29 @@
             
             if (dateElement) {
                 try {
-                    // Reference date is 27 Aug 2025 (last full day of data)
-                    const referenceDate = new Date('2025-08-27');
-                    dateElement.textContent = '27/08/2025';
+                    // Get reference date dynamically from data
+                    let referenceDate;
+                    let referenceDateStr;
+                    
+                    // Try to get from optimized data metadata
+                    if (window.optimizedData && window.optimizedData.meta && window.optimizedData.meta.metadata) {
+                        referenceDateStr = window.optimizedData.meta.metadata.reference_date;
+                    } 
+                    // Fallback to periodsData
+                    else if (window.periodsData && window.periodsData[7] && window.periodsData[7].metadata) {
+                        referenceDateStr = window.periodsData[7].metadata.reference_date;
+                    }
+                    // Final fallback to yesterday
+                    else {
+                        const yesterday = new Date();
+                        yesterday.setDate(yesterday.getDate() - 1);
+                        referenceDateStr = yesterday.toISOString().split('T')[0];
+                    }
+                    
+                    // Parse and format the date (avoid timezone issues by parsing manually)
+                    const [year, month, day] = referenceDateStr.split('-');
+                    referenceDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), 12, 0, 0);
+                    dateElement.textContent = `${day}/${month}/${year}`;
                     
                     // Update comparison dates if element exists
                     if (comparisonDatesElement) {

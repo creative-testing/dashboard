@@ -21,14 +21,14 @@ def find_latest_data_directory():
     
     # Check for current directory first
     current_dir = data_dir / "current"
-    if current_dir.exists() and (current_dir / "hybrid_data_90d.json").exists():
+    if current_dir.exists() and (current_dir / "baseline_90d_daily.json").exists():
         return str(current_dir)
     
     # Otherwise find latest backup
     backup_dirs = [d for d in data_dir.iterdir() if d.is_dir() and d.name.startswith("backup")]
     if backup_dirs:
         latest_backup = max(backup_dirs, key=lambda d: d.stat().st_mtime)
-        if (latest_backup / "hybrid_data_90d.json").exists():
+        if (latest_backup / "baseline_90d_daily.json").exists():
             return str(latest_backup)
     
     return None
@@ -40,7 +40,7 @@ def run_compression(input_dir=None):
     if not input_dir:
         input_dir = find_latest_data_directory()
         if not input_dir:
-            print("❌ No data directory found with hybrid_data_90d.json")
+            print("❌ No data directory found with baseline_90d_daily.json")
             return False
     
     print(f"📁 Using data from: {input_dir}")
@@ -90,7 +90,7 @@ def run_compression(input_dir=None):
     print("\n📊 Compression results:")
     print("─" * 40)
     
-    original_90d = Path(input_dir) / "hybrid_data_90d.json"
+    original_90d = Path(input_dir) / "baseline_90d_daily.json"
     if original_90d.exists():
         original_size = original_90d.stat().st_size / 1024 / 1024
         print(f"Original 90d file: {original_size:.1f}MB")

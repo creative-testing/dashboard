@@ -4,9 +4,13 @@ Script ROBUSTE SANS démographies - Récupère TOUT sauf age/gender
 Combine insights + creatives + media URLs
 Nom du script : fetch_sans_demographie.py
 
-⚠️ IMPORTANT: Ce script nécessite un TIMEOUT MINIMUM de 20 minutes
-   à cause des rate limits Facebook (#80004). 
-   Utilisation recommandée : python fetch_sans_demographie.py --timeout 1200
+⚠️ IMPORTANT: Ce script nécessite un TIMEOUT MINIMUM de 35 minutes
+   à cause des rate limits Facebook (#80004) et du mode Development Access Tier.
+   
+   Utilisation recommandée : 
+   timeout 2100 python fetch_sans_demographie.py
+   ou avec nohup :
+   nohup python fetch_sans_demographie.py > fetch.log 2>&1 &
 """
 import os
 import requests
@@ -52,8 +56,10 @@ def fetch_account_insights(account, token, since_date, until_date):
         current_url = url
         page = 0
         max_pages = 100
+        retries = 0
+        max_retries = 3
         
-        while current_url and page < max_pages:
+        while current_url and page < max_pages and retries < max_retries:
             # Timeout raisonnable
             if page == 0:
                 response = requests.get(current_url, params=params, timeout=120)
@@ -64,6 +70,28 @@ def fetch_account_insights(account, token, since_date, until_date):
                 logger.info(f"  Rate limit {account_name}, attente 30s...")
                 time.sleep(30)
                 continue
+            
+            if response.status_code == 500:  # Server error - retry
+                logger.warning(f"  Erreur 500 pour {account_name}, nouvelle tentative dans 10s...")
+                time.sleep(10)
+                continue
+            
+            if response.status_code == 400:  # Bad request - could be limit issue
+                logger.warning(f"  Erreur 400 pour {account_name} - possible limite atteinte")
+                # Si on a déjà des ads, on continue avec ce qu'on a
+                if all_ads:
+                    logger.info(f"  → {len(all_ads)} ads récupérées avant l'erreur")
+                    break
+                else:
+                    # Sinon on réessaye avec une limite plus petite
+                    if params.get('limit', 500) > 100:
+                        params['limit'] = 100
+                        logger.info(f"  → Réessai avec limit=100")
+                        time.sleep(5)
+                        continue
+                    else:
+                        logger.error(f"  → Échec définitif pour {account_name}")
+                        break
             
             if response.status_code != 200:
                 logger.warning(f"  Erreur {response.status_code} pour {account_name}")
@@ -120,6 +148,7 @@ def fetch_account_insights(account, token, since_date, until_date):
                 if "paging" in data and "next" in data["paging"]:
                     current_url = data["paging"]["next"]
                     page += 1
+                    retries = 0  # Reset retries on success
                     time.sleep(0.3)
                 else:
                     break
@@ -308,12 +337,18 @@ def main():
         }
         
         completed = 0
+        accounts_to_retry = []
+        
         for future in as_completed(futures):
             account = futures[future]
             try:
                 ads = future.result(timeout=180)
                 if ads:
                     all_data.extend(ads)
+                else:
+                    # Si 0 ads, on marque pour retry
+                    accounts_to_retry.append(account)
+                    logger.info(f"  ⚠️ {account.get('name', 'Unknown')}: 0 ads - marqué pour retry")
                 completed += 1
                 
                 if completed % 10 == 0:
@@ -323,6 +358,31 @@ def main():
                 logger.warning(f"⚠️ Échec {account.get('name', 'Unknown')}")
                 failed_accounts.append(account.get('name', 'Unknown'))
                 completed += 1
+    
+    # Retry pour les comptes avec 0 ads
+    if accounts_to_retry:
+        print(f"\n🔄 Nouvelle tentative pour {len(accounts_to_retry)} comptes avec 0 ads...")
+        time.sleep(5)  # Pause avant retry
+        
+        with ThreadPoolExecutor(max_workers=8) as executor:  # Moins de workers pour les retries
+            retry_futures = {
+                executor.submit(fetch_account_insights, account, token, since_date, until_date): account
+                for account in accounts_to_retry
+            }
+            
+            for future in as_completed(retry_futures):
+                account = retry_futures[future]
+                try:
+                    ads = future.result(timeout=240)  # Plus de temps pour les retries
+                    if ads:
+                        all_data.extend(ads)
+                        logger.info(f"  ✅ Retry réussi pour {account.get('name', 'Unknown')}: {len(ads)} ads")
+                    else:
+                        failed_accounts.append(account.get('name', 'Unknown'))
+                        logger.warning(f"  ❌ Retry échoué pour {account.get('name', 'Unknown')}")
+                except Exception as e:
+                    logger.warning(f"  ❌ Retry échoué pour {account.get('name', 'Unknown')}: {str(e)[:50]}")
+                    failed_accounts.append(account.get('name', 'Unknown'))
     
     print(f"\n✅ Métriques récupérées: {len(all_data)} ads")
     
