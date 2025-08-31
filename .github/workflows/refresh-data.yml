@@ -90,7 +90,11 @@ jobs:
         mkdir -p docs/data
         rm -rf docs/data/optimized
         mkdir -p docs/data/optimized
-        cp data/optimized/*.json docs/data/optimized/ || echo "No optimized files to copy yet"
+        cp data/optimized/*.json docs/data/optimized/ 2>/dev/null || echo "No optimized files to copy yet"
+        # Ensure prev_week file exists (even if empty)
+        if [ ! -f docs/data/optimized/prev_week_compressed.json ]; then
+          echo '{"period":"prev_week","ads":[]}' > docs/data/optimized/prev_week_compressed.json
+        fi
     
     - name: 📤 Commit and push changes
       if: success()
@@ -99,6 +103,8 @@ jobs:
         git config --global user.email "actions@github.com"
         
         git add -f docs/data/optimized/*.json
+        # Also add prev_week if it exists
+        git add -f docs/data/optimized/prev_week_compressed.json 2>/dev/null || true
         
         if git diff --staged --quiet; then
           echo "No changes to commit"
