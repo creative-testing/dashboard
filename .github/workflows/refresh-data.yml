@@ -85,8 +85,10 @@ jobs:
     - name: 📋 Copy to dashboard
       if: success()
       run: |
+        mkdir -p docs/data
+        rm -rf docs/data/optimized
         mkdir -p docs/data/optimized
-        cp data/optimized/*.json docs/data/optimized/
+        cp data/optimized/*.json docs/data/optimized/ || echo "No optimized files to copy yet"
     
     - name: 📤 Commit and push changes
       if: success()
