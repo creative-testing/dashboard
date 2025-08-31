@@ -63,7 +63,10 @@ class DataAdapter {
         for (let i = 0; i < this.aggData.ads.length; i++) {
             const metrics = this.getAggMetrics(i, periodIdx);
             
-            // Skip ads with no spend
+            // Skip ads with no spend for performance
+            // Note: This means the ad count shown is "ads with spend" not "all ads"
+            // For Petcare example: 7d shows 96 ads, 14d also shows 96 because 
+            // the SAME 96 ads have spend in both periods (plus others not shown when filtered)
             if (metrics.spend === 0) continue;
             
             const adMeta = this.metaData.ads[i];
