@@ -85,8 +85,8 @@ jobs:
     - name: 📋 Copy to dashboard
       if: success()
       run: |
-        mkdir -p dashboards/optimized/data/optimized
-        cp data/optimized/*.json dashboards/optimized/data/optimized/
+        mkdir -p docs/data/optimized
+        cp data/optimized/*.json docs/data/optimized/
     
     - name: 📤 Commit and push changes
       if: success()
@@ -94,7 +94,7 @@ jobs:
         git config --global user.name "GitHub Actions Bot"
         git config --global user.email "actions@github.com"
         
-        git add data/optimized/*.json dashboards/optimized/data/optimized/*.json
+        git add data/optimized/*.json docs/data/optimized/*.json
         
         if git diff --staged --quiet; then
           echo "No changes to commit"
