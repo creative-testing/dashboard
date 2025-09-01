@@ -25,31 +25,32 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
     
-    - name: 🔄 Smart baseline recovery
+    - name: 🧰 Install zstd
+      run: sudo apt-get update && sudo apt-get install -y zstd
+    
+    - name: 📥 Restore baseline from GitHub Release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        echo "🔍 Checking for existing data..."
+        set -e
+        REL_TAG="baseline"
+        ASSET="baseline_90d_daily.json.zst"
+        mkdir -p data/current
         
-        # Try 1: Check GitHub Pages for existing data
-        if curl -f -s https://fred1433.github.io/creative-testing-dashboard/data/optimized/manifest.json > /dev/null; then
-          ads_count=$(curl -s https://fred1433.github.io/creative-testing-dashboard/data/optimized/manifest.json | python3 -c "import json,sys; print(json.load(sys.stdin).get('ads_count', 0))")
-          echo "🌐 GitHub has $ads_count ads"
-          
-          # If we have substantial data, create a marker
-          if [ "$ads_count" -gt "1000" ]; then
-            echo "✅ Good data found, will use smart fetch"
-            echo "SMART_FETCH_DAYS=30" >> $GITHUB_ENV
+        if gh release view "$REL_TAG" >/dev/null 2>&1; then
+          echo "🔎 Found release '$REL_TAG', downloading asset..."
+          if gh release download "$REL_TAG" -p "$ASSET" -D data/current --clobber; then
+            zstd -d -f "data/current/$ASSET" -o "data/current/baseline_90d_daily.json"
+            echo "✅ Baseline restored from Release ($(du -h data/current/baseline_90d_daily.json | cut -f1))"
+            rm "data/current/$ASSET"  # Clean up compressed file
           else
-            echo "⚠️ Limited data, will bootstrap with 7 days"
-            echo "SMART_FETCH_DAYS=7" >> $GITHUB_ENV
+            echo "ℹ️ Asset not found; will bootstrap."
+            echo '{"daily_ads": [], "metadata": {}}' > data/current/baseline_90d_daily.json
           fi
         else
-          echo "🆕 No existing data, bootstrapping with 14 days"
-          echo "SMART_FETCH_DAYS=14" >> $GITHUB_ENV
+          echo "ℹ️ No release yet; will bootstrap."
+          echo '{"daily_ads": [], "metadata": {}}' > data/current/baseline_90d_daily.json
         fi
-        
-        # Create baseline directory
-        mkdir -p data/current
-        echo '{"daily_ads": [], "metadata": {}}' > data/current/baseline_90d_daily.json
     
     - name: 🐍 Setup Python
       uses: actions/setup-python@v4
@@ -65,8 +66,8 @@ jobs:
       env:
         FACEBOOK_ACCESS_TOKEN: ${{ secrets.FACEBOOK_ACCESS_TOKEN }}
         FRESHNESS_BUFFER_HOURS: 2
-        # Smart fetch: more days if no baseline, less if we have data
-        TAIL_BACKFILL_DAYS: ${{ env.SMART_FETCH_DAYS || (github.event.schedule == '0 3 * * *' && '7' || '1') }}
+        # 1 jour le jour, 7 jours la nuit pour late attribution
+        TAIL_BACKFILL_DAYS: ${{ github.event.schedule == '0 3 * * *' && '7' || '1' }}
         RUN_BASELINE: 0
       timeout-minutes: 30
       run: |
@@ -77,18 +78,59 @@ jobs:
         fi
         python3 scripts/production/fetch_with_smart_limits.py
     
+    - name: 🧹 Prune baseline to 90 days
+      run: |
+        python3 - << 'PY'
+        import json
+        from datetime import datetime, timedelta
+        
+        p = 'data/current/baseline_90d_daily.json'
+        try:
+            with open(p, 'r', encoding='utf-8') as f:
+                d = json.load(f)
+        except FileNotFoundError:
+            exit(0)
+        
+        cutoff = (datetime.utcnow() - timedelta(days=89)).strftime('%Y-%m-%d')
+        ads = [ad for ad in d.get('daily_ads', []) if ad.get('date', '') >= cutoff]
+        old_count = len(d.get('daily_ads', []))
+        d['daily_ads'] = ads
+        
+        with open(p, 'w', encoding='utf-8') as f:
+            json.dump(d, f, ensure_ascii=False, separators=(',', ':'))
+        
+        print(f"✂️ Pruned: {old_count} → {len(ads)} rows (keeping since {cutoff})")
+        PY
+    
     - name: 🗜️ Compress data
       if: success()
       run: |
         echo "Compressing data..."
         python3 scripts/transform_to_columnar.py
     
-    - name: 💾 Save baseline to cache
+    - name: 📤 Upload baseline to GitHub Release
       if: success()
-      uses: actions/cache/save@v4
-      with:
-        path: data/current/baseline_90d_daily.json
-        key: baseline-${{ github.ref_name }}-${{ github.run_id }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        set -e
+        REL_TAG="baseline"
+        ASSET="baseline_90d_daily.json.zst"
+        
+        # Compress with maximum ratio
+        zstd -19 -f -o "$ASSET" "data/current/baseline_90d_daily.json"
+        echo "📦 Compressed: $(du -h $ASSET | cut -f1)"
+        
+        # Upload or create release
+        if gh release view "$REL_TAG" >/dev/null 2>&1; then
+          gh release upload "$REL_TAG" "$ASSET" --clobber
+          echo "✅ Baseline asset replaced on Release '$REL_TAG'"
+        else
+          gh release create "$REL_TAG" "$ASSET" \
+            --title "Data baseline (90d rolling window)" \
+            --notes "Auto-updated every 2 hours with latest Meta Ads data. Compressed with zstd."
+          echo "✅ Baseline Release created and asset uploaded"
+        fi
     
     - name: 📋 Copy to dashboard
       if: success()
@@ -115,7 +157,8 @@ jobs:
         if git diff --staged --quiet; then
           echo "No changes to commit"
         else
-          git commit -m "🤖 Auto-refresh: $(date '+%Y-%m-%d %H:%M') UTC (${{ env.MODE }} mode)"
+          MODE="${{ github.event.schedule == '0 3 * * *' && 'nightly 7d' || 'daily 1d' }}"
+          git commit -m "🤖 Auto-refresh: $(date '+%Y-%m-%d %H:%M') UTC ($MODE)"
           
           # Pull before push to handle conflicts
           git pull --rebase origin master || git pull --no-rebase origin master
@@ -132,6 +175,18 @@ jobs:
     - name: 📊 Report status
       if: always()
       run: |
-        echo "Refresh completed with status: ${{ job.status }}"
-        echo "Mode: Daily (1 day)"
-        echo "Time: $(date '+%Y-%m-%d %H:%M:%S') UTC"
+        echo "## 📊 Refresh Summary" >> $GITHUB_STEP_SUMMARY
+        echo "- **Status**: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Mode**: ${{ github.event.schedule == '0 3 * * *' && 'Nightly (7 days)' || 'Daily (1 day)' }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Time**: $(date '+%Y-%m-%d %H:%M:%S') UTC" >> $GITHUB_STEP_SUMMARY
+        
+        if [ -f data/current/baseline_90d_daily.json ]; then
+          size=$(du -h data/current/baseline_90d_daily.json | cut -f1)
+          count=$(python3 -c "import json; print(len(json.load(open('data/current/baseline_90d_daily.json'))['daily_ads']))" 2>/dev/null || echo "?")
+          echo "- **Baseline**: $size, $count records" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [ -f baseline_90d_daily.json.zst ]; then
+          zsize=$(du -h baseline_90d_daily.json.zst | cut -f1)
+          echo "- **Compressed**: $zsize" >> $GITHUB_STEP_SUMMARY
+        fi
