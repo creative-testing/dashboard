@@ -5,6 +5,8 @@ on:
     # Toutes les 2 heures (UTC times)
     # Mexico City est UTC-6, donc on ajuste
     - cron: '0 12,14,16,18,20,22,0,2,4 * * *'  # 6h,8h,10h,12h,14h,16h,18h,20h,22h Mexico
+    # Nightly pour late attribution (7 jours)
+    - cron: '0 3 * * *'  # 3am UTC = 9pm Mexico (une fois par nuit)
     
   workflow_dispatch:  # Permet de lancer manuellement depuis GitHub
 
@@ -20,6 +22,15 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
     
+    - name: ♻️ Restore baseline cache
+      uses: actions/cache@v4
+      with:
+        path: data/current/baseline_90d_daily.json
+        key: baseline-${{ github.ref_name }}-${{ hashFiles('data/current/baseline_90d_daily.json') }}
+        restore-keys: |
+          baseline-${{ github.ref_name }}-
+          baseline-
+    
     - name: 🐍 Setup Python
       uses: actions/setup-python@v4
       with:
@@ -30,16 +41,20 @@ jobs:
         python -m pip install --upgrade pip
         pip install requests python-dotenv
     
-    - name: 📊 Run Daily Refresh (1 day)
+    - name: 📊 Run Daily Refresh
       env:
         FACEBOOK_ACCESS_TOKEN: ${{ secrets.FACEBOOK_ACCESS_TOKEN }}
         FRESHNESS_BUFFER_HOURS: 2
-        TAIL_BACKFILL_DAYS: 1  # Only fetch 1 day
+        # 1 jour le jour, 7 jours la nuit pour late attribution
+        TAIL_BACKFILL_DAYS: ${{ github.event.schedule == '0 3 * * *' && '7' || '1' }}
         RUN_BASELINE: 0
-      timeout-minutes: 10
+      timeout-minutes: ${{ github.event.schedule == '0 3 * * *' && '30' || '10' }}
       run: |
-        echo "🚀 Running daily refresh (1 day)..."
-        echo "📅 This will fetch data from yesterday and today"
+        if [[ "${{ github.event.schedule }}" == "0 3 * * *" ]]; then
+          echo "🌙 Running nightly refresh (7 days for late attribution)..."
+        else
+          echo "🚀 Running daily refresh (1 day)..."
+        fi
         python3 scripts/production/fetch_with_smart_limits.py
     
     - name: 🗜️ Compress data
@@ -47,6 +62,13 @@ jobs:
       run: |
         echo "Compressing data..."
         python3 scripts/transform_to_columnar.py
+    
+    - name: 💾 Save baseline to cache
+      if: success()
+      uses: actions/cache/save@v4
+      with:
+        path: data/current/baseline_90d_daily.json
+        key: baseline-${{ github.ref_name }}-${{ github.run_id }}
     
     - name: 📋 Copy to dashboard
       if: success()
