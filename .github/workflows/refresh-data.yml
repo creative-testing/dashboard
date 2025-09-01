@@ -51,7 +51,7 @@ jobs:
         # 1 jour le jour, 7 jours la nuit pour late attribution
         TAIL_BACKFILL_DAYS: ${{ github.event.schedule == '0 3 * * *' && '7' || '1' }}
         RUN_BASELINE: 0
-      timeout-minutes: ${{ github.event.schedule == '0 3 * * *' && '30' || '10' }}
+      timeout-minutes: 30
       run: |
         if [[ "${{ github.event.schedule }}" == "0 3 * * *" ]]; then
           echo "🌙 Running nightly refresh (7 days for late attribution)..."
