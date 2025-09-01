@@ -7,15 +7,6 @@ on:
     - cron: '0 12,14,16,18,20,22,0,2,4 * * *'  # 6h,8h,10h,12h,14h,16h,18h,20h,22h Mexico
     
   workflow_dispatch:  # Permet de lancer manuellement depuis GitHub
-    inputs:
-      mode:
-        description: 'Refresh mode'
-        required: true
-        default: 'tail'
-        type: choice
-        options:
-          - tail
-          - baseline
 
 jobs:
   refresh-data:
@@ -39,43 +30,16 @@ jobs:
         python -m pip install --upgrade pip
         pip install requests python-dotenv
     
-    - name: 🔍 Determine refresh mode
-      id: mode
-      run: |
-        # Si lancé manuellement, utiliser le choix de l'utilisateur
-        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-          echo "MODE=${{ github.event.inputs.mode }}" >> $GITHUB_ENV
-        else
-          # Automatique: baseline à 3h du matin (9h UTC), sinon tail
-          HOUR=$(date -u +%H)
-          if [ "$HOUR" = "09" ]; then
-            echo "MODE=baseline" >> $GITHUB_ENV
-          else
-            echo "MODE=tail" >> $GITHUB_ENV
-          fi
-        fi
-    
-    - name: ⚡ Run Tail Refresh (3 days)
-      if: env.MODE == 'tail'
+    - name: 📊 Run Daily Refresh (1 day)
       env:
         FACEBOOK_ACCESS_TOKEN: ${{ secrets.FACEBOOK_ACCESS_TOKEN }}
         FRESHNESS_BUFFER_HOURS: 2
-        TAIL_BACKFILL_DAYS: 3
+        TAIL_BACKFILL_DAYS: 1  # Only fetch 1 day
         RUN_BASELINE: 0
+      timeout-minutes: 10
       run: |
-        echo "🚀 Running TAIL refresh (3 days)..."
-        python3 scripts/production/fetch_with_smart_limits.py
-    
-    - name: 📚 Run Baseline Refresh (90 days)
-      if: env.MODE == 'baseline'
-      env:
-        FACEBOOK_ACCESS_TOKEN: ${{ secrets.FACEBOOK_ACCESS_TOKEN }}
-        FRESHNESS_BUFFER_HOURS: 2
-        RUN_BASELINE: 1
-        FETCH_DAYS: 90
-      timeout-minutes: 50
-      run: |
-        echo "🚀 Running BASELINE refresh (90 days)..."
+        echo "🚀 Running daily refresh (1 day)..."
+        echo "📅 This will fetch data from yesterday and today"
         python3 scripts/production/fetch_with_smart_limits.py
     
     - name: 🗜️ Compress data
@@ -127,5 +91,5 @@ jobs:
       if: always()
       run: |
         echo "Refresh completed with status: ${{ job.status }}"
-        echo "Mode: ${{ env.MODE }}"
+        echo "Mode: Daily (1 day)"
         echo "Time: $(date '+%Y-%m-%d %H:%M:%S') UTC"

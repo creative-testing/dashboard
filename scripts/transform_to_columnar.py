@@ -50,7 +50,28 @@ def transform_data(input_dir='data/current', output_dir='data/optimized'):
     
     # 2. Aggregate by ad_id and period
     print("\n🔄 Aggregating data by period...")
-    periods = ['3d', '7d', '14d', '30d', '90d']
+    
+    # Determine available periods based on data range
+    min_date = min(ad['date'] for ad in all_daily_ads if ad.get('date'))
+    max_date = max(ad['date'] for ad in all_daily_ads if ad.get('date'))
+    min_dt = datetime.strptime(min_date, '%Y-%m-%d')
+    max_dt = datetime.strptime(max_date, '%Y-%m-%d')
+    data_range_days = (max_dt - min_dt).days + 1
+    
+    # Only include periods that we have data for
+    all_periods = ['3d', '7d', '14d', '30d', '90d']
+    periods = []
+    for p in all_periods:
+        period_days = int(p.replace('d', ''))
+        if data_range_days >= period_days:
+            periods.append(p)
+        else:
+            # Still include the period but it will have same data as the previous one
+            periods.append(p)
+    
+    print(f"📊 Data range: {data_range_days} days ({min_date} to {max_date})")
+    print(f"📋 Periods to process: {periods}")
+    
     aggregated_by_period = defaultdict(lambda: defaultdict(lambda: {
         'impressions': 0,
         'clicks': 0,
@@ -65,7 +86,11 @@ def transform_data(input_dir='data/current', output_dir='data/optimized'):
     cutoff_dates = {}
     for period in periods:
         days = int(period.replace('d', ''))
-        cutoff_dates[period] = (reference_dt - timedelta(days=days-1)).strftime('%Y-%m-%d')
+        # If period is larger than data range, use min_date as cutoff
+        if days > data_range_days:
+            cutoff_dates[period] = min_date
+        else:
+            cutoff_dates[period] = (reference_dt - timedelta(days=days-1)).strftime('%Y-%m-%d')
     
     print(f"📈 Period cutoff dates:")
     for period, cutoff in cutoff_dates.items():
@@ -118,10 +143,12 @@ def transform_data(input_dir='data/current', output_dir='data/optimized'):
     # 3. Build columnar structures
     print("\n🏗️ Building columnar format...")
     
-    # Use 90d as the base to include ALL ads (not just 7d)
-    # This ensures we capture all ads that had any activity in the last 90 days
-    base_period = '90d'
+    # Use the largest available period as base to include ALL ads
+    # In TAIL mode, this will be 3d or 7d; in BASELINE mode, this will be 90d
+    # This ensures we capture all ads regardless of the fetch mode
+    base_period = periods[-1]  # Last period is always the largest (3d, 7d, 14d, 30d, 90d)
     base_ads = aggregated_by_period[base_period]
+    print(f"📦 Using {base_period} as base period ({len(base_ads)} unique ads)")
     
     # Sort ads by spend (descending) for better compression
     sorted_ads = sorted(base_ads.items(), key=lambda x: x[1]['spend'], reverse=True)
