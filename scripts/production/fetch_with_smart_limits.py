@@ -593,11 +593,22 @@ def main():
     
     # Charger le baseline existant si mode tail
     existing_baseline = None
+    bootstrap_mode = False
     if not run_baseline and os.path.exists('data/current/baseline_90d_daily.json'):
         try:
             with open('data/current/baseline_90d_daily.json', 'r', encoding='utf-8') as f:
                 existing_baseline = json.load(f)
-                print(f"\n🔄 Baseline existant chargé: {len(existing_baseline.get('daily_ads', []))} ads")
+                existing_ads_count = len(existing_baseline.get('daily_ads', []))
+                print(f"\n🔄 Baseline existant chargé: {existing_ads_count} ads")
+                
+                # Si baseline vide ou très petit, activer bootstrap
+                if existing_ads_count < 100 and os.getenv('BOOTSTRAP_IF_EMPTY') == '1':
+                    print(f"\n🚀 BOOTSTRAP MODE: Baseline trop petit ({existing_ads_count} ads)")
+                    print(f"    Fetching 30 days to bootstrap the system...")
+                    bootstrap_mode = True
+                    # Override the backfill days for bootstrap
+                    import sys
+                    sys.modules[__name__].TAIL_BACKFILL_DAYS = 30
         except Exception as e:
             print(f"⚠️ Impossible de charger le baseline existant: {e}")
     

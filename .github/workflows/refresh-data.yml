@@ -25,14 +25,31 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
     
-    - name: ♻️ Restore baseline cache
-      uses: actions/cache@v4
-      with:
-        path: data/current/baseline_90d_daily.json
-        key: baseline-${{ github.ref_name }}-${{ hashFiles('data/current/baseline_90d_daily.json') }}
-        restore-keys: |
-          baseline-${{ github.ref_name }}-
-          baseline-
+    - name: 🔄 Smart baseline recovery
+      run: |
+        echo "🔍 Checking for existing data..."
+        
+        # Try 1: Check GitHub Pages for existing data
+        if curl -f -s https://fred1433.github.io/creative-testing-dashboard/data/optimized/manifest.json > /dev/null; then
+          ads_count=$(curl -s https://fred1433.github.io/creative-testing-dashboard/data/optimized/manifest.json | python3 -c "import json,sys; print(json.load(sys.stdin).get('ads_count', 0))")
+          echo "🌐 GitHub has $ads_count ads"
+          
+          # If we have substantial data, create a marker
+          if [ "$ads_count" -gt "1000" ]; then
+            echo "✅ Good data found, will use smart fetch"
+            echo "SMART_FETCH_DAYS=30" >> $GITHUB_ENV
+          else
+            echo "⚠️ Limited data, will bootstrap with 7 days"
+            echo "SMART_FETCH_DAYS=7" >> $GITHUB_ENV
+          fi
+        else
+          echo "🆕 No existing data, bootstrapping with 14 days"
+          echo "SMART_FETCH_DAYS=14" >> $GITHUB_ENV
+        fi
+        
+        # Create baseline directory
+        mkdir -p data/current
+        echo '{"daily_ads": [], "metadata": {}}' > data/current/baseline_90d_daily.json
     
     - name: 🐍 Setup Python
       uses: actions/setup-python@v4
@@ -48,8 +65,8 @@ jobs:
       env:
         FACEBOOK_ACCESS_TOKEN: ${{ secrets.FACEBOOK_ACCESS_TOKEN }}
         FRESHNESS_BUFFER_HOURS: 2
-        # 1 jour le jour, 7 jours la nuit pour late attribution
-        TAIL_BACKFILL_DAYS: ${{ github.event.schedule == '0 3 * * *' && '7' || '1' }}
+        # Smart fetch: more days if no baseline, less if we have data
+        TAIL_BACKFILL_DAYS: ${{ env.SMART_FETCH_DAYS || (github.event.schedule == '0 3 * * *' && '7' || '1') }}
         RUN_BASELINE: 0
       timeout-minutes: 30
       run: |
