@@ -1493,7 +1493,11 @@
                             if (referenceHour) {
                                 const hourMatch = referenceHour.match(/(\d{2}):00:00$/);
                                 if (hourMatch) {
-                                    displayText += ` ${hourMatch[1]}h`;
+                                    // Convert from UTC to Mexico City time (UTC-6)
+                                    let hour = parseInt(hourMatch[1]);
+                                    hour = hour - 6; // Mexico City is UTC-6
+                                    if (hour < 0) hour += 24;
+                                    displayText += ` ${hour}h`;
                                 }
                             }
                             displayText += ' (cargando datos...)';
