@@ -551,6 +551,16 @@
             line-height: 1.2;
         }
         
+        .bar-roas {
+            position: absolute;
+            bottom: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        
         /* Spécifique pour Petcare section */
         #petcare-section .bar-chart {
             padding-bottom: 100px;
@@ -1182,60 +1192,56 @@
                         <!-- Picazón - Mayor spend -->
                         <div class="bar" style="height: 100%; background: linear-gradient(135deg, #ff9500 0%, #ff950099 100%);">
                             <span class="bar-value">$8.8K</span>
+                            <span class="bar-roas" style="color: #ff9500">1.2 ⚠️</span>
                             <span class="bar-label">Picazón</span>
                         </div>
                         <!-- Olor A Chetos -->
                         <div class="bar" style="height: 89%; background: linear-gradient(135deg, #ff3b30 0%, #ff3b3099 100%);">
                             <span class="bar-value">$7.9K</span>
+                            <span class="bar-roas" style="color: #ff3b30">0.8 ❌</span>
                             <span class="bar-label">Olor A Chetos</span>
                         </div>
                         <!-- Probióticos Baratos -->
                         <div class="bar" style="height: 81%; background: linear-gradient(135deg, #ff9500 0%, #ff950099 100%);">
                             <span class="bar-value">$7.2K</span>
+                            <span class="bar-roas" style="color: #ff9500">1.5 ⚠️</span>
                             <span class="bar-label">Probióticos Baratos</span>
                         </div>
                         <!-- Bienestar General -->
                         <div class="bar" style="height: 57%; background: linear-gradient(135deg, #00a854 0%, #00a85499 100%);">
                             <span class="bar-value">$5.0K</span>
+                            <span class="bar-roas" style="color: #00a854">2.0 ✅</span>
                             <span class="bar-label">Bienestar General</span>
                         </div>
                         <!-- Restock -->
                         <div class="bar" style="height: 18%; background: linear-gradient(135deg, #00a854 0%, #00a85499 100%);">
                             <span class="bar-value">$1.6K</span>
+                            <span class="bar-roas" style="color: #00a854">5.0 ✅</span>
                             <span class="bar-label">Restock</span>
                         </div>
                         <!-- Lamido de Patas -->
                         <div class="bar" style="height: 17%; background: linear-gradient(135deg, #00a854 0%, #00a85499 100%);">
                             <span class="bar-value">$1.5K</span>
+                            <span class="bar-roas" style="color: #00a854">4.3 ✅</span>
                             <span class="bar-label">Lamido de Patas</span>
                         </div>
                         <!-- Problemas Digestivos -->
                         <div class="bar" style="height: 15%; background: linear-gradient(135deg, #00a854 0%, #00a85499 100%);">
                             <span class="bar-value">$1.3K</span>
+                            <span class="bar-roas" style="color: #00a854">6.4 ✅</span>
                             <span class="bar-label">Problemas Digestivos</span>
                         </div>
                         <!-- Ansiedad - vraiment petit -->
                         <div class="bar" style="height: 3.2%; background: linear-gradient(135deg, #ff3b30 0%, #ff3b3099 100%);">
                             <span class="bar-value">$283</span>
+                            <span class="bar-roas" style="color: #ff3b30">0.6 ❌</span>
                             <span class="bar-label">Ansiedad</span>
                         </div>
                         <!-- Dolor Al Caminar - le plus petit -->
                         <div class="bar" style="height: 1.9%; background: linear-gradient(135deg, #00a854 0%, #00a85499 100%);">
                             <span class="bar-value">$171</span>
+                            <span class="bar-roas" style="color: #00a854">7.8 ✅</span>
                             <span class="bar-label">Dolor Al Caminar</span>
-                        </div>
-                        
-                        <!-- Línea de ROAS debajo -->
-                        <div style="position: absolute; bottom: -30px; left: 0; right: 0; display: flex; font-size: 11px; color: #86868b;">
-                            <span style="flex: 1; text-align: center; color: #ff9500">1.2 ⚠️</span>
-                            <span style="flex: 1; text-align: center; color: #ff3b30">0.8 ❌</span>
-                            <span style="flex: 1; text-align: center; color: #ff9500">1.5 ⚠️</span>
-                            <span style="flex: 1; text-align: center; color: #00a854">2.0 ✅</span>
-                            <span style="flex: 1; text-align: center; color: #00a854">5.0 ✅</span>
-                            <span style="flex: 1; text-align: center; color: #00a854">4.3 ✅</span>
-                            <span style="flex: 1; text-align: center; color: #00a854">6.4 ✅</span>
-                            <span style="flex: 1; text-align: center; color: #ff3b30">0.6 ❌</span>
-                            <span style="flex: 1; text-align: center; color: #00a854">7.8 ✅</span>
                         </div>
                     </div>
             </div>
@@ -1755,25 +1761,17 @@
                         // Make bars clickable to open video
                         const videoUrl = ad.video_url || ad.image_url || '';
                         const clickHandler = videoUrl ? `onclick="window.open('${videoUrl}', '_blank')" style="cursor: pointer;"` : '';
+                        // Add ROAS info for each bar
+                        const icon = ad.roas >= 2.0 ? '✅' : ad.roas >= 1.2 ? '⚠️' : '❌';
+                        const roasColor = ad.roas >= 2.0 ? '#00a854' : ad.roas >= 1.2 ? '#ff9500' : '#ff3b30';
                         return `
                             <div class="bar" ${clickHandler} style="height: ${barHeight}%; background: linear-gradient(135deg, ${roasClass} 0%, ${roasClass}99 100%);" title="Click para ver video">
                                 <span class="bar-value">${displayValue}</span>
+                                <span class="bar-roas" style="color: ${roasColor}">ROAS ${ad.roas.toFixed(1)} ${icon}</span>
                                 <span class="bar-label" title="${escapeHtml(ad.ad_name)}">${escapeHtml(ad.ad_name.substring(0, 10))}</span>
                             </div>
                         `;
                     }).join('');
-                    
-                    // Ajouter une légende ROAS séparée sous le graphique avec icônes
-                    barChart.innerHTML += `
-                        <div style="position: absolute; bottom: -50px; left: 0; right: 0; display: flex; justify-content: space-around; font-size: 11px; color: #86868b;">
-                            ${topAds.map(ad => {
-                                // Seuils ajustés : 2.0+ excellent, 1.2+ bien, <1.2 à améliorer
-                                const icon = ad.roas >= 2.0 ? '✅' : ad.roas >= 1.2 ? '⚠️' : '❌';
-                                const color = ad.roas >= 2.0 ? '#00a854' : ad.roas >= 1.2 ? '#ff9500' : '#ff3b30';
-                                return `<span style="color: ${color}">ROAS ${ad.roas.toFixed(1)} ${icon}</span>`;
-                            }).join('')}
-                        </div>
-                    `;
                 }
             }
             
