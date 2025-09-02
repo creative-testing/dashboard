@@ -986,6 +986,7 @@
                         <th>Compras</th>
                         <th>Awareness</th>
                         <th>Tipo</th>
+                        <th>Ángulo</th>
                         <th>Ver</th>
                         <th>Hipótesis</th>
                         <th>Resultado</th>
@@ -2016,15 +2017,51 @@
         function getAdType(adName) {
             if (!adName) return '—';
             const name = adName.toLowerCase();
+            
+            // Check first element before any separator
+            const firstPart = name.split(/[\/_ ]/)[0];
+            if (firstPart === 'nuevo' || firstPart === 'new') return 'Nuevo';
+            if (firstPart === 'it' || firstPart === 'iteracion' || firstPart === 'iteración' || firstPart === 'iteration') return 'Iteración';
+            
+            // Fallback to general search
             if (name.includes('nuevo') || name.includes('new')) return 'Nuevo';
             if (name.includes('iteracion') || name.includes('iteración') || name.includes('iteration')) return 'Iteración';
-            // Check nomenclature pattern
-            const parts = adName.split('_');
-            for (let part of parts) {
-                if (part.match(/nuevo|new/i)) return 'Nuevo';
-                if (part.match(/iteracion|iteración|iteration/i)) return 'Iteración';
-            }
+            
             return '—'; // Default to unknown if not specified
+        }
+        
+        function getAngle(adName) {
+            if (!adName) return '—';
+            
+            // Nomenclature format uses "/" as separator:
+            // "Nuevo/Problemas Digestivos/NA/ NA/NA/IMG /V2"
+            // "Nuevo/Lamido de patas /NA/ NA/NA/IMG /V1"
+            // "It/Olor a chetos /NA/ NA/NA/IMG /V1"
+            // "Nuevo/Pasto /Martin/28/VID/H1"
+            
+            const parts = adName.split('/');
+            
+            // The angle is the 2nd element (index 1) after Nuevo/It/Iteración
+            if (parts.length >= 2) {
+                let angle = parts[1].trim();
+                
+                // Skip if it's NA or empty
+                if (!angle || angle.toUpperCase() === 'NA') {
+                    return '—';
+                }
+                
+                // Clean up and capitalize properly
+                // "Problemas Digestivos" -> "Problemas Digestivos"
+                // "Olor a chetos" -> "Olor A Chetos"
+                // "RESTOCK" -> "Restock"
+                
+                // Capitalize first letter of each word
+                angle = angle.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+                
+                return angle;
+            }
+            
+            return '—';
         }
         
         function updateTable(data) {
@@ -2116,6 +2153,7 @@
                             <td class="metric">${ad.purchases || 0}</td>
                             <td style="text-align: center;">${getAwarenessLevel(ad.ad_name)}</td>
                             <td style="text-align: center;">${getAdType(ad.ad_name)}</td>
+                            <td style="text-align: center;">${getAngle(ad.ad_name)}</td>
                             <td>${mediaLink}</td>
                             <td>
                                 <div class="hypothesis-wrapper">
