@@ -1758,8 +1758,8 @@
                         // Seuils ajustés : 2.0+ vert, 1.2+ orange, <1.2 rouge
                         const roasClass = ad.roas >= 2.0 ? '#00a854' : ad.roas >= 1.2 ? '#ff9500' : '#ff3b30';
                         const barHeight = (value/maxValue*100);
-                        // Make bars clickable to open video
-                        const videoUrl = ad.video_url || ad.image_url || '';
+                        // Make bars clickable to open video - check 'media' field from optimized data
+                        const videoUrl = ad.media || ad.video_url || ad.image_url || '';
                         const clickHandler = videoUrl ? `onclick="window.open('${videoUrl}', '_blank')" style="cursor: pointer;"` : '';
                         // Add ROAS info for each bar
                         const icon = ad.roas >= 2.0 ? '✅' : ad.roas >= 1.2 ? '⚠️' : '❌';
