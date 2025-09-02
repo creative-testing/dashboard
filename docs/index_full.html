@@ -1873,7 +1873,9 @@
                     .map(([fmt, count]) => {
                         const roas = formatRoas[fmt] || 0;
                         const pct = Math.round((count / total) * 100);
-                        const shortName = fmt === 'INSTAGRAM' ? 'IG' : (fmt === 'UNKNOWN' ? 'OTROS' : fmt);
+                        // Renommer UNKNOWN en OTROS pour cohérence avec le tableau
+                        const displayName = fmt === 'UNKNOWN' ? 'OTROS' : fmt;
+                        const shortName = fmt === 'INSTAGRAM' ? 'IG' : displayName;
                         return `
                             <div class="legend-item">
                                 <div class="legend-color" style="background: ${getFormatColor(fmt)}"></div>
@@ -2276,22 +2278,18 @@
                     formatMetrics[fmt] = {
                         count: 0,
                         totalSpend: 0,
-                        totalRoas: 0,
+                        totalRevenue: 0,
                         totalCtr: 0,
                         totalPurchases: 0,
-                        validRoas: 0,
                         validCtr: 0
                     };
                 }
                 
                 formatMetrics[fmt].count += 1;
                 formatMetrics[fmt].totalSpend += parseFloat(ad.spend || 0);
+                formatMetrics[fmt].totalRevenue += ad.purchase_value || 0;
                 formatMetrics[fmt].totalPurchases += (ad.purchases || 0);
                 
-                if (ad.roas > 0) {
-                    formatMetrics[fmt].totalRoas += ad.roas;
-                    formatMetrics[fmt].validRoas += 1;
-                }
                 const ctr = (parseFloat(ad.clicks || 0) / parseFloat(ad.impressions || 1)) * 100;
                 if (ctr > 0) {
                     formatMetrics[fmt].totalCtr += ctr;
@@ -2299,21 +2297,24 @@
                 }
             });
             
-            // Remplir le tableau
+            // Remplir le tableau - Utiliser le même calcul ROAS que le donut
             const formatTable = document.getElementById('formato-table');
             if (formatTable) {
                 formatTable.innerHTML = Object.entries(formatMetrics)
+                    .filter(([fmt]) => fmt !== 'CAROUSEL') // Filtrer CAROUSEL comme dans le donut
                     .sort((a, b) => b[1].totalSpend - a[1].totalSpend)
                     .map(([fmt, metrics]) => {
-                        const avgRoas = metrics.validRoas > 0 ? (metrics.totalRoas / metrics.validRoas) : 0;
+                        // ROAS pondéré (comme dans le donut)
+                        const avgRoas = metrics.totalSpend > 0 ? (metrics.totalRevenue / metrics.totalSpend) : 0;
                         const avgCtr = metrics.validCtr > 0 ? (metrics.totalCtr / metrics.validCtr) : 0;
                         const cpa = metrics.totalPurchases > 0 ? (metrics.totalSpend / metrics.totalPurchases) : 0;
                         
                         const formatClass = `format-${fmt.toLowerCase()}`;
+                        const displayFormat = fmt === 'UNKNOWN' ? 'OTROS' : fmt;
                         
                         return `
                             <tr>
-                                <td><span class="format-badge ${formatClass}">${fmt}</span></td>
+                                <td><span class="format-badge ${formatClass}">${displayFormat}</span></td>
                                 <td class="metric">${metrics.count.toLocaleString()}</td>
                                 <td class="metric">$${Math.round(metrics.totalSpend).toLocaleString()}</td>
                                 <td class="metric">${avgRoas.toFixed(2)}</td>
