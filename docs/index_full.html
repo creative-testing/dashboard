@@ -1376,7 +1376,20 @@
             if (/[",\n]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
             return s;
         };
-        let currentAccount = 'global';  // Nouveau: track du compte actuel
+        // currentAccount supprimé - on utilise currentAccountName partout
+        
+        // Constantes centralisées pour les seuils ROAS
+        const ROAS_THRESHOLDS = {
+            HIGH: 2.0,    // Vert
+            MEDIUM: 1.2,  // Jaune
+            LOW: 0        // Rouge
+        };
+        const ROAS_COLORS = {
+            HIGH: '#4CAF50',
+            MEDIUM: '#FF9800',
+            LOW: '#f44336'
+        };
+        
         let petcareData = {};  // Nouveau: données Petcare
         let accountsIndex = null; // Index complet des comptes si disponible
         
@@ -1575,7 +1588,7 @@
         
         // Nouveau: fonction pour changer de compte
         function switchAccount(button, account) {
-            currentAccount = account;
+            // Ligne supprimée - currentAccount n'est plus utilisé
             
             // Mettre à jour les boutons
             document.querySelectorAll('.account-btn').forEach(btn => {
@@ -1721,7 +1734,7 @@
                     barChart.innerHTML = topAccounts.map(([name, spend]) => `
                         <div class="bar" style="height: ${(spend/maxSpend*100)}%">
                             <span class="bar-value">$${Math.round(spend/1000)}k</span>
-                            <span class="bar-label">${name.substring(0, 10)}</span>
+                            <span class="bar-label">${escapeHtml(name.substring(0, 10))}</span>
                         </div>
                     `).join('');
                 }
@@ -1731,7 +1744,7 @@
                 const displayMetric = sortBy === 'purchases' ? 'Ventas' : 'Gastos';
                 if (chartTitle) {
                     chartTitle.innerHTML = `
-                        🎯 Top 5 Anuncios de ${currentAccountName.substring(0, 20)}
+                        🎯 Top 5 Anuncios de ${escapeHtml(currentAccountName.substring(0, 20))}
                         <select id="top5-sort" style="margin-left: 10px; padding: 4px 8px; border-radius: 6px; border: 1px solid #d1d1d6; font-size: 12px;" onchange="window.topSortBy = this.value; if(window.currentData) updateCharts(window.currentData);">
                             <option value="spend" ${sortBy === 'spend' ? 'selected' : ''}>Por Gastos</option>
                             <option value="purchases" ${sortBy === 'purchases' ? 'selected' : ''}>Por Ventas</option>
@@ -2053,13 +2066,14 @@
             const tableBody = document.querySelector('#ads-table tbody');
             if (tableBody) {
                 tableBody.innerHTML = pageData.map(ad => {
-                    const roasClass = ad.roas >= 2.0 ? 'roas-high' : ad.roas >= 1.2 ? 'roas-medium' : 'roas-low';
+                    const roasClass = ad.roas >= ROAS_THRESHOLDS.HIGH ? 'roas-high' : ad.roas >= ROAS_THRESHOLDS.MEDIUM ? 'roas-medium' : 'roas-low';
                     const formatClass = `format-${ad.format.toLowerCase()}`;
                     
                     let mediaLink = '—';
-                    if (ad.media_url) {
+                    if (ad.media_url && !ad.media_url.toLowerCase().startsWith('javascript:')) {
                         const icon = ad.format === 'VIDEO' ? '🎬' : '🖼️';
-                        mediaLink = `<a href="${ad.media_url}" target="_blank" rel="noopener noreferrer" class="media-link">${icon}</a>`;
+                        const safeUrl = ad.media_url.replace(/['"]/g, '');
+                        mediaLink = `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer" class="media-link">${icon}</a>`;
                     }
                     
                     // Déterminer le badge d'état
