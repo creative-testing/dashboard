@@ -1012,7 +1012,7 @@
                         <th><input type="date" class="table-filter" data-column="3"></th>
                         <th><input type="number" class="table-filter" data-column="4" placeholder="Min..."></th>
                         <th><input type="number" class="table-filter" data-column="5" placeholder="Min..." step="0.01"></th>
-                        <th><input type="number" class="table-filter" data-column="6" placeholder="Max..."></th>
+                        <th><input type="number" class="table-filter" data-column="6" placeholder="Max..." style="min-width: 65px;"></th>
                         <th><input type="number" class="table-filter" data-column="7" placeholder="Min..."></th>
                         <th>
                             <select class="table-filter" data-column="8">
@@ -1030,10 +1030,15 @@
                                 <option value="iteracion">Iteración</option>
                             </select>
                         </th>
-                        <th></th>
-                        <th><input type="text" class="table-filter" data-column="11" placeholder="Filtrar..."></th>
                         <th>
-                            <select class="table-filter" data-column="12">
+                            <select class="table-filter" data-column="10">
+                                <option value="">Todos</option>
+                            </select>
+                        </th>
+                        <th></th>
+                        <th></th>
+                        <th>
+                            <select class="table-filter" data-column="13">
                                 <option value="">Todos</option>
                                 <option value="ganador">Ganador</option>
                                 <option value="perdedor">Perdedor</option>
@@ -2071,6 +2076,9 @@
             filteredTableData = currentTableData; // Par défaut, pas de filtre
             currentPage = 1; // Réinitialiser à la première page
             
+            // Populate angle filter dynamically
+            populateAngleFilter(ads);
+            
             // Appliquer les filtres si nécessaire
             const spendFilter = document.querySelector('.table-filter[data-column="4"]');
             if (spendFilter && spendFilter.value) {
@@ -2080,6 +2088,40 @@
                 }, 100);
             } else {
                 renderTable();
+            }
+        }
+        
+        function populateAngleFilter(ads) {
+            const angleFilter = document.querySelector('.table-filter[data-column="10"]');
+            if (!angleFilter) return;
+            
+            // Collect unique angles from ads
+            const angles = new Set();
+            ads.forEach(ad => {
+                const angle = getAngle(ad.ad_name);
+                if (angle && angle !== '—') {
+                    angles.add(angle);
+                }
+            });
+            
+            // Sort angles alphabetically
+            const sortedAngles = Array.from(angles).sort();
+            
+            // Keep current selection if exists
+            const currentValue = angleFilter.value;
+            
+            // Clear and rebuild options
+            angleFilter.innerHTML = '<option value="">Todos</option>';
+            sortedAngles.forEach(angle => {
+                const option = document.createElement('option');
+                option.value = angle.toLowerCase();
+                option.textContent = angle;
+                angleFilter.appendChild(option);
+            });
+            
+            // Restore previous selection if it still exists
+            if (currentValue) {
+                angleFilter.value = currentValue;
             }
         }
         
@@ -2283,17 +2325,34 @@
 
                 // 7: achats min
                 if (filters[7] && (ad.purchases || 0) < parseInt(filters[7])) return false;
-
-                // 9: hypothèse (localStorage)
-                if (filters[9]) {
-                    const hyp = (savedHypothesesCache.get(ad.ad_id)?.hypothesis || '').toLowerCase();
-                    if (!hyp.includes(filters[9])) return false;
+                
+                // 8: awareness level
+                if (filters[8]) {
+                    const awareness = getAwarenessLevel(ad.ad_name).toLowerCase();
+                    if (filters[8] === 'most' && !awareness.includes('most')) return false;
+                    if (filters[8] !== 'most' && !awareness.includes(filters[8])) return false;
                 }
-
-                // 10: résultat (ganador/perdedor)
+                
+                // 9: tipo (nuevo/iteración)
+                if (filters[9]) {
+                    const tipo = getAdType(ad.ad_name).toLowerCase();
+                    if (filters[9] === 'nuevo' && tipo !== 'nuevo') return false;
+                    if (filters[9] === 'iteracion' && tipo !== 'iteración') return false;
+                }
+                
+                // 10: ángulo
                 if (filters[10]) {
+                    const angle = getAngle(ad.ad_name).toLowerCase();
+                    if (angle !== filters[10]) return false;
+                }
+                
+                // 11: Ver (no filter)
+                // 12: Hipótesis (no filter)
+                
+                // 13: resultado (ganador/perdedor)
+                if (filters[13]) {
                     const res = savedHypothesesCache.get(ad.ad_id)?.result || '';
-                    if (res !== filters[10]) return false;
+                    if (res !== filters[13]) return false;
                 }
 
                 return true;
