@@ -1425,7 +1425,7 @@
         }
         
         async function updateDataDate() {
-            // Use ACTUAL data date, not reference date to avoid confusion
+            // Use ACTUAL data date from metadata, not reference date
             const dateElement = document.getElementById('data-date');
             const comparisonDatesElement = document.getElementById('comparison-dates');
             
@@ -1435,19 +1435,23 @@
                     let actualDataDate = null;
                     let referenceDate;
                     
-                    // Try to get the REAL max date from actual data
-                    if (window.currentData && window.currentData.ads && window.currentData.ads.length > 0) {
-                        // Find the maximum date_start in the current data
-                        const dates = window.currentData.ads
-                            .map(ad => ad.date_start)
-                            .filter(date => date && date !== 'undefined')
-                            .sort();
+                    // PRIORITY 1: Try to get data_max_date from metadata (real data date)
+                    if (window.optimizedData && window.optimizedData.meta && window.optimizedData.meta.metadata) {
+                        actualDataDate = window.optimizedData.meta.metadata.data_max_date;
                         
-                        if (dates.length > 0) {
-                            actualDataDate = dates[dates.length - 1]; // Latest date
+                        if (actualDataDate) {
                             const [year, month, day] = actualDataDate.split('-');
                             displayText = `${day}/${month}/${year}`;
                             referenceDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), 12, 0, 0);
+                            
+                            // Add hour if data is from today and we have reference_hour
+                            const referenceHour = window.optimizedData.meta.metadata.reference_hour;
+                            if (actualDataDate === window.optimizedData.meta.metadata.reference_date && referenceHour) {
+                                const hourMatch = referenceHour.match(/(\d{2}):00:00$/);
+                                if (hourMatch) {
+                                    displayText += ` ${hourMatch[1]}h`;
+                                }
+                            }
                             
                             // Add a warning if data is old
                             const dataDate = new Date(actualDataDate);
@@ -1459,7 +1463,7 @@
                         }
                     }
                     
-                    // Fallback to metadata if no actual data yet
+                    // PRIORITY 2: Fallback to reference_date if no data_max_date
                     if (!actualDataDate) {
                         let referenceDateStr;
                         let referenceHour = null;

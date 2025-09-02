@@ -709,6 +709,7 @@ def main():
         print("\n🗜️ Lancement de la compression...")
         try:
             import subprocess
+            import sys
             # Résoudre le chemin de manière robuste
             here = os.path.dirname(os.path.abspath(__file__))
             compress_script = os.path.normpath(os.path.join(here, "compress_after_fetch.py"))

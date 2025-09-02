@@ -65,7 +65,7 @@ jobs:
     - name: 📊 Run Daily Refresh
       env:
         FACEBOOK_ACCESS_TOKEN: ${{ secrets.FACEBOOK_ACCESS_TOKEN }}
-        FRESHNESS_BUFFER_HOURS: 2
+        FRESHNESS_BUFFER_HOURS: 1
         # 3 jours par défaut (pour éviter les trous), 7 jours la nuit pour late attribution
         TAIL_BACKFILL_DAYS: ${{ github.event.schedule == '0 3 * * *' && '7' || '3' }}
         RUN_BASELINE: 0

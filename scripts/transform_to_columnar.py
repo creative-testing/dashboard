@@ -236,6 +236,9 @@ def transform_data(input_dir='data/current', output_dir='data/optimized'):
             "reference_hour": reference_hour,
             "buffer_hours": buffer_hours,
             "includes_today": includes_today,
+            "data_min_date": min_date,
+            "data_max_date": max_date,
+            "data_range_days": data_range_days,
             "last_update": datetime.now().isoformat(),
             "source": "baseline_90d_daily.json",
             "pipeline": "v2_direct_from_baseline"
