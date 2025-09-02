@@ -66,15 +66,15 @@ jobs:
       env:
         FACEBOOK_ACCESS_TOKEN: ${{ secrets.FACEBOOK_ACCESS_TOKEN }}
         FRESHNESS_BUFFER_HOURS: 2
-        # 1 jour le jour, 7 jours la nuit pour late attribution
-        TAIL_BACKFILL_DAYS: ${{ github.event.schedule == '0 3 * * *' && '7' || '1' }}
+        # 3 jours par défaut (pour éviter les trous), 7 jours la nuit pour late attribution
+        TAIL_BACKFILL_DAYS: ${{ github.event.schedule == '0 3 * * *' && '7' || '3' }}
         RUN_BASELINE: 0
       timeout-minutes: 30
       run: |
         if [[ "${{ github.event.schedule }}" == "0 3 * * *" ]]; then
           echo "🌙 Running nightly refresh (7 days for late attribution)..."
         else
-          echo "🚀 Running daily refresh (1 day)..."
+          echo "🚀 Running daily refresh (3 days to avoid gaps)..."
         fi
         python3 scripts/production/fetch_with_smart_limits.py
     
