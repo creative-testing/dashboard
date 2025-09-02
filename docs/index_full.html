@@ -259,7 +259,27 @@
             padding: 30px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.07);
             margin-bottom: 40px;
+            overflow-x: auto;
         }
+        
+        #ads-table {
+            min-width: 1400px;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            width: 100%;
+        }
+        
+        #ads-table th:first-child,
+        #ads-table td:first-child {
+            min-width: 250px;
+        }
+        
+        #ads-table td {
+            vertical-align: middle;
+        }
+        
         
         .main-table-card h2 {
             font-size: 24px;
@@ -305,11 +325,8 @@
             color: #1d1d1f;
             max-width: 280px;
             line-height: 1.4;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
             word-break: break-word;
+            padding: 4px 0;
         }
         
         .metric {
@@ -368,11 +385,16 @@
         /* Editable fields */
         .hypothesis-input {
             width: 100%;
-            padding: 4px 8px;
+            min-width: 150px;
+            padding: 8px 10px;
             border: 1px solid #e0e0e2;
             border-radius: 6px;
             font-size: 13px;
             font-family: inherit;
+            resize: vertical;
+            min-height: 36px;
+            max-height: 100px;
+            line-height: 1.5;
         }
         
         .hypothesis-input:focus {
@@ -381,8 +403,14 @@
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
         
+        .hypothesis-wrapper {
+            position: relative;
+            width: 100%;
+        }
+        
         .result-select {
             width: 100%;
+            min-width: 110px;
             padding: 4px 8px;
             border: 1px solid #e0e0e2;
             border-radius: 6px;
@@ -938,8 +966,9 @@
                 </button>
             </div>
             
-            <table id="ads-table">
-                <thead>
+            <div class="table-container">
+                <table id="ads-table">
+                    <thead>
                     <tr>
                         <th>Anuncio</th>
                         <th>Estado</th>
@@ -949,6 +978,8 @@
                         <th>ROAS</th>
                         <th>CPA</th>
                         <th>Compras</th>
+                        <th>Awareness</th>
+                        <th>Tipo</th>
                         <th>Ver</th>
                         <th>Hipótesis</th>
                         <th>Resultado</th>
@@ -976,10 +1007,26 @@
                         <th><input type="number" class="table-filter" data-column="5" placeholder="Min..." step="0.01"></th>
                         <th><input type="number" class="table-filter" data-column="6" placeholder="Max..."></th>
                         <th><input type="number" class="table-filter" data-column="7" placeholder="Min..."></th>
-                        <th></th>
-                        <th><input type="text" class="table-filter" data-column="9" placeholder="Filtrar..."></th>
                         <th>
-                            <select class="table-filter" data-column="10">
+                            <select class="table-filter" data-column="8">
+                                <option value="">Todos</option>
+                                <option value="problem">Problem</option>
+                                <option value="solution">Solution</option>
+                                <option value="product">Product</option>
+                                <option value="most">Most Aware</option>
+                            </select>
+                        </th>
+                        <th>
+                            <select class="table-filter" data-column="9">
+                                <option value="">Todos</option>
+                                <option value="nuevo">Nuevo</option>
+                                <option value="iteracion">Iteración</option>
+                            </select>
+                        </th>
+                        <th></th>
+                        <th><input type="text" class="table-filter" data-column="11" placeholder="Filtrar..."></th>
+                        <th>
+                            <select class="table-filter" data-column="12">
                                 <option value="">Todos</option>
                                 <option value="ganador">Ganador</option>
                                 <option value="perdedor">Perdedor</option>
@@ -1080,6 +1127,7 @@
                     </tr>
                 </tbody>
             </table>
+            </div>
         </div>
         
         <!-- TABLA EFICIENCIA POR FORMATO -->
@@ -1233,8 +1281,8 @@
                                 <h4 style="margin-bottom: 10px;">📈 Insights Clave Petcare:</h4>
                                 <div style="display: flex; justify-content: space-around; text-align: center;">
                                     <div>
-                                        <div style="font-size: 24px; font-weight: 700; color: #00a854;">86%</div>
-                                        <div style="font-size: 12px; color: #86868b;">Nuevo vs 14% Iteración</div>
+                                        <div id="nuevo-percentage" style="font-size: 24px; font-weight: 700; color: #00a854;">—</div>
+                                        <div style="font-size: 12px; color: #86868b;">Nuevo vs <span id="iteracion-percentage">—</span> Iteración</div>
                                     </div>
                                     <div>
                                         <div style="font-size: 24px; font-weight: 700; color: #667eea;">1.86x</div>
@@ -1463,7 +1511,8 @@
             }
         }
         
-        function switchPeriod(button, days) {
+        // Make switchPeriod global for onclick handlers
+        window.switchPeriod = function(button, days) {
             currentPeriod = days;
             
             // Vérifier si les données sont chargées
@@ -1595,8 +1644,37 @@
             }
         }
         
+        function updateNuevoIteracionStats(ads) {
+            // Calculate Nuevo vs Iteración percentages
+            let nuevoCount = 0;
+            let iteracionCount = 0;
+            
+            ads.forEach(ad => {
+                const type = getAdType(ad.ad_name);
+                if (type === 'Nuevo') nuevoCount++;
+                else if (type === 'Iteración') iteracionCount++;
+            });
+            
+            const total = nuevoCount + iteracionCount;
+            if (total > 0) {
+                const nuevoPercent = Math.round((nuevoCount / total) * 100);
+                const iteracionPercent = Math.round((iteracionCount / total) * 100);
+                
+                const nuevoEl = document.getElementById('nuevo-percentage');
+                const iteracionEl = document.getElementById('iteracion-percentage');
+                
+                if (nuevoEl) nuevoEl.textContent = nuevoPercent + '%';
+                if (iteracionEl) iteracionEl.textContent = iteracionPercent + '%';
+            }
+        }
+        
         function updateCharts(data) {
+            // Store data globally for reuse
+            window.currentData = data;
             const ads = data.ads || [];
+            
+            // Update Nuevo vs Iteración stats
+            updateNuevoIteracionStats(ads);
             
             // Changer le titre et le contenu selon la sélection
             const chartTitle = document.querySelector('.chart-card h3');
@@ -1627,25 +1705,52 @@
                     `).join('');
                 }
             } else {
-                // Mode COMPTE SPÉCIFIQUE: Top 5 anuncios par spend
-                if (chartTitle) chartTitle.textContent = `🎯 Top 5 Anuncios de ${currentAccountName.substring(0, 20)}`;
+                // Mode COMPTE SPÉCIFIQUE: Top 5 anuncios
+                const sortBy = window.topSortBy || 'purchases'; // Default to purchases (ventas)
+                const displayMetric = sortBy === 'purchases' ? 'Ventas' : 'Gastos';
+                if (chartTitle) {
+                    chartTitle.innerHTML = `
+                        🎯 Top 5 Anuncios de ${currentAccountName.substring(0, 20)}
+                        <select id="top5-sort" style="margin-left: 10px; padding: 4px 8px; border-radius: 6px; border: 1px solid #d1d1d6; font-size: 12px;" onchange="window.topSortBy = this.value; if(window.currentData) updateCharts(window.currentData);">
+                            <option value="spend" ${sortBy === 'spend' ? 'selected' : ''}>Por Gastos</option>
+                            <option value="purchases" ${sortBy === 'purchases' ? 'selected' : ''}>Por Ventas</option>
+                        </select>
+                    `;
+                }
                 
-                // Filtrer et trier les anuncios par spend
+                // Filtrer et trier les anuncios (sortBy already declared above)
                 const topAds = ads
-                    .filter(ad => parseFloat(ad.spend || 0) > 0)
-                    .sort((a, b) => parseFloat(b.spend || 0) - parseFloat(a.spend || 0))
+                    .filter(ad => {
+                        if (sortBy === 'purchases') {
+                            return parseInt(ad.purchases || 0) > 0;
+                        }
+                        return parseFloat(ad.spend || 0) > 0;
+                    })
+                    .sort((a, b) => {
+                        if (sortBy === 'purchases') {
+                            return parseInt(b.purchases || 0) - parseInt(a.purchases || 0);
+                        }
+                        return parseFloat(b.spend || 0) - parseFloat(a.spend || 0);
+                    })
                     .slice(0, 5);
                 
-                const maxSpend = topAds[0] ? parseFloat(topAds[0].spend) : 1;
+                const maxValue = topAds[0] ? (sortBy === 'purchases' ? parseInt(topAds[0].purchases) : parseFloat(topAds[0].spend)) : 1;
                 
                 if (barChart) {
                     barChart.innerHTML = topAds.map(ad => {
-                        const spend = parseFloat(ad.spend || 0);
+                        const value = sortBy === 'purchases' ? parseInt(ad.purchases || 0) : parseFloat(ad.spend || 0);
+                        const displayValue = sortBy === 'purchases' ? 
+                            `${value} ventas` : 
+                            `$${Math.round(value/1000)}k`;
                         // Seuils ajustés : 2.0+ vert, 1.2+ orange, <1.2 rouge
                         const roasClass = ad.roas >= 2.0 ? '#00a854' : ad.roas >= 1.2 ? '#ff9500' : '#ff3b30';
+                        const barHeight = (value/maxValue*100);
+                        // Make bars clickable to open video
+                        const videoUrl = ad.video_url || ad.image_url || '';
+                        const clickHandler = videoUrl ? `onclick="window.open('${videoUrl}', '_blank')" style="cursor: pointer;"` : '';
                         return `
-                            <div class="bar" style="height: ${(spend/maxSpend*100)}%; background: linear-gradient(135deg, ${roasClass} 0%, ${roasClass}99 100%);">
-                                <span class="bar-value">$${Math.round(spend/1000)}k</span>
+                            <div class="bar" ${clickHandler} style="height: ${barHeight}%; background: linear-gradient(135deg, ${roasClass} 0%, ${roasClass}99 100%);" title="Click para ver video">
+                                <span class="bar-value">${displayValue}</span>
                                 <span class="bar-label" title="${escapeHtml(ad.ad_name)}">${escapeHtml(ad.ad_name.substring(0, 10))}</span>
                             </div>
                         `;
@@ -1844,6 +1949,39 @@
           });
         }
         
+        // Helper functions to extract from nomenclature
+        function getAwarenessLevel(adName) {
+            if (!adName) return '—';
+            const name = adName.toLowerCase();
+            if (name.includes('problem')) return 'Problem';
+            if (name.includes('solution')) return 'Solution';
+            if (name.includes('product')) return 'Product';
+            if (name.includes('most aware') || name.includes('mostaware')) return 'Most Aware';
+            // Try to extract from nomenclature pattern
+            const parts = adName.split('_');
+            if (parts.length > 3) {
+                const awareness = parts[3]; // Usually position 4 in nomenclature
+                if (awareness && awareness.match(/problem|solution|product|most/i)) {
+                    return awareness.charAt(0).toUpperCase() + awareness.slice(1);
+                }
+            }
+            return '—';
+        }
+        
+        function getAdType(adName) {
+            if (!adName) return '—';
+            const name = adName.toLowerCase();
+            if (name.includes('nuevo') || name.includes('new')) return 'Nuevo';
+            if (name.includes('iteracion') || name.includes('iteración') || name.includes('iteration')) return 'Iteración';
+            // Check nomenclature pattern
+            const parts = adName.split('_');
+            for (let part of parts) {
+                if (part.match(/nuevo|new/i)) return 'Nuevo';
+                if (part.match(/iteracion|iteración|iteration/i)) return 'Iteración';
+            }
+            return '—'; // Default to unknown if not specified
+        }
+        
         function updateTable(data) {
             const ads = data.ads || [];
             // Par défaut: tri par "Fecha Inicio" (plus récent → plus ancien)
@@ -1930,8 +2068,19 @@
                             <td class="metric ${roasClass}">${ad.roas.toFixed(2)}</td>
                             <td class="metric">$${ad.cpa > 0 ? ad.cpa.toFixed(0) : '—'}</td>
                             <td class="metric">${ad.purchases || 0}</td>
+                            <td>${getAwarenessLevel(ad.ad_name)}</td>
+                            <td>${getAdType(ad.ad_name)}</td>
                             <td>${mediaLink}</td>
-                            <td><input type="text" class="hypothesis-input" placeholder="Agregar hipótesis..." value="${hypothesis}" data-ad-id="${ad.ad_id}"></td>
+                            <td>
+                                <div class="hypothesis-wrapper">
+                                    <textarea class="hypothesis-input" placeholder="Agregar hipótesis..." data-ad-id="${ad.ad_id}" 
+                                        rows="1"
+                                        style="height: 36px;"
+                                        onkeyup="this.style.height='36px'; this.style.height = Math.min(this.scrollHeight, 100) + 'px';"
+                                        onfocus="this.style.height = Math.min(this.scrollHeight, 100) + 'px';"
+                                        onload="this.style.height = Math.min(this.scrollHeight, 100) + 'px';">${hypothesis}</textarea>
+                                </div>
+                            </td>
                             <td>
                                 <select class="result-select" data-ad-id="${ad.ad_id}">
                                     <option value="">—</option>
