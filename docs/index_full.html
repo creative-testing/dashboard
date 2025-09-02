@@ -648,13 +648,9 @@
         
         /* Preview Section Styles */
         .preview-section {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.07);
-            margin-bottom: 40px;
+            background: transparent;
+            margin-bottom: 20px;
             position: relative;
-            border: 2px dashed #e0e0e2;
         }
         
         .preview-badge {
@@ -1177,14 +1173,11 @@
         <!-- SECTION NOMENCLATURA PETCARE -->
         <div class="preview-section" id="petcare-section" style="display: none;">
             
-            <h2>🐕 Análisis por Nomenclatura - Petcare 2</h2>
-            <p style="color: #86868b; margin-bottom: 25px;">Análisis basado en la nomenclatura de los anuncios</p>
-            
-            <div class="preview-content">
-                <!-- PRIMERA FILA: Todos los 9 ángulos -->
-                <div class="chart-card" style="margin-bottom: 30px;">
-                    <h3>📊 Todos los Ángulos Creativos (9 ángulos identificados)</h3>
-                    <div class="bar-chart" id="petcare-angles-chart" style="padding-bottom: 120px; position: relative;">
+            <!-- ÁNGULOS CREATIVOS -->
+            <div class="chart-card" style="margin-bottom: 30px;">
+                <h3>📊 Ángulos Creativos - Petcare 2</h3>
+                <p style="color: #86868b; font-size: 14px; margin-bottom: 20px;">Análisis basado en la nomenclatura de los anuncios</p>
+                    <div class="bar-chart" id="petcare-angles-chart" style="padding-bottom: 80px; position: relative;">
                         <!-- Ordenados por spend (mayor a menor) -->
                         <!-- Picazón - Mayor spend -->
                         <div class="bar" style="height: 100%; background: linear-gradient(135deg, #ff9500 0%, #ff950099 100%);">
@@ -1233,24 +1226,24 @@
                         </div>
                         
                         <!-- Línea de ROAS debajo -->
-                        <div style="position: absolute; bottom: -50px; left: 0; right: 0; display: flex; justify-content: space-around; font-size: 11px; color: #86868b;">
-                            <span style="color: #ff9500">1.2 ⚠️</span>
-                            <span style="color: #ff3b30">0.8 ❌</span>
-                            <span style="color: #ff9500">1.5 ⚠️</span>
-                            <span style="color: #00a854">2.0 ✅</span>
-                            <span style="color: #00a854">5.0 ✅</span>
-                            <span style="color: #00a854">4.3 ✅</span>
-                            <span style="color: #00a854">6.4 ✅</span>
-                            <span style="color: #ff3b30">0.6 ❌</span>
-                            <span style="color: #00a854">7.8 ✅</span>
+                        <div style="position: absolute; bottom: -30px; left: 0; right: 0; display: flex; font-size: 11px; color: #86868b;">
+                            <span style="flex: 1; text-align: center; color: #ff9500">1.2 ⚠️</span>
+                            <span style="flex: 1; text-align: center; color: #ff3b30">0.8 ❌</span>
+                            <span style="flex: 1; text-align: center; color: #ff9500">1.5 ⚠️</span>
+                            <span style="flex: 1; text-align: center; color: #00a854">2.0 ✅</span>
+                            <span style="flex: 1; text-align: center; color: #00a854">5.0 ✅</span>
+                            <span style="flex: 1; text-align: center; color: #00a854">4.3 ✅</span>
+                            <span style="flex: 1; text-align: center; color: #00a854">6.4 ✅</span>
+                            <span style="flex: 1; text-align: center; color: #ff3b30">0.6 ❌</span>
+                            <span style="flex: 1; text-align: center; color: #00a854">7.8 ✅</span>
                         </div>
                     </div>
-                </div>
-                
-                <!-- SEGUNDA FILA: Performance por creador y insights -->
-                <div style="display: flex; justify-content: center; width: 100%;">
-                    <div class="chart-card" style="max-width: 800px; width: 100%;">
-                        <h3>👥 Performance por Creador (Datos Reales)</h3>
+            </div>
+            
+            <!-- PERFORMANCE POR CREADOR -->
+            <div class="chart-card" style="margin-bottom: 30px;">
+                <h3>👥 Performance por Creador</h3>
+                <p style="color: #86868b; font-size: 14px; margin-bottom: 20px;">Análisis de rendimiento por creador de contenido</p>
                         <div class="creator-grid" id="petcare-creators-grid">
                             <div class="creator-card">
                                 <div class="creator-avatar female">👩</div>
@@ -1277,8 +1270,6 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
             </div>
         </div>
         
