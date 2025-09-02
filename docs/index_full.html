@@ -1818,11 +1818,10 @@
             const formatStats = data.format_distribution || {};
             const formatRoas = calculateFormatRoas(ads);
             
-            // Filtrer CAROUSEL dès le début pour éviter l'espace vide
-            const filteredFormats = Object.entries(formatStats)
-                .filter(([fmt]) => fmt !== 'CAROUSEL');
+            // Ne pas filtrer - montrer TOUS les formats pour transparence
+            const filteredFormats = Object.entries(formatStats);
             
-            // Calculer le total APRÈS le filtrage
+            // Calculer le total avec TOUS les formats
             const total = filteredFormats.reduce((sum, [_, count]) => sum + count, 0);
             const circumference = 2 * Math.PI * 60; // rayon = 60
             
@@ -2301,7 +2300,7 @@
             const formatTable = document.getElementById('formato-table');
             if (formatTable) {
                 formatTable.innerHTML = Object.entries(formatMetrics)
-                    .filter(([fmt]) => fmt !== 'CAROUSEL') // Filtrer CAROUSEL comme dans le donut
+                    // Ne pas filtrer - montrer TOUS les formats
                     .sort((a, b) => b[1].totalSpend - a[1].totalSpend)
                     .map(([fmt, metrics]) => {
                         // ROAS pondéré (comme dans le donut)
