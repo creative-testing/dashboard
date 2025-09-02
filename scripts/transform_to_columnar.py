@@ -203,7 +203,7 @@ def transform_data(input_dir='data/current', output_dir='data/optimized'):
             "acc": account_id,
             "format": ad_data.get('format', 'UNKNOWN'),
             "status": ad_data.get('effective_status', 'UNKNOWN'),
-            "media": ad_data.get('media_url', '')[:200],  # Truncate long URLs
+            "media": ad_data.get('media_url', ''),  # Full URL, no truncation
             "ct": ad_data.get('created_time', '')
         })
     

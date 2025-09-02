@@ -1335,6 +1335,15 @@
             if (!res.ok) throw new Error('Load failed: ' + path);
             return await res.json();
         }
+        
+        // Helper functions for media URL handling
+        function getMediaUrl(ad) {
+            return ad.media_url || ad.media || ad.video_url || ad.image_url || '';
+        }
+        
+        function escapeAttr(s) {
+            return String(s ?? '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+        }
         // Charger toutes les données au démarrage
         let periodsData = {};
         let prevWeekData = null;  // Initialize as null, not empty object
@@ -1750,28 +1759,54 @@
                 const maxValue = topAds[0] ? (sortBy === 'purchases' ? parseInt(topAds[0].purchases) : parseFloat(topAds[0].spend)) : 1;
                 
                 if (barChart) {
+                    // Debug: log media URLs to check what's available
+                    console.log('Top 5 ads media check:');
+                    topAds.forEach(ad => {
+                        console.log('Ad:', ad.ad_name?.substring(0, 30), 
+                                    '- media_url:', ad.media_url, 
+                                    '- media:', ad.media, 
+                                    '- video_url:', ad.video_url, 
+                                    '- image_url:', ad.image_url);
+                    });
+                    
                     barChart.innerHTML = topAds.map(ad => {
                         const value = sortBy === 'purchases' ? parseInt(ad.purchases || 0) : parseFloat(ad.spend || 0);
                         const displayValue = sortBy === 'purchases' ? 
                             `${value} ventas` : 
                             `$${Math.round(value/1000)}k`;
-                        // Seuils ajustés : 2.0+ vert, 1.2+ orange, <1.2 rouge
-                        const roasClass = ad.roas >= 2.0 ? '#00a854' : ad.roas >= 1.2 ? '#ff9500' : '#ff3b30';
-                        const barHeight = (value/maxValue*100);
-                        // Make bars clickable to open video - check 'media' field from optimized data
-                        const videoUrl = ad.media || ad.video_url || ad.image_url || '';
-                        const clickHandler = videoUrl ? `onclick="window.open('${videoUrl}', '_blank')" style="cursor: pointer;"` : '';
-                        // Add ROAS info for each bar
-                        const icon = ad.roas >= 2.0 ? '✅' : ad.roas >= 1.2 ? '⚠️' : '❌';
                         const roasColor = ad.roas >= 2.0 ? '#00a854' : ad.roas >= 1.2 ? '#ff9500' : '#ff3b30';
+                        const roasClass = roasColor; // pour garder votre dégradé
+                        const barHeight = (value / maxValue * 100);
+                        
+                        const mediaUrl = getMediaUrl(ad);
+                        const clickable = !!mediaUrl;
+                        const cursorStyle = clickable ? 'cursor: pointer;' : '';
+                        const icon = ad.roas >= 2.0 ? '✅' : ad.roas >= 1.2 ? '⚠️' : '❌';
+                        
                         return `
-                            <div class="bar" ${clickHandler} style="height: ${barHeight}%; background: linear-gradient(135deg, ${roasClass} 0%, ${roasClass}99 100%);" title="Click para ver video">
+                            <div class="bar" 
+                                 style="height:${barHeight}%; background: linear-gradient(135deg, ${roasClass} 0%, ${roasClass}99 100%); ${cursorStyle}"
+                                 data-media-url="${escapeAttr(mediaUrl)}"
+                                 title="${clickable ? 'Click para ver media' : 'Sin media disponible'}">
                                 <span class="bar-value">${displayValue}</span>
-                                <span class="bar-roas" style="color: ${roasColor}">ROAS ${ad.roas.toFixed(1)} ${icon}</span>
-                                <span class="bar-label" title="${escapeHtml(ad.ad_name)}">${escapeHtml(ad.ad_name.substring(0, 10))}</span>
+                                <span class="bar-roas" style="color:${roasColor}">ROAS ${ad.roas.toFixed(1)} ${icon}</span>
+                                <span class="bar-label" title="${escapeHtml(ad.ad_name)}">${escapeHtml((ad.ad_name||'').substring(0,10))}</span>
                             </div>
                         `;
                     }).join('');
+                    
+                    // Add click event listener for bars with media URLs
+                    barChart.addEventListener('click', (e) => {
+                        const el = e.target.closest('.bar[data-media-url]');
+                        if (!el) return;
+                        const url = el.getAttribute('data-media-url');
+                        if (!url) return;
+                        try {
+                            window.open(url, '_blank', 'noopener');
+                        } catch (err) {
+                            console.error('Open failed', err);
+                        }
+                    });
                 }
             }
             
