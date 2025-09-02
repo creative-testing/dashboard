@@ -1425,57 +1425,74 @@
         }
         
         async function updateDataDate() {
-            // Use manifest date for optimized version
+            // Use ACTUAL data date, not reference date to avoid confusion
             const dateElement = document.getElementById('data-date');
             const comparisonDatesElement = document.getElementById('comparison-dates');
             
             if (dateElement) {
                 try {
-                    // Get reference date dynamically from data
+                    let displayText = 'Cargando...';
+                    let actualDataDate = null;
                     let referenceDate;
-                    let referenceDateStr;
-                    let referenceHour = null;
-                    let bufferHours = null;
-                    let includestoday = false;
                     
-                    // Try to get from optimized data metadata
-                    if (window.optimizedData && window.optimizedData.meta && window.optimizedData.meta.metadata) {
-                        referenceDateStr = window.optimizedData.meta.metadata.reference_date;
-                        referenceHour = window.optimizedData.meta.metadata.reference_hour;
-                        bufferHours = window.optimizedData.meta.metadata.buffer_hours;
-                        includestoday = window.optimizedData.meta.metadata.includes_today;
-                    } 
-                    // Fallback to periodsData
-                    else if (window.periodsData && window.periodsData[7] && window.periodsData[7].metadata) {
-                        referenceDateStr = window.periodsData[7].metadata.reference_date;
-                        referenceHour = window.periodsData[7].metadata.reference_hour;
-                        bufferHours = window.periodsData[7].metadata.buffer_hours;
-                        includestoday = window.periodsData[7].metadata.includes_today;
-                    }
-                    // Final fallback to yesterday
-                    else {
-                        const yesterday = new Date();
-                        yesterday.setDate(yesterday.getDate() - 1);
-                        referenceDateStr = yesterday.toISOString().split('T')[0];
-                    }
-                    
-                    // Parse and format the date (avoid timezone issues by parsing manually)
-                    const [year, month, day] = referenceDateStr.split('-');
-                    referenceDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), 12, 0, 0);
-                    
-                    // Format display with hour if available
-                    let displayText = `${day}/${month}/${year}`;
-                    if (referenceHour) {
-                        // Extract hour from reference_hour (format: "2024-08-29 15:00:00")
-                        const hourMatch = referenceHour.match(/(\d{2}):00:00$/);
-                        if (hourMatch) {
-                            displayText += ` ${hourMatch[1]}h`;
+                    // Try to get the REAL max date from actual data
+                    if (window.currentData && window.currentData.ads && window.currentData.ads.length > 0) {
+                        // Find the maximum date_start in the current data
+                        const dates = window.currentData.ads
+                            .map(ad => ad.date_start)
+                            .filter(date => date && date !== 'undefined')
+                            .sort();
+                        
+                        if (dates.length > 0) {
+                            actualDataDate = dates[dates.length - 1]; // Latest date
+                            const [year, month, day] = actualDataDate.split('-');
+                            displayText = `${day}/${month}/${year}`;
+                            referenceDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), 12, 0, 0);
+                            
+                            // Add a warning if data is old
+                            const dataDate = new Date(actualDataDate);
+                            const today = new Date();
+                            const daysDiff = Math.floor((today - dataDate) / (1000 * 60 * 60 * 24));
+                            if (daysDiff > 1) {
+                                displayText += ` ⚠️ (${daysDiff} días de retraso)`;
+                            }
                         }
                     }
-                    if (includestoday) {
-                        // Remove confusing "partial" text
-                    } else if (bufferHours) {
-                        displayText += ` (-${bufferHours}h)`;
+                    
+                    // Fallback to metadata if no actual data yet
+                    if (!actualDataDate) {
+                        let referenceDateStr;
+                        let referenceHour = null;
+                        
+                        // Try to get from optimized data metadata
+                        if (window.optimizedData && window.optimizedData.meta && window.optimizedData.meta.metadata) {
+                            referenceDateStr = window.optimizedData.meta.metadata.reference_date;
+                            referenceHour = window.optimizedData.meta.metadata.reference_hour;
+                        } 
+                        // Fallback to periodsData
+                        else if (window.periodsData && window.periodsData[7] && window.periodsData[7].metadata) {
+                            referenceDateStr = window.periodsData[7].metadata.reference_date;
+                            referenceHour = window.periodsData[7].metadata.reference_hour;
+                        }
+                        // Final fallback to yesterday
+                        else {
+                            const yesterday = new Date();
+                            yesterday.setDate(yesterday.getDate() - 1);
+                            referenceDateStr = yesterday.toISOString().split('T')[0];
+                        }
+                        
+                        if (referenceDateStr) {
+                            const [year, month, day] = referenceDateStr.split('-');
+                            displayText = `${day}/${month}/${year}`;
+                            referenceDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), 12, 0, 0);
+                            if (referenceHour) {
+                                const hourMatch = referenceHour.match(/(\d{2}):00:00$/);
+                                if (hourMatch) {
+                                    displayText += ` ${hourMatch[1]}h`;
+                                }
+                            }
+                            displayText += ' (cargando datos...)';
+                        }
                     }
                     
                     dateElement.textContent = displayText;
@@ -3182,4 +3199,4 @@
     </script>
 </body>
 </html>
-// Force cache refresh: 1756737899
+<!-- Force cache refresh: 1756737899 -->
