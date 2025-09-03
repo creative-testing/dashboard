@@ -408,7 +408,7 @@
             width: 100%;
         }
         
-        .result-select {
+        .result-select, .awareness-select {
             width: 100%;
             min-width: 110px;
             padding: 4px 8px;
@@ -419,7 +419,7 @@
             cursor: pointer;
         }
         
-        .result-select:focus {
+        .result-select:focus, .awareness-select:focus {
             outline: none;
             border-color: #667eea;
         }
@@ -2001,7 +2001,14 @@
         }
         
         // Helper functions to extract from nomenclature
-        function getAwarenessLevel(adName) {
+        function getAwarenessLevel(adName, adId) {
+            // Check if user has manually set the awareness level
+            const savedData = JSON.parse(localStorage.getItem('adHypotheses') || '{}');
+            if (adId && savedData[adId] && savedData[adId].awarenessLevel) {
+                return savedData[adId].awarenessLevel;
+            }
+            
+            // Otherwise try to extract from nomenclature
             if (!adName) return '—';
             const name = adName.toLowerCase();
             if (name.includes('problem')) return 'Problem';
@@ -2193,7 +2200,15 @@
                             <td class="metric ${roasClass}">${ad.roas.toFixed(2)}</td>
                             <td class="metric">$${ad.cpa > 0 ? ad.cpa.toFixed(0) : '—'}</td>
                             <td class="metric">${ad.purchases || 0}</td>
-                            <td style="text-align: center;">${getAwarenessLevel(ad.ad_name)}</td>
+                            <td style="text-align: center;">
+                                <select class="awareness-select" data-ad-id="${ad.ad_id}">
+                                    <option value="">—</option>
+                                    <option value="Problem" ${getAwarenessLevel(ad.ad_name, ad.ad_id) === 'Problem' ? 'selected' : ''}>Problem</option>
+                                    <option value="Solution" ${getAwarenessLevel(ad.ad_name, ad.ad_id) === 'Solution' ? 'selected' : ''}>Solution</option>
+                                    <option value="Product" ${getAwarenessLevel(ad.ad_name, ad.ad_id) === 'Product' ? 'selected' : ''}>Product</option>
+                                    <option value="Most Aware" ${getAwarenessLevel(ad.ad_name, ad.ad_id) === 'Most Aware' ? 'selected' : ''}>Most Aware</option>
+                                </select>
+                            </td>
                             <td style="text-align: center;">${getAdType(ad.ad_name)}</td>
                             <td style="text-align: center;">${getAngle(ad.ad_name)}</td>
                             <td>${mediaLink}</td>
@@ -2328,7 +2343,7 @@
                 
                 // 8: awareness level
                 if (filters[8]) {
-                    const awareness = getAwarenessLevel(ad.ad_name).toLowerCase();
+                    const awareness = getAwarenessLevel(ad.ad_name, ad.ad_id).toLowerCase();
                     if (filters[8] === 'most' && !awareness.includes('most')) return false;
                     if (filters[8] !== 'most' && !awareness.includes(filters[8])) return false;
                 }
@@ -2907,6 +2922,17 @@
                 const savedData = JSON.parse(localStorage.getItem('adHypotheses') || '{}');
                 if (!savedData[adId]) savedData[adId] = {};
                 savedData[adId].result = value;
+                localStorage.setItem('adHypotheses', JSON.stringify(savedData));
+            }
+            
+            // Save awareness level
+            if (e.target && e.target.classList.contains('awareness-select')) {
+                const adId = e.target.getAttribute('data-ad-id');
+                const value = e.target.value;
+                
+                const savedData = JSON.parse(localStorage.getItem('adHypotheses') || '{}');
+                if (!savedData[adId]) savedData[adId] = {};
+                savedData[adId].awarenessLevel = value;
                 localStorage.setItem('adHypotheses', JSON.stringify(savedData));
             }
         });
