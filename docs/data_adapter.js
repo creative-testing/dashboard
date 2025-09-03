@@ -213,6 +213,12 @@ async function loadOptimizedData() {
                     if (converted) {
                         window.periodsData[numericKey] = converted;
                         console.log(`✅ Background loaded ${period}: ${converted.ads.length} ads`);
+                        
+                        // Rebuild dropdown after 90d is loaded to include all accounts
+                        if (period === '90d' && typeof buildAccountOptions === 'function') {
+                            console.log('🔄 Rebuilding account dropdown with all periods data...');
+                            buildAccountOptions();
+                        }
                     }
                 }
             });
