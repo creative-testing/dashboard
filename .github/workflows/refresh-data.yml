@@ -66,6 +66,11 @@ jobs:
       env:
         FACEBOOK_ACCESS_TOKEN: ${{ secrets.FACEBOOK_ACCESS_TOKEN }}
         FRESHNESS_BUFFER_HOURS: 1
+        # Alignement avec Facebook Ads Manager (Option A choisie par Martin)
+        INCLUDE_TODAY: 0                # Exclure aujourd'hui (comme Ads Manager)
+        ACTION_REPORT_TIME: conversion   # Compter à la date de conversion
+        USE_UNIFIED_ATTR: 1              # Attribution unifiée
+        FILTER_IMPR_GT0: 0               # Ne PAS filtrer les 0 impressions
         # 3 jours par défaut (pour éviter les trous), 7 jours la nuit pour late attribution
         TAIL_BACKFILL_DAYS: ${{ github.event.schedule == '0 3 * * *' && '7' || '3' }}
         RUN_BASELINE: 0
