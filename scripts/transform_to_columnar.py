@@ -117,7 +117,10 @@ def transform_data(input_dir='data/current', output_dir='data/optimized'):
                 agg['spend'] += float(ad.get('spend', 0))
                 agg['purchases'] += int(ad.get('purchases', 0))
                 agg['purchase_value'] += float(ad.get('purchase_value', 0))
-                agg['reach'] += int(ad.get('reach', 0))
+                # IMPORTANT: Reach est NON-ADDITIVE - on ne peut pas sommer les reach journalières
+                # La reach d'une période = personnes uniques, pas la somme des reach journalières
+                # Pour l'instant on met à 0, nécessite un appel API séparé pour avoir la vraie valeur
+                # agg['reach'] += int(ad.get('reach', 0))  # INCORRECT - commenté
                 
                 # Keep first occurrence metadata
                 if 'ad_name' not in agg:
@@ -262,7 +265,7 @@ def transform_data(input_dir='data/current', output_dir='data/optimized'):
                 "purch": sum(ad.get('purchases', 0) for ad in period_ads.values()),
                 "spend_cents": int(sum(ad.get('spend', 0) for ad in period_ads.values()) * 100),
                 "purchase_value_cents": int(sum(ad.get('purchase_value', 0) for ad in period_ads.values()) * 100),
-                "reach": sum(ad.get('reach', 0) for ad in period_ads.values())
+                "reach": 0  # Reach est non-additive, ne peut pas être sommée
             }
         else:
             summary_totals[period] = {
@@ -316,7 +319,8 @@ def transform_data(input_dir='data/current', output_dir='data/optimized'):
                 agg['spend'] += float(ad.get('spend', 0))
                 agg['purchases'] += int(ad.get('purchases', 0))
                 agg['purchase_value'] += float(ad.get('purchase_value', 0))
-                agg['reach'] += int(ad.get('reach', 0))
+                # Reach non-additive - ignorée dans l'agrégation
+                # agg['reach'] += int(ad.get('reach', 0))
                 
                 # Keep metadata from first occurrence
                 if 'ad_name' not in agg:

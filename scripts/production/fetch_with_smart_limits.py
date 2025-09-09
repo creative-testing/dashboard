@@ -135,10 +135,24 @@ class SmartMetaFetcher:
             "level": "ad",
             "time_range": json.dumps({"since": since_date, "until": until_date}),
             "time_increment": "1",
-            "fields": "ad_id,ad_name,campaign_name,campaign_id,adset_name,adset_id,impressions,spend,clicks,reach,frequency,actions,action_values,created_time",
-            "filtering": json.dumps([{"field": "impressions", "operator": "GREATER_THAN", "value": 0}]),
-            "limit": 5000
+            "fields": "ad_id,ad_name,campaign_name,campaign_id,adset_name,adset_id,impressions,spend,clicks,reach,frequency,actions,action_values,conversions,conversion_values,created_time",
+            "limit": 5000,
+            # Aligner sur Facebook Ads Manager
+            "action_report_time": os.getenv("ACTION_REPORT_TIME", "conversion")
         }
+        
+        # Filtre impressions optionnel (OFF par défaut car peut cacher des conversions)
+        if os.getenv("FILTER_IMPR_GT0", "0") == "1":
+            params["filtering"] = json.dumps([{"field": "impressions", "operator": "GREATER_THAN", "value": 0}])
+        
+        # Attribution : utiliser soit unified, soit windows (pas les deux)
+        USE_UNIFIED = os.getenv("USE_UNIFIED_ATTR", "1") == "1"
+        if USE_UNIFIED:
+            params["use_unified_attribution_setting"] = "true"
+        else:
+            params["action_attribution_windows"] = json.dumps(
+                os.getenv("ACTION_ATTR_WINDOWS", "7d_click,1d_view").split(",")
+            )
         
         logger.info(f"  🚀 Création job async pour {account_id}...")
         
@@ -253,10 +267,24 @@ class SmartMetaFetcher:
             "level": "ad",
             "time_range": json.dumps({"since": since_date, "until": until_date}),
             "time_increment": "1",
-            "fields": "ad_id,ad_name,campaign_name,campaign_id,adset_name,adset_id,impressions,spend,clicks,reach,frequency,actions,action_values,created_time",
-            "filtering": json.dumps([{"field": "impressions", "operator": "GREATER_THAN", "value": 0}]),
-            "limit": batch_size
+            "fields": "ad_id,ad_name,campaign_name,campaign_id,adset_name,adset_id,impressions,spend,clicks,reach,frequency,actions,action_values,conversions,conversion_values,created_time",
+            "limit": batch_size,
+            # Aligner sur Facebook Ads Manager
+            "action_report_time": os.getenv("ACTION_REPORT_TIME", "conversion")
         }
+        
+        # Filtre impressions optionnel (OFF par défaut car peut cacher des conversions)
+        if os.getenv("FILTER_IMPR_GT0", "0") == "1":
+            params["filtering"] = json.dumps([{"field": "impressions", "operator": "GREATER_THAN", "value": 0}])
+        
+        # Attribution : utiliser soit unified, soit windows (pas les deux)
+        USE_UNIFIED = os.getenv("USE_UNIFIED_ATTR", "1") == "1"
+        if USE_UNIFIED:
+            params["use_unified_attribution_setting"] = "true"
+        else:
+            params["action_attribution_windows"] = json.dumps(
+                os.getenv("ACTION_ATTR_WINDOWS", "7d_click,1d_view").split(",")
+            )
         
         page = 0
         max_pages = 100
@@ -413,33 +441,45 @@ class SmartMetaFetcher:
         return ads
     
     def _process_purchases(self, ad: dict):
-        """Traite les données d'achats d'une ad"""
+        """Traite les données d'achats d'une ad - Priorise omni_purchase"""
+        # Ordre canonique recommandé (omni_purchase en premier)
         PURCHASE_KEYS = [
             'omni_purchase',
-            'purchase',
+            'purchase', 
             'offsite_conversion.fb_pixel_purchase',
-            'onsite_web_purchase',
+            'onsite_conversion.purchase',
+            'onsite_web_purchase'
         ]
         
-        def _first_present_value(items, keys):
-            mapping = {i.get('action_type', ''): i.get('value', 0) for i in (items or [])}
+        def _map_values(items):
+            """Crée un dictionnaire des valeurs par action_type"""
+            return {i.get('action_type', ''): float(i.get('value', 0) or 0) for i in (items or [])}
+        
+        # 1) Préférer 'conversions'/'conversion_values' si disponibles
+        conv_map = _map_values(ad.get('conversions', []))
+        conv_val_map = _map_values(ad.get('conversion_values', []))
+        
+        # 2) Sinon fallback sur 'actions'/'action_values'
+        act_map = _map_values(ad.get('actions', [])) if not conv_map else {}
+        act_val_map = _map_values(ad.get('action_values', [])) if not conv_val_map else {}
+        
+        def _pick_first(mapping, keys):
+            """Prend la première valeur trouvée dans l'ordre de priorité"""
             for k in keys:
-                if k in mapping:
-                    try:
-                        return float(mapping[k] or 0)
-                    except:
-                        return 0.0
+                if k in mapping and mapping[k] > 0:
+                    return mapping[k]
             return 0.0
         
-        purchases = int(_first_present_value(ad.get('actions', []), PURCHASE_KEYS))
-        purchase_value = float(_first_present_value(ad.get('action_values', []), PURCHASE_KEYS))
+        # Utiliser conversions en priorité, sinon actions
+        purchases = _pick_first(conv_map or act_map, PURCHASE_KEYS)
+        purchase_value = _pick_first(conv_val_map or act_val_map, PURCHASE_KEYS)
         
-        ad['purchases'] = purchases
-        ad['purchase_value'] = purchase_value
+        ad['purchases'] = int(round(purchases))
+        ad['purchase_value'] = float(purchase_value)
         
-        spend = float(ad.get('spend', 0))
-        ad['roas'] = purchase_value / spend if spend > 0 else 0
-        ad['cpa'] = spend / purchases if purchases > 0 else 0
+        spend = float(ad.get('spend', 0) or 0)
+        ad['roas'] = (ad['purchase_value'] / spend) if spend > 0 else 0.0
+        ad['cpa'] = (spend / ad['purchases']) if ad['purchases'] > 0 else 0.0
         ad['date'] = ad.get('date_start', '')
 
 def main():
@@ -498,10 +538,19 @@ def main():
     TAIL_BACKFILL_DAYS = int(os.getenv('TAIL_BACKFILL_DAYS', '3'))
     BASELINE_DAYS = int(os.getenv('FETCH_DAYS', '90'))
     
-    # High-watermark date (données jusqu'à il y a BUFFER_HOURS heures)
-    high_watermark_datetime = datetime.now() - timedelta(hours=BUFFER_HOURS)
+    # Aligner sur Ads Manager (exclure aujourd'hui par défaut)
+    INCLUDE_TODAY = os.getenv('INCLUDE_TODAY', '0') == '1'
+    
+    # High-watermark date (aligné sur Ads Manager)
+    if INCLUDE_TODAY:
+        # Mode ancien : inclure aujourd'hui (avec buffer)
+        high_watermark_datetime = datetime.now() - timedelta(hours=BUFFER_HOURS)
+    else:
+        # Mode Ads Manager : exclure aujourd'hui (jusqu'à hier 23:59:59)
+        high_watermark_datetime = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(seconds=1)
+    
     reference_date = high_watermark_datetime.strftime('%Y-%m-%d')
-    reference_hour = high_watermark_datetime.strftime('%Y-%m-%d %H:00:00')
+    reference_hour = high_watermark_datetime.strftime('%Y-%m-%d %H:%M:%S')
     
     # Déterminer si on fait tail only ou baseline complet
     run_baseline = os.getenv('RUN_BASELINE', '0') == '1'

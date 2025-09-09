@@ -2192,7 +2192,10 @@
                     
                     return `
                         <tr data-ad-id="${ad.ad_id}">
-                            <td class="ad-name" title="${escapeHtml(ad.ad_name)}">${escapeHtml(ad.ad_name)}</td>
+                            <td class="ad-name" title="${escapeHtml(ad.ad_name)} (ID: ${ad.ad_id})">
+                                ${escapeHtml(ad.ad_name)}
+                                <span style="color: #999; font-size: 11px; display: block; margin-top: 2px;">ID: ${ad.ad_id.slice(-8)}</span>
+                            </td>
                             <td>${statusBadge}</td>
                             <td><span class="format-badge ${formatClass}">${ad.format}</span></td>
                             <td>${startDate}</td>
