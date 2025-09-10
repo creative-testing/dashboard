@@ -17,7 +17,9 @@ jobs:
       group: refresh-data
       cancel-in-progress: true
     permissions:
-      contents: write  # Allow push to repository
+      contents: write      # pour Release + checkout
+      pages: write         # pour déployer sur gh-pages
+      id-token: write      # requis par deploy-pages
     
     steps:
     - name: 📥 Checkout repository
@@ -149,33 +151,21 @@ jobs:
           echo '{"period":"prev_week","ads":[]}' > docs/data/optimized/prev_week_compressed.json
         fi
     
-    - name: 📤 Commit and push changes
+    # Deploy to GitHub Pages instead of committing to master
+    - name: 🔧 Setup Pages
       if: success()
-      run: |
-        git config --global user.name "GitHub Actions Bot"
-        git config --global user.email "actions@github.com"
-        
-        git add -f docs/data/optimized/*.json
-        # Also add prev_week if it exists
-        git add -f docs/data/optimized/prev_week_compressed.json 2>/dev/null || true
-        
-        if git diff --staged --quiet; then
-          echo "No changes to commit"
-        else
-          MODE="${{ github.event.schedule == '0 3 * * *' && 'nightly 7d' || 'daily 1d' }}"
-          git commit -m "🤖 Auto-refresh: $(date '+%Y-%m-%d %H:%M') UTC ($MODE)"
-          
-          # Pull before push to handle conflicts
-          git pull --rebase origin master || git pull --no-rebase origin master
-          
-          # Push with retry logic
-          for i in 1 2 3; do
-            git push && break
-            echo "Push attempt $i failed, retrying..."
-            sleep 2
-            git pull --rebase origin master || git pull --no-rebase origin master
-          done
-        fi
+      uses: actions/configure-pages@v5
+    
+    - name: 📦 Upload Pages artifact
+      if: success()
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: docs
+    
+    - name: 🚀 Deploy to GitHub Pages
+      if: success()
+      id: deploy
+      uses: actions/deploy-pages@v4
     
     - name: 📊 Report status
       if: always()

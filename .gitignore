@@ -18,5 +18,7 @@ logs/
 !docs/*.html
 !docs/**/*.html
 
-# Allow docs JSON files for GitHub Pages
+# Allow manually-authored docs JSON if any, but ignore generated optimized data
 !docs/**/*.json
+docs/data/optimized/**
+!docs/data/optimized/.gitkeep
