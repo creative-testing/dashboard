@@ -71,15 +71,15 @@ jobs:
         ACTION_REPORT_TIME: conversion   # Compter à la date de conversion
         USE_UNIFIED_ATTR: 1              # Attribution unifiée
         FILTER_IMPR_GT0: 0               # Ne PAS filtrer les 0 impressions
-        # 3 jours par défaut (pour éviter les trous), 7 jours la nuit pour late attribution
-        TAIL_BACKFILL_DAYS: ${{ github.event.schedule == '0 3 * * *' && '7' || '3' }}
+        # 7 jours pour couvrir les ads moins actives et éviter les URLs expirées
+        TAIL_BACKFILL_DAYS: 7
         RUN_BASELINE: 0
       timeout-minutes: 30
       run: |
         if [[ "${{ github.event.schedule }}" == "0 3 * * *" ]]; then
-          echo "🌙 Running nightly refresh (7 days for late attribution)..."
+          echo "🌙 Running nightly refresh (7 days backfill)..."
         else
-          echo "🚀 Running daily refresh (3 days to avoid gaps)..."
+          echo "🚀 Running daily refresh (7 days backfill)..."
         fi
         python3 scripts/production/fetch_with_smart_limits.py
     
