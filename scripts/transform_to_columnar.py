@@ -48,6 +48,9 @@ def transform_data(input_dir='data/current', output_dir='data/optimized'):
     all_daily_ads = baseline_data.get('daily_ads', [])
     print(f"📊 Total daily records: {len(all_daily_ads):,}")
     
+    # IMPORTANT: Sort by date DESC to keep newest metadata (including fresh URLs)
+    all_daily_ads.sort(key=lambda ad: ad.get('date', ''), reverse=True)
+    
     # 2. Aggregate by ad_id and period
     print("\n🔄 Aggregating data by period...")
     
