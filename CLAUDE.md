@@ -67,3 +67,12 @@ GitHub Releases stocke `baseline_90d_daily.json.zst` (10MB compressé)
 - Tag: "baseline"
 - Mis à jour toutes les 2h
 - Évite perte de données entre runs
+
+## ⚠️ Piège Instagram Carousels (Sept 10, 2025)
+
+**IMPORTANT**: Les carousels Instagram ne sont PAS cassés !
+- **Symptôme**: "Cette publication n'est pas disponible" quand on clique
+- **Cause**: Instagram requiert d'être connecté pour voir les posts
+- **Solution**: Se connecter à Instagram dans le même navigateur
+- **NE PAS** perdre de temps à debugger les URLs ou l'API
+- Dashboard affiche maintenant un avertissement au premier clic

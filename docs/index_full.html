@@ -2170,7 +2170,10 @@
                     if (ad.media_url && !ad.media_url.toLowerCase().startsWith('javascript:')) {
                         const icon = ad.format === 'VIDEO' ? '🎬' : '🖼️';
                         const safeUrl = ad.media_url.replace(/['"]/g, '');
-                        mediaLink = `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer" class="media-link">${icon}</a>`;
+                        // Tooltip discret pour Instagram (pas d'alert intrusive)
+                        const title = safeUrl.includes('instagram.com') ? 
+                            ' title="Instagram carousel - connexion requise si \'Post unavailable\'"' : '';
+                        mediaLink = `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer" class="media-link"${title}>${icon}</a>`;
                     }
                     
                     // Déterminer le badge d'état

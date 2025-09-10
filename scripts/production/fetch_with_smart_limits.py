@@ -370,6 +370,9 @@ class SmartMetaFetcher:
                         media_url = creative["image_url"]
                     elif creative.get("instagram_permalink_url"):
                         format_type = "CAROUSEL"  # Souvent c'est un carousel sur Instagram
+                        # NOTE: Instagram carousel URLs require user to be logged in to Instagram
+                        # They will show "Post isn't available" if not authenticated
+                        # This is NOT a bug - it's Instagram's expected behavior
                         media_url = creative["instagram_permalink_url"]
                     elif creative.get("object_story_spec"):
                         # Chercher dans object_story_spec
