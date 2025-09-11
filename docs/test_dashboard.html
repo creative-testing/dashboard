@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Dashboard</title>
+</head>
+<body>
+    <h1>Testing Data Loading</h1>
+    <div id="status"></div>
+    <script>
+    const timestamp = Date.now();
+    const status = document.getElementById('status');
+    
+    async function testLoad() {
+        try {
+            status.innerHTML += '<p>Loading meta_v1.json...</p>';
+            const meta = await fetch(`./data/optimized/meta_v1.json?t=${timestamp}`).then(r => r.json());
+            status.innerHTML += '<p style="color:green">✅ meta_v1.json loaded: ' + Object.keys(meta).length + ' keys</p>';
+            
+            status.innerHTML += '<p>Loading agg_v1.json...</p>';
+            const agg = await fetch(`./data/optimized/agg_v1.json?t=${timestamp}`).then(r => r.json());
+            status.innerHTML += '<p style="color:green">✅ agg_v1.json loaded: ' + agg.ads.length + ' ads</p>';
+            
+            status.innerHTML += '<p>Loading summary_v1.json...</p>';
+            const summary = await fetch(`./data/optimized/summary_v1.json?t=${timestamp}`).then(r => r.json());
+            status.innerHTML += '<p style="color:green">✅ summary_v1.json loaded</p>';
+            
+            status.innerHTML += '<h2 style="color:green">✅ ALL DATA LOADS SUCCESSFULLY!</h2>';
+        } catch(e) {
+            status.innerHTML += '<p style="color:red">❌ Error: ' + e.message + '</p>';
+            console.error(e);
+        }
+    }
+    
+    testLoad();
+    </script>
+</body>
+</html>

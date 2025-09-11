@@ -166,11 +166,12 @@ async function loadOptimizedData() {
     try {
         console.log('📦 Loading optimized data...');
         
-        // Load all optimized files
+        // Load all optimized files with cache buster
+        const timestamp = Date.now();
         const [meta, agg, summary] = await Promise.all([
-            fetch('./data/optimized/meta_v1.json').then(r => r.json()),
-            fetch('./data/optimized/agg_v1.json').then(r => r.json()),
-            fetch('./data/optimized/summary_v1.json').then(r => r.json())
+            fetch(`./data/optimized/meta_v1.json?t=${timestamp}`).then(r => r.json()),
+            fetch(`./data/optimized/agg_v1.json?t=${timestamp}`).then(r => r.json()),
+            fetch(`./data/optimized/summary_v1.json?t=${timestamp}`).then(r => r.json())
         ]);
         
         console.log(`✅ Loaded ${agg.ads.length} ads (optimized format)`);
