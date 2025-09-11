@@ -132,15 +132,7 @@ class DataAdapter {
             roas: parseFloat(totals.spend > 0 ? (totals.purchase_value / totals.spend).toFixed(2) : '0.00')
         }));
         
-        // Build format distribution
-        const totalAds = ads.length;
-        const format_distribution = {};
-        Object.entries(formatCounts).forEach(([format, count]) => {
-            format_distribution[format.toLowerCase()] = {
-                count: count,
-                percentage: ((count / totalAds) * 100).toFixed(1)
-            };
-        });
+        // Removed format_distribution calculation - never used by dashboard
         
         // Calculate summary statistics needed by dashboard
         const totalSpend = ads.reduce((sum, ad) => sum + parseFloat(ad.spend), 0);
@@ -154,7 +146,6 @@ class DataAdapter {
             period: period,
             ads: ads,
             account_summary: account_summary,
-            format_distribution: format_distribution,
             summary: {
                 total_spend: totalSpend,
                 total_revenue: totalRevenue,

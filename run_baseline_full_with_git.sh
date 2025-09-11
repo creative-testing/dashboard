@@ -21,11 +21,8 @@ if [ $? -eq 0 ]; then
     echo ""
     echo "📤 Push vers GitHub..."
     
-    # Copier les fichiers optimisés vers le dossier dashboard
-    cp data/optimized/*.json dashboards/optimized/data/optimized/
-    
-    # Git operations
-    git add data/optimized/*.json dashboards/optimized/data/optimized/*.json
+    # Git operations - removed cp to non-existent dashboards/ directory
+    git add data/optimized/*.json
     git commit -m "🤖 Auto-refresh data: $(date '+%Y-%m-%d %H:%M') (baseline 90d)" || echo "Pas de changements à commiter"
     
     # Push seulement si il y a eu un commit

@@ -109,11 +109,7 @@ jobs:
         print(f"✂️ Pruned: {old_count} → {len(ads)} rows (keeping since {cutoff})")
         PY
     
-    - name: 🗜️ Compress data
-      if: success()
-      run: |
-        echo "Compressing data..."
-        python3 scripts/transform_to_columnar.py
+    # Compression already done by fetch_with_smart_limits.py via compress_after_fetch.py
     
     - name: 📤 Upload baseline to GitHub Release
       if: success()

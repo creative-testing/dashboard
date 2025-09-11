@@ -61,16 +61,8 @@ def transform_data(input_dir='data/current', output_dir='data/optimized'):
     max_dt = datetime.strptime(max_date, '%Y-%m-%d')
     data_range_days = (max_dt - min_dt).days + 1
     
-    # Only include periods that we have data for
-    all_periods = ['3d', '7d', '14d', '30d', '90d']
-    periods = []
-    for p in all_periods:
-        period_days = int(p.replace('d', ''))
-        if data_range_days >= period_days:
-            periods.append(p)
-        else:
-            # Still include the period but it will have same data as the previous one
-            periods.append(p)
+    # All periods to process
+    periods = ['3d', '7d', '14d', '30d', '90d']
     
     print(f"📊 Data range: {data_range_days} days ({min_date} to {max_date})")
     print(f"📋 Periods to process: {periods}")
