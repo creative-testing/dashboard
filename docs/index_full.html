@@ -2372,10 +2372,12 @@
             function formatChange(change) {
                 // Gérer les cas spéciaux
                 if (!isFinite(change)) {
-                    return `<span style="color: #00a854; font-weight: 600;">Nouveau</span>`;
+                    // Quand on passe de 0 à quelque chose (division par zéro)
+                    return `<span style="color: #6c757d; cursor: help;" title="Sin datos en la semana anterior para comparar">N/A</span>`;
                 }
                 if (Math.abs(change) > 999) {
-                    return `<span style="color: #00a854; font-weight: 600;">+999%+</span>`;
+                    // Pour les changements extrêmes mais calculables
+                    return `<span style="color: #00a854; font-weight: 600;" title="Cambio superior al 999%">+999%+</span>`;
                 }
                 const symbol = change > 0 ? '+' : '';
                 const color = change > 0 ? '#00a854' : change < 0 ? '#ff3b30' : '#6c757d';
