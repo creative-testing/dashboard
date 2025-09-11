@@ -1244,6 +1244,153 @@
         // State filter compte - DÉCLARÉ EN PREMIER
         let currentAccountName = 'Todos';
         
+        // ======================================================================
+        // NOMENCLATURE SERVICE - Parser et analyseur de nomenclature dynamique
+        // ======================================================================
+        const NOMEN = {
+            type: /^(nuevo|new|it|iteraci[oó]n|iteration)\b/i,
+            na: /^(na|n\/a|none|general|s\/?d)$/i,
+            sep: /\s*[|>\-–—_]+\s*/g,
+            age: /\b(\d{2}\s*[-–]\s*\d{2}\+?)\b/,
+            hook: /\b(hook?\s*\d{1,3}|h\d{1,3})\b/i,
+        };
+
+        function normalize(str) { 
+            return (str || '').replace(NOMEN.sep, '/').replace(/\s+/g, ' ').trim(); 
+        }
+        
+        function cleanToken(tok) { 
+            if (!tok) return ''; 
+            const t = tok.trim(); 
+            return NOMEN.na.test(t) ? '' : t; 
+        }
+        
+        function toTitle(s) { 
+            return s.toLowerCase().replace(/\b\w/g, c => c.toUpperCase()); 
+        }
+
+        function parseAdName(raw, overrides) {
+            const res = { 
+                type: '—', 
+                angle: '', 
+                creator: '', 
+                age: '', 
+                hook: '', 
+                format_hint: '', 
+                confidence: 0 
+            };
+            
+            let s = normalize(raw);
+
+            // Split (mais garder aussi la chaîne entière pour regex complémentaires)
+            const parts = s.split('/').map(p => p.trim()).filter(Boolean);
+
+            // Type
+            const t0 = parts[0] || '';
+            if (NOMEN.type.test(t0)) { 
+                res.type = /it|iteraci/i.test(t0) ? 'Iteración' : 'Nuevo'; 
+                res.confidence += 20; 
+            }
+
+            // Angle (2e token)    
+            const a1 = cleanToken(parts[1]);
+            if (a1) { 
+                res.angle = toTitle(a1); 
+                res.confidence += 40; 
+            }
+
+            // Creator (3e)
+            const c2 = cleanToken(parts[2]);
+            if (c2) { 
+                res.creator = toTitle(c2); 
+                res.confidence += 20; 
+            }
+
+            // Age (regex global sur tous les tokens)
+            const all = parts.join(' / ');
+            const ageM = all.match(NOMEN.age);
+            if (ageM) { 
+                res.age = ageM[1].replace(/\s+/g, ''); 
+                res.confidence += 10; 
+            }
+
+            // Hook
+            const hookM = all.match(NOMEN.hook);
+            if (hookM) { 
+                res.hook = hookM[0].toUpperCase().replace(/\s+/g, ''); 
+                res.confidence += 10; 
+            }
+
+            // Format hint
+            if (/vid|video/i.test(all)) res.format_hint = 'VIDEO';
+            else if (/img|image|foto/i.test(all)) res.format_hint = 'IMAGE';
+            else if (/carru?sel|carousel|ig/i.test(all)) res.format_hint = 'CAROUSEL';
+
+            // Overrides
+            if (overrides?.angle) { 
+                res.angle = overrides.angle; 
+                res.confidence = Math.max(res.confidence, 80); 
+            }
+            if (overrides?.creator) { 
+                res.creator = overrides.creator; 
+                res.confidence = Math.max(res.confidence, 80); 
+            }
+
+            // Normalisation des faux "créateurs": "NA", "Hombre/Mujer", "Creador marca" → vider
+            if (/^(hombre|mujer|creador marca|brand)$/i.test(res.creator)) res.creator = '';
+
+            return res;
+        }
+
+        function buildIndexes(ads, getOverrides) {
+            const angle = new Map(); 
+            const creator = new Map();
+            let parsedOK = 0, active = 0;
+
+            for (const ad of ads) {
+                const spend = +ad.spend || 0;
+                if (spend <= 0) continue;  // cohérent avec vos KPI
+                active++;
+
+                const overrides = getOverrides?.(ad.ad_id);
+                const p = parseAdName(ad.ad_name, overrides);
+                if (p.angle || p.creator) parsedOK++;
+
+                const add = (key, map) => {
+                    if (!key) return;
+                    const m = map.get(key) || { ads: 0, spend: 0, purchases: 0, revenue: 0 };
+                    m.ads++; 
+                    m.spend += spend; 
+                    m.purchases += (ad.purchases || 0); 
+                    m.revenue += (ad.purchase_value || 0);
+                    map.set(key, m);
+                };
+
+                add(p.angle || 'OTROS', angle);
+                add(p.creator || 'OTROS', creator);
+            }
+
+            // dérivées pondérées
+            const finish = (map) => {
+                for (const m of map.values()) {
+                    m.roas = m.spend > 0 ? m.revenue / m.spend : 0;
+                    m.cpa = m.purchases > 0 ? m.spend / m.purchases : 0;
+                }
+            };
+            finish(angle); 
+            finish(creator);
+
+            const coverage = active > 0 ? (parsedOK / active) * 100 : 0;
+            const score = (coverage >= 70 ? 40 : coverage >= 40 ? 20 : 0) + 
+                          (active > 0 ? ([...angle.keys()].filter(k => k !== 'OTROS').length > 0 ? 30 : 10) : 0) +
+                          (coverage >= 50 && [...creator.keys()].some(k => k !== 'OTROS') ? 30 : 10);
+
+            return { angle, creator, score: Math.min(score, 100), coverage };
+        }
+        // ======================================================================
+        // FIN NOMENCLATURE SERVICE
+        // ======================================================================
+        
         // Helper: try multiple paths for local JSON
         async function loadJSON(paths) {
             // Simplifié: source de vérité = data/current
@@ -1496,6 +1643,230 @@
         }
         // Function switchAccount removed - was redirecting to non-existent petcare_real_analysis.html
         
+        // ======================================================================
+        // FONCTIONS DE RENDU POUR NOMENCLATURE DYNAMIQUE
+        // ======================================================================
+        
+        function ensureNomenclatureSection() {
+            let sec = document.getElementById('nomenclature-section');
+            if (sec) return sec;
+
+            sec = document.createElement('div');
+            sec.id = 'nomenclature-section';
+            sec.innerHTML = `
+                <!-- ÁNGULOS CREATIVOS -->
+                <div class="chart-card" style="margin-bottom: 30px;">
+                    <h3>📊 Ángulos Creativos - ${currentAccountName}</h3>
+                    <p style="color: #86868b; font-size: 14px; margin-bottom: 20px;">Análisis basado en la nomenclatura de los anuncios</p>
+                    <p class="nomenclatura-note-angles" style="color:#ff9500;font-size:12px;"></p>
+                    <div id="angles-container"></div>
+                </div>
+                
+                <!-- PERFORMANCE POR CREADOR -->
+                <div class="chart-card" style="margin-bottom: 30px;">
+                    <h3>👥 Performance por Creador</h3>
+                    <p style="color: #86868b; font-size: 14px; margin-bottom: 20px;">Análisis de rendimiento por creador de contenido</p>
+                    <p class="nomenclatura-note-creators" style="color:#ff9500;font-size:12px;"></p>
+                    <div id="creators-container"></div>
+                </div>`;
+            
+            // Insérer APRÈS "Comparación Semana a Semana" et AVANT "Análisis Demográfico"
+            // Chercher la section comparison (c'est la 2ème main-table-card)
+            const allMainCards = document.querySelectorAll('.main-table-card');
+            let insertAfter = null;
+            
+            // Trouver la carte "Comparación Semana a Semana"
+            allMainCards.forEach(card => {
+                const h2 = card.querySelector('h2');
+                if (h2 && h2.textContent.includes('Comparación Semana a Semana')) {
+                    insertAfter = card;
+                }
+            });
+            
+            if (insertAfter && insertAfter.nextSibling) {
+                insertAfter.parentNode.insertBefore(sec, insertAfter.nextSibling);
+            } else {
+                // Fallback : insérer avant la section demographics ou à la fin
+                const demoSection = document.querySelector('.preview-section');
+                if (demoSection) {
+                    demoSection.parentNode.insertBefore(sec, demoSection);
+                } else {
+                    document.querySelector('.container').appendChild(sec);
+                }
+            }
+            return sec;
+        }
+
+        function renderAngles(map, container) {
+            const data = [...map.entries()]
+                .filter(([k]) => k) // garder même 'OTROS' mais on le met en bas
+                .sort((a, b) => (b[1].spend - a[1].spend));
+
+            const top = data.filter(([k]) => k !== 'OTROS').slice(0, 10); // Top 10 comme l'original
+            const others = data.find(([k]) => k === 'OTROS');
+
+            if (top.length === 0) {
+                container.innerHTML = '<div style="color:#86868b;text-align:center;padding:20px;">Sin datos suficientes</div>';
+                return;
+            }
+
+            const maxSpend = top[0]?.[1].spend || 1;
+            container.innerHTML = `
+                <div class="bar-chart" style="padding-bottom: 80px; position: relative;">
+                    ${top.map(([k, m]) => {
+                        const h = (m.spend / maxSpend) * 100;
+                        const color = m.roas >= 2 ? '#00a854' : m.roas >= 1.2 ? '#ff9500' : '#ff3b30';
+                        const icon = m.roas >= 2 ? '✅' : m.roas >= 1.2 ? '⚠️' : '❌';
+                        return `
+                            <div class="bar" style="height:${h}%; background: linear-gradient(135deg, ${color} 0%, ${color}99 100%); cursor:pointer"
+                                 title="${k} • $${Math.round(m.spend).toLocaleString()} • ROAS ${m.roas.toFixed(2)}"
+                                 data-angle="${escapeAttr(k)}">
+                                <span class="bar-value">$${Math.round(m.spend / 1000)}k</span>
+                                <span class="bar-roas" style="color:${color}">${m.roas.toFixed(1)} ${icon}</span>
+                                <span class="bar-label">${k.length > 15 ? k.slice(0, 15) + '…' : k}</span>
+                            </div>`;
+                    }).join('')}
+                </div>
+                ${others ? `<div style="text-align:center;color:#86868b;font-size:12px;margin-top:8px;">
+                    Otros ángulos (${data.length - top.length - 1} restantes): $${Math.round(others[1].spend).toLocaleString()} • ROAS ${others[1].roas.toFixed(2)}
+                </div>` : ''}
+            `;
+
+            container.querySelector('.bar-chart')?.addEventListener('click', (e) => {
+                const el = e.target.closest('[data-angle]'); 
+                if (!el) return;
+                const angle = el.getAttribute('data-angle');
+                
+                // Filtrer directement par le nom de l'annonce qui contient l'angle
+                const nameFilter = document.querySelector('.table-filter[data-column="0"]');
+                if (nameFilter) {
+                    nameFilter.value = angle; 
+                    window.applyTableFilters();
+                    window.scrollTo({ 
+                        top: document.querySelector('#ads-table').offsetTop - 80, 
+                        behavior: 'smooth' 
+                    });
+                }
+            });
+        }
+
+        function renderCreators(map, container, partial = false) {
+            if (partial) { 
+                container.innerHTML = `<div style="color:#86868b;text-align:center;padding:20px;">
+                    Cobertura baja — análisis de creadores oculto
+                </div>`; 
+                return; 
+            }
+
+            const data = [...map.entries()]
+                .filter(([k]) => k && k !== 'OTROS')
+                .filter(([_, m]) => m.spend >= 500)  // Seuil plus bas pour voir plus de créateurs
+                .sort((a, b) => b[1].roas - a[1].roas)
+                .slice(0, 9); // Top 9 créateurs
+
+            if (data.length === 0) { 
+                container.innerHTML = `<div style="color:#86868b;text-align:center;padding:20px;">
+                    Sin creadores identificados
+                </div>`; 
+                return; 
+            }
+
+            container.innerHTML = `
+                <div class="creator-grid" style="display: flex; justify-content: center; flex-wrap: wrap; gap: 15px;">
+                    ${data.map(([name, m]) => {
+                        // Déterminer l'avatar et la classe selon le nom
+                        let avatarClass = '';
+                        let avatar = '👤';
+                        let avatarStyle = 'background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);';
+                        
+                        if (/melissa|priscilla|karla|sam|esme|za|abril|karime|deni|aranza/i.test(name)) {
+                            avatar = '👩';
+                            avatarClass = 'female';
+                            avatarStyle = ''; // Utiliser le style de la classe CSS
+                        } else if (/martin|leo|dany/i.test(name)) {
+                            avatar = '👨';
+                            avatarClass = 'male';
+                            avatarStyle = ''; // Utiliser le style de la classe CSS
+                        } else if (/voz ia|ia|ai/i.test(name)) {
+                            avatar = '🤖';
+                        }
+                        
+                        return `
+                            <div class="creator-card" data-creator="${escapeAttr(name)}" style="cursor:pointer">
+                                <div class="creator-avatar ${avatarClass}" ${avatarStyle ? `style="${avatarStyle}"` : ''}>
+                                    ${avatar}
+                                </div>
+                                <div class="creator-name">${name}</div>
+                                <div class="creator-stats">
+                                    ROAS: <span class="creator-roas">${m.roas.toFixed(1)}x</span><br>
+                                    ${m.ads} ads • $${Math.round(m.spend / 1000)}k
+                                </div>
+                            </div>`;
+                    }).join('')}
+                </div>
+            `;
+
+            container.querySelector('.creator-grid')?.addEventListener('click', (e) => {
+                const el = e.target.closest('[data-creator]'); 
+                if (!el) return;
+                const creator = el.getAttribute('data-creator');
+                
+                // Filtrer par nom d'annonce contenant le créateur
+                const nameFilter = document.querySelector('.table-filter[data-column="0"]');
+                if (nameFilter) {
+                    nameFilter.value = creator; 
+                    window.applyTableFilters();
+                    window.scrollTo({ 
+                        top: document.querySelector('#ads-table').offsetTop - 80, 
+                        behavior: 'smooth' 
+                    });
+                }
+            });
+        }
+
+        function updateNomenclatureSections(data) {
+            const ads = data.ads || [];
+            const getOv = (id) => (JSON.parse(localStorage.getItem('nomenclatureOverrides') || '{}'))[id];
+            const { angle, creator, score, coverage } = buildIndexes(ads, getOv);
+
+            const section = ensureNomenclatureSection();
+            const noteAngles = section.querySelector('.nomenclatura-note-angles');
+            const noteCreators = section.querySelector('.nomenclatura-note-creators');
+            
+            // Mettre à jour le nom du compte dans le titre
+            const angleTitle = section.querySelector('.chart-card h3');
+            if (angleTitle) {
+                angleTitle.textContent = `📊 Ángulos Creativos - ${currentAccountName}`;
+            }
+
+            // Masquer pour "Todos" car trop de comptes mélangés
+            if (currentAccountName === 'Todos') {
+                section.style.display = 'none';
+                return;
+            }
+
+            if (score < 40) {
+                section.style.display = 'block';
+                renderAngles(new Map(), section.querySelector('#angles-container'));
+                renderCreators(new Map(), section.querySelector('#creators-container'));
+                noteAngles.innerHTML = `⚠️ Nomenclatura insuficiente (coverage ${coverage.toFixed(0)}%)`;
+                noteCreators.innerHTML = `La mayoría de los anuncios no siguen el formato: Nuevo / Ángulo / Creador / Edad / Hook`;
+                return;
+            }
+
+            noteAngles.textContent = '';
+            noteCreators.textContent = '';
+            section.style.display = 'block';
+            renderAngles(angle, section.querySelector('#angles-container'));
+            
+            if (score >= 70) {
+                renderCreators(creator, section.querySelector('#creators-container'));
+            } else {
+                renderCreators(new Map(), section.querySelector('#creators-container'), true);
+                noteCreators.innerHTML = `ℹ️ Análisis parcial (coverage ${coverage.toFixed(0)}%)`;
+            }
+        }
+        
         function updateDashboard(days) {
             // Load period data on demand if not already loaded
             let data = periodsData[days];
@@ -1532,10 +1903,13 @@
             updateFormatTable(viewData);
             updateComparisonTable();
             
-            // Afficher/masquer la section Petcare selon le compte sélectionné
+            // NOUVEAU: Mise à jour des sections de nomenclature dynamique
+            updateNomenclatureSections(viewData);
+            
+            // Afficher/masquer la section Petcare statique (ancien code)
             const petcareSection = document.getElementById('petcare-section');
             if (petcareSection) {
-                petcareSection.style.display = currentAccountName === 'Petcare 2' ? 'block' : 'none';
+                petcareSection.style.display = 'none'; // Toujours masquer l'ancien code statique
             }
         }
         
