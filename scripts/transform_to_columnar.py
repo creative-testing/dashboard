@@ -289,7 +289,7 @@ def transform_data(input_dir='data/current', output_dir='data/optimized'):
     save_json(manifest_data, f"{output_dir}/manifest.json")
     print(f"  ✓ manifest.json")
     
-    # 5. Handle previous week data if exists
+    # 5. Handle previous week data (robust: build from baseline if needed)
     prev_week_path = os.path.join(input_dir, 'prev_week_data.json')
     if os.path.exists(prev_week_path):
         print("\n🗜️ Compressing previous week data...")
@@ -346,6 +346,68 @@ def transform_data(input_dir='data/current', output_dir='data/optimized'):
         
         save_json(prev_week_compressed, f"{output_dir}/prev_week_compressed.json")
         print(f"  ✓ prev_week_compressed.json ({len(compressed_ads)} ads)")
+    else:
+        # Build previous week from baseline if prev_week_data.json doesn't exist
+        print("\n🧩 prev_week_data.json not found — building previous week from baseline...")
+        reference_dt = datetime.strptime(reference_date, '%Y-%m-%d')
+        prev_week_end = reference_dt - timedelta(days=7)
+        prev_week_start = prev_week_end - timedelta(days=6)
+        
+        # Filter baseline daily rows for the previous week window
+        prev_week_ads = [
+            ad for ad in all_daily_ads
+            if ad.get('date') and prev_week_start.strftime('%Y-%m-%d') <= ad['date'] <= prev_week_end.strftime('%Y-%m-%d')
+        ]
+        
+        if not prev_week_ads:
+            print("  ⚠️ No rows in baseline for previous week — writing empty file for the UI.")
+            save_json({"period": "prev_week", "ads": []}, f"{output_dir}/prev_week_compressed.json")
+        else:
+            # Aggregate by ad_id (same logic as above)
+            prev_week_aggregated = defaultdict(lambda: {
+                'impressions': 0,
+                'clicks': 0,
+                'spend': 0.0,
+                'purchases': 0,
+                'purchase_value': 0.0,
+                'reach': 0
+            })
+            
+            for ad in prev_week_ads:
+                ad_id = ad.get('ad_id')
+                if ad_id:
+                    agg = prev_week_aggregated[ad_id]
+                    agg['impressions'] += int(ad.get('impressions', 0))
+                    agg['clicks'] += int(ad.get('clicks', 0))
+                    agg['spend'] += float(ad.get('spend', 0))
+                    agg['purchases'] += int(ad.get('purchases', 0))
+                    agg['purchase_value'] += float(ad.get('purchase_value', 0))
+                    # Reach non-additive - ignorée
+                    
+                    # Keep metadata from first occurrence
+                    if 'ad_name' not in agg:
+                        for key in ['ad_name', 'campaign_name', 'adset_name', 'account_name']:
+                            agg[key] = ad.get(key, '')
+            
+            # Convert to list format
+            compressed_ads = []
+            for ad_id, data in prev_week_aggregated.items():
+                compressed_ads.append({
+                    'ad_id': ad_id,
+                    'ad_name': data.get('ad_name', ''),
+                    'campaign_name': data.get('campaign_name', ''),
+                    'adset_name': data.get('adset_name', ''),
+                    'account_name': data.get('account_name', ''),
+                    'impressions': data['impressions'],
+                    'clicks': data['clicks'],
+                    'spend': data['spend'],
+                    'purchases': data['purchases'],
+                    'purchase_value': data['purchase_value'],
+                    'reach': data['reach']
+                })
+            
+            save_json({'period': 'prev_week', 'ads': compressed_ads}, f"{output_dir}/prev_week_compressed.json")
+            print(f"  ✓ prev_week_compressed.json ({len(compressed_ads)} ads) [baseline fallback]")
     
     return True
 

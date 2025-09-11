@@ -299,7 +299,82 @@ async function loadOptimizedData() {
                     window.updateComparisonTable();
                 }
             } else {
-                console.error('❌ Previous week data not OK, status:', prevWeekResponse.status);
+                console.warn('❌ No prev_week file. Falling back to compute prev week = (14d - 7d) from optimized agg…');
+                const adapter = window.dataAdapter;
+                if (!adapter) {
+                    console.error('No dataAdapter available for fallback');
+                    return;
+                }
+                
+                const pIdx7 = adapter.aggData.periods.indexOf('7d');
+                const pIdx14 = adapter.aggData.periods.indexOf('14d');
+                if (pIdx7 === -1 || pIdx14 === -1) {
+                    console.error('Periods 7d/14d not found in agg; cannot build fallback prev week.');
+                    return;
+                }
+                
+                const computed = [];
+                for (let i = 0; i < adapter.aggData.ads.length; i++) {
+                    const m7 = adapter.getAggMetrics(i, pIdx7);
+                    const m14 = adapter.getAggMetrics(i, pIdx14);
+                    
+                    // Calculate difference (14d - 7d = prev week)
+                    const diffSpend = Math.max(0, (m14.spend - m7.spend));
+                    const diffPurch = Math.max(0, (m14.purchases - m7.purchases));
+                    const diffPval  = Math.max(0, (m14.purchase_value - m7.purchase_value));
+                    const diffImpr  = Math.max(0, (m14.impressions - m7.impressions));
+                    const diffClk   = Math.max(0, (m14.clicks - m7.clicks));
+                    
+                    // Keep only ads with spend or purchases in prev week
+                    if (diffSpend > 0 || diffPurch > 0) {
+                        const meta = adapter.metaData.ads[i];
+                        const campaign = adapter.metaData.campaigns[meta.cid] || {};
+                        const adset = adapter.metaData.adsets[meta.aid] || {};
+                        const account = adapter.metaData.accounts[meta.acc] || {};
+                        
+                        computed.push({
+                            ad_id: meta.id,
+                            ad_name: meta.name || '',
+                            campaign_name: campaign.name || '',
+                            adset_name: adset.name || '',
+                            account_name: account.name || '',
+                            impressions: diffImpr,
+                            clicks: diffClk,
+                            spend: diffSpend,
+                            purchases: diffPurch,
+                            purchase_value: diffPval,
+                            reach: 0,
+                            roas: diffSpend > 0 ? (diffPval / diffSpend) : 0,
+                            cpa: diffPurch > 0 ? (diffSpend / diffPurch) : 0
+                        });
+                    }
+                }
+                
+                window.prevWeekData = { period: "prev_week", ads: computed };
+                
+                // Calculate summary
+                const totals = computed.reduce((acc, ad) => ({
+                    impressions: acc.impressions + ad.impressions,
+                    clicks: acc.clicks + ad.clicks,
+                    purchases: acc.purchases + ad.purchases,
+                    spend: acc.spend + ad.spend,
+                    purchase_value: acc.purchase_value + ad.purchase_value
+                }), { impressions: 0, clicks: 0, purchases: 0, spend: 0, purchase_value: 0 });
+                
+                window.prevWeekData.summary = {
+                    total_impressions: totals.impressions,
+                    total_clicks: totals.clicks,
+                    total_purchases: totals.purchases,
+                    total_spend: totals.spend,
+                    total_purchase_value: totals.purchase_value,
+                    avg_roas: totals.spend > 0 ? (totals.purchase_value / totals.spend) : 0
+                };
+                
+                console.log('✅ Built prev week from 14d-7d:', computed.length, 'ads');
+                
+                if (window.updateComparisonTable) {
+                    window.updateComparisonTable();
+                }
             }
         } catch (error) {
             console.error('❌ Error loading previous week data:', error);

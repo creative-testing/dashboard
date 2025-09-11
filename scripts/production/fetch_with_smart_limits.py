@@ -722,9 +722,11 @@ def main():
     prev_week_end = datetime.strptime(reference_date, '%Y-%m-%d') - timedelta(days=7)
     prev_week_start = prev_week_end - timedelta(days=6)
     
-    # Filtrer les ads de la semaine précédente
+    # Utiliser le baseline complet (qui contient 90 jours) pour trouver la semaine précédente
+    # all_data ne contient que les 7 derniers jours, donc on utilise baseline['daily_ads']
+    baseline_ads = baseline.get('daily_ads', [])
     prev_week_ads = [
-        ad for ad in all_data 
+        ad for ad in baseline_ads 
         if ad.get('date') and prev_week_start <= datetime.strptime(ad['date'], '%Y-%m-%d') <= prev_week_end
     ]
     
