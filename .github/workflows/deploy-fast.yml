@@ -11,12 +11,12 @@ on:
 
 permissions:
   contents: read
-  actions: read          # nécessaire pour télécharger l'artefact Pages publié
+  actions: read
   pages: write
   id-token: write
 
 concurrency:
-  group: pages-deploy    # sérialise UNIQUEMENT la phase de déploiement
+  group: pages-deploy
   cancel-in-progress: true
 
 jobs:
@@ -24,6 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     steps:
       - name: 📥 Checkout repo (master)
         uses: actions/checkout@v4
@@ -33,26 +34,21 @@ jobs:
           set -e
           mkdir -p _site_prev
           get_latest_run() {
-            # Cherche d'abord un run réussi du refresh-data (le plus courant)
             gh run list --workflow ".github/workflows/refresh-data.yml" --json databaseId,conclusion -L 20 \
               | jq -r '[.[]|select(.conclusion=="success")][0].databaseId // empty'
           }
           RUN_ID="$(get_latest_run)"
           if [ -z "$RUN_ID" ]; then
-            # Fallback: un run réussi du fast-deploy
             RUN_ID=$(gh run list --workflow ".github/workflows/deploy-fast.yml" --json databaseId,conclusion -L 20 \
               | jq -r '[.[]|select(.conclusion=="success")][0].databaseId // empty')
           fi
-
           if [ -n "$RUN_ID" ]; then
             echo "ℹ️ Téléchargement artefact Pages du run $RUN_ID…"
             gh run download "$RUN_ID" -n github-pages -D _site_prev
-            # Dézip si besoin
             if compgen -G "_site_prev/*.zip" > /dev/null; then
               unzip -q _site_prev/*.zip -d _site_prev/extracted
               rm -f _site_prev/*.zip
-              shopt -s dotglob
-              mv _site_prev/extracted/* _site_prev/ || true
+              shopt -s dotglob; mv _site_prev/extracted/* _site_prev/ || true
             fi
           else
             echo "⚠️ Aucun artefact précédent trouvé (premier déploiement ?)"
@@ -62,13 +58,12 @@ jobs:
         run: |
           set -e
           mkdir -p _site
-          # Base = dernier site publié si dispo, sinon l'état du repo
           if [ -d "_site_prev" ] && [ -n "$(ls -A _site_prev 2>/dev/null)" ]; then
             cp -a _site_prev/. _site/
           else
             cp -a docs/. _site/
           fi
-          # Met à jour uniquement HTML/JS/CSS depuis le repo (ET NE TOUCHE PAS aux data optimisées)
+          # Met à jour uniquement HTML/JS/CSS depuis le repo (NE TOUCHE PAS aux data optimisées)
           rsync -a \
             --include="*/" \
             --include="**/*.html" --include="**/*.js" --include="**/*.css" \
@@ -86,117 +81,70 @@ jobs:
             [ -s "_site/data/optimized/meta_v1.json" ] && [ -s "_site/data/optimized/agg_v1.json" ]
           }
 
-          # 0) Si déjà OK (artefact Pages précédent), on sort
+          # 0) Si l'artefact Pages a déjà les data optimisées → OK
           if have_data; then
             echo "✅ Données optimisées déjà présentes"
             exit 0
           fi
 
-          echo "ℹ️ Pas de données optimisées dans l'artefact. Tentative de bootstrap…"
+          echo "ℹ️ Pas de données optimisées. Tentative de bootstrap…"
           mkdir -p data/current data/optimized
 
-          # 1) Essayer de reconstruire depuis le Release 'baseline'
+          # 1) Tenter la reconstruction depuis le Release 'baseline'
           if gh release view "baseline" >/dev/null 2>&1; then
-            echo "⬇️ Téléchargement baseline_90d_daily.json.zst depuis Release…"
+            echo "⬇️ Téléchargement baseline_90d_daily.json.zst…"
             if gh release download "baseline" -p "baseline_90d_daily.json.zst" -D data/current --clobber; then
-              echo "🧰 Install zstd"
-              sudo apt-get update >/dev/null 2>&1
+              sudo apt-get update -y >/dev/null 2>&1
               sudo apt-get install -y zstd >/dev/null 2>&1
-              echo "🗜️ Décompression baseline…"
               zstd -d -f "data/current/baseline_90d_daily.json.zst" -o "data/current/baseline_90d_daily.json"
 
-              echo "🐍 Setup Python & transform columnar"
-              python -V || true
-              echo "::group::Setup Python"
-              pip --version || true
+              # (Optionnel mais propre) disposer d'un Python récent
+              echo "::group::Python"
+              python3 -V || true
               echo "::endgroup::"
+
+              echo "🔄 Transform → format optimisé"
+              python3 scripts/transform_to_columnar.py --input-dir data/current --output-dir data/optimized || true
             else
-              echo "⚠️ Téléchargement de la baseline impossible."
+              echo "⚠️ Échec téléchargement baseline."
             fi
           else
             echo "ℹ️ Aucun Release 'baseline' trouvé."
           fi
 
-          # 2) Si on a la baseline décompressée, produire data/optimized
-          if [ -s "data/current/baseline_90d_daily.json" ]; then
-            echo "🔄 Transformation vers format optimisé…"
-            python3 scripts/transform_to_columnar.py --input-dir data/current --output-dir data/optimized
-          fi
-
-          # 3) Fallback final : générer des fichiers *vides mais valides* (schema-valid)
+          # 2) Fallback final : générer des JSON **valides** (schema-valid) si besoin
           if [ ! -s "data/optimized/meta_v1.json" ] || [ ! -s "data/optimized/agg_v1.json" ]; then
-            echo "🧪 Fallback: génération de fichiers optimisés vides (schema-valid)…"
-            cat > /tmp/generate_empty.py << 'EOF'
-import json, datetime, os
-os.makedirs("data/optimized", exist_ok=True)
-periods = ["3d","7d","14d","30d","90d"]
-now = datetime.datetime.utcnow()
-ref_date = (now - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
-meta = {
-  "version":1,
-  "metadata":{
-    "reference_date": ref_date,
-    "reference_hour": now.strftime("%Y-%m-%d %H:%M:%S"),
-    "buffer_hours": 0,
-    "includes_today": False,
-    "data_min_date": ref_date,
-    "data_max_date": ref_date,
-    "data_range_days": 1,
-    "last_update": now.isoformat(),
-    "source":"bootstrap_empty",
-    "pipeline":"bootstrap"
-  },
-  "ads":[],
-  "campaigns":{},
-  "adsets":{},
-  "accounts":{}
-}
-agg = {
-  "version":1,
-  "periods": periods,
-  "metrics": ["impressions","clicks","purchases","spend","purchase_value","reach"],
-  "ads": [],
-  "values": [],
-  "scales": {"money":100}
-}
-summary = {
-  "periods": periods,
-  "totals": {p: {"impr":0,"clk":0,"purch":0,"spend_cents":0,"purchase_value_cents":0,"reach":0} for p in periods}
-}
-manifest = {
-  "version": now.isoformat(),
-  "ads_count": 0,
-  "periods": periods,
-  "shards": {
-    "meta": {"path":"meta_v1.json"},
-    "agg": {"path":"agg_v1.json"},
-    "summary": {"path":"summary_v1.json"}
-  }
-}
-prevw = {"period":"prev_week","ads":[]}
-for name, data in [
-  ("meta_v1.json", meta),
-  ("agg_v1.json", agg),
-  ("summary_v1.json", summary),
-  ("manifest.json", manifest),
-  ("prev_week_compressed.json", prevw),
-]:
-  with open(os.path.join("data/optimized", name), "w", encoding="utf-8") as f:
-    json.dump(data, f, separators=(",",":"), ensure_ascii=False)
-EOF
-            python3 /tmp/generate_empty.py
+            echo "🧪 Fallback: génération de JSON optimisés vides (schema-valid)…"
+            REF_DATE="$(date -u -d 'yesterday' +%F 2>/dev/null || date -u +%F)"
+            NOW="$(date -u +%FT%TZ)"
+            mkdir -p data/optimized
+
+            cat > data/optimized/meta_v1.json <<JSON
+          {"version":1,"metadata":{"reference_date":"$REF_DATE","reference_hour":"$NOW","buffer_hours":0,"includes_today":false,"data_min_date":"$REF_DATE","data_max_date":"$REF_DATE","data_range_days":1,"last_update":"$NOW","source":"bootstrap_empty","pipeline":"bootstrap"},"ads":[],"campaigns":{},"adsets":{},"accounts":{}}
+          JSON
+
+            cat > data/optimized/agg_v1.json <<'JSON'
+          {"version":1,"periods":["3d","7d","14d","30d","90d"],"metrics":["impressions","clicks","purchases","spend","purchase_value","reach"],"ads":[],"values":[],"scales":{"money":100}}
+          JSON
+
+            cat > data/optimized/summary_v1.json <<'JSON'
+          {"periods":["3d","7d","14d","30d","90d"],"totals":{"3d":{"impr":0,"clk":0,"purch":0,"spend_cents":0,"purchase_value_cents":0,"reach":0},"7d":{"impr":0,"clk":0,"purch":0,"spend_cents":0,"purchase_value_cents":0,"reach":0},"14d":{"impr":0,"clk":0,"purch":0,"spend_cents":0,"purchase_value_cents":0,"reach":0},"30d":{"impr":0,"clk":0,"purch":0,"spend_cents":0,"purchase_value_cents":0,"reach":0},"90d":{"impr":0,"clk":0,"purch":0,"spend_cents":0,"purchase_value_cents":0,"reach":0}}}
+          JSON
+
+            cat > data/optimized/manifest.json <<JSON
+          {"version":"$NOW","ads_count":0,"periods":["3d","7d","14d","30d","90d"],"shards":{"meta":{"path":"meta_v1.json"},"agg":{"path":"agg_v1.json"},"summary":{"path":"summary_v1.json"}}}
+          JSON
+
+            echo '{"period":"prev_week","ads":[]}' > data/optimized/prev_week_compressed.json
           fi
 
-          # 4) Copier les data optimisées dans le bundle final
+          # 3) Copier vers le bundle final et sanity-check
           mkdir -p _site/data/optimized
           cp -a data/optimized/. _site/data/optimized/
-
-          # 5) Dernier garde-fou : vérifier la présence
           if [ ! -s "_site/data/optimized/meta_v1.json" ] || [ ! -s "_site/data/optimized/agg_v1.json" ]; then
             echo "❌ Impossible de préparer des données valides pour le déploiement."
             exit 1
           fi
-
           echo "✅ Données prêtes (baseline/empty fallback)."
           ls -la _site/data/optimized || true
 
