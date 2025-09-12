@@ -14,10 +14,11 @@ jobs:
   refresh-data:
     runs-on: ubuntu-latest
     concurrency:
-      group: refresh-data
+      group: pages-deploy    # même groupe que deploy-fast pour sérialiser
       cancel-in-progress: true
     permissions:
       contents: write      # pour Release + checkout
+      actions: read        # pour télécharger l'artefact Pages publié
       pages: write         # pour déployer sur gh-pages
       id-token: write      # requis par deploy-pages
     
@@ -147,6 +148,42 @@ jobs:
           echo '{"period":"prev_week","ads":[]}' > docs/data/optimized/prev_week_compressed.json
         fi
     
+    # Merge with existing Pages site to preserve code while updating data
+    - name: 📦 Récupérer le dernier site Pages publié (base du merge)
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        set -e
+        mkdir -p _site_prev
+        RUN_ID=$(gh run list --workflow ".github/workflows/refresh-data.yml" --json databaseId,conclusion -L 20 \
+          | jq -r '[.[]|select(.conclusion=="success")][0].databaseId // empty')
+        if [ -z "$RUN_ID" ]; then
+          RUN_ID=$(gh run list --workflow ".github/workflows/deploy-fast.yml" --json databaseId,conclusion -L 20 \
+            | jq -r '[.[]|select(.conclusion=="success")][0].databaseId // empty')
+        fi
+        if [ -n "$RUN_ID" ]; then
+          gh run download "$RUN_ID" -n github-pages -D _site_prev
+          if compgen -G "_site_prev/*.zip" > /dev/null; then
+            unzip -q _site_prev/*.zip -d _site_prev/extracted
+            rm -f _site_prev/*.zip
+            shopt -s dotglob
+            mv _site_prev/extracted/* _site_prev/ || true
+          fi
+        fi
+
+    - name: 🧱 Construire le bundle final (préserver code, remplacer données)
+      run: |
+        set -e
+        mkdir -p _site
+        if [ -d "_site_prev" ] && [ -n "$(ls -A _site_prev 2>/dev/null)" ]; then
+          cp -a _site_prev/. _site/
+        else
+          # Fallback première fois: on part du repo
+          cp -a docs/. _site/
+        fi
+        mkdir -p _site/data/optimized
+        cp -a docs/data/optimized/. _site/data/optimized/
+
     # Deploy to GitHub Pages instead of committing to master
     - name: 🔧 Setup Pages
       if: success()
@@ -156,7 +193,7 @@ jobs:
       if: success()
       uses: actions/upload-pages-artifact@v3
       with:
-        path: docs
+        path: _site
     
     - name: 🚀 Deploy to GitHub Pages
       if: success()
