@@ -25,3 +25,7 @@ logs/
 !docs/**/*.json
 docs/data/optimized/**
 !docs/data/optimized/.gitkeep
+
+# Backups and analysis scripts
+docs/index_full_backup*.html
+scripts/analyze_all_nomenclature.py

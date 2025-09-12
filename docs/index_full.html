@@ -382,6 +382,30 @@
             color: #ff3b30;
         }
         
+        /* Confidence badges */
+        .confidence-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .confidence-badge.high {
+            background: #d4f4dd;
+            color: #00a854;
+        }
+        
+        .confidence-badge.medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .confidence-badge.low {
+            background: #ffe5e5;
+            color: #ff3b30;
+        }
+        
         /* Editable fields */
         .hypothesis-input {
             width: 100%;
@@ -987,6 +1011,9 @@
                         <th>Awareness</th>
                         <th>Tipo</th>
                         <th>Ángulo</th>
+                        <th>Creador</th>
+                        <th>Hook</th>
+                        <th title="Confianza del parser de nomenclatura">Conf.</th>
                         <th>Ver</th>
                         <th>Hipótesis</th>
                         <th>Resultado</th>
@@ -1035,10 +1062,20 @@
                                 <option value="">Todos</option>
                             </select>
                         </th>
+                        <th><input type="text" class="table-filter" data-column="11" placeholder="Creador..."></th>
+                        <th><input type="text" class="table-filter" data-column="12" placeholder="H1,V1..."></th>
+                        <th>
+                            <select class="table-filter" data-column="13">
+                                <option value="">Todos</option>
+                                <option value="high">Alto (>70%)</option>
+                                <option value="medium">Medio (40-70%)</option>
+                                <option value="low">Bajo (<40%)</option>
+                            </select>
+                        </th>
                         <th></th>
                         <th></th>
                         <th>
-                            <select class="table-filter" data-column="13">
+                            <select class="table-filter" data-column="16">
                                 <option value="">Todos</option>
                                 <option value="ganador">Ganador</option>
                                 <option value="perdedor">Perdedor</option>
@@ -1244,105 +1281,310 @@
         // State filter compte - DÉCLARÉ EN PREMIER
         let currentAccountName = 'Todos';
         
+        // =============== Nomenclature Parser v2 ===============
+        // Tolérant aux variantes, avec score de confiance et détection créateur robuste.
         // ======================================================================
-        // NOMENCLATURE SERVICE - Parser et analyseur de nomenclature dynamique
-        // ======================================================================
-        const NOMEN = {
-            type: /^(nuevo|new|it|iteraci[oó]n|iteration)\b/i,
-            na: /^(na|n\/a|none|general|s\/?d)$/i,
-            sep: /\s*[|>\-–—_]+\s*/g,
-            age: /\b(\d{2}\s*[-–]\s*\d{2}\+?)\b/,
-            hook: /\b(hook?\s*\d{1,3}|h\d{1,3})\b/i,
-        };
-
-        function normalize(str) { 
-            return (str || '').replace(NOMEN.sep, '/').replace(/\s+/g, ' ').trim(); 
-        }
         
-        function cleanToken(tok) { 
-            if (!tok) return ''; 
-            const t = tok.trim(); 
-            return NOMEN.na.test(t) ? '' : t; 
-        }
+        (function(){
+          // --- Utils ---
+          const rmAcc = s => (s||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,''); // strip accents (working copy)
+          const toTitle = s => (s||'')
+            .toLowerCase()
+            .replace(/\s+/g,' ')
+            .trim()
+            .replace(/\b\w/g, c => c.toUpperCase());
         
-        function toTitle(s) { 
-            return s.toLowerCase().replace(/\b\w/g, c => c.toUpperCase()); 
-        }
-
-        function parseAdName(raw, overrides) {
-            const res = { 
-                type: '—', 
-                angle: '', 
-                creator: '', 
-                age: '', 
-                hook: '', 
-                format_hint: '', 
-                confidence: 0 
+          // Séparateurs considérés comme "structurels"
+          const SEP = /\s*(?:\||[>]|[_]|—|–)\s*/g;
+          const CODE_LIKE = /\b(?:AG\d+|0\d{3}[A-Z]?\w*|[A-Z]{1,3}\d{2,}S?\w*|SP\d{2,}|PD\d{2,}|[A-Z]{2,}\d{2,})\b/gi;
+        
+          const STOP_CREATOR = /\b(?:na|n\/a|none|s\/?d|general|voz ?ia|creador(?:a)? (?:ia|marca|equipo)|hombre|mujer|mujeres|hombres|varios creadores|organico|voz en off|fase|fase \d+|nuevo|nueva|iteracion|iteración|estatico|estático|video|imagen|img|carousel|carrusel|el|la|los|las|si|no|mas|más|top|top \d+|batch|batch \d+|test|prueba|copy|copia|ad|ad \d+|anuncio|campaña|campaign)\b/i;
+          const NA_RE = /^(?:na|n\/a|none|s\/?d|general|-|—|_)?$/i;
+        
+          // Type
+          const TYPE_RE_STRICT = /^(?:nuevo|new|it|iteracion|iteración|iteration)\b/i;
+          const TYPE_RE_LOOSE  = /\b(?:nuevo|new|it|iteracion|iteración|iteration)\b/i;
+        
+          // Edad
+          const AGE_RE = /\b(\d{2})\s*[-–]\s*(\d{2}\+?)\b/;
+        
+          // Hook / Version
+          const HOOK_RE = /\b(?:hook?\s*\d+|h\d+)\b/gi;
+          const V_RE = /\bv0*(\d+)(?:\s*-\s*\d+)?\b/i;           // V1 / V02
+          const VH_RE = /\bv0*(\d+)h0*(\d+)\b/i;                // V1H2 / V01H02
+          const H_COMPACT = /\bh(\d{2,})\b/i;                   // H123
+          const H_RANGE = /\bh(\d+)\s*[-–]\s*(\d+)\b/i;         // H1-3
+        
+          // Mots à retirer du champ Angle (clutter méthodo/campagne)
+          const ANGLE_NOISE = /\b(?:tc|am|cp|fase\s*\d+|video|vid|imagen|img|estatico|estático|carousel|carrusel|ig|ad\s*\d+|copia|promo(?:ciones)?)\b/gi;
+          const V_PREFIX = /^\s*[ve]-\s*/i;
+        
+          // Formats (hint)
+          function formatHint(s){
+            if (/vid(?:eo)?/i.test(s)) return 'VIDEO';
+            if (/(?:image|imagen|img|foto|estatico|estático)/i.test(s)) return 'IMAGE';
+            if (/(?:carru?sel|carousel|ig)/i.test(s)) return 'CAROUSEL';
+            return '';
+          }
+        
+          // Lexique dynamique de créateurs (rempli depuis les données courantes)
+          let KNOWN_CREATORS = new Map(); // name -> count
+        
+          function setKnownCreatorsFromAds(ads){
+            KNOWN_CREATORS.clear();
+            const add = (name)=> {
+              if (!name) return;
+              const key = toTitle(name);
+              KNOWN_CREATORS.set(key, (KNOWN_CREATORS.get(key)||0) + 1);
             };
+            // naïf mais efficace : prendre le 3e segment si type au 1er, + tous tokens ressemblant à "prénom/nom"
+            for (const ad of ads||[]) {
+              const raw = (ad.ad_name||'').trim();
+              if (!raw) continue;
+        
+              // segmentation "light" façon parser
+              const s0 = raw.replace(SEP, '/').replace(/\s{2,}/g,' ').trim();
+              const parts = s0.split('/').map(x=>x.trim()).filter(Boolean);
+              const p0 = rmAcc(parts[0]||'').toLowerCase();
+        
+              // 3e segment comme candidat créateur
+              if (TYPE_RE_STRICT.test(p0) && parts[2] && !STOP_CREATOR.test(parts[2]) && !/\d/.test(parts[2])) {
+                add(parts[2]);
+              }
+        
+              // fallback : récolte de tokens "Prénom Nom"
+              const caps = (raw.match(/\b[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+)?\b/g) || []);
+              caps.forEach(add);
+            }
+          }
+        
+          function creatorLikelihood(tok){
+            if (!tok) return 0;
+            const s = tok.trim();
+            if (!s || STOP_CREATOR.test(s)) return 0;
             
-            let s = normalize(raw);
-
-            // Split (mais garder aussi la chaîne entière pour regex complémentaires)
+            // Rejeter si contient des chiffres (sauf initiales comme "Daniel B.")
+            if (/\d/.test(s) && !/^[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+\s+[A-Z]\.$/.test(s)) return 0;
+            
+            // Rejeter les mots trop courts (sauf dans le lexique)
+            const key = toTitle(s);
+            if (s.length <= 2 && !KNOWN_CREATORS.has(key)) return 0;
+            
+            // Rejeter si c'est un mot commun espagnol/anglais
+            const commonWords = /^(el|la|los|las|de|del|en|con|sin|por|para|sobre|desde|hasta|si|no|mas|más|muy|mucho|poco|todo|nada|algo|bien|mal|mejor|peor|grande|pequeño|nuevo|viejo|joven|bueno|malo|primero|ultimo|the|and|or|but|with|without|for|from|about|more|less|very|much|all|nothing|something|good|bad|new|old|young|first|last)$/i;
+            if (commonWords.test(s)) return 0;
+            
+            // heuristique "nom propre" - Plus strict maintenant
+            // Doit commencer par majuscule et avoir au moins 3 lettres
+            const proper = /^[A-ZÁÉÍÓÚÑ][a-záéíóúñ]{2,}(?:\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+|(?:\s+[A-Z]\b))?$/.test(s);
+            
+            // Si pas un nom propre ET pas dans le lexique, rejeter
+            if (!proper && !KNOWN_CREATORS.has(key)) return 0;
+            
+            let score = proper ? 0.4 : 0.2;
+            
+            // Bonus si dans le lexique ET vu plusieurs fois
+            if (KNOWN_CREATORS.has(key)) {
+              const c = KNOWN_CREATORS.get(key);
+              if (c >= 2) score += 0.3; // Fort bonus si vu plusieurs fois
+              else score += 0.1;
+            }
+            
+            // pénalités pour tout en majuscules (sauf si court comme "MAX")
+            if (s === s.toUpperCase() && s.length > 3 && !KNOWN_CREATORS.has(key)) score -= 0.3;
+            
+            return Math.max(0, Math.min(1, score));
+          }
+        
+          function expandHCompact(s, acc){
+            // H123 → H1,H2,H3
+            const m = s.match(H_COMPACT);
+            if (!m) return;
+            const digits = m[1];
+            digits.split('').forEach(d => acc.add(`H${parseInt(d,10)}`));
+          }
+        
+          function expandHRange(s, acc){
+            // H1-3 → H1,H2,H3
+            const m = s.match(H_RANGE);
+            if (!m) return;
+            const a = parseInt(m[1],10), b = parseInt(m[2],10);
+            if (isFinite(a) && isFinite(b) && b >= a && b - a <= 10) {
+              for (let i=a; i<=b; i++) acc.add(`H${i}`);
+            }
+          }
+        
+          function parseHookBlock(all){
+            const hooks = new Set();
+            let v = null;
+        
+            // VxHy fusionnés
+            const mvh = all.match(VH_RE);
+            if (mvh) {
+              const mm = VH_RE.exec(all);
+              v = `V${parseInt(mm[1],10)}`;
+              hooks.add(`H${parseInt(mm[2],10)}`);
+            }
+        
+            // Vx isolé (si pas déjà capturé)
+            if (!v) {
+              const mv = all.match(/\bV0*\d+\b/i);
+              if (mv) v = `V${parseInt(mv[0].slice(1),10)}`;
+            }
+        
+            // H compact / range
+            expandHCompact(all, hooks);
+            expandHRange(all, hooks);
+        
+            // H classiques & Hook X
+            (all.match(HOOK_RE)||[]).forEach(h => {
+              const num = h.replace(/hook?/i,'H').replace(/[^\d]/g,'');
+              if (num) hooks.add(`H${parseInt(num,10)}`);
+            });
+        
+            // Listes "H1,2,3" / "H1 y 3"
+            (all.match(/\bH\d+(?:\s*[,y]\s*\d+)+\b/gi)||[]).forEach(seq=>{
+              const first = /H(\d+)/i.exec(seq)[1];
+              hooks.add(`H${parseInt(first,10)}`);
+              (seq.match(/\d+/g)||[]).slice(1).forEach(n => hooks.add(`H${parseInt(n,10)}`));
+            });
+        
+            // Nettoyage et rendu
+            const hList = [...hooks].sort((a,b)=>parseInt(a.slice(1))-parseInt(b.slice(1)));
+            if (v && hList.length === 1) return `${v}${hList[0]}`;     // ex: V1H2
+            if (v && hList.length > 1) return `${v}/${hList.join(',')}`;
+            if (hList.length > 0) return hList.join(',');
+            return v || '';
+          }
+        
+          function cleanAngle(s){
+            if (!s || NA_RE.test(s)) return '';
+            // retire bruit méthodo
+            let out = s.replace(ANGLE_NOISE,' ').replace(/\s{2,}/g,' ').trim();
+            // gère v- / e-
+            out = out.replace(V_PREFIX,'');
+            // coupe listes très longues en gardant l'idée principale si besoin
+            return toTitle(out);
+          }
+        
+          function parseAdNameV2(raw, overrides){
+            const res = { type:'—', angle:'', creator:'', age:'', hook:'', format_hint:'', confidence:0, field_confidence:{type:0,angle:0,creator:0,age:0,hook:0} };
+            if (!raw) return res;
+            
+            // Apply overrides if provided
+            if (overrides) {
+                if (overrides.angle) res.angle = overrides.angle;
+                if (overrides.creator) res.creator = overrides.creator;
+                if (overrides.age) res.age = overrides.age;
+                if (overrides.hook) res.hook = overrides.hook;
+                if (overrides.type) res.type = overrides.type;
+                res.confidence = 100; // Override always has full confidence
+                res.field_confidence = {type:1,angle:1,creator:1,age:1,hook:1};
+                return res;
+            }
+        
+            // Copie de travail
+            let s = String(raw);
+            // indice format (pour dashboard)
+            res.format_hint = formatHint(s);
+        
+            // purge codes isolés pour ne pas polluer
+            s = s.replace(CODE_LIKE, ' ');
+            // standardise séparateurs
+            s = s.replace(SEP, '/').replace(/\s*\/\s*/g,'/').replace(/\s{2,}/g,' ').trim();
+        
             const parts = s.split('/').map(p => p.trim()).filter(Boolean);
-
-            // Type
-            const t0 = parts[0] || '';
-            if (NOMEN.type.test(t0)) { 
-                res.type = /it|iteraci/i.test(t0) ? 'Iteración' : 'Nuevo'; 
-                res.confidence += 20; 
-            }
-
-            // Angle (2e token)    
-            const a1 = cleanToken(parts[1]);
-            if (a1) { 
-                res.angle = toTitle(a1); 
-                res.confidence += 40; 
-            }
-
-            // Creator (3e)
-            const c2 = cleanToken(parts[2]);
-            if (c2) { 
-                res.creator = toTitle(c2); 
-                res.confidence += 20; 
-            }
-
-            // Age (regex global sur tous les tokens)
             const all = parts.join(' / ');
-            const ageM = all.match(NOMEN.age);
-            if (ageM) { 
-                res.age = ageM[1].replace(/\s+/g, ''); 
-                res.confidence += 10; 
+            const allNoAcc = rmAcc(all).toLowerCase();
+        
+            // === TYPE ===
+            const p0 = rmAcc(parts[0]||'').toLowerCase();
+            if (TYPE_RE_STRICT.test(p0)) {
+              res.type = /(?:^|\/)\s*(?:it|iteracion|iteración|iteration)\b/i.test(parts[0]) ? 'Iteración' : 'Nuevo';
+              res.confidence += (res.field_confidence.type = 40);
+            } else {
+              const m = allNoAcc.match(TYPE_RE_LOOSE);
+              if (m) {
+                res.type = /it|iteracion|iteración|iteration/.test(m[0]) ? 'Iteración' : 'Nuevo';
+                res.confidence += (res.field_confidence.type = 20);
+              }
             }
-
-            // Hook
-            const hookM = all.match(NOMEN.hook);
-            if (hookM) { 
-                res.hook = hookM[0].toUpperCase().replace(/\s+/g, ''); 
-                res.confidence += 10; 
+        
+            // === ANGLE ===
+            let angle = '';
+            if (parts[1] && !NA_RE.test(parts[1])) angle = cleanAngle(parts[1]);
+            if (!angle) {
+              // fallback "v-xxx" ou "e-xxx"
+              const m = all.match(/\b[ve]-\s*([a-záéíóúñ ]{3,})\b/i);
+              if (m) angle = cleanAngle(m[1]);
             }
-
-            // Format hint
-            if (/vid|video/i.test(all)) res.format_hint = 'VIDEO';
-            else if (/img|image|foto/i.test(all)) res.format_hint = 'IMAGE';
-            else if (/carru?sel|carousel|ig/i.test(all)) res.format_hint = 'CAROUSEL';
-
-            // Overrides
-            if (overrides?.angle) { 
-                res.angle = overrides.angle; 
-                res.confidence = Math.max(res.confidence, 80); 
+            if (angle) {
+              const direct = !!(parts[1] && cleanAngle(parts[1]));
+              res.angle = angle;
+              res.confidence += (res.field_confidence.angle = direct ? 40 : 20);
             }
-            if (overrides?.creator) { 
-                res.creator = overrides.creator; 
-                res.confidence = Math.max(res.confidence, 80); 
+        
+            // === CREATOR === (3e segment prioritaire)
+            let creatorCand = (parts[2]||'').trim();
+            let cScore = 0;
+            if (creatorCand && !NA_RE.test(creatorCand)) {
+              cScore = creatorLikelihood(creatorCand);
             }
-
-            // Normalisation des faux "créateurs": "NA", "Hombre/Mujer", "Creador marca" → vider
-            if (/^(hombre|mujer|creador marca|brand)$/i.test(res.creator)) res.creator = '';
-
+            // fallback : chercher un Nom Propre crédible ailleurs si score trop bas
+            if (cScore < 0.5) {
+              const caps = (all.match(/\b[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+(?:\s+[A-ZÁÉÍÓÚÑ][a-záéíóúñ]+|(?:\s+[A-Z]\b))?\b/g) || [])
+                .map(toTitle)
+                .filter(n => creatorLikelihood(n) >= 0.5);
+              if (caps.length) {
+                // prioriser ceux connus
+                caps.sort((a,b)=>(KNOWN_CREATORS.get(b)||0)-(KNOWN_CREATORS.get(a)||0));
+                creatorCand = caps[0];
+                cScore = creatorLikelihood(creatorCand);
+              }
+            }
+            if (cScore >= 0.5) {
+              res.creator = toTitle(creatorCand);
+              // 30 de base + bonus fréquentation (cap à 50 total champ)
+              const base = 30;
+              const bonus = Math.min(20, Math.max(0, (cScore-0.3)*100));
+              res.confidence += (res.field_confidence.creator = base + bonus);
+            }
+        
+            // === AGE ===
+            const ageM = all.match(AGE_RE);
+            if (ageM) {
+              res.age = `${ageM[1]}-${ageM[2]}`.replace(/\s+/g,'');
+              res.confidence += (res.field_confidence.age = 10);
+            }
+        
+            // === HOOK ===
+            const hook = parseHookBlock(all);
+            if (hook) {
+              res.hook = hook.toUpperCase().replace(/\s+/g,'');
+              // +5 si compact/range expand détecté
+              const extra = (H_COMPACT.test(all) || H_RANGE.test(all)) ? 15 : 10;
+              res.confidence += (res.field_confidence.hook = extra);
+            }
+        
+            // clamp
+            res.confidence = Math.min(100, res.confidence);
             return res;
-        }
+          }
+        
+          // Expose dans la page
+          window.NOMEN_V2 = {
+            parseAdName: parseAdNameV2,
+            setKnownCreatorsFromAds
+          };
+        })();
+        
+        // Compatibilité : remplacer l'ancien parseAdName
+        const parseAdName = window.NOMEN_V2.parseAdName;
 
         function buildIndexes(ads, getOverrides) {
+            // NEW: alimente le lexique dynamique des créateurs
+            if (Array.isArray(ads)) window.NOMEN_V2.setKnownCreatorsFromAds(ads);
+            
             const angle = new Map(); 
             const creator = new Map();
             let parsedOK = 0, active = 0;
@@ -2287,36 +2529,26 @@
         
         function getAngle(adName) {
             if (!adName) return '—';
-            
-            // Nomenclature format uses "/" as separator:
-            // "Nuevo/Problemas Digestivos/NA/ NA/NA/IMG /V2"
-            // "Nuevo/Lamido de patas /NA/ NA/NA/IMG /V1"
-            // "It/Olor a chetos /NA/ NA/NA/IMG /V1"
-            // "Nuevo/Pasto /Martin/28/VID/H1"
-            
-            const parts = adName.split('/');
-            
-            // The angle is the 2nd element (index 1) after Nuevo/It/Iteración
-            if (parts.length >= 2) {
-                let angle = parts[1].trim();
-                
-                // Skip if it's NA or empty
-                if (!angle || angle.toUpperCase() === 'NA') {
-                    return '—';
-                }
-                
-                // Clean up and capitalize properly
-                // "Problemas Digestivos" -> "Problemas Digestivos"
-                // "Olor a chetos" -> "Olor A Chetos"
-                // "RESTOCK" -> "Restock"
-                
-                // Capitalize first letter of each word
-                angle = angle.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
-                
-                return angle;
-            }
-            
-            return '—';
+            const parsed = window.NOMEN_V2.parseAdName(adName);
+            return parsed.angle || '—';
+        }
+        
+        function getCreator(adName) {
+            if (!adName) return '—';
+            const parsed = window.NOMEN_V2.parseAdName(adName);
+            return parsed.creator || '—';
+        }
+        
+        function getHook(adName) {
+            if (!adName) return '—';
+            const parsed = window.NOMEN_V2.parseAdName(adName);
+            return parsed.hook || '—';
+        }
+        
+        function getConfidence(adName) {
+            if (!adName) return 0;
+            const parsed = window.NOMEN_V2.parseAdName(adName);
+            return parsed.confidence;
         }
         
         function updateTable(data) {
@@ -2460,6 +2692,14 @@
                             </td>
                             <td style="text-align: center;">${getAdType(ad.ad_name)}</td>
                             <td style="text-align: center;">${getAngle(ad.ad_name)}</td>
+                            <td style="text-align: center;">${getCreator(ad.ad_name)}</td>
+                            <td style="text-align: center;">${getHook(ad.ad_name)}</td>
+                            <td style="text-align: center;">
+                                <span class="confidence-badge ${getConfidence(ad.ad_name) > 70 ? 'high' : getConfidence(ad.ad_name) > 40 ? 'medium' : 'low'}" 
+                                      title="Confianza del parser: ${getConfidence(ad.ad_name)}%">
+                                    ${getConfidence(ad.ad_name)}%
+                                </span>
+                            </td>
                             <td>${mediaLink}</td>
                             <td>
                                 <div class="hypothesis-wrapper">
@@ -2610,13 +2850,33 @@
                     if (angle !== filters[10]) return false;
                 }
                 
-                // 11: Ver (no filter)
-                // 12: Hipótesis (no filter)
+                // 11: creador
+                if (filters[11]) {
+                    const creator = getCreator(ad.ad_name).toLowerCase();
+                    if (!creator.includes(filters[11])) return false;
+                }
                 
-                // 13: resultado (ganador/perdedor)
+                // 12: hook
+                if (filters[12]) {
+                    const hook = getHook(ad.ad_name).toLowerCase();
+                    if (!hook.includes(filters[12])) return false;
+                }
+                
+                // 13: confidence
                 if (filters[13]) {
+                    const conf = getConfidence(ad.ad_name);
+                    if (filters[13] === 'high' && conf <= 70) return false;
+                    if (filters[13] === 'medium' && (conf <= 40 || conf > 70)) return false;
+                    if (filters[13] === 'low' && conf > 40) return false;
+                }
+                
+                // 14: Ver (no filter)
+                // 15: Hipótesis (no filter)
+                
+                // 16: resultado (ganador/perdedor)
+                if (filters[16]) {
                     const res = savedHypothesesCache.get(ad.ad_id)?.result || '';
-                    if (res !== filters[13]) return false;
+                    if (res !== filters[16]) return false;
                 }
 
                 return true;
