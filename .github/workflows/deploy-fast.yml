@@ -11,12 +11,12 @@ on:
 
 permissions:
   contents: read
-  actions: read          # 👈 nécessaire pour télécharger l'artefact Pages publié
+  actions: read          # nécessaire pour télécharger l'artefact Pages publié
   pages: write
   id-token: write
 
 concurrency:
-  group: pages-deploy    # 👈 sérialise UNIQUEMENT la phase de déploiement
+  group: pages-deploy    # sérialise UNIQUEMENT la phase de déploiement
   cancel-in-progress: true
 
 jobs:
