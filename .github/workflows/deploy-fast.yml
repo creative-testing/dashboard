@@ -1,0 +1,82 @@
+name: 🚀 Fast Deploy (Code Only)
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - 'docs/**/*.html'
+      - 'docs/**/*.js'
+      - 'docs/**/*.css'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+      
+      - name: 📥 Download existing data from last successful run
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "📥 Downloading data from GitHub Release..."
+          REL_TAG="baseline"
+          mkdir -p docs/data/optimized
+          
+          # Download and extract baseline
+          if gh release download "$REL_TAG" -p "baseline_90d_daily.json.zst" -D /tmp --clobber; then
+            sudo apt-get install -y zstd
+            zstd -d /tmp/baseline_90d_daily.json.zst -o /tmp/baseline.json
+            
+            # Quick transform to optimized format (Python one-liner)
+            python3 -c "
+import json
+data = json.load(open('/tmp/baseline.json'))
+ads = data.get('daily_ads', [])
+# Create minimal optimized files
+json.dump({'period':'7','ads':ads[-2000:]}, open('docs/data/optimized/meta_v1.json','w'))
+json.dump({'period':'7','aggregated':[]}, open('docs/data/optimized/agg_v1.json','w'))
+json.dump({'total_ads':len(ads),'total_spend':sum(float(a.get('spend',0)) for a in ads)}, open('docs/data/optimized/summary_v1.json','w'))
+json.dump({'version':1,'periods':['7']}, open('docs/data/optimized/manifest.json','w'))
+json.dump({'period':'prev_week','ads':[]}, open('docs/data/optimized/prev_week_compressed.json','w'))
+            "
+            echo "✅ Data files created from baseline"
+          else
+            echo "⚠️ No baseline found, creating empty data files"
+            echo '{"period":"7","ads":[]}' > docs/data/optimized/meta_v1.json
+            echo '{"period":"7","aggregated":[]}' > docs/data/optimized/agg_v1.json
+            echo '{"total_ads":0,"total_spend":0}' > docs/data/optimized/summary_v1.json
+            echo '{"version":1,"periods":["7"]}' > docs/data/optimized/manifest.json
+            echo '{"period":"prev_week","ads":[]}' > docs/data/optimized/prev_week_compressed.json
+          fi
+          
+          ls -la docs/data/optimized/
+      
+      - name: 🔧 Setup Pages
+        uses: actions/configure-pages@v5
+      
+      - name: 📦 Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+      
+      - name: 🚀 Deploy to Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+      
+      - name: ✅ Summary
+        run: |
+          echo "## 🚀 Fast Deploy Complete!" >> $GITHUB_STEP_SUMMARY
+          echo "- **Type**: Code only (reusing existing data)" >> $GITHUB_STEP_SUMMARY
+          echo "- **URL**: ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Time**: $(date '+%Y-%m-%d %H:%M:%S') UTC" >> $GITHUB_STEP_SUMMARY
