@@ -126,7 +126,7 @@ jobs:
           # 3) Fallback final : générer des fichiers *vides mais valides* (schema-valid)
           if [ ! -s "data/optimized/meta_v1.json" ] || [ ! -s "data/optimized/agg_v1.json" ]; then
             echo "🧪 Fallback: génération de fichiers optimisés vides (schema-valid)…"
-            python3 - << 'PY'
+            cat > /tmp/generate_empty.py << 'EOF'
 import json, datetime, os
 os.makedirs("data/optimized", exist_ok=True)
 periods = ["3d","7d","14d","30d","90d"]
@@ -183,7 +183,8 @@ for name, data in [
 ]:
   with open(os.path.join("data/optimized", name), "w", encoding="utf-8") as f:
     json.dump(data, f, separators=(",",":"), ensure_ascii=False)
-PY
+EOF
+            python3 /tmp/generate_empty.py
           fi
 
           # 4) Copier les data optimisées dans le bundle final
