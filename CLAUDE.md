@@ -76,3 +76,57 @@ GitHub Releases stocke `baseline_90d_daily.json.zst` (10MB compressé)
 - **Solution**: Se connecter à Instagram dans le même navigateur
 - **NE PAS** perdre de temps à debugger les URLs ou l'API
 - Dashboard affiche maintenant un avertissement au premier clic
+
+## 🚀 DÉPLOIEMENT DÉCOUPLÉ (Sept 12, 2025) - 2h de galère
+
+### Le problème initial
+- Déployer du code HTML prenait 15 minutes car il relançait le fetch Meta Ads
+- Code et données étaient couplés dans un seul workflow
+- Création d'un workflow séparé a écrasé les données → dashboard cassé
+
+### La solution (ChatGPT-5)
+Deux workflows qui partagent l'artefact Pages :
+
+1. **`🚀 Fast Deploy (Code Only)`** - 36 secondes
+   - Récupère l'artefact Pages précédent
+   - Remplace SEULEMENT le code
+   - Garde les données intactes
+
+2. **`🤖 Auto Refresh Data`** - 15 minutes
+   - Fetch Meta Ads + transform
+   - Récupère l'artefact Pages précédent  
+   - Remplace SEULEMENT les données
+   - Garde le code intact
+
+### Chaîne de repli brillante
+Le workflow Fast Deploy ne crashe jamais grâce à :
+1. Artefact Pages (si existe)
+2. Release baseline + transform (reconstruction)
+3. JSON vides mais valides (0 ads, pas de crash)
+4. Fail seulement si tout échoue
+
+### Leçons apprises
+- **L'indentation YAML est CRITIQUE** - step mal indentée = 30 min de debug
+- **JSON vides `{}` crashent le dashboard** - toujours des structures valides
+- **`concurrency: pages-deploy`** empêche les conflits entre workflows
+- **ChatGPT-5 est excellent** pour l'architecture de workflows
+
+## 🎯 Parser V2 avec Confiance (Sept 12, 2025)
+
+### Nouveautés
+- **Détection dynamique de créateurs** depuis les ads existantes
+- **Score de confiance** (0-100%) par champ parsé
+- **Stopwords améliorés** pour éviter les faux positifs
+- **Expansion des hooks** (H123 → H1, H2, H3)
+
+### Structure nomenclature
+```
+Type / Angle / Creator / Age / Hook
+Ex: Prospecting / Picazon / UGC_Maria / 35+ / H1
+```
+
+### Colonnes ajoutées au dashboard
+- Angulo (avec badge confiance)
+- Creador (avec détection dynamique)
+- Hook (avec expansion)
+- Conf. (score global)
