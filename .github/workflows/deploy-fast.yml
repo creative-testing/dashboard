@@ -68,7 +68,7 @@ jobs:
           else
             cp -a docs/. _site/
           fi
-          # Met à jour uniquement HTML/JS/CSS depuis le repo
+          # Met à jour uniquement HTML/JS/CSS depuis le repo (ET NE TOUCHE PAS aux data optimisées)
           rsync -a \
             --include="*/" \
             --include="**/*.html" --include="**/*.js" --include="**/*.css" \
@@ -76,11 +76,127 @@ jobs:
             --exclude="*" \
             docs/ _site/
 
-          # Filets de sécurité: s'assurer que les JSON existent
+      - name: 🧪 Valider/Bootstrapper les données (baseline → transform → fallback vide)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+
+          have_data() {
+            [ -s "_site/data/optimized/meta_v1.json" ] && [ -s "_site/data/optimized/agg_v1.json" ]
+          }
+
+          # 0) Si déjà OK (artefact Pages précédent), on sort
+          if have_data; then
+            echo "✅ Données optimisées déjà présentes"
+            exit 0
+          fi
+
+          echo "ℹ️ Pas de données optimisées dans l'artefact. Tentative de bootstrap…"
+          mkdir -p data/current data/optimized
+
+          # 1) Essayer de reconstruire depuis le Release 'baseline'
+          if gh release view "baseline" >/dev/null 2>&1; then
+            echo "⬇️ Téléchargement baseline_90d_daily.json.zst depuis Release…"
+            if gh release download "baseline" -p "baseline_90d_daily.json.zst" -D data/current --clobber; then
+              echo "🧰 Install zstd"
+              sudo apt-get update >/dev/null 2>&1
+              sudo apt-get install -y zstd >/dev/null 2>&1
+              echo "🗜️ Décompression baseline…"
+              zstd -d -f "data/current/baseline_90d_daily.json.zst" -o "data/current/baseline_90d_daily.json"
+
+              echo "🐍 Setup Python & transform columnar"
+              python -V || true
+              echo "::group::Setup Python"
+              pip --version || true
+              echo "::endgroup::"
+            else
+              echo "⚠️ Téléchargement de la baseline impossible."
+            fi
+          else
+            echo "ℹ️ Aucun Release 'baseline' trouvé."
+          fi
+
+          # 2) Si on a la baseline décompressée, produire data/optimized
+          if [ -s "data/current/baseline_90d_daily.json" ]; then
+            echo "🔄 Transformation vers format optimisé…"
+            python3 scripts/transform_to_columnar.py --input-dir data/current --output-dir data/optimized
+          fi
+
+          # 3) Fallback final : générer des fichiers *vides mais valides* (schema-valid)
+          if [ ! -s "data/optimized/meta_v1.json" ] || [ ! -s "data/optimized/agg_v1.json" ]; then
+            echo "🧪 Fallback: génération de fichiers optimisés vides (schema-valid)…"
+            python3 - << 'PY'
+import json, datetime, os
+os.makedirs("data/optimized", exist_ok=True)
+periods = ["3d","7d","14d","30d","90d"]
+now = datetime.datetime.utcnow()
+ref_date = (now - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+meta = {
+  "version":1,
+  "metadata":{
+    "reference_date": ref_date,
+    "reference_hour": now.strftime("%Y-%m-%d %H:%M:%S"),
+    "buffer_hours": 0,
+    "includes_today": False,
+    "data_min_date": ref_date,
+    "data_max_date": ref_date,
+    "data_range_days": 1,
+    "last_update": now.isoformat(),
+    "source":"bootstrap_empty",
+    "pipeline":"bootstrap"
+  },
+  "ads":[],
+  "campaigns":{},
+  "adsets":{},
+  "accounts":{}
+}
+agg = {
+  "version":1,
+  "periods": periods,
+  "metrics": ["impressions","clicks","purchases","spend","purchase_value","reach"],
+  "ads": [],
+  "values": [],
+  "scales": {"money":100}
+}
+summary = {
+  "periods": periods,
+  "totals": {p: {"impr":0,"clk":0,"purch":0,"spend_cents":0,"purchase_value_cents":0,"reach":0} for p in periods}
+}
+manifest = {
+  "version": now.isoformat(),
+  "ads_count": 0,
+  "periods": periods,
+  "shards": {
+    "meta": {"path":"meta_v1.json"},
+    "agg": {"path":"agg_v1.json"},
+    "summary": {"path":"summary_v1.json"}
+  }
+}
+prevw = {"period":"prev_week","ads":[]}
+for name, data in [
+  ("meta_v1.json", meta),
+  ("agg_v1.json", agg),
+  ("summary_v1.json", summary),
+  ("manifest.json", manifest),
+  ("prev_week_compressed.json", prevw),
+]:
+  with open(os.path.join("data/optimized", name), "w", encoding="utf-8") as f:
+    json.dump(data, f, separators=(",",":"), ensure_ascii=False)
+PY
+          fi
+
+          # 4) Copier les data optimisées dans le bundle final
           mkdir -p _site/data/optimized
-          for f in meta_v1.json agg_v1.json summary_v1.json manifest.json prev_week_compressed.json; do
-            [ -s "_site/data/optimized/$f" ] || echo '{}' > "_site/data/optimized/$f"
-          done
+          cp -a data/optimized/. _site/data/optimized/
+
+          # 5) Dernier garde-fou : vérifier la présence
+          if [ ! -s "_site/data/optimized/meta_v1.json" ] || [ ! -s "_site/data/optimized/agg_v1.json" ]; then
+            echo "❌ Impossible de préparer des données valides pour le déploiement."
+            exit 1
+          fi
+
+          echo "✅ Données prêtes (baseline/empty fallback)."
           ls -la _site/data/optimized || true
 
       - name: 🔧 Setup Pages
