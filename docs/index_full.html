@@ -383,30 +383,6 @@
             color: #ff3b30;
         }
         
-        /* Confidence badges */
-        .confidence-badge {
-            display: inline-block;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-        
-        .confidence-badge.high {
-            background: #d4f4dd;
-            color: #00a854;
-        }
-        
-        .confidence-badge.medium {
-            background: #fff3cd;
-            color: #856404;
-        }
-        
-        .confidence-badge.low {
-            background: #ffe5e5;
-            color: #ff3b30;
-        }
-        
         /* Editable fields */
         .hypothesis-input {
             width: 100%;
@@ -1012,9 +988,6 @@
                         <th>Awareness</th>
                         <th>Tipo</th>
                         <th>Ángulo</th>
-                        <th>Creador</th>
-                        <th>Hook</th>
-                        <th title="Confianza del parser de nomenclatura">Conf.</th>
                         <th>Ver</th>
                         <th>Hipótesis</th>
                         <th>Resultado</th>
@@ -1063,20 +1036,10 @@
                                 <option value="">Todos</option>
                             </select>
                         </th>
-                        <th><input type="text" class="table-filter" data-column="11" placeholder="Creador..."></th>
-                        <th><input type="text" class="table-filter" data-column="12" placeholder="H1,V1..."></th>
+                        <th></th> <!-- 11: Ver (no filter) -->
+                        <th></th> <!-- 12: Hipótesis (no filter) -->
                         <th>
                             <select class="table-filter" data-column="13">
-                                <option value="">Todos</option>
-                                <option value="high">Alto (>70%)</option>
-                                <option value="medium">Medio (40-70%)</option>
-                                <option value="low">Bajo (<40%)</option>
-                            </select>
-                        </th>
-                        <th></th>
-                        <th></th>
-                        <th>
-                            <select class="table-filter" data-column="16">
                                 <option value="">Todos</option>
                                 <option value="ganador">Ganador</option>
                                 <option value="perdedor">Perdedor</option>
@@ -1998,8 +1961,8 @@
                         `;
                     }).join('');
                     
-                    // Add click event listener for bars with media URLs
-                    barChart.addEventListener('click', (e) => {
+                    // Add click handler (not additive) for bars with media URLs
+                    barChart.onclick = (e) => {
                         const el = e.target.closest('.bar[data-media-url]');
                         if (!el) return;
                         const url = el.getAttribute('data-media-url');
@@ -2009,7 +1972,7 @@
                         } catch (err) {
                             console.error('Open failed', err);
                         }
-                    });
+                    };
                 }
             }
             
@@ -2219,38 +2182,42 @@
             return '—';
         }
         
+        // Cache pour éviter de parser plusieurs fois le même nom
+        const parseCache = new Map();
+        
+        function parseOnce(adName) {
+            if (!parseCache.has(adName)) {
+                parseCache.set(adName, window.NOMEN_V2.parseAdName(adName));
+            }
+            return parseCache.get(adName);
+        }
+        
+        // Clear cache when data changes
+        window.clearParseCache = function() {
+            parseCache.clear();
+        };
+        
         function getAdType(adName) {
-            // Utilise le vrai parser V2 au lieu de refaire la logique
-            const parsed = window.NOMEN_V2.parseAdName(adName);
+            const parsed = parseOnce(adName);
             return parsed.type || '—';
         }
         
         function getAngle(adName) {
             if (!adName) return '—';
-            const parsed = window.NOMEN_V2.parseAdName(adName);
+            const parsed = parseOnce(adName);
             return parsed.angle || '—';
         }
         
-        function getCreator(adName) {
-            if (!adName) return '—';
-            const parsed = window.NOMEN_V2.parseAdName(adName);
-            return parsed.creator || '—';
-        }
         
-        function getHook(adName) {
-            if (!adName) return '—';
-            const parsed = window.NOMEN_V2.parseAdName(adName);
-            return parsed.hook || '—';
-        }
         
-        function getConfidence(adName) {
-            if (!adName) return 0;
-            const parsed = window.NOMEN_V2.parseAdName(adName);
-            return parsed.confidence;
-        }
+        
+        
+        
         
         function updateTable(data) {
             const ads = data.ads || [];
+            // Clear parse cache when data changes
+            if (window.clearParseCache) window.clearParseCache();
             // Par défaut: tri par "Fecha Inicio" (plus récent → plus ancien)
             currentTableData = applySort(ads);
             filteredTableData = currentTableData; // Par défaut, pas de filtre
@@ -2390,14 +2357,6 @@
                             </td>
                             <td style="text-align: center;">${getAdType(ad.ad_name)}</td>
                             <td style="text-align: center;">${getAngle(ad.ad_name)}</td>
-                            <td style="text-align: center;">${getCreator(ad.ad_name)}</td>
-                            <td style="text-align: center;">${getHook(ad.ad_name)}</td>
-                            <td style="text-align: center;">
-                                <span class="confidence-badge ${getConfidence(ad.ad_name) > 70 ? 'high' : getConfidence(ad.ad_name) > 40 ? 'medium' : 'low'}" 
-                                      title="Confianza del parser: ${getConfidence(ad.ad_name)}%">
-                                    ${getConfidence(ad.ad_name)}%
-                                </span>
-                            </td>
                             <td>${mediaLink}</td>
                             <td>
                                 <div class="hypothesis-wrapper">
@@ -2548,33 +2507,13 @@
                     if (angle !== filters[10]) return false;
                 }
                 
-                // 11: creador
-                if (filters[11]) {
-                    const creator = getCreator(ad.ad_name).toLowerCase();
-                    if (!creator.includes(filters[11])) return false;
-                }
+                // 11: Ver (no filter)
+                // 12: Hipótesis (no filter)
                 
-                // 12: hook
-                if (filters[12]) {
-                    const hook = getHook(ad.ad_name).toLowerCase();
-                    if (!hook.includes(filters[12])) return false;
-                }
-                
-                // 13: confidence
+                // 13: resultado (ganador/perdedor)
                 if (filters[13]) {
-                    const conf = getConfidence(ad.ad_name);
-                    if (filters[13] === 'high' && conf <= 70) return false;
-                    if (filters[13] === 'medium' && (conf <= 40 || conf > 70)) return false;
-                    if (filters[13] === 'low' && conf > 40) return false;
-                }
-                
-                // 14: Ver (no filter)
-                // 15: Hipótesis (no filter)
-                
-                // 16: resultado (ganador/perdedor)
-                if (filters[16]) {
                     const res = savedHypothesesCache.get(ad.ad_id)?.result || '';
-                    if (res !== filters[16]) return false;
+                    if (res !== filters[13]) return false;
                 }
 
                 return true;
@@ -3169,11 +3108,6 @@
                 if (!savedData[adId]) savedData[adId] = {};
                 savedData[adId].hypothesis = value;
                 localStorage.setItem('adHypotheses', JSON.stringify(savedData));
-            }
-            
-            // Filtres de table
-            if (e.target && e.target.classList.contains('table-filter')) {
-                applyTableFilters();
             }
         });
         
