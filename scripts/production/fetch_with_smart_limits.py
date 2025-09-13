@@ -517,15 +517,14 @@ def main():
     response = requests.get(accounts_url, params=accounts_params, timeout=30)
     if response.status_code != 200:
         logger.error(f"Erreur récupération comptes: {response.status_code}")
-        # Si rate limit dès le début, attendre
         if response.status_code == 400:
             error = response.json().get('error', {})
             if error.get('code') == 80004:
-                wait_time = error.get('estimated_time_to_regain_access', 15) * 60
-                print(f"\n⏰ Rate limit détecté, attente de {wait_time/60:.1f} minutes...")
-                print("💡 Conseil: Relancer le script plus tard ou utiliser un autre token")
-                sys.exit(1)
-        sys.exit(1)
+                wait_min = error.get('estimated_time_to_regain_access', 15)
+                print(f"\n⏰ Rate limit détecté, attente estimée ~{wait_min} min.")
+                print("ℹ️ On marque le run comme SKIPPED pour éviter du bruit, aucune perte de fraîcheur de données.")
+                raise SystemExit(0)  # ✅ ne pas faire échouer le workflow
+        raise SystemExit(1)
     
     accounts = response.json().get("data", [])
     active_accounts = [acc for acc in accounts if acc.get("account_status") == 1]
@@ -658,9 +657,11 @@ def main():
                     print(f"\n🚀 BOOTSTRAP MODE: Baseline trop petit ({existing_ads_count} ads)")
                     print(f"    Fetching 30 days to bootstrap the system...")
                     bootstrap_mode = True
-                    # Override the backfill days for bootstrap
-                    import sys
-                    sys.modules[__name__].TAIL_BACKFILL_DAYS = 30
+                    # Recalcule local : on étend immédiatement la fenêtre
+                    days_to_fetch = 30
+                    since_date = (datetime.strptime(reference_date, '%Y-%m-%d') - timedelta(days=days_to_fetch-1)).strftime('%Y-%m-%d')
+                    until_date = reference_date
+                    print(f"    → nouvelle période: {since_date} → {until_date} ({days_to_fetch} jours)")
         except Exception as e:
             print(f"⚠️ Impossible de charger le baseline existant: {e}")
     
@@ -763,7 +764,6 @@ def main():
         print("\n🗜️ Lancement de la compression...")
         try:
             import subprocess
-            import sys
             # Résoudre le chemin de manière robuste
             here = os.path.dirname(os.path.abspath(__file__))
             compress_script = os.path.normpath(os.path.join(here, "compress_after_fetch.py"))
