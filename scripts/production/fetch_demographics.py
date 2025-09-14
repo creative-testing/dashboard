@@ -99,7 +99,7 @@ class DemographicsFetcher:
         params = {
             "access_token": self.token,
             "level": "account",  # BEAUCOUP plus rapide: 1 ligne par segment
-            "time_range": json.dumps({"since": since_date, "until": until_date})
+            "time_range": json.dumps({"since": since_date, "until": until_date}),
             "breakdowns": json.dumps(["age", "gender"]),  # Le point clé !
             "fields": "impressions,spend,clicks,actions,action_values,date_start",
             "limit": 500,
