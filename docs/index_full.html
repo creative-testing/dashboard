@@ -384,7 +384,7 @@
         }
         
         /* Editable fields */
-        .hypothesis-input {
+        .hypothesis-input, .learning-input {
             width: 100%;
             min-width: 150px;
             padding: 8px 10px;
@@ -398,7 +398,7 @@
             line-height: 1.5;
         }
         
-        .hypothesis-input:focus {
+        .hypothesis-input:focus, .learning-input:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
@@ -990,6 +990,7 @@
                         <th>Ángulo</th>
                         <th>Ver</th>
                         <th>Hipótesis</th>
+                        <th>Aprendizajes</th>
                         <th>Resultado</th>
                     </tr>
                     <tr class="filter-row">
@@ -1039,8 +1040,9 @@
                         </th>
                         <th></th> <!-- 11: Ver (no filter) -->
                         <th></th> <!-- 12: Hipótesis (no filter) -->
+                        <th></th> <!-- 13: Aprendizajes (no filter) -->
                         <th>
-                            <select class="table-filter" data-column="13">
+                            <select class="table-filter" data-column="14">
                                 <option value="">Todos</option>
                                 <option value="ganador">Ganador</option>
                                 <option value="perdedor">Perdedor</option>
@@ -2341,6 +2343,7 @@
                     // Récupérer les valeurs sauvegardées
                     const savedAd = savedData[ad.ad_id] || {};
                     const hypothesis = savedAd.hypothesis || '';
+                    const learning = savedAd.learning || '';
                     const result = savedAd.result || '';
                     
                     return `
@@ -2377,6 +2380,16 @@
                                         onkeyup="this.style.height='36px'; this.style.height = Math.min(this.scrollHeight, 100) + 'px';"
                                         onfocus="this.style.height = Math.min(this.scrollHeight, 100) + 'px';"
                                         onload="this.style.height = Math.min(this.scrollHeight, 100) + 'px';">${hypothesis}</textarea>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="hypothesis-wrapper">
+                                    <textarea class="learning-input" placeholder="Aprendizajes y siguiente paso..." data-ad-id="${ad.ad_id}"
+                                        rows="1"
+                                        style="height: 36px;"
+                                        onkeyup="this.style.height='36px'; this.style.height = Math.min(this.scrollHeight, 100) + 'px';"
+                                        onfocus="this.style.height = Math.min(this.scrollHeight, 100) + 'px';"
+                                        onload="this.style.height = Math.min(this.scrollHeight, 100) + 'px';">${learning}</textarea>
                                 </div>
                             </td>
                             <td>
@@ -2520,11 +2533,12 @@
                 
                 // 11: Ver (no filter)
                 // 12: Hipótesis (no filter)
+                // 13: Aprendizajes (no filter)
                 
-                // 13: resultado (ganador/perdedor)
-                if (filters[13]) {
+                // 14: resultado (ganador/perdedor)
+                if (filters[14]) {
                     const res = savedHypothesesCache.get(ad.ad_id)?.result || '';
-                    if (res !== filters[13]) return false;
+                    if (res !== filters[14]) return false;
                 }
 
                 return true;
@@ -3089,6 +3103,32 @@
                 if (!savedData[adId]) savedData[adId] = {};
                 savedData[adId].result = value;
                 localStorage.setItem('adHypotheses', JSON.stringify(savedData));
+                
+                // Auto-sugerir plantilla en Aprendizajes si está vacío
+                const row = e.target.closest('tr');
+                const learningEl = row ? row.querySelector('.learning-input') : null;
+                if (learningEl && !learningEl.value.trim()) {
+                    const tpl =
+                        value === 'ganador'
+                            ? 'Ganador. Aprendizaje: ¿qué funcionó (hook/ángulo/creador)? Siguiente paso: escalar +20-30% y probar 2 variantes (hook/CTA).'
+                            : value === 'perdedor'
+                                ? 'Perdedor. Aprendizaje: ¿qué no funcionó? Acciones: pausar o limitar entrega; iterar 2 variantes (hook/ángulo/creador) y re-test en 7 días.'
+                                : '';
+                    if (tpl) {
+                        learningEl.value = tpl;
+                        // auto-resize
+                        learningEl.style.height = '36px';
+                        learningEl.style.height = Math.min(learningEl.scrollHeight, 100) + 'px';
+                        // guardar
+                        const sd = JSON.parse(localStorage.getItem('adHypotheses') || '{}');
+                        if (!sd[adId]) sd[adId] = {};
+                        sd[adId].learning = learningEl.value;
+                        localStorage.setItem('adHypotheses', JSON.stringify(sd));
+                    }
+                }
+                
+                // Si un filtre de Resultado est actif, rafraîchir la vue
+                if (typeof window.applyTableFilters === 'function') window.applyTableFilters();
             }
             
             // Save awareness level
@@ -3100,6 +3140,9 @@
                 if (!savedData[adId]) savedData[adId] = {};
                 savedData[adId].awarenessLevel = value;
                 localStorage.setItem('adHypotheses', JSON.stringify(savedData));
+                
+                // Refresh filters if needed
+                if (typeof window.applyTableFilters === 'function') window.applyTableFilters();
             }
         });
         
@@ -3120,6 +3163,16 @@
                 savedData[adId].hypothesis = value;
                 localStorage.setItem('adHypotheses', JSON.stringify(savedData));
             }
+            
+            // Sauvegarder los aprendizajes
+            if (e.target && e.target.classList.contains('learning-input')) {
+                const adId = e.target.getAttribute('data-ad-id');
+                const value = e.target.value;
+                const savedData = JSON.parse(localStorage.getItem('adHypotheses') || '{}');
+                if (!savedData[adId]) savedData[adId] = {};
+                savedData[adId].learning = value;
+                localStorage.setItem('adHypotheses', JSON.stringify(savedData));
+            }
         });
         
         // Export to Excel functionality
@@ -3128,10 +3181,11 @@
             
             // Prepare CSV content
             let csv = '\ufeff'; // UTF-8 BOM for Excel
-            csv += 'Anuncio,Cuenta,Estado,Formato,Fecha Inicio,Importe Gastado,ROAS,CPA,Compras,CTR,CPM,Hipótesis,Resultado\n';
+            csv += 'Anuncio,Cuenta,Estado,Formato,Fecha Inicio,Importe Gastado,ROAS,CPA,Compras,CTR,CPM,Hipótesis,Aprendizajes,Resultado\n';
             
             filteredTableData.forEach(ad => {
                 const hypothesis = savedData[ad.ad_id]?.hypothesis || '';
+                const learning = savedData[ad.ad_id]?.learning || '';
                 const result = savedData[ad.ad_id]?.result || '';
                 const startDate = ad.created_time ? new Date(ad.created_time).toLocaleDateString('es-MX') : '';
                 const ctr = (parseFloat(ad.clicks || 0) / parseFloat(ad.impressions || 1) * 100).toFixed(2);
@@ -3151,6 +3205,7 @@
                     ctr,
                     ad.cpm > 0 ? ad.cpm.toFixed(0) : '',
                     escapeCsv(hypothesis),
+                    escapeCsv(learning),
                     result === 'ganador' ? 'Ganador' : result === 'perdedor' ? 'Perdedor' : ''
                 ].join(',') + '\n';
             });
