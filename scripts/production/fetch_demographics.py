@@ -68,7 +68,8 @@ class DemographicsFetcher:
             # Appel synchrone direct
             results = self._fetch_sync_demographics(account_id, since_date, until_date)
         
-        if not results:
+        # Vérifier que results est bien une liste
+        if not results or not isinstance(results, list):
             logger.warning(f"  ⚠️ No demographics data for {account_name}")
             return None
             
@@ -374,11 +375,11 @@ def main():
                     total_success += 1
                 else:
                     logger.warning(f"  ⚠️ {period_days}d: No data")
-                    total_failed += 1
+                    # Continue quand même avec les autres périodes
                     
             except Exception as e:
                 logger.error(f"  ❌ {period_days}d: Error - {str(e)}")
-                total_failed += 1
+                # Continue quand même avec les autres périodes au lieu d'échouer
             
             # Pause entre périodes pour éviter rate limit
             time.sleep(2)
