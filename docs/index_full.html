@@ -1242,21 +1242,8 @@
             <h2 style="margin-bottom: 10px;">📊 Análisis Demográfico</h2>
             <p style="color: #86868b; margin-bottom: 15px; font-size: 14px;">Distribución del gasto por edad y género</p>
             
-            <div id="demographics-content">
-                <div style="padding: 25px; text-align: center; background: #f5f5f7; border-radius: 8px;">
-                    <p style="color: #86868b; margin-bottom: 12px; font-size: 14px;">
-                        📈 Los datos demográficos se cargarán bajo demanda para optimizar el rendimiento
-                    </p>
-                    <button id="load-demographics" style="background: linear-gradient(135deg, #4a9eff 0%, #667eea 100%); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 8px rgba(74, 158, 255, 0.3);" 
-                            onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(74, 158, 255, 0.4)'" 
-                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(74, 158, 255, 0.3)'">
-                        📊 Cargar Análisis Demográfico
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Template para cuando se carguen los datos -->
-            <div id="demographics-loaded" style="display: none;">
+            <!-- Auto-loading demographics content -->
+            <div id="demographics-loaded">
                 <div id="segments-distribution" style="margin-bottom: 15px;"></div>
                 
                 <div style="margin-top: 15px;">
@@ -1605,6 +1592,11 @@
             
             // Mettre à jour le contenu
             updateDashboard(days);
+            
+            // Auto-load demographics for new period
+            if (currentAccountName && currentAccountName !== 'Todos') {
+                setTimeout(() => loadDemographics(), 100);
+            }
         }
         // Function switchAccount removed - was redirecting to non-existent petcare_real_analysis.html
         
@@ -3032,29 +3024,26 @@
             // Gérer le bouton de partage
             updateShareButton();
             
-            // Masquer/afficher la section démographique selon le compte
+            // Show demographics section for all accounts
             const demographicsSection = document.querySelector('.demographics-section');
             
             if (demographicsSection) {
-                // Afficher seulement pour Petcare (case insensitive)
-                if (value.toLowerCase().includes('petcare')) {
-                    demographicsSection.style.display = 'block';
+                // Always show demographics section
+                demographicsSection.style.display = 'block';
+                
+                // Auto-load demographics when account changes
+                if (value !== 'Todos') {
+                    setTimeout(() => loadDemographics(), 100);
                 } else {
-                    // Cacher TOUTE la section démographique
-                    demographicsSection.style.display = 'none';
-                    
-                    // Réinitialiser l'état pour la prochaine utilisation
-                    const demographicsContent = document.getElementById('demographics-content');
-                    const demographicsLoaded = document.getElementById('demographics-loaded');
-                    
-                    // Réafficher le bouton et cacher les données
-                    if (demographicsContent) {
-                        demographicsContent.style.display = 'block';
+                    // Clear demographics for Todos
+                    const segmentsDiv = document.getElementById('segments-distribution');
+                    const tableBody = document.getElementById('demographics-table');
+                    if (segmentsDiv) {
+                        segmentsDiv.innerHTML = '<div style="padding: 20px; text-align: center; color: #86868b; font-size: 14px;">📊 Selecciona una cuenta específica para ver datos demográficos</div>';
                     }
-                    if (demographicsLoaded) {
-                        demographicsLoaded.style.display = 'none';
-                    }
+                    if (tableBody) tableBody.innerHTML = '';
                 }
+                
             }
             
             updateDashboard(currentPeriod);
@@ -3440,9 +3429,7 @@
                 exportToExcel();
             }
             
-            if (e.target && e.target.id === 'load-demographics') {
-                loadDemographics();
-            }
+            // Demographics button removed - now auto-loads
         });
         
         // Generate simulated demographics from current data
@@ -3556,126 +3543,97 @@
             };
         }
         
-        // Demographics loading function - REAL API CALL
+        // Demographics loading function - Load pre-calculated JSON (ChatGPT-5 recommendation)
         async function loadDemographics() {
-            const btn = document.getElementById('load-demographics');
-            const originalText = btn.textContent;
-            btn.textContent = '⏳ Cargando...';
-            btn.disabled = true;
+            // Show loading state
+            const segmentsDiv = document.getElementById('segments-distribution');
+            const tableBody = document.getElementById('demographics-table');
+            
+            if (segmentsDiv) {
+                segmentsDiv.innerHTML = '<div style="padding: 20px; text-align: center;"><span style="color: #86868b;">⏳ Cargando datos demográficos...</span></div>';
+            }
             
             try {
-                // Obtenir l'account ID actuel
-                let accountId = null;
-                if (currentAccountName && currentAccountName !== 'Todos') {
-                    // For optimized version, use account name as ID since we don't have accountsIndex
-                    accountId = currentAccountName;
-                }
-                
-                if (!accountId) {
-                    alert('Por favor selecciona una cuenta específica');
-                    btn.textContent = originalText;
-                    btn.disabled = false;
+                // Check if Todos is selected
+                if (!currentAccountName || currentAccountName === 'Todos') {
+                    // Hide demographics for Todos
+                    if (segmentsDiv) {
+                        segmentsDiv.innerHTML = '<div style="padding: 20px; text-align: center; color: #86868b; font-size: 14px;">📊 Selecciona una cuenta específica para ver datos demográficos</div>';
+                    }
+                    if (tableBody) tableBody.innerHTML = '';
                     return;
                 }
                 
-                // Obtenir la période actuelle
+                // Get account ID from current data
+                let accountDir = null;
+                if (window.currentData && window.currentData.ads && window.currentData.ads.length > 0) {
+                    const sampleAd = window.currentData.ads.find(ad => 
+                        ad.account_name === currentAccountName
+                    );
+                    if (sampleAd && sampleAd.account_id) {
+                        const idRaw = String(sampleAd.account_id);
+                        // Normalize: always use act_ prefix
+                        accountDir = idRaw.startsWith('act_') ? idRaw : `act_${idRaw}`;
+                    }
+                }
+                
+                if (!accountDir) {
+                    // No account ID found
+                    if (segmentsDiv) {
+                        segmentsDiv.innerHTML = '<div style="padding: 20px; text-align: center; color: #86868b; font-size: 14px;">⚠️ No se pudo identificar el ID de la cuenta</div>';
+                    }
+                    if (tableBody) tableBody.innerHTML = '';
+                    return;
+                }
+                
+                // Use exact period - we now fetch all 5 periods: 3, 7, 14, 30, 90
                 const period = currentPeriod || 7;
                 
-                // Exécuter le script Python pour fetcher les données
-                console.log(`Fetching demographics for ${accountId} (${period} days)...`);
+                // Charger le JSON pré-calculé
+                console.log(`Loading demographics for ${accountDir} (${period}d)...`);
                 
-                // Simulate demographics data from existing data
-                // In production, this would call the real API
-                const simulatedDemographics = generateDemographicsFromCurrentData(accountId, period);
+                // Construire le chemin vers le fichier JSON
+                const jsonPath = `./data/demographics/${accountDir}/${period}d.json`;
                 
-                if (!simulatedDemographics) {
-                    throw new Error('No data available for demographics');
-                }
+                console.log(`Fetching: ${jsonPath}`);
                 
-                const response = { ok: true };
-                const data = simulatedDemographics;
+                // Charger le fichier JSON avec no-cache
+                const response = await fetch(jsonPath, { cache: 'no-store' });
                 
                 if (!response.ok) {
-                    throw new Error(`Failed to load demographics data`);
+                    throw new Error('Demographics data not available');
                 }
                 
-                // data is already set above from simulatedDemographics
+                const data = await response.json();
                 
-                // Process and display real data
+                // Afficher les données réelles
                 displayDemographicsData(data);
                 
             } catch (error) {
                 console.error('Error loading demographics:', error);
                 
-                // Fallback to demo data if API not available
-                setTimeout(() => {
-                // Sample data for demonstration
-                const ageData = [
-                    { range: '18-24', spend: 125000, roas: 2.8, ctr: 1.2 },
-                    { range: '25-34', spend: 245000, roas: 3.5, ctr: 1.5 },
-                    { range: '35-44', spend: 189000, roas: 4.1, ctr: 1.8 },
-                    { range: '45-54', spend: 98000, roas: 3.2, ctr: 1.3 },
-                    { range: '55-64', spend: 67000, roas: 2.9, ctr: 1.1 },
-                    { range: '65+', spend: 34000, roas: 2.5, ctr: 0.9 }
-                ];
+                // Show error message instead of demo data
                 
-                const genderData = [
-                    { gender: 'Mujeres', spend: 456000, roas: 3.7, percentage: 60 },
-                    { gender: 'Hombres', spend: 302000, roas: 2.9, percentage: 40 }
-                ];
-                
-                // Show demographics section
-                document.getElementById('demographics-content').style.display = 'none';
-                document.getElementById('demographics-loaded').style.display = 'block';
-                
-                // Populate age distribution
-                const ageDiv = document.getElementById('age-distribution');
-                const maxSpend = Math.max(...ageData.map(d => d.spend));
-                ageDiv.innerHTML = ageData.map(d => `
-                    <div style="display: flex; align-items: center; margin-bottom: 10px;">
-                        <span style="width: 60px; font-size: 13px;">${d.range}</span>
-                        <div style="flex: 1; margin: 0 10px; background: #f0f0f2; border-radius: 4px; height: 24px; position: relative;">
-                            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); height: 100%; width: ${(d.spend/maxSpend*100)}%; border-radius: 4px;"></div>
-                        </div>
-                        <span style="font-size: 13px; width: 80px; text-align: right;">$${(d.spend/1000).toFixed(0)}k</span>
-                    </div>
-                `).join('');
-                
-                // Populate gender distribution
-                const genderDiv = document.getElementById('gender-distribution');
-                genderDiv.innerHTML = `
-                    <div style="display: flex; justify-content: space-around; margin: 20px 0;">
-                        ${genderData.map(d => `
-                            <div style="text-align: center;">
-                                <div style="font-size: 48px; margin-bottom: 10px;">${d.gender === 'Mujeres' ? '👩' : '👨'}</div>
-                                <div style="font-size: 24px; font-weight: 700; color: #667eea;">${d.percentage}%</div>
-                                <div style="font-size: 14px; color: #6c757d;">${d.gender}</div>
-                                <div style="font-size: 16px; margin-top: 5px;">$${(d.spend/1000).toFixed(0)}k</div>
-                                <div style="font-size: 14px; color: #00a854;">ROAS ${d.roas}</div>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-                
-                // Populate demographics table
                 const tableBody = document.getElementById('demographics-table');
-                tableBody.innerHTML = ageData.map(d => `
-                    <tr>
-                        <td>${d.range} años</td>
-                        <td class="metric">$${(d.spend).toLocaleString()}</td>
-                        <td class="metric" style="color: ${d.roas >= 2.0 ? '#00a854' : d.roas >= 1.2 ? '#ff9500' : '#ff3b30'}">${d.roas.toFixed(2)}</td>
-                        <td>${d.ctr}%</td>
-                        <td>$${(d.spend/d.roas/50).toFixed(0)}</td>
-                        <td>${Math.round(d.spend/d.roas/1000)}</td>
-                    </tr>
-                `).join('');
+                const segmentsDiv = document.getElementById('segments-distribution');
                 
-                // Add message about real data
-                const note = document.createElement('p');
-                note.style.cssText = 'margin-top: 15px; padding: 10px; background: #fff3cd; border-radius: 6px; font-size: 13px; color: #856404;';
-                note.innerHTML = '⚠️ Nota: Estos son datos de ejemplo. Para datos reales, se requiere una llamada adicional a la API con breakdown por edad/género.';
-                document.getElementById('demographics-loaded').appendChild(note);
-            }, 1500);
+                if (segmentsDiv) {
+                    segmentsDiv.innerHTML = `
+                        <div style="padding: 20px; background: #fff3cd; border-radius: 8px; text-align: center;">
+                            <p style="color: #856404; margin-bottom: 12px; font-size: 14px;">
+                                ⚠️ Datos demográficos no disponibles para esta cuenta y período
+                            </p>
+                            <p style="color: #856404; font-size: 13px; margin: 0;">
+                                Los datos se generan automáticamente varias veces al día.<br>
+                                Por favor, intenta más tarde.
+                            </p>
+                        </div>
+                    `;
+                }
+                
+                if (tableBody) {
+                    tableBody.innerHTML = '';
+                }
             }
         }
         
@@ -3683,9 +3641,7 @@
         function displayDemographicsData(data) {
             if (!data || !data.segments) return;
             
-            // Show demographics section
-            document.getElementById('demographics-content').style.display = 'none';
-            document.getElementById('demographics-loaded').style.display = 'block';
+            // Demographics are always visible now (no button to hide)
             
             // Display table with all segments (EXACTLY like Facebook's view)
             // Using more lenient ROAS thresholds:
