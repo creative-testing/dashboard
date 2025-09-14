@@ -1018,6 +1018,7 @@
                         <th>
                             <select class="table-filter" data-column="8">
                                 <option value="">Todos</option>
+                                <option value="unaware">Unaware</option>
                                 <option value="problem">Problem</option>
                                 <option value="solution">Solution</option>
                                 <option value="product">Product</option>
@@ -2158,26 +2159,35 @@
         
         // Helper functions to extract from nomenclature
         function getAwarenessLevel(adName, adId) {
-            // Check if user has manually set the awareness level
+            // 1) Priorité aux overrides manuels sauvegardés
             const savedData = JSON.parse(localStorage.getItem('adHypotheses') || '{}');
             if (adId && savedData[adId] && savedData[adId].awarenessLevel) {
                 return savedData[adId].awarenessLevel;
             }
             
-            // Otherwise try to extract from nomenclature
+            // 2) Détection automatique depuis le nom
             if (!adName) return '—';
             const name = adName.toLowerCase();
+            
+            // NEW: Unaware (qq synonymes fréquents)
+            if (name.includes('unaware') || /\bcold\b/.test(name) || /\btofu\b/.test(name) || name.includes('top of funnel')) {
+                return 'Unaware';
+            }
+            
+            if (name.includes('most aware') || name.includes('mostaware')) return 'Most Aware';
             if (name.includes('problem')) return 'Problem';
             if (name.includes('solution')) return 'Solution';
             if (name.includes('product')) return 'Product';
-            if (name.includes('most aware') || name.includes('mostaware')) return 'Most Aware';
-            // Try to extract from nomenclature pattern
+            
+            // 3) Cas "nomenclature_avec_underscores"
             const parts = adName.split('_');
             if (parts.length > 3) {
-                const awareness = parts[3]; // Usually position 4 in nomenclature
-                if (awareness && awareness.match(/problem|solution|product|most/i)) {
-                    return awareness.charAt(0).toUpperCase() + awareness.slice(1);
-                }
+                const raw = (parts[3] || '').toLowerCase().replace(/[^\w]/g, ''); // normalise
+                if (raw === 'unaware' || raw === 'cold' || raw === 'tofu') return 'Unaware';
+                if (raw.startsWith('most')) return 'Most Aware';
+                if (raw === 'problem') return 'Problem';
+                if (raw === 'solution') return 'Solution';
+                if (raw === 'product') return 'Product';
             }
             return '—';
         }
@@ -2349,6 +2359,7 @@
                             <td style="text-align: center;">
                                 <select class="awareness-select" data-ad-id="${ad.ad_id}">
                                     <option value="">—</option>
+                                    <option value="Unaware" ${getAwarenessLevel(ad.ad_name, ad.ad_id) === 'Unaware' ? 'selected' : ''}>Unaware</option>
                                     <option value="Problem" ${getAwarenessLevel(ad.ad_name, ad.ad_id) === 'Problem' ? 'selected' : ''}>Problem</option>
                                     <option value="Solution" ${getAwarenessLevel(ad.ad_name, ad.ad_id) === 'Solution' ? 'selected' : ''}>Solution</option>
                                     <option value="Product" ${getAwarenessLevel(ad.ad_name, ad.ad_id) === 'Product' ? 'selected' : ''}>Product</option>
