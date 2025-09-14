@@ -324,8 +324,8 @@ def main():
     # Créer le fetcher
     fetcher = DemographicsFetcher(TOKEN, DEVELOPMENT_MODE)
     
-    # Créer le dossier de sortie
-    output_base = "data/demographics"
+    # Créer le dossier de sortie - DANS docs/ pour GitHub Pages !
+    output_base = os.getenv("DEMOGRAPHICS_OUTPUT_DIR", "docs/data/demographics")
     os.makedirs(output_base, exist_ok=True)
     
     # Stats globales

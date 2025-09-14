@@ -13,7 +13,10 @@ on:
 
 permissions:
   contents: write
-  actions: read
+
+concurrency:
+  group: demographics-prod
+  cancel-in-progress: false
 
 jobs:
   fetch-demographics:
@@ -44,12 +47,14 @@ jobs:
           # Créer le fichier .env temporaire
           cat > .env << EOF
           META_ACCESS_TOKEN=$FACEBOOK_ACCESS_TOKEN
+          DEMOGRAPHICS_OUTPUT_DIR=docs/data/demographics
           DEVELOPMENT_MODE=1
           ACTION_REPORT_TIME=conversion
           USE_UNIFIED_ATTR=1
           EOF
           
           echo "✅ Environment configured"
+          echo "📁 Output directory: docs/data/demographics"
       
       - name: 🔬 Fetch demographics data
         env:
@@ -96,11 +101,11 @@ jobs:
       - name: 💾 Commit and push changes
         if: success()
         run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           
-          # Ajouter les nouveaux fichiers
-          git add data/demographics/ || true
+          # Ajouter les nouveaux fichiers (dans docs/ maintenant !)
+          git add docs/data/demographics/ || true
           
           # Commit si il y a des changements
           if ! git diff --cached --quiet; then
