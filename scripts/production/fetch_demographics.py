@@ -52,21 +52,8 @@ class DemographicsFetcher:
         """
         logger.info(f"📊 Fetching demographics for {account_name} ({period_days}d: {since_date} to {until_date})")
         
-        # Pour 90j, utiliser async job
-        use_async = period_days >= 90
-        
-        if use_async:
-            # Créer un job async
-            report_id = self._create_async_demographics_job(account_id, since_date, until_date)
-            if not report_id:
-                logger.error(f"  ❌ Failed to create async job for {account_name}")
-                return None
-            
-            # Attendre et récupérer les résultats
-            results = self.fetcher.wait_for_async_job(report_id, account_id)
-        else:
-            # Appel synchrone direct
-            results = self._fetch_sync_demographics(account_id, since_date, until_date)
+        # Toujours utiliser le chemin synchrone (plus simple et fiable)
+        results = self._fetch_sync_demographics(account_id, since_date, until_date)
         
         # Vérifier que results est bien une liste
         if not results or not isinstance(results, list):

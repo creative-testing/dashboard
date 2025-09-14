@@ -8,6 +8,10 @@ venv/
 # Data folders (local testing)
 data/
 
+# Whitelist everything in docs/data (served by GitHub Pages)
+!docs/data/
+!docs/data/**
+
 # Dev helpers
 .codex_http_server.pid
 

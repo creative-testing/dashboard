@@ -104,8 +104,8 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           
-          # Ajouter les nouveaux fichiers (dans docs/ maintenant !)
-          git add docs/data/demographics/ || true
+          # Force add pour contourner .gitignore si besoin
+          git add -f docs/data/demographics || true
           
           # Commit si il y a des changements
           if ! git diff --cached --quiet; then
