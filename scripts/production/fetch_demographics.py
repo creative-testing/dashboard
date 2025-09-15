@@ -74,7 +74,7 @@ class DemographicsFetcher:
                 "period": f"{period_days}d",
                 "date_range": f"{since_date}..{until_date}",
                 "generated_at": datetime.utcnow().isoformat() + "Z",
-                "source": "insights(level=adset, breakdowns=[age,gender])"
+                "source": "insights(level=account, breakdowns=[age,gender])"
             },
             "segments": segments,
             "totals": totals
@@ -89,7 +89,7 @@ class DemographicsFetcher:
             "level": "account",  # BEAUCOUP plus rapide: 1 ligne par segment
             "time_range": json.dumps({"since": since_date, "until": until_date}),
             "breakdowns": json.dumps(["age", "gender"]),  # Le point clé !
-            "fields": "impressions,spend,clicks,actions,action_values,date_start",
+            "fields": "impressions,spend,clicks,actions,action_values",
             "limit": 500,
             "action_report_time": "conversion",
             "use_unified_attribution_setting": "true"
@@ -113,7 +113,7 @@ class DemographicsFetcher:
             "level": "account",  # BEAUCOUP plus rapide
             "time_range": json.dumps({"since": since_date, "until": until_date}),
             "breakdowns": "age,gender",  # Format string pour sync
-            "fields": "impressions,spend,clicks,actions,action_values,date_start",
+            "fields": "impressions,spend,clicks,actions,action_values",
             "limit": 500,
             "action_report_time": "conversion",
             "use_unified_attribution_setting": "true"
@@ -368,11 +368,9 @@ def main():
                 logger.error(f"  ❌ {period_days}d: Error - {str(e)}")
                 # Continue quand même avec les autres périodes au lieu d'échouer
             
-            # Pause entre périodes pour éviter rate limit
-            time.sleep(2)
+            # SmartMetaFetcher gère déjà le rate limiting
         
-        # Pause entre comptes
-        time.sleep(5)
+        # SmartMetaFetcher gère déjà le rate limiting
     
     # Résumé final
     logger.info(f"\n{'='*60}")
