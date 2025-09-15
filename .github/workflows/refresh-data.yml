@@ -187,6 +187,16 @@ jobs:
         mkdir -p _site/data/optimized
         cp -a docs/data/optimized/. _site/data/optimized/
 
+    - name: 📊 Overlay demographics (repo → _site)
+      run: |
+        if [ -d "docs/data/demographics" ]; then
+          mkdir -p _site/data/demographics
+          rsync -a docs/data/demographics/ _site/data/demographics/
+          echo "✅ Demographics copiés vers _site/"
+        else
+          echo "ℹ️ Aucun docs/data/demographics dans le repo"
+        fi
+
     # Deploy to GitHub Pages instead of committing to master
     - name: 🔧 Setup Pages
       if: success()

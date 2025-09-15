@@ -7,6 +7,7 @@ on:
       - 'docs/**/*.html'
       - 'docs/**/*.js'
       - 'docs/**/*.css'
+      - 'docs/data/demographics/**'
   workflow_dispatch:
 
 permissions:
@@ -76,6 +77,16 @@ jobs:
             --exclude="docs/data/optimized/**" \
             --exclude="*" \
             docs/ _site/
+
+      - name: 📊 Overlay demographics (repo → _site)
+        run: |
+          if [ -d "docs/data/demographics" ]; then
+            mkdir -p _site/data/demographics
+            rsync -a docs/data/demographics/ _site/data/demographics/
+            echo "✅ Demographics copiés vers _site/ (fast deploy)"
+          else
+            echo "ℹ️ Aucun docs/data/demographics dans le repo"
+          fi
 
       - name: 🧪 Valider/Bootstrapper les données (baseline → transform → fallback vide)
         env:
