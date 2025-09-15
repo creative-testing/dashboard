@@ -13,6 +13,9 @@ on:
 jobs:
   refresh-data:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     concurrency:
       group: pages-deploy    # même groupe que deploy-fast pour sérialiser
       cancel-in-progress: true
