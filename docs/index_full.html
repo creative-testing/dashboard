@@ -1964,7 +1964,233 @@
                 }
             }
         }
-        
+
+        // ========== NUEVO: Grid de "Iteraciones vs Nuevos" + "Awareness" ==========
+
+        function ensureInsightsSection() {
+          let grid = document.getElementById('insights-grid');
+          if (grid) return grid;
+
+          grid = document.createElement('div');
+          grid.id = 'insights-grid';
+          grid.className = 'chart-grid';
+          grid.style.marginTop = '20px';
+          grid.innerHTML = `
+            <div class="chart-card fixed-height">
+              <h3>
+                % Iteraciones vs Creativos Nuevos
+                <select id="iter-metric" style="margin-left: 10px; padding: 4px 8px; border-radius: 6px; border: 1px solid #d1d1d6; font-size: 12px;">
+                  <option value="spend" selected>Por Gastos</option>
+                  <option value="count">Por Anuncios</option>
+                  <option value="purchases">Por Compras</option>
+                </select>
+              </h3>
+              <div id="iter-vs-new-chart" class="bar-chart" style="padding-bottom: 90px;"></div>
+              <p id="iter-note" style="text-align:center;color:#86868b;margin-top:8px;font-size:12px;"></p>
+            </div>
+
+            <div class="chart-card fixed-height">
+              <h3>
+                🧠 Awareness Levels — Distribución
+                <select id="awareness-metric" style="margin-left: 10px; padding: 4px 8px; border-radius: 6px; border: 1px solid #d1d1d6; font-size: 12px;">
+                  <option value="spend" selected>Por Gastos</option>
+                  <option value="count">Por Anuncios</option>
+                  <option value="purchases">Por Compras</option>
+                </select>
+              </h3>
+              <div id="awareness-chart" class="bar-chart" style="padding-bottom: 90px;"></div>
+              <p id="awareness-note" style="text-align:center;color:#86868b;margin-top:8px;font-size:12px;"></p>
+            </div>
+          `;
+
+          // Insérer juste avant la première "main-table-card"
+          const container = document.querySelector('.container');
+          const firstTableCard = document.querySelector('.main-table-card');
+          if (container && firstTableCard) container.insertBefore(grid, firstTableCard);
+          else if (container) container.appendChild(grid);
+
+          // Listeners (re-rendu quand on change de base)
+          grid.querySelector('#iter-metric').addEventListener('change', () => {
+            if (window.currentData) updateIterationVsNewSection(window.currentData);
+          });
+          grid.querySelector('#awareness-metric').addEventListener('change', () => {
+            if (window.currentData) updateAwarenessSection(window.currentData);
+          });
+
+          return grid;
+        }
+
+        function computeTypeStats(ads) {
+          // base = anuncios activos (spend > 0) — cohérent avec vos KPI
+          const base = (ads || []).filter(a => parseFloat(a.spend || 0) > 0);
+
+          const sums = {
+            nuevo: { spend: 0, count: 0, purchases: 0 },
+            iter:  { spend: 0, count: 0, purchases: 0 },
+            other: { spend: 0, count: 0, purchases: 0 }
+          };
+
+          base.forEach(ad => {
+            const t = (getAdType(ad.ad_name) || '').toLowerCase(); // 'nuevo' | 'iteración' | '—'
+            const spend = parseFloat(ad.spend || 0);
+            const purchases = parseInt(ad.purchases || 0, 10);
+
+            if (t.startsWith('iter')) {
+              sums.iter.spend += spend; sums.iter.count += 1; sums.iter.purchases += purchases;
+            } else if (t.startsWith('nuevo')) {
+              sums.nuevo.spend += spend; sums.nuevo.count += 1; sums.nuevo.purchases += purchases;
+            } else {
+              sums.other.spend += spend; sums.other.count += 1; sums.other.purchases += purchases;
+            }
+          });
+
+          const totals = {
+            spend:     sums.nuevo.spend + sums.iter.spend,
+            count:     sums.nuevo.count + sums.iter.count,
+            purchases: sums.nuevo.purchases + sums.iter.purchases
+          };
+
+          return { baseCount: base.length, sums, totals };
+        }
+
+        function updateIterationVsNewSection(data) {
+          ensureInsightsSection();
+          const ads = data.ads || [];
+          const metricSel = document.getElementById('iter-metric');
+          const metric = metricSel ? metricSel.value : 'spend';
+
+          const stats = computeTypeStats(ads);
+          const denom = stats.totals[metric] || 0;
+
+          const chart = document.getElementById('iter-vs-new-chart');
+          const note  = document.getElementById('iter-note');
+
+          if (!chart) return;
+
+          if (denom <= 0) {
+            chart.innerHTML = `<div style="color:#86868b;text-align:center;width:100%;">Sin datos suficientes</div>`;
+            if (note) note.textContent = '';
+            return;
+          }
+
+          const nuevoVal = stats.sums.nuevo[metric];
+          const iterVal  = stats.sums.iter[metric];
+          const nuevoPct = (nuevoVal / denom) * 100;
+          const iterPct  = (iterVal  / denom) * 100;
+
+          // Couverture (part "válida" vs total incluant "otros")
+          const totalWithOthers = stats.totals[metric] + stats.sums.other[metric];
+          const coveragePct = totalWithOthers > 0 ? (stats.totals[metric] / totalWithOthers) * 100 : 0;
+
+          chart.innerHTML = `
+            <div class="bar" style="height:${nuevoPct.toFixed(1)}%; background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);">
+              <span class="bar-value">${nuevoPct.toFixed(0)}%</span>
+              <span class="bar-label">Nuevo</span>
+            </div>
+            <div class="bar" style="height:${iterPct.toFixed(1)}%; background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);">
+              <span class="bar-value">${iterPct.toFixed(0)}%</span>
+              <span class="bar-label">Iteración</span>
+            </div>
+          `;
+
+          if (note) {
+            let baseText = '';
+            if (metric === 'spend')      baseText = `${Math.round(denom).toLocaleString()} gastados`;
+            else if (metric === 'count') baseText = `${denom} anuncios`;
+            else                         baseText = `${denom} compras`;
+
+            note.textContent = `Base: ${baseText} • Cobertura "Tipo" válido: ${coveragePct.toFixed(0)}%`;
+          }
+        }
+
+        const AWARENESS_LEVELS = ['Unaware', 'Problem', 'Solution', 'Product', 'Most Aware'];
+
+        function computeAwarenessStats(ads) {
+          const base = (ads || []).filter(a => parseFloat(a.spend || 0) > 0);
+
+          const sums = {
+            'Unaware':     { spend: 0, count: 0, purchases: 0 },
+            'Problem':     { spend: 0, count: 0, purchases: 0 },
+            'Solution':    { spend: 0, count: 0, purchases: 0 },
+            'Product':     { spend: 0, count: 0, purchases: 0 },
+            'Most Aware':  { spend: 0, count: 0, purchases: 0 },
+            'Sin etiqueta':{ spend: 0, count: 0, purchases: 0 }
+          };
+
+          base.forEach(ad => {
+            const lvl = getAwarenessLevel(ad.ad_name, ad.ad_id) || '—';
+            const key = AWARENESS_LEVELS.includes(lvl) ? lvl : 'Sin etiqueta';
+            const spend = parseFloat(ad.spend || 0);
+            const purchases = parseInt(ad.purchases || 0, 10);
+
+            sums[key].spend += spend;
+            sums[key].count += 1;
+            sums[key].purchases += purchases;
+          });
+
+          const totals = {
+            spend:     Object.values(sums).reduce((s, v) => s + v.spend, 0),
+            count:     base.length,
+            purchases: Object.values(sums).reduce((s, v) => s + v.purchases, 0)
+          };
+
+          const assignedSpend     = AWARENESS_LEVELS.reduce((s, k) => s + sums[k].spend, 0);
+          const assignedCount     = AWARENESS_LEVELS.reduce((s, k) => s + sums[k].count, 0);
+          const assignedPurchases = AWARENESS_LEVELS.reduce((s, k) => s + sums[k].purchases, 0);
+
+          return { sums, totals, assigned: { spend: assignedSpend, count: assignedCount, purchases: assignedPurchases } };
+        }
+
+        function updateAwarenessSection(data) {
+          ensureInsightsSection();
+          const ads = data.ads || [];
+          const metricSel = document.getElementById('awareness-metric');
+          const metric = metricSel ? metricSel.value : 'spend';
+
+          const stats = computeAwarenessStats(ads);
+          const denom = stats.totals[metric] || 0;
+
+          const chart = document.getElementById('awareness-chart');
+          const note  = document.getElementById('awareness-note');
+          if (!chart) return;
+
+          if (denom <= 0) {
+            chart.innerHTML = `<div style="color:#86868b;text-align:center;width:100%;">Sin datos suficientes</div>`;
+            if (note) note.textContent = '';
+            return;
+          }
+
+          const config = [
+            { key: 'Unaware',      label: 'Unaware',     color: '#7dd3fc' },
+            { key: 'Problem',      label: 'Problem',     color: '#60a5fa' },
+            { key: 'Solution',     label: 'Solution',    color: '#3b82f6' },
+            { key: 'Product',      label: 'Product',     color: '#2563eb' },
+            { key: 'Most Aware',   label: 'Most',        color: '#1e40af' },
+            { key: 'Sin etiqueta', label: 'Sin etiqueta',color: '#94a3b8' }
+          ];
+
+          chart.innerHTML = config.map(({key, label, color}) => {
+            const val = stats.sums[key][metric];
+            const pct = denom > 0 ? (val / denom) * 100 : 0;
+            return `
+              <div class="bar" style="height:${pct.toFixed(1)}%; background: linear-gradient(135deg, ${color} 0%, ${color}CC 100%);">
+                <span class="bar-value">${pct.toFixed(0)}%</span>
+                <span class="bar-label" title="${label}">${label}</span>
+              </div>
+            `;
+          }).join('');
+
+          if (note) {
+            const assignedPct = denom > 0 ? (stats.assigned[metric] / denom) * 100 : 0;
+            let baseText = '';
+            if (metric === 'spend')      baseText = `${Math.round(denom).toLocaleString()} gastados`;
+            else if (metric === 'count') baseText = `${denom} anuncios`;
+            else                         baseText = `${denom} compras`;
+
+            note.textContent = `Base: ${baseText} • Asignados: ${assignedPct.toFixed(0)}%`;
+          }
+        }
+
         function updateHookSection(data) {
             // crée le conteneur si besoin
             ensureHookSection();
@@ -2012,7 +2238,12 @@
             
             // NOUVEAU: Mise à jour des sections de nomenclature dynamique
             updateNomenclatureSections(viewData);
-            
+
+            // 🆕 graphiques Insights (Iteraciones vs Nuevos + Awareness)
+            ensureInsightsSection();
+            updateIterationVsNewSection(viewData);
+            updateAwarenessSection(viewData);
+
             // 🆕 graphiques Tipo de Hook (en bas)
             updateHookSection(viewData);
             
