@@ -4,42 +4,56 @@
   const toTitle = s => (s || '').trim();
   const isNA = s => /^n\/a$/i.test((s || '').trim());
 
-  // Normalise "N / A" -> "N/A" (sans toucher le reste)
+  // Normalise "N / A" (ou variations d'espaces/majuscules) -> "N/A"
   function normalizeNA(s) {
     return String(s || '').replace(/\bN\s*\/\s*A\b/gi, 'N/A');
   }
 
-  // Protège N/A pour ne pas être coupé au split
+  // Protège les "N/A" pour ne pas être coupés par le split('/')
   function protectNA(s) {
-    return s.replace(/N\/A/gi, '<<__NA__>>');
+    return String(s || '').replace(/N\/A/gi, '<<__NA__>>');
   }
   function unprotectNA(strOrArr) {
-    const un = v => v.replace(/<<__NA__>>/g, 'N/A');
+    const un = v => String(v || '').replace(/<<__NA__>>/g, 'N/A');
     return Array.isArray(strOrArr) ? strOrArr.map(un) : un(strOrArr);
   }
 
-  // Split strict en 5 segments (concatène l'excédent dans le 5e, pad si <5)
+  /**
+   * Split strict en 5 segments (Type / Angle / Creator / Age / Hook)
+   * - Ne coupe jamais les "N/A"
+   * - Cas legacy EXACTEMENT 6 segments: supprime le 5e (ancien format)
+   * - Si <5: pad à N/A ; si >5: concatène le surplus dans le 5e (Hook)
+   */
   function split5(raw) {
     if (!raw) return ['', '', '', '', ''];
     let s = String(raw).trim();
 
-    // 1) normaliser les espaces autour des slash et N/A
+    // 1) normaliser "N / A" -> "N/A"
     s = normalizeNA(s);
+
+    // 2) normaliser les espaces autour des slash
     s = s.replace(/\s*\/\s*/g, '/');
 
-    // 2) protéger N/A
+    // 3) protéger "N/A"
     s = protectNA(s);
 
-    // 3) split
+    // 4) split
     let parts = s.split('/').map(p => p.trim());
 
-    // 4) déprotéger
+    // 5) déprotéger
     parts = unprotectNA(parts);
 
-    // 5) remettre à 5 pièces exactes
+    // 6) règle legacy: exactement 6 segments -> retirer le 5e
+    if (parts.length === 6) {
+      // supprime la 5e (index 4)
+      parts.splice(4, 1); // il reste 5 segments: [0,1,2,3,5]
+    }
+
+    // 7) clamp à 5 segments
     if (parts.length < 5) {
       while (parts.length < 5) parts.push('N/A');
     } else if (parts.length > 5) {
+      // cas très rare >6 dès l'entrée : garder 4 premiers, concaténer le reste en Hook
       const head = parts.slice(0, 4);
       const tail = parts.slice(4).join(' / ');
       parts = [...head, tail];
