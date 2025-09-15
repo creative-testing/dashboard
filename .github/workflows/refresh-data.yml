@@ -27,12 +27,12 @@ jobs:
     
     steps:
     - name: 📥 Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
     
-    - name: 🧰 Install zstd
-      run: sudo apt-get update && sudo apt-get install -y zstd
+    - name: 🧰 Install tooling
+      run: sudo apt-get update && sudo apt-get install -y zstd jq unzip
     
     - name: 📥 Restore baseline from GitHub Release
       env:
@@ -59,7 +59,7 @@ jobs:
         fi
     
     - name: 🐍 Setup Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.10'
     
@@ -80,7 +80,7 @@ jobs:
         # 7 jours pour couvrir les ads moins actives et éviter les URLs expirées
         TAIL_BACKFILL_DAYS: 7
         RUN_BASELINE: 0
-      timeout-minutes: 30
+      timeout-minutes: 60
       run: |
         if [[ "${{ github.event.schedule }}" == "0 3 * * *" ]]; then
           echo "🌙 Running nightly refresh (7 days backfill)..."
@@ -200,7 +200,7 @@ jobs:
     
     - name: 🚀 Deploy to GitHub Pages
       if: success()
-      id: deploy
+      id: deployment
       uses: actions/deploy-pages@v4
     
     - name: 📊 Report status

@@ -16,7 +16,7 @@ permissions:
 
 concurrency:
   group: demographics-prod
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   fetch-demographics:
@@ -68,7 +68,7 @@ jobs:
           bash run_fetch_demographics.sh
           
           # Vérifier que des fichiers ont été créés
-          if [ -d "data/demographics" ] && [ "$(find data/demographics -name "*.json" -type f | wc -l)" -gt 0 ]; then
+          if [ -d "docs/data/demographics" ] && [ "$(find docs/data/demographics -name "*.json" -type f | wc -l)" -gt 0 ]; then
             echo "✅ Demographics files created successfully"
           else
             echo "⚠️ Warning: No demographics files found"
@@ -80,18 +80,18 @@ jobs:
           echo "## 📊 Demographics Fetch Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
-          if [ -d "data/demographics" ]; then
+          if [ -d "docs/data/demographics" ]; then
             echo "### Files created:" >> $GITHUB_STEP_SUMMARY
             echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-            find data/demographics -name "*.json" -type f | sort | while read file; do
+            find docs/data/demographics -name "*.json" -type f | sort | while read file; do
               size=$(du -h "$file" | cut -f1)
               segments=$(grep -c '"age":' "$file" 2>/dev/null || echo "0")
               echo "$(basename $(dirname "$file"))/$(basename "$file") - $size - $segments segments"
             done >> $GITHUB_STEP_SUMMARY
             echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
             
-            total_files=$(find data/demographics -name "*.json" -type f | wc -l)
-            total_size=$(du -sh data/demographics 2>/dev/null | cut -f1 || echo "0")
+            total_files=$(find docs/data/demographics -name "*.json" -type f | wc -l)
+            total_size=$(du -sh docs/data/demographics 2>/dev/null | cut -f1 || echo "0")
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "**Total:** $total_files files, $total_size" >> $GITHUB_STEP_SUMMARY
           else
