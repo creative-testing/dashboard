@@ -4,52 +4,52 @@
     "account_name": "Oaxacapsx",
     "period": "3d",
     "date_range": "2025-09-12..2025-09-14",
-    "generated_at": "2025-09-15T09:10:53.457836Z",
+    "generated_at": "2025-09-15T15:10:13.457186Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 71990,
+      "impressions": 72060,
       "clicks": 2217,
-      "spend": 2872.9,
+      "spend": 2874.91,
       "purchases": 9,
       "purchase_value": 13323.0,
       "ctr": 3.08,
-      "cpa": 319.21,
-      "roas": 4.64
+      "cpa": 319.43,
+      "roas": 4.63
     },
     {
       "age": "18-24",
       "gender": "male",
-      "impressions": 77576,
-      "clicks": 2459,
-      "spend": 2830.75,
+      "impressions": 77645,
+      "clicks": 2461,
+      "spend": 2832.39,
       "purchases": 11,
       "purchase_value": 18289.0,
       "ctr": 3.17,
-      "cpa": 257.34,
+      "cpa": 257.49,
       "roas": 6.46
     },
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 15627,
-      "clicks": 631,
-      "spend": 1031.76,
+      "impressions": 15653,
+      "clicks": 632,
+      "spend": 1035.43,
       "purchases": 1,
       "purchase_value": 1699.0,
       "ctr": 4.04,
-      "cpa": 1031.76,
-      "roas": 1.65
+      "cpa": 1035.43,
+      "roas": 1.64
     },
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 16194,
+      "impressions": 16209,
       "clicks": 407,
-      "spend": 648.85,
+      "spend": 649.69,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 2.51,
@@ -59,21 +59,21 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 11251,
+      "impressions": 11262,
       "clicks": 313,
-      "spend": 434.48,
+      "spend": 435.04,
       "purchases": 1,
       "purchase_value": 2099.0,
       "ctr": 2.78,
-      "cpa": 434.48,
-      "roas": 4.83
+      "cpa": 435.04,
+      "roas": 4.82
     },
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 3503,
+      "impressions": 3506,
       "clicks": 148,
-      "spend": 411.05,
+      "spend": 412.47,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 4.22,
@@ -83,24 +83,24 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 4690,
+      "impressions": 4693,
       "clicks": 163,
-      "spend": 202.02,
+      "spend": 202.12,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 3.48,
+      "ctr": 3.47,
       "cpa": 0,
       "roas": 0.0
     },
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 1449,
+      "impressions": 1453,
       "clicks": 95,
-      "spend": 128.06,
+      "spend": 128.17,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 6.56,
+      "ctr": 6.54,
       "cpa": 0,
       "roas": 0.0
     },
@@ -109,7 +109,7 @@
       "gender": "male",
       "impressions": 861,
       "clicks": 26,
-      "spend": 53.18,
+      "spend": 53.17,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 3.02,
@@ -121,7 +121,7 @@
       "gender": "male",
       "impressions": 518,
       "clicks": 18,
-      "spend": 36.99,
+      "spend": 36.98,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 3.47,
@@ -131,14 +131,14 @@
     {
       "age": "18-24",
       "gender": "unknown",
-      "impressions": 939,
-      "clicks": 24,
-      "spend": 29.87,
+      "impressions": 940,
+      "clicks": 25,
+      "spend": 29.9,
       "purchases": 1,
       "purchase_value": 1899.0,
-      "ctr": 2.56,
-      "cpa": 29.87,
-      "roas": 63.59
+      "ctr": 2.66,
+      "cpa": 29.9,
+      "roas": 63.52
     },
     {
       "age": "25-34",
@@ -226,11 +226,11 @@
     }
   ],
   "totals": {
-    "impressions": 205956,
-    "clicks": 6550,
-    "spend": 8720.4,
+    "impressions": 206158,
+    "clicks": 6554,
+    "spend": 8730.76,
     "purchases": 23,
     "purchase_value": 37309.0,
-    "roas": 4.28
+    "roas": 4.27
   }
 }
