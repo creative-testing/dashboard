@@ -25,7 +25,7 @@
    * - Si <5: pad à N/A ; si >5: concatène le surplus dans le 5e (Hook)
    */
   function split5(raw) {
-    if (!raw) return ['', '', '', '', ''];
+    if (!raw) return ['N/A', 'N/A', 'N/A', 'N/A', 'N/A'];
     let s = String(raw).trim();
 
     // 1) normaliser "N / A" -> "N/A"
@@ -49,15 +49,19 @@
       parts.splice(4, 1); // il reste 5 segments: [0,1,2,3,5]
     }
 
-    // 7) clamp à 5 segments
+    // 7) NOUVEAU: si < 5 parties après traitement = nomenclature invalide
     if (parts.length < 5) {
-      while (parts.length < 5) parts.push('N/A');
-    } else if (parts.length > 5) {
-      // cas très rare >6 dès l'entrée : garder 4 premiers, concaténer le reste en Hook
+      // Tout à N/A pour ne pas polluer les stats
+      return ['N/A', 'N/A', 'N/A', 'N/A', 'N/A'];
+    }
+
+    // 8) si > 5 parties: garder 4 premiers, concaténer le reste en Hook
+    if (parts.length > 5) {
       const head = parts.slice(0, 4);
       const tail = parts.slice(4).join(' / ');
       parts = [...head, tail];
     }
+
     return parts;
   }
 
@@ -92,6 +96,16 @@
     }
 
     const [p0, p1, p2, p3, p4] = split5(raw);
+
+    // Si split5 retourne tout à N/A, c'est une nomenclature invalide
+    if (p0 === 'N/A' && p1 === 'N/A' && p2 === 'N/A' && p3 === 'N/A' && p4 === 'N/A') {
+      res.type = '—';
+      res.angle = '';
+      res.creator = '';
+      res.age = '';
+      res.hook = '';
+      return res;
+    }
 
     res.type    = normalizeType(p0);
     res.angle   = isNA(p1) ? '' : toTitle(p1);
