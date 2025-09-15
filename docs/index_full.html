@@ -1740,13 +1740,8 @@
             });
         }
 
-        function renderCreators(map, container, partial = false) {
-            if (partial) { 
-                container.innerHTML = `<div style="color:#86868b;text-align:center;padding:20px;">
-                    Cobertura baja — análisis de creadores oculto
-                </div>`; 
-                return; 
-            }
+        function renderCreators(map, container) {
+            // Toujours afficher les créateurs, même si peu de données
 
             const data = [...map.entries()]
                 .filter(([k]) => k && k !== 'OTROS')
@@ -1849,10 +1844,9 @@
             section.style.display = 'block';
             renderAngles(angle, section.querySelector('#angles-container'));
             
-            if (score >= 70) {
-                renderCreators(creator, section.querySelector('#creators-container'));
-            } else {
-                renderCreators(new Map(), section.querySelector('#creators-container'), true);
+            // Toujours afficher les créateurs, même avec une couverture faible
+            renderCreators(creator, section.querySelector('#creators-container'));
+            if (score < 70) {
                 noteCreators.innerHTML = `ℹ️ Análisis parcial (coverage ${coverage.toFixed(0)}%)`;
             }
         }
