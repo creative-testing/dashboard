@@ -495,7 +495,18 @@
             border-radius: 12px;
             padding: 24px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+            height: auto; /* Hauteur auto par défaut */
+        }
+        
+        /* Seulement les cartes marquées .fixed-height auront 400px */
+        .chart-card.fixed-height {
             height: 400px;
+        }
+        
+        /* Carte "Créateurs" : grandit selon le contenu */
+        .chart-card.creators-card {
+            height: auto;
+            overflow: visible;
         }
         
         .chart-card h3 {
@@ -758,119 +769,85 @@
         }
         
         /* Creator cards styles */
-        .creator-grid {
+        /* Grille fluide : remplit l'espace avec des cartes min 200px */
+        #creators-container .creator-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 12px;
-            padding: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+            width: 100%;
             max-width: 100%;
-            margin: 0 auto;
         }
         
-        /* Ajuster le nombre de colonnes selon le nombre de créateurs */
-        .creator-grid[data-count="1"],
-        .creator-grid[data-count="2"],
-        .creator-grid[data-count="3"] {
-            grid-template-columns: repeat(3, 1fr);
-            max-width: 600px;
+        /* Breakpoints : resserrer les colonnes sur écrans plus petits */
+        @media (max-width: 1024px) {
+            #creators-container .creator-grid {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            }
+        }
+        @media (max-width: 640px) {
+            #creators-container .creator-grid {
+                grid-template-columns: 1fr 1fr; /* lisible sur mobile */
+            }
         }
         
-        .creator-grid[data-count="4"],
-        .creator-grid[data-count="5"],
-        .creator-grid[data-count="6"] {
-            grid-template-columns: repeat(3, 1fr);
-            max-width: 700px;
-        }
-        
-        .creator-grid[data-count="7"],
-        .creator-grid[data-count="8"],
-        .creator-grid[data-count="9"] {
-            grid-template-columns: repeat(3, 1fr);
-            max-width: 100%;
-            width: 900px;
-        }
-        
-        /* Plus de 9 créateurs : 4 colonnes */
-        .creator-grid[data-count="10"],
-        .creator-grid[data-count="11"],
-        .creator-grid[data-count="12"] {
-            grid-template-columns: repeat(4, 1fr);
-            max-width: 100%;
-            width: 950px;
-        }
-        
-        /* Plus de 12 créateurs : 5 colonnes */
-        .creator-grid[data-count="13"],
-        .creator-grid[data-count="14"],
-        .creator-grid[data-count="15"] {
-            grid-template-columns: repeat(5, 1fr);
-            max-width: 100%;
-            width: 1000px;
-        }
-        
-        /* Plus de 15 créateurs : 6 colonnes */
-        .creator-grid[data-count="16"],
-        .creator-grid[data-count="17"],
-        .creator-grid[data-count="18"],
-        .creator-grid[data-count="19"],
-        .creator-grid[data-count="20"] {
-            grid-template-columns: repeat(6, 1fr);
-            max-width: 100%;
-            width: 1100px;
-        }
-        
-        .creator-card {
+        /* Cartes compactes mais lisibles */
+        #creators-container .creator-card {
             background: #f8f9fa;
             border-radius: 10px;
-            padding: 10px;
+            padding: 12px;
             text-align: center;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
             transition: transform 0.2s ease;
-            min-width: 0; /* Permet le rétrécissement */
         }
         
-        .creator-card:hover {
+        #creators-container .creator-card:hover {
             transform: translateY(-3px);
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
         
-        .creator-avatar {
+        /* Avatar un peu compact */
+        #creators-container .creator-avatar {
             font-size: 28px;
-            margin-bottom: 6px;
-            padding: 6px;
+            width: 46px;
+            height: 46px;
             border-radius: 50%;
-            width: 45px;
-            height: 45px;
             margin: 0 auto 6px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
         
-        .creator-avatar.male {
+        #creators-container .creator-avatar.male {
             background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
         }
-        
-        .creator-avatar.female {
+
+        #creators-container .creator-avatar.female {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         }
         
-        .creator-name {
+        /* Nom : coupe proprement sur 2 lignes max */
+        #creators-container .creator-name {
             font-weight: 600;
             font-size: 13px;
-            margin-bottom: 8px;
             color: #1d1d1f;
+            margin-bottom: 6px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
             overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            min-height: 2.6em;
         }
         
-        .creator-stats {
+        /* Stats compactes */
+        #creators-container .creator-stats {
             font-size: 11px;
-            color: #6c757d;
             line-height: 1.3;
+            color: #6c757d;
         }
         
-        .creator-roas {
+        #creators-container .creator-roas {
             font-weight: 700;
             color: #00a854;
         }
@@ -975,7 +952,7 @@
         </div>
         
         <div class="chart-grid">
-            <div class="chart-card">
+            <div class="chart-card fixed-height">
                 <h3>💰 Top 5 Cuentas por Inversión</h3>
                 <div class="bar-chart">
                     <div class="bar" style="height: 100.0%">
@@ -1001,7 +978,7 @@
                 </div>
             </div>
             
-            <div class="chart-card">
+            <div class="chart-card fixed-height">
                 <h3>📊 Distribución por Formato</h3>
                 <div class="donut-chart">
                     <svg class="donut-svg" viewBox="0 0 180 180">
@@ -1261,7 +1238,7 @@
             </div>
             
             <!-- PERFORMANCE POR CREADOR -->
-            <div class="chart-card" style="margin-bottom: 30px;">
+            <div class="chart-card creators-card" style="margin-bottom: 30px;">
                 <h3>👥 Performance por Creador</h3>
                 <p style="color: #86868b; font-size: 14px; margin-bottom: 20px;">Análisis de rendimiento por creador de contenido</p>
                         <div class="creator-grid" id="petcare-creators-grid">
@@ -1676,7 +1653,7 @@
                 </div>
                 
                 <!-- PERFORMANCE POR CREADOR -->
-                <div class="chart-card" style="margin-bottom: 30px;">
+                <div class="chart-card creators-card" style="margin-bottom: 30px;">
                     <h3>👥 Performance por Creador</h3>
                     <p style="color: #86868b; font-size: 14px; margin-bottom: 20px;">Análisis de rendimiento por creador de contenido</p>
                     <p class="nomenclatura-note-creators" style="color:#ff9500;font-size:12px;"></p>
@@ -1784,9 +1761,8 @@
                 return; 
             }
 
-            const creatorCount = data.length;
             container.innerHTML = `
-                <div class="creator-grid" data-count="${creatorCount}" style="display: grid;">
+                <div class="creator-grid">
                     ${data.map(([name, m]) => {
                         // Déterminer l'avatar et la classe selon le nom
                         let avatarClass = '';
