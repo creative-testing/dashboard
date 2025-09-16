@@ -10,8 +10,9 @@ on:
       - 'docs/data/demographics/**'
   workflow_dispatch:
   workflow_run:
-    workflows: ["📊 Fetch Demographics (Age/Gender)"]
+    workflows: ["📊 Fetch Demographics (Age/Gender)", "🤖 Auto Refresh Data"]
     types: [completed]
+    branches: [master]
 
 permissions:
   contents: read
