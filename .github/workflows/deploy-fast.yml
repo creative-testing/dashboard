@@ -44,25 +44,22 @@ jobs:
         run: |
           set -e
           mkdir -p _site_prev
-          get_latest_run() {
-            gh run list --workflow ".github/workflows/refresh-data.yml" --json databaseId,conclusion -L 20 \
-              | jq -r '[.[]|select(.conclusion=="success")][0].databaseId // empty'
-          }
-          RUN_ID="$(get_latest_run)"
-          if [ -z "$RUN_ID" ]; then
-            RUN_ID=$(gh run list --workflow ".github/workflows/deploy-fast.yml" --json databaseId,conclusion -L 20 \
-              | jq -r '[.[]|select(.conclusion=="success")][0].databaseId // empty')
-          fi
+          # On ne cherche plus dans refresh-data car il ne déploie plus !
+          # Seul deploy-fast publie maintenant
+          RUN_ID=$(gh run list --workflow ".github/workflows/deploy-fast.yml" --json databaseId,conclusion -L 20 \
+            | jq -r '[.[]|select(.conclusion=="success")][0].databaseId // empty')
+
           if [ -n "$RUN_ID" ]; then
             echo "ℹ️ Téléchargement artefact Pages du run $RUN_ID…"
-            gh run download "$RUN_ID" -n github-pages -D _site_prev
-            if compgen -G "_site_prev/*.zip" > /dev/null; then
+            # IMPORTANT: Ne pas faire échouer si l'artefact n'existe pas (2>/dev/null et || true)
+            gh run download "$RUN_ID" -n github-pages -D _site_prev 2>/dev/null || echo "ℹ️ Pas d'artefact (normal au début)"
+            if compgen -G "_site_prev/*.zip" > /dev/null 2>/dev/null; then
               unzip -q _site_prev/*.zip -d _site_prev/extracted
               rm -f _site_prev/*.zip
               shopt -s dotglob; mv _site_prev/extracted/* _site_prev/ || true
             fi
           else
-            echo "⚠️ Aucun artefact précédent trouvé (premier déploiement ?)"
+            echo "⚠️ Aucun déploiement précédent trouvé (normal au début)"
           fi
 
       - name: 🧱 Construire le bundle final (préserver data/, mettre à jour le code)
