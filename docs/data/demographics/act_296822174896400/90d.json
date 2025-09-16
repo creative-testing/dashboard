@@ -4,16 +4,16 @@
     "account_name": "Kocare Beauty",
     "period": "90d",
     "date_range": "2025-06-18..2025-09-15",
-    "generated_at": "2025-09-16T15:21:36.435690Z",
+    "generated_at": "2025-09-16T21:17:44.683941Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 3100121,
+      "impressions": 3100148,
       "clicks": 67357,
-      "spend": 146047.02,
+      "spend": 146047.9,
       "purchases": 407,
       "purchase_value": 722544.54,
       "ctr": 2.17,
@@ -23,9 +23,9 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 1400862,
+      "impressions": 1400873,
       "clicks": 41056,
-      "spend": 106208.74,
+      "spend": 106209.42,
       "purchases": 206,
       "purchase_value": 388587.16,
       "ctr": 2.93,
@@ -35,21 +35,21 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 350983,
+      "impressions": 350986,
       "clicks": 13454,
-      "spend": 38753.4,
+      "spend": 38753.87,
       "purchases": 69,
       "purchase_value": 120527.1,
       "ctr": 3.83,
-      "cpa": 561.64,
+      "cpa": 561.65,
       "roas": 3.11
     },
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 987526,
+      "impressions": 987536,
       "clicks": 20031,
-      "spend": 31295.0,
+      "spend": 31295.26,
       "purchases": 81,
       "purchase_value": 144559.36,
       "ctr": 2.03,
@@ -61,7 +61,7 @@
       "gender": "female",
       "impressions": 76241,
       "clicks": 3538,
-      "spend": 11303.26,
+      "spend": 11303.25,
       "purchases": 17,
       "purchase_value": 40463.6,
       "ctr": 4.64,
@@ -89,19 +89,19 @@
       "purchases": 10,
       "purchase_value": 20324.3,
       "ctr": 2.43,
-      "cpa": 370.71,
+      "cpa": 370.7,
       "roas": 5.48
     },
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 34714,
+      "impressions": 34716,
       "clicks": 947,
-      "spend": 2731.77,
+      "spend": 2733.19,
       "purchases": 7,
       "purchase_value": 17836.0,
       "ctr": 2.73,
-      "cpa": 390.25,
+      "cpa": 390.46,
       "roas": 6.53
     },
     {
@@ -109,7 +109,7 @@
       "gender": "unknown",
       "impressions": 19453,
       "clicks": 484,
-      "spend": 1340.45,
+      "spend": 1340.44,
       "purchases": 8,
       "purchase_value": 7481.0,
       "ctr": 2.49,
@@ -125,7 +125,7 @@
       "purchases": 2,
       "purchase_value": 1765.0,
       "ctr": 2.32,
-      "cpa": 613.14,
+      "cpa": 613.13,
       "roas": 1.44
     },
     {
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 6187473,
+    "impressions": 6187526,
     "clicks": 152856,
-    "spend": 350631.69,
+    "spend": 350635.38,
     "purchases": 825,
     "purchase_value": 1496243.31,
     "roas": 4.27
