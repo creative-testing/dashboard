@@ -4,76 +4,76 @@
     "account_name": "LeanTravel",
     "period": "14d",
     "date_range": "2025-09-02..2025-09-15",
-    "generated_at": "2025-09-16T13:04:36.131087Z",
+    "generated_at": "2025-09-16T15:25:51.016438Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 8959,
-      "clicks": 261,
-      "spend": 3183.05,
+      "impressions": 8958,
+      "clicks": 260,
+      "spend": 3197.94,
       "purchases": 12,
       "purchase_value": 17378.0,
-      "ctr": 2.91,
-      "cpa": 265.25,
-      "roas": 5.46
+      "ctr": 2.9,
+      "cpa": 266.5,
+      "roas": 5.43
     },
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 9251,
+      "impressions": 9264,
       "clicks": 180,
-      "spend": 2968.4,
+      "spend": 2981.04,
       "purchases": 9,
       "purchase_value": 11565.0,
-      "ctr": 1.95,
-      "cpa": 329.82,
-      "roas": 3.9
+      "ctr": 1.94,
+      "cpa": 331.23,
+      "roas": 3.88
     },
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 4241,
-      "clicks": 159,
-      "spend": 1502.41,
+      "impressions": 4239,
+      "clicks": 160,
+      "spend": 1507.58,
       "purchases": 5,
       "purchase_value": 4794.0,
-      "ctr": 3.75,
-      "cpa": 300.48,
-      "roas": 3.19
+      "ctr": 3.77,
+      "cpa": 301.52,
+      "roas": 3.18
     },
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 5265,
+      "impressions": 5264,
       "clicks": 77,
-      "spend": 1172.91,
+      "spend": 1175.54,
       "purchases": 5,
       "purchase_value": 7990.0,
       "ctr": 1.46,
-      "cpa": 234.58,
-      "roas": 6.81
+      "cpa": 235.11,
+      "roas": 6.8
     },
     {
       "age": "45-54",
       "gender": "male",
       "impressions": 1726,
       "clicks": 28,
-      "spend": 339.74,
+      "spend": 340.31,
       "purchases": 1,
       "purchase_value": 799.0,
       "ctr": 1.62,
-      "cpa": 339.74,
+      "cpa": 340.31,
       "roas": 2.35
     },
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 1359,
+      "impressions": 1356,
       "clicks": 27,
-      "spend": 286.09,
+      "spend": 287.43,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.99,
@@ -83,13 +83,13 @@
     {
       "age": "65+",
       "gender": "male",
-      "impressions": 1106,
+      "impressions": 1103,
       "clicks": 25,
-      "spend": 279.25,
+      "spend": 279.37,
       "purchases": 1,
       "purchase_value": 799.0,
-      "ctr": 2.26,
-      "cpa": 279.25,
+      "ctr": 2.27,
+      "cpa": 279.37,
       "roas": 2.86
     },
     {
@@ -97,22 +97,22 @@
       "gender": "female",
       "impressions": 1664,
       "clicks": 20,
-      "spend": 251.66,
+      "spend": 252.77,
       "purchases": 1,
       "purchase_value": 1598.0,
       "ctr": 1.2,
-      "cpa": 251.66,
-      "roas": 6.35
+      "cpa": 252.77,
+      "roas": 6.32
     },
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 1627,
+      "impressions": 1623,
       "clicks": 16,
       "spend": 185.35,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 0.98,
+      "ctr": 0.99,
       "cpa": 0,
       "roas": 0.0
     },
@@ -121,7 +121,7 @@
       "gender": "male",
       "impressions": 927,
       "clicks": 9,
-      "spend": 98.59,
+      "spend": 99.05,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 0.97,
@@ -131,12 +131,12 @@
     {
       "age": "65+",
       "gender": "unknown",
-      "impressions": 163,
+      "impressions": 164,
       "clicks": 2,
-      "spend": 73.75,
+      "spend": 73.89,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 1.23,
+      "ctr": 1.22,
       "cpa": 0,
       "roas": 0.0
     },
@@ -204,9 +204,9 @@
   "totals": {
     "impressions": 36969,
     "clicks": 815,
-    "spend": 10483.24,
+    "spend": 10522.31,
     "purchases": 35,
     "purchase_value": 45722.0,
-    "roas": 4.36
+    "roas": 4.35
   }
 }
