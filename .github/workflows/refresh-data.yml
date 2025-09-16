@@ -197,27 +197,12 @@ jobs:
           echo "ℹ️ Aucun docs/data/demographics dans le repo"
         fi
 
-    # Deploy to GitHub Pages instead of committing to master
-    - name: 🔎 Sanity check (no empty site!)
+    # On ne déploie PLUS depuis refresh-data : deploy-fast s'en charge via workflow_run
+    - name: 🔎 Sanity check (local only, no deployment)
       run: |
-        test -s _site/index_full.html || (echo "❌ index_full.html is empty or missing!" && exit 1)
-        test -s _site/data/optimized/meta_v1.json || (echo "❌ meta_v1.json is empty or missing!" && exit 1)
-        echo "✅ Site content verified"
-
-    - name: 🔧 Setup Pages
-      if: success()
-      uses: actions/configure-pages@v5
-    
-    - name: 📦 Upload Pages artifact
-      if: success()
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: _site
-    
-    - name: 🚀 Deploy to GitHub Pages
-      if: success()
-      id: deployment
-      uses: actions/deploy-pages@v4
+        test -s _site/index_full.html || (echo "⚠️ index_full.html missing - deploy-fast will handle" && exit 0)
+        test -s _site/data/optimized/meta_v1.json || (echo "⚠️ meta_v1.json missing - deploy-fast will handle" && exit 0)
+        echo "✅ Local bundle looks good (publication déléguée à deploy-fast via workflow_run)"
     
     - name: 📊 Report status
       if: always()

@@ -187,6 +187,12 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
+      - name: 🌬️ Smoke check (200 OK)
+        run: |
+          sleep 8
+          curl -sSfL "${{ steps.deployment.outputs.page_url }}index_full.html" >/dev/null
+          echo "✅ Site is responding correctly (200 OK)"
+
       - name: ✅ Summary
         run: |
           echo "## 🚀 Fast Deploy Complete" >> $GITHUB_STEP_SUMMARY

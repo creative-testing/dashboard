@@ -119,10 +119,7 @@ jobs:
             
             git push
             echo "✅ Changes committed and pushed"
-
-            # Trigger deploy-fast to update Pages
-            echo "🚀 Triggering Pages deployment..."
-            gh workflow run deploy-fast.yml
+            # Pas de déclenchement manuel : deploy-fast se lancera automatiquement via workflow_run
           else
             echo "ℹ️ No changes to commit"
           fi
