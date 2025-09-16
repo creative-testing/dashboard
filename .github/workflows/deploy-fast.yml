@@ -190,7 +190,10 @@ jobs:
       - name: 🌬️ Smoke check (200 OK)
         run: |
           sleep 8
-          curl -sSfL "${{ steps.deployment.outputs.page_url }}index_full.html" >/dev/null
+          URL="${{ steps.deployment.outputs.page_url }}"
+          # Remove trailing slash if present
+          URL="${URL%/}"
+          curl -sSfL "${URL}/index_full.html" >/dev/null
           echo "✅ Site is responding correctly (200 OK)"
 
       - name: ✅ Summary
