@@ -9,6 +9,9 @@ on:
       - 'docs/**/*.css'
       - 'docs/data/demographics/**'
   workflow_dispatch:
+  workflow_run:
+    workflows: ["📊 Fetch Demographics (Age/Gender)"]
+    types: [completed]
 
 permissions:
   contents: read
@@ -18,7 +21,7 @@ permissions:
 
 concurrency:
   group: pages-deploy
-  cancel-in-progress: true
+  cancel-in-progress: false  # JAMAIS annuler pour éviter les 404
 
 jobs:
   deploy:
@@ -164,6 +167,12 @@ jobs:
           fi
           echo "✅ Données prêtes (baseline/empty fallback)."
           ls -la _site/data/optimized || true
+
+      - name: 🔎 Sanity check (no empty site!)
+        run: |
+          test -s _site/index_full.html || (echo "❌ index_full.html is empty or missing!" && exit 1)
+          test -s _site/data/optimized/meta_v1.json || (echo "❌ meta_v1.json is empty or missing!" && exit 1)
+          echo "✅ Site content verified"
 
       - name: 🔧 Setup Pages
         uses: actions/configure-pages@v5

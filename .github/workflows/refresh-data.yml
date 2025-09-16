@@ -18,7 +18,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     concurrency:
       group: pages-deploy    # même groupe que deploy-fast pour sérialiser
-      cancel-in-progress: true
+      cancel-in-progress: false  # JAMAIS annuler pour éviter les 404
     permissions:
       contents: write      # pour Release + checkout
       actions: read        # pour télécharger l'artefact Pages publié
@@ -198,6 +198,12 @@ jobs:
         fi
 
     # Deploy to GitHub Pages instead of committing to master
+    - name: 🔎 Sanity check (no empty site!)
+      run: |
+        test -s _site/index_full.html || (echo "❌ index_full.html is empty or missing!" && exit 1)
+        test -s _site/data/optimized/meta_v1.json || (echo "❌ meta_v1.json is empty or missing!" && exit 1)
+        echo "✅ Site content verified"
+
     - name: 🔧 Setup Pages
       if: success()
       uses: actions/configure-pages@v5
