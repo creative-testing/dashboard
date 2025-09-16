@@ -4,21 +4,21 @@
     "account_name": "origoshoes.mexico",
     "period": "7d",
     "date_range": "2025-09-09..2025-09-15",
-    "generated_at": "2025-09-16T09:24:48.921315Z",
+    "generated_at": "2025-09-16T13:03:24.260702Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 24256,
+      "impressions": 24258,
       "clicks": 729,
-      "spend": 2155.56,
+      "spend": 2155.84,
       "purchases": 4,
       "purchase_value": 20662.0,
       "ctr": 3.01,
-      "cpa": 538.89,
-      "roas": 9.59
+      "cpa": 538.96,
+      "roas": 9.58
     },
     {
       "age": "45-54",
@@ -59,25 +59,25 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 7030,
+      "impressions": 7032,
       "clicks": 353,
-      "spend": 1051.87,
+      "spend": 1052.27,
       "purchases": 1,
       "purchase_value": 2414.0,
       "ctr": 5.02,
-      "cpa": 1051.87,
+      "cpa": 1052.27,
       "roas": 2.29
     },
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 8885,
+      "impressions": 8886,
       "clicks": 213,
-      "spend": 886.01,
+      "spend": 886.46,
       "purchases": 1,
       "purchase_value": 1630.0,
       "ctr": 2.4,
-      "cpa": 886.01,
+      "cpa": 886.46,
       "roas": 1.84
     },
     {
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 121804,
+    "impressions": 121809,
     "clicks": 3340,
-    "spend": 9951.32,
+    "spend": 9952.45,
     "purchases": 18,
     "purchase_value": 52522.0,
     "roas": 5.28
