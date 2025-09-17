@@ -4,16 +4,16 @@
     "account_name": "S & S GOURMET",
     "period": "7d",
     "date_range": "2025-09-10..2025-09-16",
-    "generated_at": "2025-09-17T09:20:23.364719Z",
+    "generated_at": "2025-09-17T15:20:13.910529Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 37031,
+      "impressions": 37036,
       "clicks": 514,
-      "spend": 3118.44,
+      "spend": 3118.54,
       "purchases": 25,
       "purchase_value": 23201.35,
       "ctr": 1.39,
@@ -23,33 +23,33 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 34433,
+      "impressions": 34436,
       "clicks": 419,
-      "spend": 1847.97,
+      "spend": 1848.38,
       "purchases": 7,
       "purchase_value": 7351.5,
       "ctr": 1.22,
-      "cpa": 264.0,
+      "cpa": 264.05,
       "roas": 3.98
     },
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 13526,
+      "impressions": 13528,
       "clicks": 295,
-      "spend": 1627.27,
+      "spend": 1627.31,
       "purchases": 3,
       "purchase_value": 2818.65,
       "ctr": 2.18,
-      "cpa": 542.42,
+      "cpa": 542.44,
       "roas": 1.73
     },
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 3497,
+      "impressions": 3498,
       "clicks": 129,
-      "spend": 544.79,
+      "spend": 544.81,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 3.69,
@@ -83,13 +83,13 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 842,
+      "impressions": 843,
       "clicks": 23,
-      "spend": 157.31,
+      "spend": 157.32,
       "purchases": 1,
       "purchase_value": 936.0,
       "ctr": 2.73,
-      "cpa": 157.31,
+      "cpa": 157.32,
       "roas": 5.95
     },
     {
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 100923,
+    "impressions": 100935,
     "clicks": 1557,
-    "spend": 8055.25,
+    "spend": 8055.83,
     "purchases": 41,
     "purchase_value": 38658.2,
     "roas": 4.8
