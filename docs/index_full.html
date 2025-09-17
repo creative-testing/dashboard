@@ -928,24 +928,24 @@
             
             <div class="kpi-card">
                 <div class="kpi-content">
-                    <h3>3.42</h3>
-                    <p>ROAS Promedio</p>
+                    <h3 id="kpi-roas-value">3.42</h3>
+                    <p id="kpi-roas-label">ROAS Promedio</p>
                 </div>
                 <div class="kpi-icon purple">📈</div>
             </div>
             
             <div class="kpi-card">
                 <div class="kpi-content">
-                    <h3>$0</h3>
-                    <p>Valor de Conversión</p>
+                    <h3 id="kpi-extra-value">$0</h3>
+                    <p id="kpi-extra-label">Valor de Conversión</p>
                 </div>
                 <div class="kpi-icon yellow">💵</div>
             </div>
 
             <div class="kpi-card">
                 <div class="kpi-content">
-                    <h3>$0</h3>
-                    <p>CPA Promedio</p>
+                    <h3 id="kpi-cpa-value">$0</h3>
+                    <p id="kpi-cpa-label">CPA Promedio</p>
                 </div>
                 <div class="kpi-icon yellow">🎯</div>
             </div>
@@ -2256,6 +2256,10 @@
         
         function updateKPIs(data) {
             const ads = data.ads || [];
+            const any = ads[0];
+            const currentAccId = any ? (any.account_id || '') : '';
+            const profile = getAccountProfile(currentAccId); // 'leads' or 'ecom'
+
             // Un ad est "actif sur la période" s'il a eu du spend (donc il tournait)
             const activeAds = ads.filter(ad => parseFloat(ad.spend || 0) > 0).length;
             const totalAds = ads.length;
@@ -2265,21 +2269,63 @@
             const totalPurchases = ads.reduce((sum, ad) => sum + (ad.purchases || 0), 0);
             const avgRoas = totalSpend > 0 ? (totalRevenue / totalSpend) : 0;
             const cpa = totalPurchases > 0 ? (totalSpend / totalPurchases) : 0;
-            
+
+            // Leads-specific aggregates
+            const totalImpr   = ads.reduce((s,a)=> s + (a.impressions||0), 0);
+            const totalReachA = ads.reduce((s,a)=> s + (a.reach||0), 0); // proxy using max reach per ad
+            const totalUClk   = ads.reduce((s,a)=> s + (a.unique_link_clicks||0), 0);
+            const totalLeads  = ads.reduce((s,a)=> s + (a.results||0), 0);
+            const cpm         = totalImpr > 0 ? (totalSpend / totalImpr * 1000) : 0;
+            const ctrUnique   = (totalReachA > 0 && totalUClk > 0) ? (totalUClk / totalReachA * 100) : 0; // using reach proxy
+
             // Mettre à jour les valeurs dans les KPI cards (5 cartes désormais)
             const kpiCards = document.querySelectorAll('.kpi-content');
             if (kpiCards.length >= 5) {
-                // KPI 1: Anuncios con Inversión (ceux qui ont eu du spend)
+                // KPI 1: Anuncios con Inversión (ceux qui ont eu du spend) - unchanged
                 kpiCards[0].innerHTML = `
                     <h3>${activeAds.toLocaleString()}</h3>
                     <p>Anuncios con Inversión</p>
                 `;
-                
-                // Autres KPIs restent simples
+
+                // KPI 2: Total Spend - unchanged
                 kpiCards[1].querySelector('h3').textContent = `$${Math.round(totalSpend).toLocaleString()}`;
-                kpiCards[2].querySelector('h3').textContent = avgRoas.toFixed(2);
-                kpiCards[3].querySelector('h3').textContent = `$${Math.round(totalRevenue).toLocaleString()}`;
-                kpiCards[4].querySelector('h3').textContent = cpa > 0 ? `$${cpa.toFixed(2)}` : 'N/A';
+
+                if (profile === 'leads') {
+                    // KPI 3 → CTR único
+                    const v3 = document.getElementById('kpi-roas-value');
+                    const l3 = document.getElementById('kpi-roas-label');
+                    if (v3) v3.textContent = (ctrUnique > 0 ? ctrUnique.toFixed(2) + '%' : 'N/A');
+                    if (l3) l3.textContent = 'CTR único';
+
+                    // KPI 4 → CPM
+                    const v4 = document.getElementById('kpi-extra-value');
+                    const l4 = document.getElementById('kpi-extra-label');
+                    if (v4) v4.textContent = (cpm > 0 ? `$${cpm.toFixed(2)}` : 'N/A');
+                    if (l4) l4.textContent = 'CPM';
+
+                    // KPI 5 → Costo por Resultado
+                    const v5 = document.getElementById('kpi-cpa-value');
+                    const l5 = document.getElementById('kpi-cpa-label');
+                    const cpr = totalLeads > 0 ? (totalSpend / totalLeads) : 0;
+                    if (v5) v5.textContent = (cpr > 0 ? `$${cpr.toFixed(2)}` : 'N/A');
+                    if (l5) l5.textContent = 'Costo por Resultado';
+                } else {
+                    // ecom defaults
+                    const v3 = document.getElementById('kpi-roas-value');
+                    const l3 = document.getElementById('kpi-roas-label');
+                    if (v3) v3.textContent = avgRoas.toFixed(2);
+                    if (l3) l3.textContent = 'ROAS Promedio';
+
+                    const v4 = document.getElementById('kpi-extra-value');
+                    const l4 = document.getElementById('kpi-extra-label');
+                    if (v4) v4.textContent = `$${Math.round(totalRevenue).toLocaleString()}`;
+                    if (l4) l4.textContent = 'Valor de Conversión';
+
+                    const v5 = document.getElementById('kpi-cpa-value');
+                    const l5 = document.getElementById('kpi-cpa-label');
+                    if (v5) v5.textContent = cpa > 0 ? `$${cpa.toFixed(2)}` : 'N/A';
+                    if (l5) l5.textContent = 'CPA Promedio';
+                }
             }
         }
         
@@ -3955,11 +4001,47 @@
         // Fonction de filtrage supprimée - utilise window.applyTableFilters définie ligne 1862
 
         // Charger les données au démarrage
+        // Configuration des profils de compte
+        let accountProfiles = {};
+        async function loadAccountProfiles() {
+            try {
+                const response = await fetch('config/account_profiles.json');
+                if (response.ok) {
+                    const config = await response.json();
+                    accountProfiles = config;
+                }
+            } catch (e) {
+                console.log('No account profiles config found, using default');
+                accountProfiles = { profiles: {}, default: 'ecom' };
+            }
+        }
+
+        // Déterminer le profil du compte actuel
+        function getAccountProfile(accountId) {
+            if (!accountId) return accountProfiles.default || 'ecom';
+
+            // Chercher l'ID exact ou le nom du compte
+            if (accountProfiles.profiles) {
+                // D'abord chercher par ID exact
+                if (accountProfiles.profiles[accountId]) {
+                    return accountProfiles.profiles[accountId];
+                }
+                // Si c'est le compte Ads-Alchemy par ID
+                if (accountId === 'act_3816311378380297' || accountId === '3816311378380297') {
+                    return 'leads';
+                }
+            }
+            return accountProfiles.default || 'ecom';
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
+            // Charger la configuration des profils
+            await loadAccountProfiles();
+
             // Afficher "Chargement..." dans les KPIs
             const kpiCards = document.querySelectorAll('.kpi-content h3');
             kpiCards.forEach(card => card.textContent = '...');
-            
+
             // Mode client (URL)
             const qp = getQueryParams();
             if (qp.account) {

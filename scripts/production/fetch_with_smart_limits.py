@@ -135,7 +135,7 @@ class SmartMetaFetcher:
             "level": "ad",
             "time_range": json.dumps({"since": since_date, "until": until_date}),
             "time_increment": "1",
-            "fields": "ad_id,ad_name,campaign_name,campaign_id,adset_name,adset_id,impressions,spend,clicks,reach,frequency,actions,action_values,conversions,conversion_values,created_time",
+            "fields": "ad_id,ad_name,campaign_name,campaign_id,adset_name,adset_id,impressions,spend,clicks,unique_outbound_clicks,reach,frequency,cpm,ctr,actions,action_values,conversions,conversion_values,created_time",
             "limit": 5000,
             # Aligner sur Facebook Ads Manager
             "action_report_time": os.getenv("ACTION_REPORT_TIME", "conversion")
@@ -244,6 +244,7 @@ class SmartMetaFetcher:
                         ad['account_id'] = account_id
                         # Process purchases...
                         self._process_purchases(ad)
+                        self._process_leads(ad)
                     return ads
             
             logger.warning(f"  ⚠️ Échec async pour {account_name}, fallback sur sync")
@@ -267,7 +268,7 @@ class SmartMetaFetcher:
             "level": "ad",
             "time_range": json.dumps({"since": since_date, "until": until_date}),
             "time_increment": "1",
-            "fields": "ad_id,ad_name,campaign_name,campaign_id,adset_name,adset_id,impressions,spend,clicks,reach,frequency,actions,action_values,conversions,conversion_values,created_time",
+            "fields": "ad_id,ad_name,campaign_name,campaign_id,adset_name,adset_id,impressions,spend,clicks,unique_outbound_clicks,reach,frequency,cpm,ctr,actions,action_values,conversions,conversion_values,created_time",
             "limit": batch_size,
             # Aligner sur Facebook Ads Manager
             "action_report_time": os.getenv("ACTION_REPORT_TIME", "conversion")
@@ -302,7 +303,8 @@ class SmartMetaFetcher:
                     ad['account_name'] = account_name
                     ad['account_id'] = account_id
                     self._process_purchases(ad)
-                
+                    self._process_leads(ad)
+
                 all_ads.extend(ads_batch)
                 
                 # Pagination
@@ -484,6 +486,44 @@ class SmartMetaFetcher:
         ad['roas'] = (ad['purchase_value'] / spend) if spend > 0 else 0.0
         ad['cpa'] = (spend / ad['purchases']) if ad['purchases'] > 0 else 0.0
         ad['date'] = ad.get('date_start', '')
+
+    def _process_leads(self, ad: dict):
+        """Extrait les leads (Instant Forms + Pixel) dans ad['results']."""
+        def _sum(items, keys):
+            s = 0.0
+            for k in keys:
+                for i in (items or []):
+                    if i.get('action_type') == k:
+                        try: s += float(i.get('value', 0) or 0)
+                        except: pass
+            return s
+
+        # Types de leads : Instant Forms et Pixel conversions
+        lead_keys = ['lead', 'offsite_conversion.fb_lead']
+
+        # Priorité aux conversions, puis actions
+        conv = _sum(ad.get('conversions', []), lead_keys)
+        acts = _sum(ad.get('actions', []), lead_keys) if conv == 0 else 0.0
+
+        leads = conv if conv > 0 else acts
+        ad['results'] = int(round(leads))
+
+        # Normaliser unique_outbound_clicks (clics uniques sortants)
+        # C'est un tableau avec un seul objet: [{'action_type': 'outbound_click', 'value': '17'}]
+        outbound_total = 0
+        outbound_data = ad.get('unique_outbound_clicks', [])
+        if isinstance(outbound_data, list):
+            for item in outbound_data:
+                if isinstance(item, dict) and item.get('action_type') == 'outbound_click':
+                    try:
+                        outbound_total += int(item.get('value', 0))
+                    except:
+                        pass
+        ad['unique_link_clicks'] = outbound_total
+
+        # Ajouter CPM et CTR directement depuis l'API
+        ad['cpm'] = float(ad.get('cpm', 0) or 0)
+        ad['ctr'] = float(ad.get('ctr', 0) or 0)
 
 def main():
     """Fonction principale avec gestion intelligente des rate limits"""

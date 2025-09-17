@@ -70,10 +70,12 @@ def transform_data(input_dir='data/current', output_dir='data/optimized'):
     aggregated_by_period = defaultdict(lambda: defaultdict(lambda: {
         'impressions': 0,
         'clicks': 0,
+        'unique_link_clicks': 0,
+        'results': 0,
         'spend': 0.0,
         'purchases': 0,
         'purchase_value': 0.0,
-        'reach': 0
+        'reach': 0  # will store max daily reach (approx for uniques)
     }))
     
     # Calculate cutoff dates for each period
@@ -109,13 +111,28 @@ def transform_data(input_dir='data/current', output_dir='data/optimized'):
                 # Aggregate metrics
                 agg['impressions'] += int(ad.get('impressions', 0))
                 agg['clicks'] += int(ad.get('clicks', 0))
+                agg['unique_link_clicks'] += int(ad.get('unique_link_clicks', 0))
+                agg['results'] += int(ad.get('results', 0))
                 agg['spend'] += float(ad.get('spend', 0))
                 agg['purchases'] += int(ad.get('purchases', 0))
                 agg['purchase_value'] += float(ad.get('purchase_value', 0))
-                # IMPORTANT: Reach est NON-ADDITIVE - on ne peut pas sommer les reach journalières
-                # La reach d'une période = personnes uniques, pas la somme des reach journalières
-                # Pour l'instant on met à 0, nécessite un appel API séparé pour avoir la vraie valeur
-                # agg['reach'] += int(ad.get('reach', 0))  # INCORRECT - commenté
+                # reach (approx): keep the MAX daily reach across the window
+                try:
+                    r = int(ad.get('reach', 0))
+                    if r > agg['reach']: agg['reach'] = r
+                except:
+                    pass
+
+                # Pour CPM et CTR: moyenne pondérée par impressions
+                impressions = int(ad.get('impressions', 0))
+                if impressions > 0:
+                    if 'cpm_weighted' not in agg:
+                        agg['cpm_weighted'] = 0
+                        agg['ctr_weighted'] = 0
+                        agg['total_impressions_weight'] = 0
+                    agg['cpm_weighted'] += float(ad.get('cpm', 0)) * impressions
+                    agg['ctr_weighted'] += float(ad.get('ctr', 0)) * impressions
+                    agg['total_impressions_weight'] += impressions
                 
                 # Keep first occurrence metadata
                 if 'ad_name' not in agg:
@@ -183,13 +200,26 @@ def transform_data(input_dir='data/current', output_dir='data/optimized'):
         # Add values for each period (flattened array)
         for period in periods:
             period_data = aggregated_by_period[period].get(ad_id, {})
+
+            # Calculate weighted averages for CPM and CTR
+            total_weight = period_data.get('total_impressions_weight', 0)
+            cpm = 0
+            ctr = 0
+            if total_weight > 0:
+                cpm = period_data.get('cpm_weighted', 0) / total_weight
+                ctr = period_data.get('ctr_weighted', 0) / total_weight
+
             values.extend([
                 period_data.get('impressions', 0),
                 period_data.get('clicks', 0),
+                period_data.get('unique_link_clicks', 0),
+                period_data.get('results', 0),
                 period_data.get('purchases', 0),
                 int(period_data.get('spend', 0) * 100),  # Store as cents
                 int(period_data.get('purchase_value', 0) * 100),  # Store as cents
-                period_data.get('reach', 0)
+                period_data.get('reach', 0),
+                int(cpm * 100),  # Store CPM * 100 for precision
+                int(ctr * 100)   # Store CTR * 100 for precision
             ])
         
         # Add metadata
@@ -213,7 +243,7 @@ def transform_data(input_dir='data/current', output_dir='data/optimized'):
     agg_data = {
         "version": 1,
         "periods": periods,
-        "metrics": ["impressions", "clicks", "purchases", "spend", "purchase_value", "reach"],
+        "metrics": ["impressions", "clicks", "unique_link_clicks", "results", "purchases", "spend", "purchase_value", "reach", "cpm", "ctr"],
         "ads": ad_ids,
         "values": values,
         "scales": {"money": 100}  # Cents to dollars

@@ -9,7 +9,10 @@ class DataAdapter {
         this.aggData = aggData;
         this.summaryData = summaryData;
         this.adIndexMap = {};
-        
+        // Metric name -> index mapping
+        this.mx = {};
+        (aggData.metrics || []).forEach((m,i)=> this.mx[m]=i);
+
         // Build index map
         aggData.ads.forEach((adId, idx) => {
             this.adIndexMap[adId] = idx;
@@ -18,32 +21,45 @@ class DataAdapter {
     
     // Get metrics for a specific ad and period
     getAggMetrics(adIdx, periodIdx) {
-        const P = this.aggData.periods.length;  // 5
-        const M = this.aggData.metrics.length;  // 6
+        const P = this.aggData.periods.length;
+        const M = this.aggData.metrics.length;
         const base = adIdx * (P * M) + periodIdx * M;
-        
-        const impr = this.aggData.values[base + 0];
-        const clk = this.aggData.values[base + 1];
-        const purch = this.aggData.values[base + 2];
-        const spend = this.aggData.values[base + 3] / this.aggData.scales.money;
-        const pval = this.aggData.values[base + 4] / this.aggData.scales.money;
-        const reach = this.aggData.values[base + 5];
-        
+
+        const val = (name, def=0) => {
+            const idx = this.mx[name];
+            if (idx == null) return def;
+            return this.aggData.values[base + idx];
+        };
+
+        const impr  = val('impressions', 0);
+        const clk   = val('clicks', 0);
+        const uclk  = val('unique_link_clicks', 0);
+        const res   = val('results', 0);
+        const purch = val('purchases', 0);
+        const spend = (val('spend', 0)) / this.aggData.scales.money;
+        const pval  = (val('purchase_value', 0)) / this.aggData.scales.money;
+        const reach = val('reach', 0); // max daily reach (approx)
+        const cpm_raw = val('cpm', 0) / 100; // Stored as CPM * 100
+        const ctr_raw = val('ctr', 0) / 100; // Stored as CTR * 100
+
         // Calculate derived metrics
         const ctr = impr > 0 ? (clk / impr) * 100 : 0;
         const roas = spend > 0 ? (pval / spend) : 0;
         const cpa = purch > 0 ? (spend / purch) : 0;
-        
-        return { 
-            impressions: impr, 
-            clicks: clk, 
-            purchases: purch, 
-            spend, 
-            purchase_value: pval, 
-            reach, 
-            ctr, 
-            roas, 
-            cpa 
+
+        return {
+            impressions: impr,
+            clicks: clk,
+            unique_link_clicks: uclk,
+            results: res,
+            purchases: purch,
+            spend,
+            purchase_value: pval,
+            reach,
+            cpm: cpm_raw,
+            ctr: ctr_raw > 0 ? ctr_raw : ctr, // Use API CTR if available, else calculate
+            roas,
+            cpa
         };
     }
     
@@ -87,9 +103,12 @@ class DataAdapter {
                 impressions: metrics.impressions,
                 spend: parseFloat(metrics.spend.toFixed(2)),  // Keep as number
                 clicks: metrics.clicks,
+                unique_link_clicks: metrics.unique_link_clicks,
+                results: metrics.results,
                 reach: metrics.reach,
                 purchases: metrics.purchases,
                 purchase_value: parseFloat(metrics.purchase_value.toFixed(2)),  // Keep as number
+                cpm: metrics.cpm,
                 ctr: metrics.ctr,
                 roas: metrics.roas,
                 cpa: metrics.cpa,
