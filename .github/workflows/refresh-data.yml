@@ -158,20 +158,21 @@ jobs:
       run: |
         set -e
         mkdir -p _site_prev
-        RUN_ID=$(gh run list --workflow ".github/workflows/refresh-data.yml" --json databaseId,conclusion -L 20 \
+        # On cherche SEULEMENT dans deploy-fast car refresh-data ne crée plus d'artifacts
+        RUN_ID=$(gh run list --workflow ".github/workflows/deploy-fast.yml" --json databaseId,conclusion -L 20 \
           | jq -r '[.[]|select(.conclusion=="success")][0].databaseId // empty')
-        if [ -z "$RUN_ID" ]; then
-          RUN_ID=$(gh run list --workflow ".github/workflows/deploy-fast.yml" --json databaseId,conclusion -L 20 \
-            | jq -r '[.[]|select(.conclusion=="success")][0].databaseId // empty')
-        fi
         if [ -n "$RUN_ID" ]; then
-          gh run download "$RUN_ID" -n github-pages -D _site_prev
+          echo "📦 Récupération de l'artifact du run deploy-fast #$RUN_ID"
+          # Ne pas faire échouer si pas d'artifact (avec || true)
+          gh run download "$RUN_ID" -n github-pages -D _site_prev 2>/dev/null || echo "⚠️ Pas d'artifact trouvé (normal au début)"
           if compgen -G "_site_prev/*.zip" > /dev/null; then
             unzip -q _site_prev/*.zip -d _site_prev/extracted
             rm -f _site_prev/*.zip
             shopt -s dotglob
             mv _site_prev/extracted/* _site_prev/ || true
           fi
+        else
+          echo "⚠️ Aucun run deploy-fast trouvé, on continue sans artifact précédent"
         fi
 
     - name: 🧱 Construire le bundle final (préserver code, remplacer données)
