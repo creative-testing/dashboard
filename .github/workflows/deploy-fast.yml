@@ -137,20 +137,20 @@ jobs:
               mkdir -p data/optimized
 
               cat > data/optimized/meta_v1.json <<JSON
-{"version":1,"metadata":{"reference_date":"$REF_DATE","reference_hour":"$NOW","buffer_hours":0,"includes_today":false,"data_min_date":"$REF_DATE","data_max_date":"$REF_DATE","data_range_days":1,"last_update":"$NOW","source":"bootstrap_empty","pipeline":"bootstrap"},"ads":[],"campaigns":{},"adsets":{},"accounts":{}}
-JSON
+          {"version":1,"metadata":{"reference_date":"$REF_DATE","reference_hour":"$NOW","buffer_hours":0,"includes_today":false,"data_min_date":"$REF_DATE","data_max_date":"$REF_DATE","data_range_days":1,"last_update":"$NOW","source":"bootstrap_empty","pipeline":"bootstrap"},"ads":[],"campaigns":{},"adsets":{},"accounts":{}}
+          JSON
 
               cat > data/optimized/agg_v1.json <<'JSON'
-{"version":1,"periods":["3d","7d","14d","30d","90d"],"metrics":["impressions","clicks","purchases","spend","purchase_value","reach"],"ads":[],"values":[],"scales":{"money":100}}
-JSON
+          {"version":1,"periods":["3d","7d","14d","30d","90d"],"metrics":["impressions","clicks","purchases","spend","purchase_value","reach"],"ads":[],"values":[],"scales":{"money":100}}
+          JSON
 
               cat > data/optimized/summary_v1.json <<'JSON'
-{"periods":["3d","7d","14d","30d","90d"],"totals":{"3d":{"impr":0,"clk":0,"purch":0,"spend_cents":0,"purchase_value_cents":0,"reach":0},"7d":{"impr":0,"clk":0,"purch":0,"spend_cents":0,"purchase_value_cents":0,"reach":0},"14d":{"impr":0,"clk":0,"purch":0,"spend_cents":0,"purchase_value_cents":0,"reach":0},"30d":{"impr":0,"clk":0,"purch":0,"spend_cents":0,"purchase_value_cents":0,"reach":0},"90d":{"impr":0,"clk":0,"purch":0,"spend_cents":0,"purchase_value_cents":0,"reach":0}}}
-JSON
+          {"periods":["3d","7d","14d","30d","90d"],"totals":{"3d":{"impr":0,"clk":0,"purch":0,"spend_cents":0,"purchase_value_cents":0,"reach":0},"7d":{"impr":0,"clk":0,"purch":0,"spend_cents":0,"purchase_value_cents":0,"reach":0},"14d":{"impr":0,"clk":0,"purch":0,"spend_cents":0,"purchase_value_cents":0,"reach":0},"30d":{"impr":0,"clk":0,"purch":0,"spend_cents":0,"purchase_value_cents":0,"reach":0},"90d":{"impr":0,"clk":0,"purch":0,"spend_cents":0,"purchase_value_cents":0,"reach":0}}}
+          JSON
 
               cat > data/optimized/manifest.json <<JSON
-{"version":"$NOW","ads_count":0,"periods":["3d","7d","14d","30d","90d"],"shards":{"meta":{"path":"meta_v1.json"},"agg":{"path":"agg_v1.json"},"summary":{"path":"summary_v1.json"}}}
-JSON
+          {"version":"$NOW","ads_count":0,"periods":["3d","7d","14d","30d","90d"],"shards":{"meta":{"path":"meta_v1.json"},"agg":{"path":"agg_v1.json"},"summary":{"path":"summary_v1.json"}}}
+          JSON
 
               echo '{"period":"prev_week","ads":[]}' > data/optimized/prev_week_compressed.json
             fi
