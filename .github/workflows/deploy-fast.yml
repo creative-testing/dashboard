@@ -75,6 +75,7 @@ jobs:
           rsync -a \
             --include="*/" \
             --include="**/*.html" --include="**/*.js" --include="**/*.css" \
+            --include="**/account_profiles.json" \
             --exclude="docs/data/optimized/**" \
             --exclude="*" \
             docs/ _site/
