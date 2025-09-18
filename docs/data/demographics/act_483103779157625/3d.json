@@ -4,45 +4,45 @@
     "account_name": "Arua Joyería",
     "period": "3d",
     "date_range": "2025-09-15..2025-09-17",
-    "generated_at": "2025-09-18T09:20:47.398898Z",
+    "generated_at": "2025-09-18T15:20:35.364106Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 19199,
-      "clicks": 458,
-      "spend": 1490.28,
+      "impressions": 19208,
+      "clicks": 460,
+      "spend": 1490.6,
       "purchases": 1,
       "purchase_value": 564.0,
       "ctr": 2.39,
-      "cpa": 1490.28,
+      "cpa": 1490.6,
       "roas": 0.38
     },
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 29492,
+      "impressions": 29498,
       "clicks": 479,
-      "spend": 1451.28,
+      "spend": 1453.71,
       "purchases": 1,
       "purchase_value": 1948.8,
       "ctr": 1.62,
-      "cpa": 1451.28,
+      "cpa": 1453.71,
       "roas": 1.34
     },
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 4461,
+      "impressions": 4463,
       "clicks": 175,
-      "spend": 433.55,
+      "spend": 434.07,
       "purchases": 2,
       "purchase_value": 3412.68,
       "ctr": 3.92,
-      "cpa": 216.78,
-      "roas": 7.87
+      "cpa": 217.04,
+      "roas": 7.86
     },
     {
       "age": "55-64",
@@ -95,12 +95,12 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 859,
+      "impressions": 860,
       "clicks": 18,
-      "spend": 35.18,
+      "spend": 35.19,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 2.1,
+      "ctr": 2.09,
       "cpa": 0,
       "roas": 0.0
     },
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 62502,
-    "clicks": 1403,
-    "spend": 3971.34,
+    "impressions": 62520,
+    "clicks": 1405,
+    "spend": 3974.62,
     "purchases": 7,
     "purchase_value": 9340.52,
     "roas": 2.35
