@@ -4,20 +4,20 @@
     "account_name": "LeanTravel",
     "period": "14d",
     "date_range": "2025-09-06..2025-09-19",
-    "generated_at": "2025-09-20T15:21:15.990370Z",
+    "generated_at": "2025-09-20T21:20:02.218473Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 9274,
+      "impressions": 9276,
       "clicks": 168,
-      "spend": 3123.53,
+      "spend": 3123.77,
       "purchases": 8,
       "purchase_value": 13692.0,
       "ctr": 1.81,
-      "cpa": 390.44,
+      "cpa": 390.47,
       "roas": 4.38
     },
     {
@@ -59,13 +59,13 @@
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 1269,
+      "impressions": 1270,
       "clicks": 24,
-      "spend": 314.34,
+      "spend": 314.5,
       "purchases": 1,
       "purchase_value": 799.0,
       "ctr": 1.89,
-      "cpa": 314.34,
+      "cpa": 314.5,
       "roas": 2.54
     },
     {
@@ -202,9 +202,9 @@
     }
   ],
   "totals": {
-    "impressions": 33955,
+    "impressions": 33958,
     "clicks": 690,
-    "spend": 10429.47,
+    "spend": 10429.87,
     "purchases": 28,
     "purchase_value": 38461.0,
     "roas": 3.69
