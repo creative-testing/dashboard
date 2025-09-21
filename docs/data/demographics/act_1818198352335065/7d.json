@@ -4,16 +4,16 @@
     "account_name": "koneli.mx",
     "period": "7d",
     "date_range": "2025-09-14..2025-09-20",
-    "generated_at": "2025-09-21T15:20:46.843125Z",
+    "generated_at": "2025-09-21T21:19:42.054734Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 248357,
-      "clicks": 4256,
-      "spend": 19736.86,
+      "impressions": 248368,
+      "clicks": 4257,
+      "spend": 19736.74,
       "purchases": 27,
       "purchase_value": 41097.56,
       "ctr": 1.71,
@@ -23,9 +23,9 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 223213,
+      "impressions": 223225,
       "clicks": 3052,
-      "spend": 12454.52,
+      "spend": 12454.58,
       "purchases": 30,
       "purchase_value": 43729.02,
       "ctr": 1.37,
@@ -35,21 +35,21 @@
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 91511,
+      "impressions": 91520,
       "clicks": 2858,
-      "spend": 10401.18,
+      "spend": 10401.28,
       "purchases": 14,
       "purchase_value": 21500.31,
       "ctr": 3.12,
-      "cpa": 742.94,
+      "cpa": 742.95,
       "roas": 2.07
     },
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 26853,
+      "impressions": 26855,
       "clicks": 1610,
-      "spend": 3839.03,
+      "spend": 3839.01,
       "purchases": 8,
       "purchase_value": 17049.48,
       "ctr": 6.0,
@@ -71,9 +71,9 @@
     {
       "age": "18-24",
       "gender": "male",
-      "impressions": 15251,
+      "impressions": 15252,
       "clicks": 301,
-      "spend": 687.57,
+      "spend": 687.56,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.97,
@@ -155,7 +155,7 @@
     {
       "age": "55-64",
       "gender": "unknown",
-      "impressions": 326,
+      "impressions": 325,
       "clicks": 7,
       "spend": 63.92,
       "purchases": 0,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 634506,
-    "clicks": 13203,
-    "spend": 49628.28,
+    "impressions": 634540,
+    "clicks": 13204,
+    "spend": 49628.29,
     "purchases": 84,
     "purchase_value": 129889.57,
     "roas": 2.62
