@@ -4,38 +4,38 @@
     "account_name": "origoshoes.mexico",
     "period": "3d",
     "date_range": "2025-09-18..2025-09-20",
-    "generated_at": "2025-09-21T09:20:34.591476Z",
+    "generated_at": "2025-09-21T15:20:22.100695Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 11837,
+      "impressions": 11839,
       "clicks": 364,
       "spend": 1082.69,
       "purchases": 2,
       "purchase_value": 4194.0,
-      "ctr": 3.08,
+      "ctr": 3.07,
       "cpa": 541.35,
       "roas": 3.87
     },
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 11898,
+      "impressions": 11903,
       "clicks": 353,
-      "spend": 709.42,
+      "spend": 709.52,
       "purchases": 1,
       "purchase_value": 1630.0,
       "ctr": 2.97,
-      "cpa": 709.42,
+      "cpa": 709.52,
       "roas": 2.3
     },
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 6025,
+      "impressions": 6026,
       "clicks": 217,
       "spend": 577.23,
       "purchases": 0,
@@ -47,13 +47,13 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 6297,
+      "impressions": 6298,
       "clicks": 132,
-      "spend": 473.23,
+      "spend": 473.32,
       "purchases": 1,
       "purchase_value": 2660.0,
       "ctr": 2.1,
-      "cpa": 473.23,
+      "cpa": 473.32,
       "roas": 5.62
     },
     {
@@ -71,13 +71,13 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 5837,
+      "impressions": 5839,
       "clicks": 121,
-      "spend": 301.36,
+      "spend": 301.38,
       "purchases": 1,
       "purchase_value": 2414.0,
       "ctr": 2.07,
-      "cpa": 301.36,
+      "cpa": 301.38,
       "roas": 8.01
     },
     {
@@ -107,21 +107,21 @@
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 896,
+      "impressions": 897,
       "clicks": 22,
-      "spend": 95.03,
+      "spend": 95.09,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 2.46,
+      "ctr": 2.45,
       "cpa": 0,
       "roas": 0.0
     },
     {
       "age": "65+",
       "gender": "male",
-      "impressions": 565,
+      "impressions": 566,
       "clicks": 12,
-      "spend": 54.61,
+      "spend": 54.71,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 2.12,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 53053,
+    "impressions": 53066,
     "clicks": 1512,
-    "spend": 4164.92,
+    "spend": 4165.29,
     "purchases": 8,
     "purchase_value": 18650.0,
     "roas": 4.48
