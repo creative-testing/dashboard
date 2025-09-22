@@ -4,7 +4,7 @@
     "account_name": "RAW APHOTECARY 2",
     "period": "90d",
     "date_range": "2025-06-24..2025-09-21",
-    "generated_at": "2025-09-22T09:27:20.559774Z",
+    "generated_at": "2025-09-22T15:25:15.463950Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
@@ -23,13 +23,13 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 3864,
+      "impressions": 3866,
       "clicks": 236,
-      "spend": 2093.19,
+      "spend": 2093.56,
       "purchases": 3,
       "purchase_value": 1737.99,
-      "ctr": 6.11,
-      "cpa": 697.73,
+      "ctr": 6.1,
+      "cpa": 697.85,
       "roas": 0.83
     },
     {
@@ -59,9 +59,9 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 4342,
+      "impressions": 4343,
       "clicks": 128,
-      "spend": 1106.81,
+      "spend": 1106.84,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 2.95,
@@ -83,13 +83,13 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 1733,
+      "impressions": 1734,
       "clicks": 112,
-      "spend": 857.61,
+      "spend": 858.59,
       "purchases": 1,
       "purchase_value": 429.0,
       "ctr": 6.46,
-      "cpa": 857.61,
+      "cpa": 858.59,
       "roas": 0.5
     },
     {
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 30765,
+    "impressions": 30769,
     "clicks": 1293,
-    "spend": 11761.38,
+    "spend": 11762.76,
     "purchases": 10,
     "purchase_value": 6093.96,
     "roas": 0.52

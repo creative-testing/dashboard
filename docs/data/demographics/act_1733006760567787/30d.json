@@ -4,56 +4,56 @@
     "account_name": "Moscca Fine Fragrance",
     "period": "30d",
     "date_range": "2025-08-23..2025-09-21",
-    "generated_at": "2025-09-22T09:27:10.072686Z",
+    "generated_at": "2025-09-22T15:25:04.023388Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 97194,
+      "impressions": 97195,
       "clicks": 1379,
-      "spend": 5866.86,
+      "spend": 5866.95,
       "purchases": 9,
       "purchase_value": 16311.7,
       "ctr": 1.42,
-      "cpa": 651.87,
+      "cpa": 651.88,
       "roas": 2.78
     },
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 52304,
+      "impressions": 52306,
       "clicks": 1198,
-      "spend": 5518.04,
+      "spend": 5518.1,
       "purchases": 5,
       "purchase_value": 7192.3,
       "ctr": 2.29,
-      "cpa": 1103.61,
+      "cpa": 1103.62,
       "roas": 1.3
     },
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 34051,
+      "impressions": 34052,
       "clicks": 1148,
-      "spend": 4230.79,
+      "spend": 4230.83,
       "purchases": 6,
       "purchase_value": 6673.1,
       "ctr": 3.37,
-      "cpa": 705.13,
+      "cpa": 705.14,
       "roas": 1.58
     },
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 50011,
+      "impressions": 50013,
       "clicks": 1205,
-      "spend": 3992.44,
+      "spend": 3992.53,
       "purchases": 5,
       "purchase_value": 6030.4,
       "ctr": 2.41,
-      "cpa": 798.49,
+      "cpa": 798.51,
       "roas": 1.51
     },
     {
@@ -71,13 +71,13 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 62519,
+      "impressions": 62520,
       "clicks": 1271,
-      "spend": 3313.89,
+      "spend": 3313.96,
       "purchases": 4,
       "purchase_value": 6918.4,
       "ctr": 2.03,
-      "cpa": 828.47,
+      "cpa": 828.49,
       "roas": 2.09
     },
     {
@@ -95,13 +95,13 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 9083,
+      "impressions": 9084,
       "clicks": 424,
-      "spend": 1902.72,
+      "spend": 1902.77,
       "purchases": 1,
       "purchase_value": 1699.0,
       "ctr": 4.67,
-      "cpa": 1902.72,
+      "cpa": 1902.77,
       "roas": 0.89
     },
     {
@@ -155,12 +155,24 @@
     {
       "age": "35-44",
       "gender": "unknown",
-      "impressions": 1758,
+      "impressions": 1759,
       "clicks": 37,
-      "spend": 110.23,
+      "spend": 110.24,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 2.1,
+      "cpa": 0,
+      "roas": 0.0
+    },
+    {
+      "age": "55-64",
+      "gender": "unknown",
+      "impressions": 458,
+      "clicks": 9,
+      "spend": 79.74,
+      "purchases": 0,
+      "purchase_value": 0.0,
+      "ctr": 1.97,
       "cpa": 0,
       "roas": 0.0
     },
@@ -173,18 +185,6 @@
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 2.64,
-      "cpa": 0,
-      "roas": 0.0
-    },
-    {
-      "age": "55-64",
-      "gender": "unknown",
-      "impressions": 457,
-      "clicks": 9,
-      "spend": 79.66,
-      "purchases": 0,
-      "purchase_value": 0.0,
-      "ctr": 1.97,
       "cpa": 0,
       "roas": 0.0
     },
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 389724,
+    "impressions": 389734,
     "clicks": 9165,
-    "spend": 34965.75,
+    "spend": 34966.24,
     "purchases": 43,
     "purchase_value": 60070.7,
     "roas": 1.72
