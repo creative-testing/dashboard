@@ -3,70 +3,70 @@
     "account_id": "3625928541013770",
     "account_name": "FITFAM APP",
     "period": "90d",
-    "date_range": "2025-06-25..2025-09-22",
-    "generated_at": "2025-09-23T21:19:31.692550Z",
+    "date_range": "2025-06-26..2025-09-23",
+    "generated_at": "2025-09-24T09:23:26.846250Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
-      "age": "25-34",
-      "gender": "female",
-      "impressions": 157232,
-      "clicks": 1978,
-      "spend": 8383.29,
-      "purchases": 60,
-      "purchase_value": 5937.62,
-      "ctr": 1.26,
-      "cpa": 139.72,
-      "roas": 0.71
-    },
-    {
       "age": "35-44",
       "gender": "female",
-      "impressions": 108946,
-      "clicks": 1709,
-      "spend": 8251.28,
-      "purchases": 49,
-      "purchase_value": 4850.21,
-      "ctr": 1.57,
-      "cpa": 168.39,
-      "roas": 0.59
+      "impressions": 100967,
+      "clicks": 1632,
+      "spend": 7705.06,
+      "purchases": 40,
+      "purchase_value": 3959.21,
+      "ctr": 1.62,
+      "cpa": 192.63,
+      "roas": 0.51
+    },
+    {
+      "age": "25-34",
+      "gender": "female",
+      "impressions": 143957,
+      "clicks": 1859,
+      "spend": 7688.21,
+      "purchases": 55,
+      "purchase_value": 5442.62,
+      "ctr": 1.29,
+      "cpa": 139.79,
+      "roas": 0.71
     },
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 25486,
-      "clicks": 691,
-      "spend": 2797.43,
+      "impressions": 24248,
+      "clicks": 664,
+      "spend": 2687.47,
       "purchases": 12,
       "purchase_value": 1187.21,
-      "ctr": 2.71,
-      "cpa": 233.12,
-      "roas": 0.42
+      "ctr": 2.74,
+      "cpa": 223.96,
+      "roas": 0.44
     },
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 26986,
-      "clicks": 297,
-      "spend": 808.43,
-      "purchases": 3,
-      "purchase_value": 297.0,
-      "ctr": 1.1,
-      "cpa": 269.48,
-      "roas": 0.37
+      "impressions": 25339,
+      "clicks": 285,
+      "spend": 762.93,
+      "purchases": 2,
+      "purchase_value": 198.0,
+      "ctr": 1.12,
+      "cpa": 381.47,
+      "roas": 0.26
     },
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 4499,
-      "clicks": 140,
-      "spend": 516.91,
+      "impressions": 4311,
+      "clicks": 137,
+      "spend": 499.62,
       "purchases": 1,
       "purchase_value": 99.0,
-      "ctr": 3.11,
-      "cpa": 516.91,
-      "roas": 0.19
+      "ctr": 3.18,
+      "cpa": 499.62,
+      "roas": 0.2
     },
     {
       "age": "25-34",
@@ -83,14 +83,14 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 1904,
-      "clicks": 48,
-      "spend": 150.62,
+      "impressions": 1796,
+      "clicks": 46,
+      "spend": 144.77,
       "purchases": 1,
       "purchase_value": 99.0,
-      "ctr": 2.52,
-      "cpa": 150.62,
-      "roas": 0.66
+      "ctr": 2.56,
+      "cpa": 144.77,
+      "roas": 0.68
     },
     {
       "age": "35-44",
@@ -110,11 +110,11 @@
       "impressions": 580,
       "clicks": 20,
       "spend": 39.0,
-      "purchases": 1,
-      "purchase_value": 99.0,
+      "purchases": 0,
+      "purchase_value": 0.0,
       "ctr": 3.45,
-      "cpa": 39.0,
-      "roas": 2.54
+      "cpa": 0,
+      "roas": 0.0
     },
     {
       "age": "35-44",
@@ -238,11 +238,11 @@
     }
   ],
   "totals": {
-    "impressions": 331890,
-    "clicks": 4982,
-    "spend": 21348.46,
-    "purchases": 127,
-    "purchase_value": 12569.04,
-    "roas": 0.59
+    "impressions": 307455,
+    "clicks": 4742,
+    "spend": 19928.56,
+    "purchases": 111,
+    "purchase_value": 10985.04,
+    "roas": 0.55
   }
 }
