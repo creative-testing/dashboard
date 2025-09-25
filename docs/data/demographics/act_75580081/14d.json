@@ -4,26 +4,26 @@
     "account_name": "Zendio",
     "period": "14d",
     "date_range": "2025-09-11..2025-09-24",
-    "generated_at": "2025-09-25T09:21:06.295582Z",
+    "generated_at": "2025-09-25T15:20:44.443091Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 35960,
+      "impressions": 35963,
       "clicks": 453,
-      "spend": 2483.83,
+      "spend": 2483.92,
       "purchases": 2,
       "purchase_value": 3801.75,
       "ctr": 1.26,
-      "cpa": 1241.91,
+      "cpa": 1241.96,
       "roas": 1.53
     },
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 39755,
+      "impressions": 39756,
       "clicks": 504,
       "spend": 2153.69,
       "purchases": 1,
@@ -47,26 +47,26 @@
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 13612,
-      "clicks": 215,
-      "spend": 1383.96,
+      "impressions": 13614,
+      "clicks": 216,
+      "spend": 1384.24,
       "purchases": 1,
       "purchase_value": 3177.1,
-      "ctr": 1.58,
-      "cpa": 1383.96,
+      "ctr": 1.59,
+      "cpa": 1384.24,
       "roas": 2.3
     },
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 17367,
+      "impressions": 17369,
       "clicks": 229,
-      "spend": 1258.83,
+      "spend": 1259.31,
       "purchases": 4,
       "purchase_value": 5811.6,
       "ctr": 1.32,
-      "cpa": 314.71,
-      "roas": 4.62
+      "cpa": 314.83,
+      "roas": 4.61
     },
     {
       "age": "45-54",
@@ -95,13 +95,13 @@
     {
       "age": "18-24",
       "gender": "male",
-      "impressions": 7798,
+      "impressions": 7799,
       "clicks": 85,
-      "spend": 315.42,
+      "spend": 315.43,
       "purchases": 1,
       "purchase_value": 3149.1,
       "ctr": 1.09,
-      "cpa": 315.42,
+      "cpa": 315.43,
       "roas": 9.98
     },
     {
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 150552,
-    "clicks": 2200,
-    "spend": 11201.11,
+    "impressions": 150561,
+    "clicks": 2201,
+    "spend": 11201.97,
     "purchases": 14,
     "purchase_value": 33848.05,
     "roas": 3.02
