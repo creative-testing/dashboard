@@ -4,28 +4,28 @@
     "account_name": "YEKE ADS",
     "period": "7d",
     "date_range": "2025-09-18..2025-09-24",
-    "generated_at": "2025-09-25T15:23:35.329932Z",
+    "generated_at": "2025-09-25T21:18:50.520793Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 13283,
+      "impressions": 13286,
       "clicks": 747,
-      "spend": 869.67,
+      "spend": 869.75,
       "purchases": 2,
       "purchase_value": 4495.0,
       "ctr": 5.62,
-      "cpa": 434.83,
+      "cpa": 434.87,
       "roas": 5.17
     },
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 19050,
+      "impressions": 19058,
       "clicks": 1610,
-      "spend": 811.93,
+      "spend": 812.04,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 8.45,
@@ -35,13 +35,13 @@
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 20765,
+      "impressions": 20766,
       "clicks": 1956,
-      "spend": 696.76,
+      "spend": 696.77,
       "purchases": 1,
       "purchase_value": 855.0,
       "ctr": 9.42,
-      "cpa": 696.76,
+      "cpa": 696.77,
       "roas": 1.23
     },
     {
@@ -95,7 +95,7 @@
     {
       "age": "65+",
       "gender": "male",
-      "impressions": 13299,
+      "impressions": 13301,
       "clicks": 1405,
       "spend": 379.65,
       "purchases": 0,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 139141,
+    "impressions": 139155,
     "clicks": 8601,
-    "spend": 5918.42,
+    "spend": 5918.62,
     "purchases": 7,
     "purchase_value": 14500.0,
     "roas": 2.45

@@ -4,20 +4,20 @@
     "account_name": "Reset A&F",
     "period": "7d",
     "date_range": "2025-09-18..2025-09-24",
-    "generated_at": "2025-09-25T15:22:10.071522Z",
+    "generated_at": "2025-09-25T21:17:42.898683Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 16005,
+      "impressions": 16006,
       "clicks": 200,
-      "spend": 2182.79,
+      "spend": 2183.17,
       "purchases": 4,
       "purchase_value": 5029.6,
       "ctr": 1.25,
-      "cpa": 545.7,
+      "cpa": 545.79,
       "roas": 2.3
     },
     {
@@ -35,13 +35,13 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 6169,
+      "impressions": 6170,
       "clicks": 74,
-      "spend": 523.08,
+      "spend": 523.14,
       "purchases": 1,
       "purchase_value": 927.0,
       "ctr": 1.2,
-      "cpa": 523.08,
+      "cpa": 523.14,
       "roas": 1.77
     },
     {
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 34714,
+    "impressions": 34716,
     "clicks": 521,
-    "spend": 4833.19,
+    "spend": 4833.63,
     "purchases": 8,
     "purchase_value": 12902.8,
     "roas": 2.67
