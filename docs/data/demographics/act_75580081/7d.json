@@ -4,16 +4,16 @@
     "account_name": "Zendio",
     "period": "7d",
     "date_range": "2025-09-19..2025-09-25",
-    "generated_at": "2025-09-26T15:19:47.730995Z",
+    "generated_at": "2025-09-26T21:16:04.776817Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 17254,
+      "impressions": 17256,
       "clicks": 212,
-      "spend": 1195.29,
+      "spend": 1195.63,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.23,
@@ -47,14 +47,14 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 7602,
+      "impressions": 7603,
       "clicks": 127,
-      "spend": 799.07,
+      "spend": 799.09,
       "purchases": 4,
       "purchase_value": 13412.4,
       "ctr": 1.67,
       "cpa": 199.77,
-      "roas": 16.79
+      "roas": 16.78
     },
     {
       "age": "25-34",
@@ -71,9 +71,9 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 2782,
+      "impressions": 2784,
       "clicks": 64,
-      "spend": 368.46,
+      "spend": 368.66,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 2.3,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 71909,
+    "impressions": 71914,
     "clicks": 1017,
-    "spend": 5663.2,
+    "spend": 5663.76,
     "purchases": 7,
     "purchase_value": 18565.7,
     "roas": 3.28
