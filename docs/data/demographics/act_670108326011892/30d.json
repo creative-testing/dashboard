@@ -4,16 +4,16 @@
     "account_name": "SCENTICA",
     "period": "30d",
     "date_range": "2025-08-28..2025-09-26",
-    "generated_at": "2025-09-27T15:21:10.760694Z",
+    "generated_at": "2025-09-27T21:19:20.947065Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 125176,
+      "impressions": 125178,
       "clicks": 2265,
-      "spend": 5471.76,
+      "spend": 5471.8,
       "purchases": 23,
       "purchase_value": 29161.0,
       "ctr": 1.81,
@@ -24,8 +24,8 @@
       "age": "25-34",
       "gender": "female",
       "impressions": 91835,
-      "clicks": 1744,
-      "spend": 4584.86,
+      "clicks": 1745,
+      "spend": 4584.87,
       "purchases": 8,
       "purchase_value": 7830.0,
       "ctr": 1.9,
@@ -35,13 +35,13 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 63249,
+      "impressions": 63252,
       "clicks": 1495,
-      "spend": 4121.25,
+      "spend": 4121.43,
       "purchases": 7,
       "purchase_value": 7527.0,
       "ctr": 2.36,
-      "cpa": 588.75,
+      "cpa": 588.78,
       "roas": 1.83
     },
     {
@@ -61,7 +61,7 @@
       "gender": "male",
       "impressions": 21478,
       "clicks": 688,
-      "spend": 1892.71,
+      "spend": 1892.7,
       "purchases": 4,
       "purchase_value": 3890.0,
       "ctr": 3.2,
@@ -83,13 +83,13 @@
     {
       "age": "18-24",
       "gender": "male",
-      "impressions": 47205,
+      "impressions": 47206,
       "clicks": 715,
-      "spend": 1464.32,
+      "spend": 1464.33,
       "purchases": 5,
       "purchase_value": 4399.0,
       "ctr": 1.51,
-      "cpa": 292.86,
+      "cpa": 292.87,
       "roas": 3.0
     },
     {
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 469366,
-    "clicks": 10460,
-    "spend": 26342.31,
+    "impressions": 469372,
+    "clicks": 10461,
+    "spend": 26342.54,
     "purchases": 78,
     "purchase_value": 83791.0,
     "roas": 3.18
