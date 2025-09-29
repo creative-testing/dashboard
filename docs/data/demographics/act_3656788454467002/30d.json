@@ -4,7 +4,7 @@
     "account_name": "Blue Banana Brand México",
     "period": "30d",
     "date_range": "2025-08-30..2025-09-28",
-    "generated_at": "2025-09-29T09:26:12.960608Z",
+    "generated_at": "2025-09-29T15:23:19.851731Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
@@ -13,11 +13,11 @@
       "gender": "male",
       "impressions": 21628,
       "clicks": 927,
-      "spend": 4348.47,
+      "spend": 4348.51,
       "purchases": 5,
       "purchase_value": 8650.87,
       "ctr": 4.29,
-      "cpa": 869.69,
+      "cpa": 869.7,
       "roas": 1.99
     },
     {
@@ -25,35 +25,35 @@
       "gender": "male",
       "impressions": 34261,
       "clicks": 1178,
-      "spend": 4315.76,
+      "spend": 4315.8,
       "purchases": 2,
       "purchase_value": 6843.0,
       "ctr": 3.44,
-      "cpa": 2157.88,
+      "cpa": 2157.9,
       "roas": 1.59
     },
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 32564,
+      "impressions": 32568,
       "clicks": 1006,
-      "spend": 2295.09,
+      "spend": 2295.61,
       "purchases": 3,
       "purchase_value": 3095.54,
       "ctr": 3.09,
-      "cpa": 765.03,
+      "cpa": 765.2,
       "roas": 1.35
     },
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 7370,
+      "impressions": 7371,
       "clicks": 339,
-      "spend": 1850.26,
+      "spend": 1850.42,
       "purchases": 2,
       "purchase_value": 4124.28,
       "ctr": 4.6,
-      "cpa": 925.13,
+      "cpa": 925.21,
       "roas": 2.23
     },
     {
@@ -61,7 +61,7 @@
       "gender": "female",
       "impressions": 5150,
       "clicks": 248,
-      "spend": 1180.36,
+      "spend": 1180.37,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 4.82,
@@ -107,9 +107,9 @@
     {
       "age": "18-24",
       "gender": "male",
-      "impressions": 13015,
+      "impressions": 13016,
       "clicks": 368,
-      "spend": 530.86,
+      "spend": 530.89,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 2.83,
@@ -119,7 +119,7 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 5460,
+      "impressions": 5461,
       "clicks": 176,
       "spend": 474.05,
       "purchases": 0,
@@ -191,12 +191,12 @@
     {
       "age": "55-64",
       "gender": "unknown",
-      "impressions": 146,
+      "impressions": 147,
       "clicks": 11,
-      "spend": 23.9,
+      "spend": 24.18,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 7.53,
+      "ctr": 7.48,
       "cpa": 0,
       "roas": 0.0
     },
@@ -227,20 +227,20 @@
     {
       "age": "Unknown",
       "gender": "unknown",
-      "impressions": 0,
+      "impressions": 1,
       "clicks": 0,
-      "spend": 0.0,
+      "spend": 0.21,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 0,
+      "ctr": 0.0,
       "cpa": 0,
-      "roas": 0
+      "roas": 0.0
     }
   ],
   "totals": {
-    "impressions": 134476,
+    "impressions": 134485,
     "clicks": 4917,
-    "spend": 17721.77,
+    "spend": 17723.06,
     "purchases": 13,
     "purchase_value": 23669.61,
     "roas": 1.34
