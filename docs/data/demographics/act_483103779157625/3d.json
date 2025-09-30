@@ -4,7 +4,7 @@
     "account_name": "Arua Joyería",
     "period": "3d",
     "date_range": "2025-09-27..2025-09-29",
-    "generated_at": "2025-09-30T15:18:51.307877Z",
+    "generated_at": "2025-09-30T21:17:30.526499Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
@@ -12,35 +12,35 @@
       "age": "35-44",
       "gender": "female",
       "impressions": 18535,
-      "clicks": 469,
-      "spend": 1748.11,
+      "clicks": 470,
+      "spend": 1748.1,
       "purchases": 4,
       "purchase_value": 7440.0,
-      "ctr": 2.53,
-      "cpa": 437.03,
+      "ctr": 2.54,
+      "cpa": 437.02,
       "roas": 4.26
     },
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 24058,
+      "impressions": 24059,
       "clicks": 406,
-      "spend": 1328.58,
+      "spend": 1328.62,
       "purchases": 1,
       "purchase_value": 550.0,
       "ctr": 1.69,
-      "cpa": 1328.58,
+      "cpa": 1328.62,
       "roas": 0.41
     },
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 3789,
+      "impressions": 3796,
       "clicks": 166,
-      "spend": 483.57,
+      "spend": 483.89,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 4.38,
+      "ctr": 4.37,
       "cpa": 0,
       "roas": 0.0
     },
@@ -83,7 +83,7 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 1310,
+      "impressions": 1311,
       "clicks": 24,
       "spend": 56.08,
       "purchases": 1,
@@ -95,9 +95,9 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 797,
+      "impressions": 798,
       "clicks": 9,
-      "spend": 37.54,
+      "spend": 37.64,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.13,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 53790,
-    "clicks": 1221,
-    "spend": 4053.59,
+    "impressions": 53800,
+    "clicks": 1222,
+    "spend": 4054.04,
     "purchases": 6,
     "purchase_value": 9200.0,
     "roas": 2.27
