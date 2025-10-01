@@ -4,28 +4,28 @@
     "account_name": "Anuncios MEETIK",
     "period": "3d",
     "date_range": "2025-09-28..2025-09-30",
-    "generated_at": "2025-10-01T09:22:02.933351Z",
+    "generated_at": "2025-10-01T15:19:41.022132Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 24841,
+      "impressions": 24843,
       "clicks": 391,
-      "spend": 1509.5,
+      "spend": 1509.55,
       "purchases": 5,
       "purchase_value": 6360.8,
       "ctr": 1.57,
-      "cpa": 301.9,
+      "cpa": 301.91,
       "roas": 4.21
     },
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 8353,
+      "impressions": 8354,
       "clicks": 235,
-      "spend": 601.4,
+      "spend": 601.41,
       "purchases": 4,
       "purchase_value": 4950.7,
       "ctr": 2.81,
@@ -35,21 +35,21 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 9642,
+      "impressions": 9643,
       "clicks": 140,
-      "spend": 392.42,
+      "spend": 392.46,
       "purchases": 4,
       "purchase_value": 1882.8,
       "ctr": 1.45,
-      "cpa": 98.11,
+      "cpa": 98.12,
       "roas": 4.8
     },
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 2953,
+      "impressions": 2955,
       "clicks": 52,
-      "spend": 122.93,
+      "spend": 122.99,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.76,
@@ -226,9 +226,9 @@
     }
   ],
   "totals": {
-    "impressions": 51818,
+    "impressions": 51824,
     "clicks": 946,
-    "spend": 2930.72,
+    "spend": 2930.88,
     "purchases": 15,
     "purchase_value": 15553.5,
     "roas": 5.31
