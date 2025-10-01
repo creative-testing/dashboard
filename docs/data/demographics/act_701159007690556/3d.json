@@ -4,16 +4,16 @@
     "account_name": "Zanetti",
     "period": "3d",
     "date_range": "2025-09-28..2025-09-30",
-    "generated_at": "2025-10-01T15:21:00.505331Z",
+    "generated_at": "2025-10-01T21:18:34.166096Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 3776,
+      "impressions": 3778,
       "clicks": 128,
-      "spend": 859.53,
+      "spend": 865.79,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 3.39,
@@ -23,26 +23,26 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 4479,
+      "impressions": 4481,
       "clicks": 79,
-      "spend": 756.91,
+      "spend": 757.09,
       "purchases": 2,
       "purchase_value": 3897.0,
       "ctr": 1.76,
-      "cpa": 378.45,
+      "cpa": 378.54,
       "roas": 5.15
     },
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 1675,
+      "impressions": 1682,
       "clicks": 70,
-      "spend": 428.08,
+      "spend": 428.24,
       "purchases": 1,
       "purchase_value": 2588.0,
-      "ctr": 4.18,
-      "cpa": 428.08,
-      "roas": 6.05
+      "ctr": 4.16,
+      "cpa": 428.24,
+      "roas": 6.04
     },
     {
       "age": "25-34",
@@ -71,9 +71,9 @@
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 810,
+      "impressions": 811,
       "clicks": 17,
-      "spend": 135.98,
+      "spend": 136.0,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 2.1,
@@ -83,9 +83,9 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 1123,
+      "impressions": 1124,
       "clicks": 16,
-      "spend": 118.35,
+      "spend": 118.37,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.42,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 16273,
+    "impressions": 16286,
     "clicks": 442,
-    "spend": 2960.66,
+    "spend": 2967.3,
     "purchases": 3,
     "purchase_value": 6485.0,
     "roas": 2.19

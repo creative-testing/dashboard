@@ -4,7 +4,7 @@
     "account_name": "SCENTICA",
     "period": "3d",
     "date_range": "2025-09-28..2025-09-30",
-    "generated_at": "2025-10-01T15:23:47.757110Z",
+    "generated_at": "2025-10-01T21:20:53.695800Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
@@ -23,13 +23,13 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 8637,
+      "impressions": 8641,
       "clicks": 178,
-      "spend": 579.85,
+      "spend": 580.16,
       "purchases": 3,
       "purchase_value": 3690.0,
       "ctr": 2.06,
-      "cpa": 193.28,
+      "cpa": 193.39,
       "roas": 6.36
     },
     {
@@ -71,9 +71,9 @@
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 3083,
+      "impressions": 3084,
       "clicks": 108,
-      "spend": 238.64,
+      "spend": 238.76,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 3.5,
@@ -95,7 +95,7 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 3450,
+      "impressions": 3451,
       "clicks": 55,
       "spend": 165.29,
       "purchases": 1,
@@ -119,9 +119,9 @@
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 1464,
+      "impressions": 1465,
       "clicks": 48,
-      "spend": 143.67,
+      "spend": 143.68,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 3.28,
@@ -226,9 +226,9 @@
     }
   ],
   "totals": {
-    "impressions": 56966,
+    "impressions": 56973,
     "clicks": 1233,
-    "spend": 3486.63,
+    "spend": 3487.07,
     "purchases": 8,
     "purchase_value": 9336.0,
     "roas": 2.68
