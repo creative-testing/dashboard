@@ -4,38 +4,38 @@
     "account_name": "Reset A&F",
     "period": "3d",
     "date_range": "2025-09-29..2025-10-01",
-    "generated_at": "2025-10-02T09:20:46.064862Z",
+    "generated_at": "2025-10-02T15:21:28.452630Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 9962,
+      "impressions": 9963,
       "clicks": 158,
-      "spend": 1445.54,
+      "spend": 1445.62,
       "purchases": 1,
       "purchase_value": 1628.0,
       "ctr": 1.59,
-      "cpa": 1445.54,
+      "cpa": 1445.62,
       "roas": 1.13
     },
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 6316,
+      "impressions": 6318,
       "clicks": 120,
-      "spend": 833.84,
+      "spend": 833.97,
       "purchases": 1,
       "purchase_value": 638.0,
       "ctr": 1.9,
-      "cpa": 833.84,
+      "cpa": 833.97,
       "roas": 0.77
     },
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 2595,
+      "impressions": 2596,
       "clicks": 37,
       "spend": 457.81,
       "purchases": 1,
@@ -59,12 +59,12 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 486,
+      "impressions": 487,
       "clicks": 23,
-      "spend": 122.39,
+      "spend": 122.49,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 4.73,
+      "ctr": 4.72,
       "cpa": 0,
       "roas": 0.0
     },
@@ -83,12 +83,12 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 323,
+      "impressions": 324,
       "clicks": 9,
-      "spend": 31.91,
+      "spend": 31.92,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 2.79,
+      "ctr": 2.78,
       "cpa": 0,
       "roas": 0.0
     },
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 22067,
+    "impressions": 22073,
     "clicks": 403,
-    "spend": 3263.47,
+    "spend": 3263.79,
     "purchases": 3,
     "purchase_value": 3746.65,
     "roas": 1.15
