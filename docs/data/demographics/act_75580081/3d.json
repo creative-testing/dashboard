@@ -4,16 +4,16 @@
     "account_name": "Zendio",
     "period": "3d",
     "date_range": "2025-09-30..2025-10-02",
-    "generated_at": "2025-10-03T09:19:04.018930Z",
+    "generated_at": "2025-10-03T15:19:15.245539Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 9803,
+      "impressions": 9804,
       "clicks": 133,
-      "spend": 538.56,
+      "spend": 538.58,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.36,
@@ -23,33 +23,33 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 8492,
+      "impressions": 8495,
       "clicks": 107,
-      "spend": 528.55,
+      "spend": 528.66,
       "purchases": 1,
       "purchase_value": 3438.1,
       "ctr": 1.26,
-      "cpa": 528.55,
+      "cpa": 528.66,
       "roas": 6.5
     },
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 4363,
+      "impressions": 4365,
       "clicks": 43,
-      "spend": 308.2,
+      "spend": 308.31,
       "purchases": 1,
       "purchase_value": 472.8,
       "ctr": 0.99,
-      "cpa": 308.2,
+      "cpa": 308.31,
       "roas": 1.53
     },
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 3821,
+      "impressions": 3824,
       "clicks": 52,
-      "spend": 306.57,
+      "spend": 307.23,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.36,
@@ -59,13 +59,13 @@
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 3445,
+      "impressions": 3446,
       "clicks": 50,
-      "spend": 294.5,
+      "spend": 294.63,
       "purchases": 1,
       "purchase_value": 1513.0,
       "ctr": 1.45,
-      "cpa": 294.5,
+      "cpa": 294.63,
       "roas": 5.14
     },
     {
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 36308,
+    "impressions": 36318,
     "clicks": 503,
-    "spend": 2620.16,
+    "spend": 2621.19,
     "purchases": 3,
     "purchase_value": 5423.9,
     "roas": 2.07

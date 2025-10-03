@@ -4,16 +4,16 @@
     "account_name": "SCENTICA",
     "period": "30d",
     "date_range": "2025-09-03..2025-10-02",
-    "generated_at": "2025-10-03T09:23:41.595573Z",
+    "generated_at": "2025-10-03T15:23:49.392809Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 130946,
+      "impressions": 130952,
       "clicks": 2346,
-      "spend": 5852.19,
+      "spend": 5852.28,
       "purchases": 27,
       "purchase_value": 34607.0,
       "ctr": 1.79,
@@ -23,13 +23,13 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 93242,
+      "impressions": 93248,
       "clicks": 1800,
-      "spend": 4728.22,
+      "spend": 4729.06,
       "purchases": 7,
       "purchase_value": 7690.0,
       "ctr": 1.93,
-      "cpa": 675.46,
+      "cpa": 675.58,
       "roas": 1.63
     },
     {
@@ -47,9 +47,9 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 39574,
+      "impressions": 39575,
       "clicks": 1191,
-      "spend": 3057.4,
+      "spend": 3057.44,
       "purchases": 10,
       "purchase_value": 11813.0,
       "ctr": 3.01,
@@ -83,21 +83,21 @@
     {
       "age": "18-24",
       "gender": "male",
-      "impressions": 48453,
+      "impressions": 48454,
       "clicks": 725,
-      "spend": 1533.76,
+      "spend": 1533.78,
       "purchases": 4,
       "purchase_value": 3869.0,
       "ctr": 1.5,
-      "cpa": 383.44,
+      "cpa": 383.45,
       "roas": 2.52
     },
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 36372,
+      "impressions": 36373,
       "clicks": 612,
-      "spend": 1278.7,
+      "spend": 1278.71,
       "purchases": 6,
       "purchase_value": 7422.0,
       "ctr": 1.68,
@@ -238,11 +238,11 @@
     }
   ],
   "totals": {
-    "impressions": 493644,
+    "impressions": 493659,
     "clicks": 11112,
-    "spend": 28482.72,
+    "spend": 28483.72,
     "purchases": 87,
     "purchase_value": 96415.0,
-    "roas": 3.39
+    "roas": 3.38
   }
 }
