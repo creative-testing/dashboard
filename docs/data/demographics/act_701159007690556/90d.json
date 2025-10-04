@@ -4,7 +4,7 @@
     "account_name": "Zanetti",
     "period": "90d",
     "date_range": "2025-07-06..2025-10-03",
-    "generated_at": "2025-10-04T09:18:35.782342Z",
+    "generated_at": "2025-10-04T15:18:10.372429Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
@@ -35,9 +35,9 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 48613,
-      "clicks": 2260,
-      "spend": 11785.9,
+      "impressions": 48614,
+      "clicks": 2261,
+      "spend": 11785.93,
       "purchases": 29,
       "purchase_value": 50331.3,
       "ctr": 4.65,
@@ -47,9 +47,9 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 80741,
+      "impressions": 80742,
       "clicks": 1646,
-      "spend": 8343.55,
+      "spend": 8343.58,
       "purchases": 15,
       "purchase_value": 29528.15,
       "ctr": 2.04,
@@ -83,25 +83,25 @@
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 24307,
+      "impressions": 24308,
       "clicks": 750,
-      "spend": 3397.97,
+      "spend": 3398.0,
       "purchases": 4,
       "purchase_value": 8267.1,
       "ctr": 3.09,
-      "cpa": 849.49,
+      "cpa": 849.5,
       "roas": 2.43
     },
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 17213,
+      "impressions": 17215,
       "clicks": 670,
-      "spend": 2815.56,
+      "spend": 2815.71,
       "purchases": 6,
       "purchase_value": 10736.05,
       "ctr": 3.89,
-      "cpa": 469.26,
+      "cpa": 469.28,
       "roas": 3.81
     },
     {
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 529933,
-    "clicks": 16472,
-    "spend": 85152.62,
+    "impressions": 529938,
+    "clicks": 16473,
+    "spend": 85152.86,
     "purchases": 192,
     "purchase_value": 379905.0,
     "roas": 4.46
