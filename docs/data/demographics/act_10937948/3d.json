@@ -4,7 +4,7 @@
     "account_name": "KRAPEL CUENTA PUBLICITARIA",
     "period": "3d",
     "date_range": "2025-10-02..2025-10-04",
-    "generated_at": "2025-10-05T15:16:27.814968Z",
+    "generated_at": "2025-10-05T21:15:19.547398Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
@@ -23,9 +23,9 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 3301,
+      "impressions": 3302,
       "clicks": 103,
-      "spend": 384.64,
+      "spend": 384.65,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 3.12,
@@ -35,7 +35,7 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 1655,
+      "impressions": 1656,
       "clicks": 72,
       "spend": 227.62,
       "purchases": 0,
@@ -167,12 +167,12 @@
     {
       "age": "65+",
       "gender": "unknown",
-      "impressions": 12,
-      "clicks": 0,
+      "impressions": 13,
+      "clicks": 1,
       "spend": 2.09,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 0.0,
+      "ctr": 7.69,
       "cpa": 0,
       "roas": 0.0
     },
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 15256,
-    "clicks": 394,
-    "spend": 1445.22,
+    "impressions": 15259,
+    "clicks": 395,
+    "spend": 1445.23,
     "purchases": 2,
     "purchase_value": 1400.0,
     "roas": 0.97

@@ -4,16 +4,16 @@
     "account_name": "koneli.mx",
     "period": "90d",
     "date_range": "2025-07-07..2025-10-04",
-    "generated_at": "2025-10-05T15:20:09.733532Z",
+    "generated_at": "2025-10-05T21:18:35.495845Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 3032422,
+      "impressions": 3032434,
       "clicks": 63118,
-      "spend": 257906.82,
+      "spend": 257906.98,
       "purchases": 498,
       "purchase_value": 844154.11,
       "ctr": 2.08,
@@ -23,9 +23,9 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 2883332,
-      "clicks": 54647,
-      "spend": 167857.58,
+      "impressions": 2883354,
+      "clicks": 54648,
+      "spend": 167857.66,
       "purchases": 343,
       "purchase_value": 541971.56,
       "ctr": 1.9,
@@ -35,7 +35,7 @@
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 1093186,
+      "impressions": 1093202,
       "clicks": 37882,
       "spend": 126827.02,
       "purchases": 222,
@@ -59,7 +59,7 @@
     {
       "age": "65+",
       "gender": "male",
-      "impressions": 134673,
+      "impressions": 134675,
       "clicks": 7430,
       "spend": 18405.0,
       "purchases": 36,
@@ -71,9 +71,9 @@
     {
       "age": "18-24",
       "gender": "male",
-      "impressions": 252287,
+      "impressions": 252289,
       "clicks": 11607,
-      "spend": 11256.12,
+      "spend": 11256.13,
       "purchases": 14,
       "purchase_value": 18950.99,
       "ctr": 4.6,
@@ -83,7 +83,7 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 69991,
+      "impressions": 69992,
       "clicks": 2358,
       "spend": 4862.57,
       "purchases": 12,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 8004137,
-    "clicks": 202296,
-    "spend": 654029.55,
+    "impressions": 8004192,
+    "clicks": 202297,
+    "spend": 654029.8,
     "purchases": 1263,
     "purchase_value": 2072633.64,
     "roas": 3.17
