@@ -4,28 +4,28 @@
     "account_name": "HAPE MEXICO",
     "period": "3d",
     "date_range": "2025-10-02..2025-10-04",
-    "generated_at": "2025-10-05T09:18:06.595915Z",
+    "generated_at": "2025-10-05T15:18:04.090968Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 8090,
-      "clicks": 117,
-      "spend": 999.33,
+      "impressions": 8095,
+      "clicks": 118,
+      "spend": 999.52,
       "purchases": 4,
       "purchase_value": 7400.1,
-      "ctr": 1.45,
-      "cpa": 249.83,
-      "roas": 7.41
+      "ctr": 1.46,
+      "cpa": 249.88,
+      "roas": 7.4
     },
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 2685,
+      "impressions": 2687,
       "clicks": 59,
-      "spend": 585.77,
+      "spend": 585.78,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 2.2,
@@ -35,21 +35,21 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 6413,
+      "impressions": 6419,
       "clicks": 139,
-      "spend": 467.42,
+      "spend": 467.67,
       "purchases": 1,
       "purchase_value": 2690.0,
       "ctr": 2.17,
-      "cpa": 467.42,
-      "roas": 5.76
+      "cpa": 467.67,
+      "roas": 5.75
     },
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 1653,
+      "impressions": 1657,
       "clicks": 45,
-      "spend": 258.65,
+      "spend": 258.66,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 2.72,
@@ -59,7 +59,7 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 2783,
+      "impressions": 2786,
       "clicks": 31,
       "spend": 221.47,
       "purchases": 0,
@@ -71,9 +71,9 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 2403,
+      "impressions": 2407,
       "clicks": 37,
-      "spend": 178.71,
+      "spend": 178.81,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.54,
@@ -83,7 +83,7 @@
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 1318,
+      "impressions": 1319,
       "clicks": 21,
       "spend": 110.49,
       "purchases": 0,
@@ -95,7 +95,7 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 2625,
+      "impressions": 2626,
       "clicks": 35,
       "spend": 83.2,
       "purchases": 1,
@@ -107,12 +107,12 @@
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 872,
+      "impressions": 876,
       "clicks": 22,
       "spend": 69.97,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 2.52,
+      "ctr": 2.51,
       "cpa": 0,
       "roas": 0.0
     },
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 30444,
-    "clicks": 559,
-    "spend": 3106.28,
+    "impressions": 30474,
+    "clicks": 560,
+    "spend": 3106.84,
     "purchases": 8,
     "purchase_value": 15087.1,
     "roas": 4.86

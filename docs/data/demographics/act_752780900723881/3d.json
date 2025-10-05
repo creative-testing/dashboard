@@ -4,14 +4,14 @@
     "account_name": "BIANCA-CUENTA P",
     "period": "3d",
     "date_range": "2025-10-02..2025-10-04",
-    "generated_at": "2025-10-05T09:20:28.449869Z",
+    "generated_at": "2025-10-05T15:20:58.255983Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 28442,
+      "impressions": 28449,
       "clicks": 701,
       "spend": 1709.87,
       "purchases": 4,
@@ -23,19 +23,19 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 41180,
+      "impressions": 41189,
       "clicks": 670,
-      "spend": 1524.27,
+      "spend": 1524.36,
       "purchases": 3,
       "purchase_value": 10796.0,
       "ctr": 1.63,
-      "cpa": 508.09,
+      "cpa": 508.12,
       "roas": 7.08
     },
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 9550,
+      "impressions": 9556,
       "clicks": 284,
       "spend": 831.19,
       "purchases": 3,
@@ -59,7 +59,7 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 7925,
+      "impressions": 7927,
       "clicks": 120,
       "spend": 188.18,
       "purchases": 3,
@@ -83,7 +83,7 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 3954,
+      "impressions": 3955,
       "clicks": 63,
       "spend": 110.68,
       "purchases": 0,
@@ -107,12 +107,12 @@
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 594,
+      "impressions": 597,
       "clicks": 14,
       "spend": 24.23,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 2.36,
+      "ctr": 2.35,
       "cpa": 0,
       "roas": 0.0
     },
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 99324,
+    "impressions": 99352,
     "clicks": 2085,
-    "spend": 5021.14,
+    "spend": 5021.23,
     "purchases": 15,
     "purchase_value": 34274.0,
     "roas": 6.83

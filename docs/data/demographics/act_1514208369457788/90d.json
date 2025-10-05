@@ -4,16 +4,16 @@
     "account_name": "Oaxacapsx",
     "period": "90d",
     "date_range": "2025-07-07..2025-10-04",
-    "generated_at": "2025-10-05T09:19:43.488340Z",
+    "generated_at": "2025-10-05T15:19:56.942771Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 1621608,
-      "clicks": 52868,
-      "spend": 69694.25,
+      "impressions": 1621633,
+      "clicks": 52870,
+      "spend": 69694.26,
       "purchases": 157,
       "purchase_value": 283559.0,
       "ctr": 3.26,
@@ -23,9 +23,9 @@
     {
       "age": "18-24",
       "gender": "male",
-      "impressions": 1819079,
-      "clicks": 58074,
-      "spend": 66758.81,
+      "impressions": 1819099,
+      "clicks": 58076,
+      "spend": 66758.88,
       "purchases": 136,
       "purchase_value": 234757.0,
       "ctr": 3.19,
@@ -35,9 +35,9 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 391121,
+      "impressions": 391127,
       "clicks": 14547,
-      "spend": 21246.0,
+      "spend": 21246.01,
       "purchases": 36,
       "purchase_value": 68881.0,
       "ctr": 3.72,
@@ -47,7 +47,7 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 384949,
+      "impressions": 384956,
       "clicks": 10926,
       "spend": 15297.88,
       "purchases": 40,
@@ -59,7 +59,7 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 295653,
+      "impressions": 295654,
       "clicks": 8278,
       "spend": 11628.74,
       "purchases": 18,
@@ -71,8 +71,8 @@
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 108780,
-      "clicks": 4110,
+      "impressions": 108784,
+      "clicks": 4111,
       "spend": 8156.74,
       "purchases": 21,
       "purchase_value": 40878.0,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 4966536,
-    "clicks": 158395,
-    "spend": 205186.79,
+    "impressions": 4966599,
+    "clicks": 158400,
+    "spend": 205186.88,
     "purchases": 422,
     "purchase_value": 850988.0,
     "roas": 4.15
