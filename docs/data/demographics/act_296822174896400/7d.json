@@ -4,44 +4,44 @@
     "account_name": "Kocare Beauty",
     "period": "7d",
     "date_range": "2025-09-29..2025-10-05",
-    "generated_at": "2025-10-06T15:20:35.679849Z",
+    "generated_at": "2025-10-06T21:17:21.861811Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 259849,
-      "clicks": 4767,
-      "spend": 11834.91,
+      "impressions": 259866,
+      "clicks": 4770,
+      "spend": 11835.62,
       "purchases": 26,
       "purchase_value": 53652.15,
-      "ctr": 1.83,
-      "cpa": 455.19,
+      "ctr": 1.84,
+      "cpa": 455.22,
       "roas": 4.53
     },
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 109015,
+      "impressions": 109021,
       "clicks": 2729,
-      "spend": 9242.3,
+      "spend": 9243.16,
       "purchases": 17,
       "purchase_value": 31101.3,
       "ctr": 2.5,
-      "cpa": 543.66,
-      "roas": 3.37
+      "cpa": 543.72,
+      "roas": 3.36
     },
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 89630,
+      "impressions": 89638,
       "clicks": 1614,
-      "spend": 2914.67,
+      "spend": 2914.94,
       "purchases": 5,
       "purchase_value": 6802.0,
       "ctr": 1.8,
-      "cpa": 582.93,
+      "cpa": 582.99,
       "roas": 2.33
     },
     {
@@ -59,25 +59,25 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 5146,
-      "clicks": 215,
+      "impressions": 5147,
+      "clicks": 216,
       "spend": 1060.87,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 4.18,
+      "ctr": 4.2,
       "cpa": 0,
       "roas": 0.0
     },
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 4340,
+      "impressions": 4341,
       "clicks": 128,
-      "spend": 349.28,
+      "spend": 349.35,
       "purchases": 1,
       "purchase_value": 1817.1,
       "ctr": 2.95,
-      "cpa": 349.28,
+      "cpa": 349.35,
       "roas": 5.2
     },
     {
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 514184,
-    "clicks": 10703,
-    "spend": 29367.99,
+    "impressions": 514217,
+    "clicks": 10707,
+    "spend": 29369.9,
     "purchases": 55,
     "purchase_value": 108360.05,
     "roas": 3.69
