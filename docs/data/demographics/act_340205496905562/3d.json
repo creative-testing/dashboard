@@ -4,28 +4,28 @@
     "account_name": "Anuncios MEETIK",
     "period": "3d",
     "date_range": "2025-10-04..2025-10-06",
-    "generated_at": "2025-10-07T09:21:31.666500Z",
+    "generated_at": "2025-10-07T15:21:32.983330Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 23890,
+      "impressions": 23894,
       "clicks": 389,
-      "spend": 1173.48,
+      "spend": 1174.7,
       "purchases": 2,
       "purchase_value": 1133.0,
       "ctr": 1.63,
-      "cpa": 586.74,
-      "roas": 0.97
+      "cpa": 587.35,
+      "roas": 0.96
     },
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 8340,
+      "impressions": 8343,
       "clicks": 241,
-      "spend": 545.66,
+      "spend": 545.7,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 2.89,
@@ -35,9 +35,9 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 10076,
+      "impressions": 10082,
       "clicks": 122,
-      "spend": 333.45,
+      "spend": 333.8,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.21,
@@ -47,9 +47,9 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 3406,
+      "impressions": 3408,
       "clicks": 64,
-      "spend": 128.04,
+      "spend": 128.08,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.88,
@@ -71,7 +71,7 @@
     {
       "age": "18-24",
       "gender": "male",
-      "impressions": 2123,
+      "impressions": 2124,
       "clicks": 33,
       "spend": 71.34,
       "purchases": 0,
@@ -83,12 +83,12 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 943,
+      "impressions": 944,
       "clicks": 24,
-      "spend": 49.04,
+      "spend": 49.05,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 2.55,
+      "ctr": 2.54,
       "cpa": 0,
       "roas": 0.0
     },
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 52589,
+    "impressions": 52606,
     "clicks": 998,
-    "spend": 2479.26,
+    "spend": 2480.92,
     "purchases": 2,
     "purchase_value": 1133.0,
     "roas": 0.46
