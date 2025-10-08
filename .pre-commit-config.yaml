@@ -1,0 +1,69 @@
+# Pre-commit hooks pour qualité de code et sécurité
+# Installation: pip install pre-commit && pre-commit install
+# Usage manuel: pre-commit run --all-files
+
+repos:
+  # Formatage Python avec Ruff
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.5.6
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+      - id: ruff-format
+
+  # Black (formatage code)
+  - repo: https://github.com/psf/black
+    rev: 24.8.0
+    hooks:
+      - id: black
+        language_version: python3.10
+
+  # MyPy (type checking)
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.10.0
+    hooks:
+      - id: mypy
+        additional_dependencies:
+          - "pydantic>=2.7"
+          - "types-requests"
+        args: [--ignore-missing-imports]
+        exclude: ^(tests/|alembic/)
+
+  # GitLeaks (détection de secrets)
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.4
+    hooks:
+      - id: gitleaks
+        args: ["detect", "--no-banner", "--redact", "--verbose"]
+
+  # Hooks Python standards
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+        args: [--unsafe]  # Pour docker-compose
+      - id: check-json
+      - id: check-added-large-files
+        args: [--maxkb=1000]
+      - id: check-merge-conflict
+      - id: debug-statements
+      - id: mixed-line-ending
+
+  # Sécurité Python (Bandit)
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.5
+    hooks:
+      - id: bandit
+        args: [-c, pyproject.toml, -r, api/app]
+        additional_dependencies: ["bandit[toml]"]
+
+# Configuration globale
+default_language_version:
+  python: python3.10
+
+ci:
+  autofix_commit_msg: |
+    [pre-commit.ci] auto fixes from pre-commit hooks
+  autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
