@@ -4,16 +4,16 @@
     "account_name": "Piu Pieza Unica",
     "period": "3d",
     "date_range": "2025-10-06..2025-10-08",
-    "generated_at": "2025-10-09T09:22:42.607686Z",
+    "generated_at": "2025-10-09T15:32:40.523986Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 13492,
+      "impressions": 13496,
       "clicks": 283,
-      "spend": 902.85,
+      "spend": 903.01,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 2.1,
@@ -23,25 +23,25 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 17724,
+      "impressions": 17730,
       "clicks": 287,
-      "spend": 742.65,
+      "spend": 746.77,
       "purchases": 1,
       "purchase_value": 444.0,
       "ctr": 1.62,
-      "cpa": 742.65,
-      "roas": 0.6
+      "cpa": 746.77,
+      "roas": 0.59
     },
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 3910,
+      "impressions": 3911,
       "clicks": 96,
-      "spend": 411.75,
+      "spend": 411.77,
       "purchases": 2,
       "purchase_value": 840.0,
-      "ctr": 2.46,
-      "cpa": 205.87,
+      "ctr": 2.45,
+      "cpa": 205.88,
       "roas": 2.04
     },
     {
@@ -71,7 +71,7 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 1798,
+      "impressions": 1799,
       "clicks": 37,
       "spend": 80.72,
       "purchases": 0,
@@ -107,12 +107,12 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 346,
+      "impressions": 347,
       "clicks": 10,
       "spend": 23.85,
       "purchases": 1,
       "purchase_value": 713.0,
-      "ctr": 2.89,
+      "ctr": 2.88,
       "cpa": 23.85,
       "roas": 29.89
     },
@@ -238,11 +238,11 @@
     }
   ],
   "totals": {
-    "impressions": 48670,
+    "impressions": 48683,
     "clicks": 901,
-    "spend": 2590.4,
+    "spend": 2594.7,
     "purchases": 5,
     "purchase_value": 2526.0,
-    "roas": 0.98
+    "roas": 0.97
   }
 }
