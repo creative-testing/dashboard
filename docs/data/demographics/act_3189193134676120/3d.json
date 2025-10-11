@@ -4,32 +4,32 @@
     "account_name": "Piu Pieza Unica",
     "period": "3d",
     "date_range": "2025-10-08..2025-10-10",
-    "generated_at": "2025-10-11T09:19:55.460097Z",
+    "generated_at": "2025-10-11T15:18:23.896191Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 12853,
+      "impressions": 12855,
       "clicks": 289,
-      "spend": 949.48,
+      "spend": 949.63,
       "purchases": 1,
       "purchase_value": 371.0,
       "ctr": 2.25,
-      "cpa": 949.48,
+      "cpa": 949.63,
       "roas": 0.39
     },
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 13815,
+      "impressions": 13818,
       "clicks": 200,
-      "spend": 654.46,
+      "spend": 654.58,
       "purchases": 2,
       "purchase_value": 993.0,
       "ctr": 1.45,
-      "cpa": 327.23,
+      "cpa": 327.29,
       "roas": 1.52
     },
     {
@@ -83,9 +83,9 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 1295,
+      "impressions": 1296,
       "clicks": 20,
-      "spend": 76.34,
+      "spend": 76.37,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.54,
@@ -95,9 +95,9 @@
     {
       "age": "18-24",
       "gender": "male",
-      "impressions": 708,
+      "impressions": 709,
       "clicks": 6,
-      "spend": 22.24,
+      "spend": 22.28,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 0.85,
@@ -107,12 +107,12 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 303,
+      "impressions": 307,
       "clicks": 12,
-      "spend": 18.29,
+      "spend": 18.33,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 3.96,
+      "ctr": 3.91,
       "cpa": 0,
       "roas": 0.0
     },
@@ -238,11 +238,11 @@
     }
   ],
   "totals": {
-    "impressions": 39871,
+    "impressions": 39882,
     "clicks": 783,
-    "spend": 2436.55,
+    "spend": 2436.93,
     "purchases": 5,
     "purchase_value": 2522.0,
-    "roas": 1.04
+    "roas": 1.03
   }
 }
