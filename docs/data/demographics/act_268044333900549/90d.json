@@ -4,16 +4,16 @@
     "account_name": "S & S GOURMET",
     "period": "90d",
     "date_range": "2025-07-13..2025-10-10",
-    "generated_at": "2025-10-11T15:16:45.760536Z",
+    "generated_at": "2025-10-11T21:15:55.444923Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 470212,
-      "clicks": 6295,
-      "spend": 33297.53,
+      "impressions": 470217,
+      "clicks": 6296,
+      "spend": 33298.09,
       "purchases": 175,
       "purchase_value": 176939.6,
       "ctr": 1.34,
@@ -23,13 +23,13 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 529829,
+      "impressions": 529832,
       "clicks": 5819,
-      "spend": 22030.7,
+      "spend": 22030.96,
       "purchases": 111,
       "purchase_value": 115692.75,
       "ctr": 1.1,
-      "cpa": 198.47,
+      "cpa": 198.48,
       "roas": 5.25
     },
     {
@@ -47,7 +47,7 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 73651,
+      "impressions": 73652,
       "clicks": 1151,
       "spend": 5152.03,
       "purchases": 9,
@@ -59,9 +59,9 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 179069,
+      "impressions": 179071,
       "clicks": 984,
-      "spend": 2542.88,
+      "spend": 2542.95,
       "purchases": 12,
       "purchase_value": 11316.02,
       "ctr": 0.55,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 1962752,
-    "clicks": 20047,
-    "spend": 87430.57,
+    "impressions": 1962763,
+    "clicks": 20048,
+    "spend": 87431.46,
     "purchases": 398,
     "purchase_value": 404226.95,
     "roas": 4.62
