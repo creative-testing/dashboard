@@ -4,16 +4,16 @@
     "account_name": "koneli.mx",
     "period": "30d",
     "date_range": "2025-09-12..2025-10-11",
-    "generated_at": "2025-10-12T15:21:02.293032Z",
+    "generated_at": "2025-10-12T21:19:22.107280Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 1086077,
-      "clicks": 20987,
-      "spend": 90084.8,
+      "impressions": 1086086,
+      "clicks": 20988,
+      "spend": 90084.89,
       "purchases": 159,
       "purchase_value": 284990.12,
       "ctr": 1.93,
@@ -23,7 +23,7 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 1084671,
+      "impressions": 1084675,
       "clicks": 18482,
       "spend": 62043.29,
       "purchases": 127,
@@ -35,9 +35,9 @@
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 369636,
+      "impressions": 369643,
       "clicks": 11257,
-      "spend": 44910.83,
+      "spend": 44910.95,
       "purchases": 63,
       "purchase_value": 96580.24,
       "ctr": 3.05,
@@ -47,7 +47,7 @@
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 104005,
+      "impressions": 104006,
       "clicks": 5225,
       "spend": 19081.18,
       "purchases": 41,
@@ -71,9 +71,9 @@
     {
       "age": "18-24",
       "gender": "male",
-      "impressions": 96146,
+      "impressions": 96151,
       "clicks": 3198,
-      "spend": 5201.11,
+      "spend": 5201.12,
       "purchases": 7,
       "purchase_value": 10289.0,
       "ctr": 3.33,
@@ -131,7 +131,7 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 7721,
+      "impressions": 7722,
       "clicks": 365,
       "spend": 705.09,
       "purchases": 1,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 2874202,
-    "clicks": 63957,
-    "spend": 236573.81,
+    "impressions": 2874229,
+    "clicks": 63958,
+    "spend": 236574.03,
     "purchases": 424,
     "purchase_value": 684466.44,
     "roas": 2.89
