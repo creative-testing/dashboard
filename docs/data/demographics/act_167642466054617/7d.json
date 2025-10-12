@@ -4,16 +4,16 @@
     "account_name": "Smellers MX",
     "period": "7d",
     "date_range": "2025-10-05..2025-10-11",
-    "generated_at": "2025-10-12T09:19:42.190832Z",
+    "generated_at": "2025-10-12T15:19:41.908703Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 119003,
+      "impressions": 119014,
       "clicks": 1700,
-      "spend": 9412.66,
+      "spend": 9412.72,
       "purchases": 38,
       "purchase_value": 32360.85,
       "ctr": 1.43,
@@ -23,7 +23,7 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 62283,
+      "impressions": 62290,
       "clicks": 1320,
       "spend": 6958.09,
       "purchases": 28,
@@ -35,9 +35,9 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 107892,
+      "impressions": 107901,
       "clicks": 1239,
-      "spend": 5786.18,
+      "spend": 5786.24,
       "purchases": 25,
       "purchase_value": 19072.61,
       "ctr": 1.15,
@@ -47,7 +47,7 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 18449,
+      "impressions": 18452,
       "clicks": 521,
       "spend": 2479.75,
       "purchases": 12,
@@ -95,7 +95,7 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 6083,
+      "impressions": 6084,
       "clicks": 193,
       "spend": 763.69,
       "purchases": 4,
@@ -107,7 +107,7 @@
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 6338,
+      "impressions": 6339,
       "clicks": 100,
       "spend": 498.22,
       "purchases": 3,
@@ -119,7 +119,7 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 8134,
+      "impressions": 8133,
       "clicks": 100,
       "spend": 326.86,
       "purchases": 2,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 409165,
+    "impressions": 409196,
     "clicks": 6196,
-    "spend": 31039.57,
+    "spend": 31039.69,
     "purchases": 139,
     "purchase_value": 119273.06,
     "roas": 3.84

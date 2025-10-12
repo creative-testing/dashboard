@@ -4,16 +4,16 @@
     "account_name": "koneli.mx",
     "period": "90d",
     "date_range": "2025-07-14..2025-10-11",
-    "generated_at": "2025-10-12T09:20:57.857700Z",
+    "generated_at": "2025-10-12T15:21:03.534298Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 3140446,
-      "clicks": 65151,
-      "spend": 267704.3,
+      "impressions": 3140468,
+      "clicks": 65153,
+      "spend": 267704.32,
       "purchases": 516,
       "purchase_value": 877096.48,
       "ctr": 2.07,
@@ -23,9 +23,9 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 3033048,
+      "impressions": 3033060,
       "clicks": 57817,
-      "spend": 175599.13,
+      "spend": 175599.21,
       "purchases": 370,
       "purchase_value": 584284.72,
       "ctr": 1.91,
@@ -35,9 +35,9 @@
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 1106302,
+      "impressions": 1106311,
       "clicks": 37473,
-      "spend": 130596.07,
+      "spend": 130596.3,
       "purchases": 227,
       "purchase_value": 357527.56,
       "ctr": 3.39,
@@ -47,7 +47,7 @@
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 322673,
+      "impressions": 322674,
       "clicks": 16672,
       "spend": 53175.84,
       "purchases": 107,
@@ -71,7 +71,7 @@
     {
       "age": "18-24",
       "gender": "male",
-      "impressions": 270978,
+      "impressions": 270979,
       "clicks": 12372,
       "spend": 11946.42,
       "purchases": 17,
@@ -83,7 +83,7 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 70266,
+      "impressions": 70267,
       "clicks": 2362,
       "spend": 4847.36,
       "purchases": 11,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 8287958,
-    "clicks": 206261,
-    "spend": 678875.83,
+    "impressions": 8288004,
+    "clicks": 206263,
+    "spend": 678876.16,
     "purchases": 1320,
     "purchase_value": 2161922.13,
     "roas": 3.18

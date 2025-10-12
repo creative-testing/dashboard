@@ -4,14 +4,14 @@
     "account_name": "GRUPO PRESLOW/ROCKHAMPTON",
     "period": "3d",
     "date_range": "2025-10-09..2025-10-11",
-    "generated_at": "2025-10-12T09:17:56.595157Z",
+    "generated_at": "2025-10-12T15:17:43.266302Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 55753,
+      "impressions": 55769,
       "clicks": 1269,
       "spend": 1323.4,
       "purchases": 6,
@@ -23,7 +23,7 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 30867,
+      "impressions": 30871,
       "clicks": 865,
       "spend": 1096.96,
       "purchases": 5,
@@ -35,7 +35,7 @@
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 18028,
+      "impressions": 18034,
       "clicks": 696,
       "spend": 913.92,
       "purchases": 2,
@@ -47,31 +47,31 @@
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 8925,
-      "clicks": 486,
+      "impressions": 8927,
+      "clicks": 487,
       "spend": 699.9,
       "purchases": 3,
       "purchase_value": 3417.2,
-      "ctr": 5.45,
+      "ctr": 5.46,
       "cpa": 233.3,
       "roas": 4.88
     },
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 16532,
+      "impressions": 16544,
       "clicks": 611,
       "spend": 695.33,
       "purchases": 2,
       "purchase_value": 2285.74,
-      "ctr": 3.7,
+      "ctr": 3.69,
       "cpa": 347.66,
       "roas": 3.29
     },
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 23188,
+      "impressions": 23197,
       "clicks": 607,
       "spend": 631.35,
       "purchases": 4,
@@ -95,19 +95,19 @@
     {
       "age": "18-24",
       "gender": "male",
-      "impressions": 21879,
-      "clicks": 513,
+      "impressions": 21887,
+      "clicks": 514,
       "spend": 481.48,
       "purchases": 1,
       "purchase_value": 1149.3,
-      "ctr": 2.34,
+      "ctr": 2.35,
       "cpa": 481.48,
       "roas": 2.39
     },
     {
       "age": "65+",
       "gender": "male",
-      "impressions": 3661,
+      "impressions": 3662,
       "clicks": 224,
       "spend": 294.7,
       "purchases": 3,
@@ -131,7 +131,7 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 7038,
+      "impressions": 7041,
       "clicks": 211,
       "spend": 164.89,
       "purchases": 2,
@@ -238,8 +238,8 @@
     }
   ],
   "totals": {
-    "impressions": 198923,
-    "clicks": 6210,
+    "impressions": 198984,
+    "clicks": 6212,
     "spend": 7159.01,
     "purchases": 36,
     "purchase_value": 43807.68,

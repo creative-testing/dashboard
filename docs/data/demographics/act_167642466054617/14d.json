@@ -4,26 +4,26 @@
     "account_name": "Smellers MX",
     "period": "14d",
     "date_range": "2025-09-28..2025-10-11",
-    "generated_at": "2025-10-12T09:19:43.113485Z",
+    "generated_at": "2025-10-12T15:19:42.818810Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 243662,
+      "impressions": 243673,
       "clicks": 3835,
-      "spend": 18619.27,
+      "spend": 18619.33,
       "purchases": 87,
       "purchase_value": 69490.58,
       "ctr": 1.57,
-      "cpa": 214.01,
+      "cpa": 214.02,
       "roas": 3.73
     },
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 130155,
+      "impressions": 130162,
       "clicks": 3059,
       "spend": 13407.78,
       "purchases": 59,
@@ -35,9 +35,9 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 209089,
+      "impressions": 209096,
       "clicks": 2546,
-      "spend": 11133.27,
+      "spend": 11133.33,
       "purchases": 51,
       "purchase_value": 40388.92,
       "ctr": 1.22,
@@ -47,7 +47,7 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 37826,
+      "impressions": 37829,
       "clicks": 1193,
       "spend": 4713.38,
       "purchases": 22,
@@ -83,7 +83,7 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 46329,
+      "impressions": 46330,
       "clicks": 515,
       "spend": 2004.16,
       "purchases": 10,
@@ -95,7 +95,7 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 12175,
+      "impressions": 12176,
       "clicks": 382,
       "spend": 1449.5,
       "purchases": 10,
@@ -107,7 +107,7 @@
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 12604,
+      "impressions": 12605,
       "clicks": 273,
       "spend": 1058.99,
       "purchases": 8,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 821970,
+    "impressions": 822001,
     "clicks": 13686,
-    "spend": 60509.81,
+    "spend": 60509.93,
     "purchases": 292,
     "purchase_value": 245645.4,
     "roas": 4.06
