@@ -1,0 +1,76 @@
+services:
+  # API Backend (FastAPI)
+  - type: web
+    name: creative-testing-api
+    runtime: python
+    region: oregon  # ou 'frankfurt' si tu préfères Europe
+    plan: free  # gratuit pour commencer, upgrade si nécessaire
+    branch: master
+    rootDir: api
+    buildCommand: pip install -r requirements-api.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: false
+      - key: API_VERSION
+        value: v1
+      - key: SECRET_KEY
+        generateValue: true  # Render génère automatiquement
+      - key: SESSION_SECRET
+        generateValue: true  # Render génère automatiquement
+      - key: DATABASE_URL
+        fromDatabase:
+          name: creative-testing-db
+          property: connectionString
+      - key: META_APP_ID
+        value: "1187229696581219"
+      - key: META_APP_SECRET
+        sync: false  # À configurer manuellement dans le dashboard
+      - key: META_API_VERSION
+        value: v23.0
+      - key: META_REDIRECT_URI
+        sync: false  # Sera configuré après avoir l'URL
+      - key: STRIPE_SECRET_KEY
+        sync: false  # À configurer manuellement
+      - key: STRIPE_PUBLISHABLE_KEY
+        value: pk_test_51Rj22CGfz8xOQOCycXcncRZbsFilrIYeNW0dvoyUX3PZFJ8dBFriRx830lr1xrhT1aWa3d8JBI8PzXMmzCafjFCX00PPqCrG43
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false  # À configurer manuellement après création webhook
+      - key: STRIPE_PRICE_FREE
+        value: price_free
+      - key: STRIPE_PRICE_PRO
+        value: price_1S0hIHGfz8xOQOCyyTrZ7Ovq
+      - key: STRIPE_PRICE_ENTERPRISE
+        value: price_1S0hIIGfz8xOQOCycdGhetgG
+      - key: REDIS_URL
+        value: ""  # Optionnel pour l'instant
+      - key: STORAGE_MODE
+        value: local
+      - key: LOCAL_DATA_ROOT
+        value: ./data
+      - key: TOKEN_ENCRYPTION_KEY
+        value: NL60gr7GtOU1TPxj2qlbCB64R6sCIG4FTT8eANnABWw=
+      - key: JWT_ISSUER
+        value: creative-testing-api
+      - key: COOKIE_SAMESITE
+        value: none  # 'none' pour cross-site (API et dashboard sur domaines différents)
+      - key: COOKIE_DOMAIN
+        value: ""
+      - key: ALLOWED_ORIGINS
+        value: http://localhost:8080,https://creative-testing.github.io,http://127.0.0.1:8080
+      - key: DASHBOARD_URL
+        value: https://creative-testing.github.io
+      - key: RATE_LIMIT_PER_MINUTE
+        value: "60"
+      - key: SENTRY_DSN
+        value: ""  # Optionnel
+
+databases:
+  # PostgreSQL Database
+  - name: creative-testing-db
+    databaseName: creative_testing_saas
+    plan: free  # gratuit pour commencer
+    region: oregon  # même région que l'API
