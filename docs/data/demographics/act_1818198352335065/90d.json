@@ -4,28 +4,28 @@
     "account_name": "koneli.mx",
     "period": "90d",
     "date_range": "2025-07-15..2025-10-12",
-    "generated_at": "2025-10-13T15:23:58.323457Z",
+    "generated_at": "2025-10-13T21:21:55.183409Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 3156018,
-      "clicks": 65455,
-      "spend": 269224.7,
+      "impressions": 3156029,
+      "clicks": 65456,
+      "spend": 269225.37,
       "purchases": 517,
       "purchase_value": 879385.38,
       "ctr": 2.07,
-      "cpa": 520.74,
+      "cpa": 520.75,
       "roas": 3.27
     },
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 3047954,
-      "clicks": 57970,
-      "spend": 176127.3,
+      "impressions": 3047975,
+      "clicks": 57972,
+      "spend": 176128.37,
       "purchases": 371,
       "purchase_value": 588320.12,
       "ctr": 1.9,
@@ -35,13 +35,13 @@
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 1111009,
+      "impressions": 1111021,
       "clicks": 37546,
-      "spend": 131696.57,
+      "spend": 131699.24,
       "purchases": 229,
       "purchase_value": 360414.46,
       "ctr": 3.38,
-      "cpa": 575.09,
+      "cpa": 575.11,
       "roas": 2.74
     },
     {
@@ -71,13 +71,13 @@
     {
       "age": "18-24",
       "gender": "male",
-      "impressions": 273156,
+      "impressions": 273162,
       "clicks": 12452,
-      "spend": 12005.3,
+      "spend": 12005.47,
       "purchases": 17,
       "purchase_value": 24355.09,
       "ctr": 4.56,
-      "cpa": 706.19,
+      "cpa": 706.2,
       "roas": 2.03
     },
     {
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 8326774,
-    "clicks": 206792,
-    "spend": 683097.69,
+    "impressions": 8326824,
+    "clicks": 206795,
+    "spend": 683102.27,
     "purchases": 1326,
     "purchase_value": 2174178.82,
     "roas": 3.18
