@@ -35,8 +35,12 @@ class CSRFFromCookieGuard(BaseHTTPMiddleware):
     # Safe methods that don't need CSRF protection
     SAFE_METHODS = ("GET", "HEAD", "OPTIONS")
 
-    # Paths excluded from CSRF check (DEBUG endpoints)
-    CSRF_EXEMPT_PATHS = ("/auth/facebook/dev-login",)
+    # Paths excluded from CSRF check (DEBUG endpoints, webhooks)
+    CSRF_EXEMPT_PATHS = (
+        "/auth/facebook/dev-login",
+        "/billing/webhook",  # Stripe webhooks (verified via signature)
+        "/facebook/data-deletion",  # Meta data deletion callback
+    )
 
     async def dispatch(self, request, call_next):
         # Skip CSRF check for exempt paths (DEBUG endpoints)

@@ -1,5 +1,22 @@
 # Notes Pipeline Meta Ads - CLAUDE
 
+## ⛔ RÈGLE CRITIQUE: AUCUN DÉPLOIEMENT SANS AUTORISATION EXPLICITE
+
+**IMPORTANT**: Ne JAMAIS faire de push, déploiement, ou modification en production sans l'autorisation explicite de Frederic.
+
+Cela inclut:
+- ❌ `git push` vers GitHub (master ou toute branche)
+- ❌ Déploiement sur Render ou tout service cloud
+- ❌ Déploiement sur GitHub Pages
+- ❌ Modifications des GitHub Actions workflows
+- ❌ Publication de releases
+- ❌ Mise à jour de fichiers en production
+- ❌ Lancement manuel de workflows GitHub Actions
+
+**Toujours demander confirmation avant TOUT déploiement.**
+
+---
+
 ## 🚨 Problèmes résolus (Sept 2, 2025)
 
 ### 1. Date affichée incorrecte
