@@ -4,20 +4,20 @@
     "account_name": "Rose&Mimosas",
     "period": "7d",
     "date_range": "2025-10-06..2025-10-12",
-    "generated_at": "2025-10-13T09:25:16.922400Z",
+    "generated_at": "2025-10-13T15:21:43.946112Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 36745,
+      "impressions": 36749,
       "clicks": 1228,
-      "spend": 4424.6,
+      "spend": 4424.82,
       "purchases": 5,
       "purchase_value": 11120.2,
       "ctr": 3.34,
-      "cpa": 884.92,
+      "cpa": 884.96,
       "roas": 2.51
     },
     {
@@ -35,13 +35,13 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 11584,
+      "impressions": 11585,
       "clicks": 661,
-      "spend": 2140.42,
+      "spend": 2140.48,
       "purchases": 1,
       "purchase_value": 839.0,
       "ctr": 5.71,
-      "cpa": 2140.42,
+      "cpa": 2140.48,
       "roas": 0.39
     },
     {
@@ -59,12 +59,12 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 1435,
-      "clicks": 129,
-      "spend": 260.21,
+      "impressions": 1436,
+      "clicks": 130,
+      "spend": 260.22,
       "purchases": 3,
       "purchase_value": 8824.84,
-      "ctr": 8.99,
+      "ctr": 9.05,
       "cpa": 86.74,
       "roas": 33.91
     },
@@ -83,14 +83,14 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 1098,
+      "impressions": 1099,
       "clicks": 34,
-      "spend": 102.19,
+      "spend": 102.38,
       "purchases": 1,
       "purchase_value": 1739.0,
-      "ctr": 3.1,
-      "cpa": 102.19,
-      "roas": 17.02
+      "ctr": 3.09,
+      "cpa": 102.38,
+      "roas": 16.99
     },
     {
       "age": "35-44",
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 94135,
-    "clicks": 3239,
-    "spend": 10511.57,
+    "impressions": 94142,
+    "clicks": 3240,
+    "spend": 10512.05,
     "purchases": 13,
     "purchase_value": 33935.04,
     "roas": 3.23

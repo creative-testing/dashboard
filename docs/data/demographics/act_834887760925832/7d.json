@@ -4,28 +4,28 @@
     "account_name": "SEPUA",
     "period": "7d",
     "date_range": "2025-10-06..2025-10-12",
-    "generated_at": "2025-10-13T09:26:13.743000Z",
+    "generated_at": "2025-10-13T15:22:30.664975Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 6572,
+      "impressions": 6574,
       "clicks": 95,
-      "spend": 987.11,
+      "spend": 987.26,
       "purchases": 1,
       "purchase_value": 1849.0,
       "ctr": 1.45,
-      "cpa": 987.11,
+      "cpa": 987.26,
       "roas": 1.87
     },
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 2555,
+      "impressions": 2557,
       "clicks": 67,
-      "spend": 830.25,
+      "spend": 830.89,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 2.62,
@@ -49,7 +49,7 @@
       "gender": "female",
       "impressions": 5348,
       "clicks": 40,
-      "spend": 664.27,
+      "spend": 664.26,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 0.75,
@@ -59,14 +59,14 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 3918,
+      "impressions": 3919,
       "clicks": 46,
-      "spend": 484.94,
+      "spend": 485.47,
       "purchases": 1,
       "purchase_value": 6650.0,
       "ctr": 1.17,
-      "cpa": 484.94,
-      "roas": 13.71
+      "cpa": 485.47,
+      "roas": 13.7
     },
     {
       "age": "45-54",
@@ -95,12 +95,12 @@
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 675,
+      "impressions": 676,
       "clicks": 13,
-      "spend": 221.52,
+      "spend": 228.85,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 1.93,
+      "ctr": 1.92,
       "cpa": 0,
       "roas": 0.0
     },
@@ -202,9 +202,9 @@
     }
   ],
   "totals": {
-    "impressions": 26806,
+    "impressions": 26812,
     "clicks": 415,
-    "spend": 4912.31,
+    "spend": 4920.95,
     "purchases": 2,
     "purchase_value": 8499.0,
     "roas": 1.73

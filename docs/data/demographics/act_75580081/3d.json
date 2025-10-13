@@ -4,28 +4,28 @@
     "account_name": "Zendio",
     "period": "3d",
     "date_range": "2025-10-10..2025-10-12",
-    "generated_at": "2025-10-13T09:23:44.293494Z",
+    "generated_at": "2025-10-13T15:20:07.310447Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 8437,
-      "clicks": 111,
-      "spend": 573.24,
+      "impressions": 8442,
+      "clicks": 112,
+      "spend": 573.38,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 1.32,
+      "ctr": 1.33,
       "cpa": 0,
       "roas": 0.0
     },
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 9537,
+      "impressions": 9539,
       "clicks": 111,
-      "spend": 496.52,
+      "spend": 496.57,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.16,
@@ -35,13 +35,13 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 4170,
+      "impressions": 4171,
       "clicks": 91,
-      "spend": 420.26,
+      "spend": 420.29,
       "purchases": 1,
       "purchase_value": 3287.1,
       "ctr": 2.18,
-      "cpa": 420.26,
+      "cpa": 420.29,
       "roas": 7.82
     },
     {
@@ -59,13 +59,13 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 4577,
+      "impressions": 4578,
       "clicks": 50,
-      "spend": 296.03,
+      "spend": 296.31,
       "purchases": 1,
       "purchase_value": 1712.25,
       "ctr": 1.09,
-      "cpa": 296.03,
+      "cpa": 296.31,
       "roas": 5.78
     },
     {
@@ -143,9 +143,9 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 208,
+      "impressions": 209,
       "clicks": 3,
-      "spend": 14.38,
+      "spend": 14.39,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.44,
@@ -226,9 +226,9 @@
     }
   ],
   "totals": {
-    "impressions": 36037,
-    "clicks": 521,
-    "spend": 2689.16,
+    "impressions": 36047,
+    "clicks": 522,
+    "spend": 2689.67,
     "purchases": 4,
     "purchase_value": 9408.9,
     "roas": 3.5
