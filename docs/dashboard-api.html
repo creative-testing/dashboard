@@ -176,7 +176,7 @@
             if (authToken) {
                 try {
                     // Test if token is still valid
-                    const response = await fetch(`${API_URL}/api/accounts`, {
+                    const response = await fetch(`${API_URL}/api/accounts/`, {
                         headers: {
                             'Authorization': `Bearer ${authToken}`
                         }
@@ -266,7 +266,7 @@
 
         async function loadAccounts() {
             try {
-                const response = await fetch(`${API_URL}/api/accounts`, {
+                const response = await fetch(`${API_URL}/api/accounts/`, {
                     headers: {
                         'Authorization': `Bearer ${authToken}`
                     }
