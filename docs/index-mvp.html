@@ -335,11 +335,7 @@
         }
 
         async function loginWithMeta() {
-            // Show error message about OAuth being production-only
-            document.getElementById('oauth-error').style.display = 'block';
-
-            // In production, this would redirect to OAuth
-            // window.location.href = `${API_URL}/auth/facebook/login`;
+            window.location.href = `${API_URL}/auth/facebook/login`;
         }
 
         async function devLogin() {
