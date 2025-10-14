@@ -59,15 +59,34 @@ def upgrade() -> None:
     except Exception:
         pass  # Constraint already exists
 
-    try:
-        op.create_unique_constraint("uq_oauth_user_provider", "oauth_tokens", ["user_id", "provider"])
-    except Exception:
-        pass  # Constraint already exists
+    conn.execute(sa.text("""
+    DO $$
+    BEGIN
+      IF EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_name = 'oauth_tokens' AND column_name = 'provider'
+      ) THEN
+        IF NOT EXISTS (
+          SELECT 1 FROM pg_constraint WHERE conname = 'uq_oauth_user_provider'
+        ) THEN
+          ALTER TABLE oauth_tokens
+          ADD CONSTRAINT uq_oauth_user_provider UNIQUE (user_id, provider);
+        END IF;
+      END IF;
+    END$$;
+    """))
 
-    try:
-        op.create_unique_constraint("uq_ad_accounts_tenant_fb", "ad_accounts", ["tenant_id", "fb_account_id"])
-    except Exception:
-        pass  # Constraint already exists
+    conn.execute(sa.text("""
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint WHERE conname = 'uq_ad_accounts_tenant_fb'
+      ) THEN
+        ALTER TABLE ad_accounts
+        ADD CONSTRAINT uq_ad_accounts_tenant_fb UNIQUE (tenant_id, fb_account_id);
+      END IF;
+    END$$;
+    """))
 
 
 def downgrade() -> None:
