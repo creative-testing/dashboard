@@ -285,6 +285,10 @@
 
     <script>
         const DEFAULT_API_URL = 'https://creative-testing-api.onrender.com';
+        const storedApiUrl = window.localStorage.getItem('api_url');
+        if (storedApiUrl && storedApiUrl.startsWith('http://localhost')) {
+            window.localStorage.removeItem('api_url');
+        }
         const API_URL = window.localStorage.getItem('api_url') || DEFAULT_API_URL;
         let authToken = null;
         let tenantId = null;
