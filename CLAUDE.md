@@ -1,19 +1,24 @@
 # Notes Pipeline Meta Ads - CLAUDE
 
-## ⛔ RÈGLE CRITIQUE: AUCUN DÉPLOIEMENT SANS AUTORISATION EXPLICITE
+## ⛔ RÈGLE CRITIQUE: PROTECTION DE LA PRODUCTION
 
-**IMPORTANT**: Ne JAMAIS faire de push, déploiement, ou modification en production sans l'autorisation explicite de Frederic.
+**MASTER = PRODUCTION - NE JAMAIS TOUCHER SANS AUTORISATION EXPLICITE**
 
-Cela inclut:
-- ❌ `git push` vers GitHub (master ou toute branche)
-- ❌ Déploiement sur Render ou tout service cloud
-- ❌ Déploiement sur GitHub Pages
-- ❌ Modifications des GitHub Actions workflows
-- ❌ Publication de releases
-- ❌ Mise à jour de fichiers en production
-- ❌ Lancement manuel de workflows GitHub Actions
+La branche `master` alimente le dashboard de production utilisé par l'entreprise et les patrons de Frederic.
+**Toute modification de master peut CASSER le système en production !**
 
-**Toujours demander confirmation avant TOUT déploiement.**
+### ❌ INTERDIT sur `master`:
+- ❌ `git push origin master` → **STRICTEMENT INTERDIT**
+- ❌ Merge vers master
+- ❌ Modifications des workflows GitHub Actions
+- ❌ Déploiement sur GitHub Pages depuis master
+
+### ✅ AUTORISÉ sur `saas-mvp`:
+- ✅ `git push origin saas-mvp` → **AUTORISÉ** (branche de développement isolée)
+- ✅ Commits sur saas-mvp
+- ✅ Tests et déploiements Render depuis saas-mvp
+
+**Règle simple: saas-mvp = liberté totale | master = demander autorisation explicite**
 
 ---
 
