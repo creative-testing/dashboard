@@ -4,44 +4,44 @@
     "account_name": "Anuncios MEETIK",
     "period": "30d",
     "date_range": "2025-09-15..2025-10-14",
-    "generated_at": "2025-10-15T09:21:59.220699Z",
+    "generated_at": "2025-10-15T15:20:00.858575Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 256788,
+      "impressions": 256798,
       "clicks": 4546,
-      "spend": 13018.89,
+      "spend": 13019.26,
       "purchases": 27,
       "purchase_value": 34791.22,
       "ctr": 1.77,
-      "cpa": 482.18,
+      "cpa": 482.19,
       "roas": 2.67
     },
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 84777,
-      "clicks": 2203,
-      "spend": 5851.18,
+      "impressions": 84780,
+      "clicks": 2204,
+      "spend": 5853.68,
       "purchases": 12,
       "purchase_value": 14893.5,
       "ctr": 2.6,
-      "cpa": 487.6,
-      "roas": 2.55
+      "cpa": 487.81,
+      "roas": 2.54
     },
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 103704,
+      "impressions": 103707,
       "clicks": 1532,
-      "spend": 3833.46,
+      "spend": 3833.74,
       "purchases": 13,
       "purchase_value": 10895.04,
       "ctr": 1.48,
-      "cpa": 294.88,
+      "cpa": 294.9,
       "roas": 2.84
     },
     {
@@ -61,7 +61,7 @@
       "gender": "female",
       "impressions": 18120,
       "clicks": 653,
-      "spend": 1023.82,
+      "spend": 1023.83,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 3.6,
@@ -71,7 +71,7 @@
     {
       "age": "18-24",
       "gender": "male",
-      "impressions": 20145,
+      "impressions": 20146,
       "clicks": 236,
       "spend": 679.55,
       "purchases": 3,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 540759,
-    "clicks": 10278,
-    "spend": 26634.86,
+    "impressions": 540776,
+    "clicks": 10279,
+    "spend": 26638.02,
     "purchases": 58,
     "purchase_value": 66338.46,
     "roas": 2.49
