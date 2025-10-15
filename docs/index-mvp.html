@@ -284,7 +284,12 @@
     </div>
 
     <script>
-        const API_URL = 'http://localhost:8000';
+        const DEFAULT_API_URL = 'https://creative-testing-api.onrender.com';
+        const storedApiUrl = window.localStorage.getItem('api_url');
+        if (storedApiUrl && storedApiUrl.startsWith('http://localhost')) {
+            window.localStorage.removeItem('api_url');
+        }
+        const API_URL = window.localStorage.getItem('api_url') || DEFAULT_API_URL;
         let authToken = null;
         let tenantId = null;
         let devMode = false;
@@ -330,11 +335,7 @@
         }
 
         async function loginWithMeta() {
-            // Show error message about OAuth being production-only
-            document.getElementById('oauth-error').style.display = 'block';
-
-            // In production, this would redirect to OAuth
-            // window.location.href = `${API_URL}/auth/facebook/login`;
+            window.location.href = `${API_URL}/auth/facebook/login`;
         }
 
         async function devLogin() {
