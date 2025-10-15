@@ -22,6 +22,59 @@ La branche `master` alimente le dashboard de production utilisé par l'entrepris
 
 ---
 
+## 🛡️ COEXISTENCE DASHBOARD PRODUCTION & SAAS (Oct 15, 2025)
+
+### CONTEXTE CRITIQUE
+
+Le dashboard de production fonctionne actuellement pour les patrons de Frederic :
+- **URL en production** : https://creative-testing.github.io/dashboard/index_full.html
+- **Fichier** : `docs/index_full.html`
+- **Données** : `docs/data/optimized/*.json` (générés par GitHub Actions)
+- **Pipeline** : `.github/workflows/refresh-data.yml` → `fetch_with_smart_limits.py` → `transform_to_columnar.py`
+
+### ⚠️ RÈGLES DE COEXISTENCE
+
+**NE JAMAIS TOUCHER** :
+- ❌ `docs/index_full.html` (dashboard actuel des patrons)
+- ❌ `docs/data/optimized/*.json` (données actuelles)
+- ❌ `.github/workflows/refresh-data.yml` (pipeline de données actuel)
+- ❌ Tout fichier qui pourrait affecter index_full.html
+
+**NOUVEAU DASHBOARD SAAS** :
+- ✅ `docs/index-mvp.html` (nouvelle interface SaaS multi-tenant)
+- ✅ API Render : `creative-testing-api.onrender.com`
+- ✅ Données isolées par tenant : `tenants/{tenant_id}/accounts/{act_id}/...`
+- ✅ Authentification OAuth Facebook
+
+### ARCHITECTURE PARALLÈLE
+
+```
+PRODUCTION (Patrons)                     SAAS (Nouveaux utilisateurs)
+├── index_full.html                      ├── index-mvp.html
+├── GitHub Actions refresh               ├── API Render
+├── Token hardcodé dans secrets          ├── OAuth Facebook
+├── Données globales                     ├── Données par tenant
+└── docs/data/optimized/*.json           └── tenants/{tenant}/accounts/{act}/*.json
+```
+
+### WORKFLOW DE DÉPLOIEMENT SÉCURISÉ
+
+1. **Développement** : Toujours sur `saas-mvp`
+2. **Tests locaux** : `http://localhost:8080/index-mvp.html`
+3. **Publication** : PR séparée qui ajoute UNIQUEMENT `index-mvp.html`
+4. **Vérification** : Confirmer qu'aucun fichier existant n'est modifié
+5. **Validation** : L'URL des patrons doit rester fonctionnelle après merge
+
+### CHECKLIST AVANT TOUT MERGE VERS MASTER
+
+- [ ] `docs/index_full.html` n'est PAS modifié
+- [ ] `docs/data/optimized/*` n'est PAS modifié
+- [ ] `.github/workflows/refresh-data.yml` n'est PAS modifié
+- [ ] Test manuel de https://creative-testing.github.io/dashboard/index_full.html
+- [ ] La PR ajoute UNIQUEMENT des nouveaux fichiers SaaS
+
+---
+
 ## 🚨 Problèmes résolus (Sept 2, 2025)
 
 ### 1. Date affichée incorrecte
