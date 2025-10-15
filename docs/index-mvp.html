@@ -284,10 +284,50 @@
     </div>
 
     <script>
-        const API_URL = 'http://localhost:8000';
+        const DEFAULT_API_URL = 'https://creative-testing-api.onrender.com';
+        const storedApiUrl = getStoredApiUrl();
+        const API_URL = storedApiUrl || DEFAULT_API_URL;
         let authToken = null;
         let tenantId = null;
+        let currentUser = null;
         let devMode = false;
+
+        function getStoredApiUrl() {
+            const stored = window.localStorage.getItem('api_url');
+            if (!stored) return null;
+            if (stored.startsWith('http://localhost')) {
+                return stored;
+            }
+            window.localStorage.removeItem('api_url');
+            return null;
+        }
+
+        function setAuthContext(token, tenant) {
+            authToken = token;
+            tenantId = tenant;
+            if (token) {
+                localStorage.setItem('auth_token', token);
+            } else {
+                localStorage.removeItem('auth_token');
+            }
+            if (tenant) {
+                localStorage.setItem('tenant_id', tenant);
+            } else {
+                localStorage.removeItem('tenant_id');
+            }
+        }
+
+        function authFetch(url, options = {}) {
+            const headers = options.headers ? { ...options.headers } : {};
+            if (authToken) {
+                headers['Authorization'] = `Bearer ${authToken}`;
+            }
+            return fetch(url, {
+                ...options,
+                headers,
+                credentials: 'include'
+            });
+        }
 
         // Dev mode activation (press 'd' key)
         document.addEventListener('keydown', (e) => {
@@ -299,42 +339,36 @@
             }
         });
 
-        // Initialize
-        checkAuth();
-
         async function checkAuth() {
             authToken = localStorage.getItem('auth_token');
             tenantId = localStorage.getItem('tenant_id');
 
-            if (authToken) {
-                try {
-                    // Test if token is still valid
-                    const response = await fetch(`${API_URL}/api/accounts/`, {
-                        headers: {
-                            'Authorization': `Bearer ${authToken}`
-                        }
-                    });
-
-                    if (response.ok) {
-                        updateAuthStatus(true);
-                        loadAccounts();
-                    } else {
-                        // Token expired
-                        logout();
+            try {
+                const response = await authFetch(`${API_URL}/api/accounts/me`);
+                if (response.ok) {
+                    const me = await response.json();
+                    currentUser = me.user || null;
+                    tenantId = me.tenant_id;
+                    if (tenantId) {
+                        localStorage.setItem('tenant_id', tenantId);
                     }
-                } catch (error) {
-                    console.error('Auth check failed:', error);
-                    logout();
+                    updateAuthStatus(true);
+                    await loadAccounts();
+                    return;
                 }
+            } catch (error) {
+                console.warn('Auth check failed:', error);
+            }
+
+            if (authToken) {
+                logout();
+            } else {
+                updateAuthStatus(false);
             }
         }
 
         async function loginWithMeta() {
-            // Show error message about OAuth being production-only
-            document.getElementById('oauth-error').style.display = 'block';
-
-            // In production, this would redirect to OAuth
-            // window.location.href = `${API_URL}/auth/facebook/login`;
+            window.location.href = `${API_URL}/auth/facebook/login`;
         }
 
         async function devLogin() {
@@ -351,27 +385,24 @@
                 const data = await response.json();
 
                 // Store token
-                authToken = data.access_token;
-                tenantId = data.tenant_id;
-                localStorage.setItem('auth_token', authToken);
-                localStorage.setItem('tenant_id', tenantId);
+            setAuthContext(data.access_token, data.tenant_id);
+            updateAuthStatus(true);
+            await loadAccounts();
 
-                updateAuthStatus(true);
-
-                // Load accounts
-                await loadAccounts();
-
-            } catch (error) {
-                alert('Error en login de desarrollador: ' + error.message);
+        } catch (error) {
+            alert('Error en login de desarrollador: ' + error.message);
                 console.error('Dev login error:', error);
             }
         }
 
         function logout() {
-            authToken = null;
-            tenantId = null;
-            localStorage.removeItem('auth_token');
-            localStorage.removeItem('tenant_id');
+            try {
+                await authFetch(`${API_URL}/auth/logout`, { method: 'POST' });
+            } catch (error) {
+                console.warn('Logout request failed:', error);
+            }
+            setAuthContext(null, null);
+            currentUser = null;
             updateAuthStatus(false);
 
             // Hide sections
@@ -387,7 +418,11 @@
                 statusEl.textContent = 'Conectado';
                 statusEl.className = 'status connected';
                 document.getElementById('login-section').style.display = 'none';
-                document.getElementById('user-info').style.display = 'block';
+                const userInfo = document.getElementById('user-info');
+                userInfo.style.display = 'block';
+                if (currentUser && currentUser.name) {
+                    userInfo.querySelector('h3').textContent = `¡Hola, ${currentUser.name}!`;
+                }
                 document.getElementById('accounts-section').style.display = 'block';
                 document.getElementById('oauth-error').style.display = 'none';
             } else {
@@ -401,11 +436,7 @@
 
         async function loadAccounts() {
             try {
-                const response = await fetch(`${API_URL}/api/accounts/`, {
-                    headers: {
-                        'Authorization': `Bearer ${authToken}`
-                    }
-                });
+                const response = await authFetch(`${API_URL}/api/accounts/`);
 
                 if (!response.ok) {
                     throw new Error('Failed to load accounts');
@@ -448,11 +479,7 @@
                 document.getElementById('campaign-data').innerHTML = '<div class="loading">Cargando campañas...</div>';
                 document.getElementById('data-section').style.display = 'block';
 
-                const response = await fetch(`${API_URL}/api/data/campaigns?ad_account_id=${accountId}&fields=id,name,status,objective&limit=10`, {
-                    headers: {
-                        'Authorization': `Bearer ${authToken}`
-                    }
-                });
+                const response = await authFetch(`${API_URL}/api/data/campaigns?ad_account_id=${accountId}&fields=id,name,status,objective&limit=10`);
 
                 if (!response.ok) {
                     throw new Error('Error al cargar campañas');
@@ -478,11 +505,8 @@
 
         async function refreshAccount(accountId) {
             try {
-                const response = await fetch(`${API_URL}/api/accounts/refresh/${accountId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${authToken}`
-                    }
+                const response = await authFetch(`${API_URL}/api/accounts/refresh/${accountId}`, {
+                    method: 'POST'
                 });
 
                 if (!response.ok) {
@@ -501,18 +525,13 @@
         // Handle OAuth callback
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('token')) {
-            // Store token from OAuth callback
-            authToken = urlParams.get('token');
-            tenantId = urlParams.get('tenant_id');
-            localStorage.setItem('auth_token', authToken);
-            localStorage.setItem('tenant_id', tenantId);
-
-            // Clean URL
+            setAuthContext(urlParams.get('token'), urlParams.get('tenant_id'));
             window.history.replaceState({}, document.title, window.location.pathname);
-
-            // Update UI
             updateAuthStatus(true);
             loadAccounts();
+        } else {
+            // No query params, rely on cookie session
+            checkAuth();
         }
     </script>
 </body>
