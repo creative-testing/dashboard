@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Creative Testing Dashboard</title>
+    <link rel="icon" href="data:,">
     <style>
         * {
             margin: 0;
@@ -285,40 +286,39 @@
 
     <script>
         const DEFAULT_API_URL = 'https://creative-testing-api.onrender.com';
-        const storedApiUrl = getStoredApiUrl();
-        const API_URL = storedApiUrl || DEFAULT_API_URL;
-        let authToken = null;
-        let tenantId = null;
+        const API_URL = (() => {
+            const stored = window.localStorage.getItem('api_url');
+            if (stored && stored.startsWith('http://localhost')) {
+                return stored;
+            }
+            if (stored) {
+                window.localStorage.removeItem('api_url');
+            }
+            return DEFAULT_API_URL;
+        })();
+
+        let authToken = window.localStorage.getItem('auth_token') || null;
+        let tenantId = window.localStorage.getItem('tenant_id') || null;
         let currentUser = null;
         let devMode = false;
 
-        function getStoredApiUrl() {
-            const stored = window.localStorage.getItem('api_url');
-            if (!stored) return null;
-            if (stored.startsWith('http://localhost')) {
-                return stored;
-            }
-            window.localStorage.removeItem('api_url');
-            return null;
-        }
-
         function setAuthContext(token, tenant) {
-            authToken = token;
-            tenantId = tenant;
-            if (token) {
-                localStorage.setItem('auth_token', token);
+            authToken = token || null;
+            tenantId = tenant || null;
+            if (authToken) {
+                window.localStorage.setItem('auth_token', authToken);
             } else {
-                localStorage.removeItem('auth_token');
+                window.localStorage.removeItem('auth_token');
             }
-            if (tenant) {
-                localStorage.setItem('tenant_id', tenant);
+            if (tenantId) {
+                window.localStorage.setItem('tenant_id', tenantId);
             } else {
-                localStorage.removeItem('tenant_id');
+                window.localStorage.removeItem('tenant_id');
             }
         }
 
         function authFetch(url, options = {}) {
-            const headers = options.headers ? { ...options.headers } : {};
+            const headers = { ...(options.headers || {}) };
             if (authToken) {
                 headers['Authorization'] = `Bearer ${authToken}`;
             }
@@ -329,9 +329,8 @@
             });
         }
 
-        // Dev mode activation (press 'd' key)
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'd' && !devMode) {
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'd' && !devMode) {
                 devMode = true;
                 document.getElementById('dev-login-btn').style.display = 'block';
                 document.getElementById('dev-mode-indicator').style.display = 'block';
@@ -339,73 +338,36 @@
             }
         });
 
-        async function checkAuth() {
-            authToken = localStorage.getItem('auth_token');
-            tenantId = localStorage.getItem('tenant_id');
-
-            try {
-                const response = await authFetch(`${API_URL}/api/accounts/me`);
-                if (response.ok) {
-                    const me = await response.json();
-                    currentUser = me.user || null;
-                    tenantId = me.tenant_id;
-                    if (tenantId) {
-                        localStorage.setItem('tenant_id', tenantId);
-                    }
-                    updateAuthStatus(true);
-                    await loadAccounts();
-                    return;
-                }
-            } catch (error) {
-                console.warn('Auth check failed:', error);
-            }
-
-            if (authToken) {
-                logout();
-            } else {
-                updateAuthStatus(false);
-            }
-        }
-
-        async function loginWithMeta() {
+        function loginWithMeta() {
             window.location.href = `${API_URL}/auth/facebook/login`;
         }
 
         async function devLogin() {
             try {
-                const response = await fetch(`${API_URL}/auth/facebook/dev-login`, {
-                    method: 'POST',
-                    credentials: 'include'
-                });
-
+                const response = await authFetch(`${API_URL}/auth/facebook/dev-login`, { method: 'POST' });
                 if (!response.ok) {
                     throw new Error('Dev login failed');
                 }
-
                 const data = await response.json();
-
-                // Store token
-            setAuthContext(data.access_token, data.tenant_id);
-            updateAuthStatus(true);
-            await loadAccounts();
-
-        } catch (error) {
-            alert('Error en login de desarrollador: ' + error.message);
+                setAuthContext(data.access_token, data.tenant_id);
+                currentUser = data.user || { name: data.name || 'Usuario' };
+                updateAuthStatus(true);
+                await loadAccounts();
+            } catch (error) {
+                alert('Error en login de desarrollador: ' + error.message);
                 console.error('Dev login error:', error);
             }
         }
 
-        function logout() {
+        async function logout() {
             try {
-                await authFetch(`${API_URL}/auth/logout`, { method: 'POST' });
+                await authFetch(`${API_URL}/auth/facebook/logout`, { method: 'POST' });
             } catch (error) {
                 console.warn('Logout request failed:', error);
             }
             setAuthContext(null, null);
             currentUser = null;
             updateAuthStatus(false);
-
-            // Hide sections
             document.getElementById('user-info').style.display = 'none';
             document.getElementById('accounts-section').style.display = 'none';
             document.getElementById('data-section').style.display = 'none';
@@ -420,9 +382,8 @@
                 document.getElementById('login-section').style.display = 'none';
                 const userInfo = document.getElementById('user-info');
                 userInfo.style.display = 'block';
-                if (currentUser && currentUser.name) {
-                    userInfo.querySelector('h3').textContent = `¡Hola, ${currentUser.name}!`;
-                }
+                const displayName = (currentUser && currentUser.name) ? currentUser.name : 'Usuario';
+                userInfo.querySelector('h3').textContent = `¡Hola, ${displayName}!`;
                 document.getElementById('accounts-section').style.display = 'block';
                 document.getElementById('oauth-error').style.display = 'none';
             } else {
@@ -437,37 +398,29 @@
         async function loadAccounts() {
             try {
                 const response = await authFetch(`${API_URL}/api/accounts/`);
-
                 if (!response.ok) {
                     throw new Error('Failed to load accounts');
                 }
-
                 const data = await response.json();
                 const accounts = data.accounts || [];
-
-                // Display accounts
+                if (!currentUser && data.user) {
+                    currentUser = data.user;
+                }
                 const accountsList = document.getElementById('accounts-list');
-
                 if (accounts.length === 0) {
                     accountsList.innerHTML = '<p style="color: #666;">No se encontraron cuentas publicitarias. Conecta una cuenta publicitaria de Facebook para comenzar.</p>';
                     return;
                 }
-
                 accountsList.innerHTML = accounts.map(account => `
                     <div class="account-card">
                         <h4>${account.name}</h4>
                         <p><strong>ID de Cuenta:</strong> ${account.fb_account_id}</p>
                         <p><strong>Perfil:</strong> ${account.profile.toUpperCase()}</p>
                         <p><strong>Última actualización:</strong> ${account.last_refresh_at ? new Date(account.last_refresh_at).toLocaleString('es-ES') : 'Nunca'}</p>
-                        <button class="btn" onclick="loadCampaigns('${account.fb_account_id}')">
-                            Ver Campañas
-                        </button>
-                        <button class="btn btn-secondary" onclick="refreshAccount('${account.fb_account_id}')">
-                            Actualizar Datos
-                        </button>
+                        <button class="btn" onclick="loadCampaigns('${account.fb_account_id}')">Ver Campañas</button>
+                        <button class="btn btn-secondary" onclick="refreshAccount('${account.fb_account_id}')">Actualizar Datos</button>
                     </div>
                 `).join('');
-
             } catch (error) {
                 alert('Error al cargar cuentas: ' + error.message);
                 console.error('Load accounts error:', error);
@@ -478,21 +431,15 @@
             try {
                 document.getElementById('campaign-data').innerHTML = '<div class="loading">Cargando campañas...</div>';
                 document.getElementById('data-section').style.display = 'block';
-
                 const response = await authFetch(`${API_URL}/api/data/campaigns?ad_account_id=${accountId}&fields=id,name,status,objective&limit=10`);
-
                 if (!response.ok) {
                     throw new Error('Error al cargar campañas');
                 }
-
                 const campaigns = await response.json();
-
-                // Display campaigns
                 document.getElementById('campaign-data').innerHTML = `
                     <h3>Campañas para ${accountId}</h3>
                     <pre>${JSON.stringify(campaigns, null, 2)}</pre>
                 `;
-
             } catch (error) {
                 document.getElementById('campaign-data').innerHTML = `
                     <div class="error-message">
@@ -505,34 +452,54 @@
 
         async function refreshAccount(accountId) {
             try {
-                const response = await authFetch(`${API_URL}/api/accounts/refresh/${accountId}`, {
-                    method: 'POST'
-                });
-
+                const response = await authFetch(`${API_URL}/api/accounts/refresh/${accountId}`, { method: 'POST' });
                 if (!response.ok) {
                     throw new Error('Error al actualizar cuenta');
                 }
-
                 alert('✅ ¡Cuenta actualizada exitosamente!');
                 await loadAccounts();
-
             } catch (error) {
                 alert('❌ Error al actualizar cuenta: ' + error.message);
                 console.error('Refresh account error:', error);
             }
         }
 
-        // Handle OAuth callback
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('token')) {
-            setAuthContext(urlParams.get('token'), urlParams.get('tenant_id'));
-            window.history.replaceState({}, document.title, window.location.pathname);
-            updateAuthStatus(true);
-            loadAccounts();
-        } else {
-            // No query params, rely on cookie session
-            checkAuth();
+        async function checkAuth() {
+            try {
+                const response = await authFetch(`${API_URL}/api/accounts/me`);
+                if (response.ok) {
+                    const me = await response.json();
+                    currentUser = me.user || { name: me.name || 'Usuario' };
+                    if (me.tenant_id) {
+                        window.localStorage.setItem('tenant_id', me.tenant_id);
+                    }
+                    updateAuthStatus(true);
+                    await loadAccounts();
+                    return;
+                }
+            } catch (error) {
+                console.warn('Auth probe failed:', error);
+            }
+            setAuthContext(null, null);
+            currentUser = null;
+            updateAuthStatus(false);
         }
+
+        window.loginWithMeta = loginWithMeta;
+        window.devLogin = devLogin;
+        window.logout = logout;
+        window.loadAccounts = loadAccounts;
+        window.loadCampaigns = loadCampaigns;
+        window.refreshAccount = refreshAccount;
+
+        (async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('token')) {
+                setAuthContext(urlParams.get('token'), urlParams.get('tenant_id'));
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+            await checkAuth();
+        })();
     </script>
 </body>
 </html>
