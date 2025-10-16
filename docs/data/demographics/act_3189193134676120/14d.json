@@ -4,56 +4,56 @@
     "account_name": "Piu Pieza Unica",
     "period": "14d",
     "date_range": "2025-10-02..2025-10-15",
-    "generated_at": "2025-10-16T09:24:23.851688Z",
+    "generated_at": "2025-10-16T15:23:41.462937Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 62923,
+      "impressions": 62927,
       "clicks": 1266,
-      "spend": 4490.44,
+      "spend": 4491.14,
       "purchases": 6,
       "purchase_value": 3236.0,
       "ctr": 2.01,
-      "cpa": 748.41,
+      "cpa": 748.52,
       "roas": 0.72
     },
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 77900,
+      "impressions": 77905,
       "clicks": 1204,
-      "spend": 3460.93,
+      "spend": 3461.15,
       "purchases": 8,
       "purchase_value": 4841.6,
       "ctr": 1.55,
-      "cpa": 432.62,
+      "cpa": 432.64,
       "roas": 1.4
     },
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 17308,
+      "impressions": 17310,
       "clicks": 486,
-      "spend": 1814.81,
+      "spend": 1814.87,
       "purchases": 6,
       "purchase_value": 3937.2,
       "ctr": 2.81,
-      "cpa": 302.47,
+      "cpa": 302.48,
       "roas": 2.17
     },
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 21447,
+      "impressions": 21448,
       "clicks": 338,
-      "spend": 622.25,
+      "spend": 622.28,
       "purchases": 1,
       "purchase_value": 434.0,
       "ctr": 1.58,
-      "cpa": 622.25,
+      "cpa": 622.28,
       "roas": 0.7
     },
     {
@@ -95,14 +95,14 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 1637,
+      "impressions": 1638,
       "clicks": 50,
-      "spend": 115.34,
+      "spend": 115.69,
       "purchases": 1,
       "purchase_value": 713.0,
       "ctr": 3.05,
-      "cpa": 115.34,
-      "roas": 6.18
+      "cpa": 115.69,
+      "roas": 6.16
     },
     {
       "age": "18-24",
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 205700,
+    "impressions": 205713,
     "clicks": 3813,
-    "spend": 11857.83,
+    "spend": 11859.19,
     "purchases": 28,
     "purchase_value": 16966.0,
     "roas": 1.43
