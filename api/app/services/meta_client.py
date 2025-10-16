@@ -3,6 +3,7 @@ Client Meta/Facebook avec retry intelligent et timeouts
 Implémentation sécurisée avec appsecret_proof et gestion des rate limits
 """
 import asyncio
+import json
 import random
 import hmac
 import hashlib
@@ -266,6 +267,79 @@ class MetaClient:
         )
 
         return response.get("data", [])
+
+    async def get_insights_daily(
+        self,
+        ad_account_id: str,
+        access_token: str,
+        since_date: str,
+        until_date: str,
+        limit: int = 500
+    ) -> list[Dict[str, Any]]:
+        """
+        Récupère les insights daily (time_increment=1) pour un ad account
+
+        CRITICAL: Returns daily granular data needed for period aggregation
+
+        Args:
+            ad_account_id: ID du compte (ex: "act_123456")
+            access_token: Token de l'utilisateur
+            since_date: Date de début (YYYY-MM-DD)
+            until_date: Date de fin (YYYY-MM-DD)
+            limit: Nombre max de rows par page (max 500)
+
+        Returns:
+            List of daily ad insights with fields:
+            - ad_id, ad_name, campaign_name, campaign_id, adset_name, adset_id
+            - date_start, date_stop (each row = 1 day)
+            - impressions, clicks, unique_outbound_clicks, reach, frequency
+            - cpm, ctr, spend
+            - actions, action_values, conversions, conversion_values
+            - created_time
+        """
+        insights_url = f"{self.base_url}/{ad_account_id}/insights"
+        proof = self._generate_appsecret_proof(access_token)
+
+        # Fields matching production pipeline (fetch_with_smart_limits.py:271)
+        fields = (
+            "ad_id,ad_name,campaign_name,campaign_id,adset_name,adset_id,"
+            "impressions,spend,clicks,unique_outbound_clicks,reach,frequency,"
+            "cpm,ctr,actions,action_values,conversions,conversion_values,created_time"
+        )
+
+        all_insights = []
+        params = {
+            "access_token": access_token,
+            "appsecret_proof": proof,
+            "level": "ad",
+            "time_range": json.dumps({"since": since_date, "until": until_date}),
+            "time_increment": "1",  # ← CRITICAL: daily data
+            "fields": fields,
+            "limit": limit,
+            "action_report_time": "conversion",  # Align with Ads Manager
+            "use_unified_attribution_setting": "true"  # Best practice
+        }
+
+        # Paginate through all results
+        next_url = insights_url
+        page_count = 0
+        max_pages = 200  # Safety limit
+
+        while next_url and page_count < max_pages:
+            response = await self._request_with_retry("GET", next_url, params=params)
+
+            if "data" in response:
+                all_insights.extend(response["data"])
+
+            # Check for next page
+            if "paging" in response and "next" in response["paging"]:
+                next_url = response["paging"]["next"]
+                params = {}  # Next URL contains all params
+                page_count += 1
+            else:
+                break
+
+        return all_insights
 
 
 # Instance globale (singleton pattern)

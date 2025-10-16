@@ -276,7 +276,7 @@ async def facebook_callback(
     </div>
     <script>
         setTimeout(() => {{
-            window.location.href = '{settings.DASHBOARD_URL}';
+            window.location.href = '{settings.DASHBOARD_URL}?token={access_token}&tenant_id={tenant.id}';
         }}, 1500);
     </script>
 </body>
