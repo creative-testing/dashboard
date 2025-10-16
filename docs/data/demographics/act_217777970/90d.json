@@ -4,16 +4,16 @@
     "account_name": "217777970",
     "period": "90d",
     "date_range": "2025-07-18..2025-10-15",
-    "generated_at": "2025-10-16T15:21:28.947617Z",
+    "generated_at": "2025-10-16T21:16:57.015140Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 1604155,
+      "impressions": 1604168,
       "clicks": 17935,
-      "spend": 4247.47,
+      "spend": 4247.51,
       "purchases": 185,
       "purchase_value": 11025.7,
       "ctr": 1.12,
@@ -23,9 +23,9 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 778825,
+      "impressions": 778831,
       "clicks": 10986,
-      "spend": 3360.43,
+      "spend": 3360.46,
       "purchases": 162,
       "purchase_value": 10066.66,
       "ctr": 1.41,
@@ -35,7 +35,7 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 139576,
+      "impressions": 139578,
       "clicks": 2994,
       "spend": 901.88,
       "purchases": 31,
@@ -59,7 +59,7 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 239094,
+      "impressions": 239099,
       "clicks": 3022,
       "spend": 415.09,
       "purchases": 23,
@@ -71,7 +71,7 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 180766,
+      "impressions": 180767,
       "clicks": 1926,
       "spend": 400.43,
       "purchases": 23,
@@ -95,13 +95,13 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 24650,
+      "impressions": 24651,
       "clicks": 689,
-      "spend": 208.72,
+      "spend": 208.73,
       "purchases": 3,
       "purchase_value": 106.19,
       "ctr": 2.8,
-      "cpa": 69.57,
+      "cpa": 69.58,
       "roas": 0.51
     },
     {
@@ -143,12 +143,12 @@
     {
       "age": "25-34",
       "gender": "unknown",
-      "impressions": 10945,
+      "impressions": 10946,
       "clicks": 110,
       "spend": 37.34,
       "purchases": 1,
       "purchase_value": 73.13,
-      "ctr": 1.01,
+      "ctr": 1.0,
       "cpa": 37.34,
       "roas": 1.96
     },
@@ -191,7 +191,7 @@
     {
       "age": "65+",
       "gender": "male",
-      "impressions": 3726,
+      "impressions": 3727,
       "clicks": 81,
       "spend": 11.69,
       "purchases": 0,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 3169330,
+    "impressions": 3169360,
     "clicks": 40651,
-    "spend": 10542.04,
+    "spend": 10542.12,
     "purchases": 462,
     "purchase_value": 28149.87,
     "roas": 2.67
