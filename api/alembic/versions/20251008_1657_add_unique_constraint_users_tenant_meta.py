@@ -25,13 +25,21 @@ def upgrade() -> None:
                type_=sa.String(length=64),
                existing_nullable=True)
     op.drop_index(op.f('uq_users_tenant_email_lower'), table_name='users')
+    op.execute("DROP INDEX IF EXISTS ix_users_email")
     op.create_index(op.f('ix_users_email'), 'users', ['email'], unique=True)
 
     # Add unique constraint on (tenant_id, meta_user_id) to prevent duplicate OAuth users
     # Use execute to make it idempotent (IF NOT EXISTS)
     op.execute("""
-        ALTER TABLE users ADD CONSTRAINT IF NOT EXISTS uq_users_tenant_meta
-        UNIQUE (tenant_id, meta_user_id)
+    DO $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint WHERE conname = 'uq_users_tenant_meta'
+      ) THEN
+        ALTER TABLE users ADD CONSTRAINT uq_users_tenant_meta
+        UNIQUE (tenant_id, meta_user_id);
+      END IF;
+    END$$;
     """)
     # ### end Alembic commands ###
 
