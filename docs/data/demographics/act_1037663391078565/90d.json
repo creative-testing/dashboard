@@ -4,56 +4,56 @@
     "account_name": "Botanical Doctor",
     "period": "90d",
     "date_range": "2025-07-18..2025-10-15",
-    "generated_at": "2025-10-16T03:39:46.515122Z",
+    "generated_at": "2025-10-16T09:25:57.408567Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 11078,
+      "impressions": 11080,
       "clicks": 508,
-      "spend": 4497.87,
+      "spend": 4498.43,
       "purchases": 13,
       "purchase_value": 8893.39,
-      "ctr": 4.59,
-      "cpa": 345.99,
+      "ctr": 4.58,
+      "cpa": 346.03,
       "roas": 1.98
     },
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 6885,
+      "impressions": 6886,
       "clicks": 453,
-      "spend": 3520.23,
-      "purchases": 6,
-      "purchase_value": 2989.11,
+      "spend": 3520.28,
+      "purchases": 7,
+      "purchase_value": 3418.11,
       "ctr": 6.58,
-      "cpa": 586.71,
-      "roas": 0.85
+      "cpa": 502.9,
+      "roas": 0.97
     },
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 8072,
-      "clicks": 283,
-      "spend": 2214.92,
+      "impressions": 8073,
+      "clicks": 284,
+      "spend": 2215.1,
       "purchases": 4,
       "purchase_value": 2527.78,
-      "ctr": 3.51,
-      "cpa": 553.73,
+      "ctr": 3.52,
+      "cpa": 553.78,
       "roas": 1.14
     },
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 5119,
-      "clicks": 148,
-      "spend": 1623.74,
+      "impressions": 5121,
+      "clicks": 149,
+      "spend": 1623.97,
       "purchases": 1,
       "purchase_value": 429.0,
-      "ctr": 2.89,
-      "cpa": 1623.74,
+      "ctr": 2.91,
+      "cpa": 1623.97,
       "roas": 0.26
     },
     {
@@ -83,13 +83,13 @@
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 3255,
+      "impressions": 3256,
       "clicks": 143,
-      "spend": 1359.51,
+      "spend": 1359.58,
       "purchases": 1,
       "purchase_value": 879.99,
       "ctr": 4.39,
-      "cpa": 1359.51,
+      "cpa": 1359.58,
       "roas": 0.65
     },
     {
@@ -119,13 +119,13 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 3347,
+      "impressions": 3348,
       "clicks": 118,
-      "spend": 514.26,
+      "spend": 514.28,
       "purchases": 1,
       "purchase_value": 429.0,
-      "ctr": 3.53,
-      "cpa": 514.26,
+      "ctr": 3.52,
+      "cpa": 514.28,
       "roas": 0.83
     },
     {
@@ -238,11 +238,11 @@
     }
   ],
   "totals": {
-    "impressions": 55736,
-    "clicks": 2381,
-    "spend": 18891.85,
-    "purchases": 32,
-    "purchase_value": 20179.64,
-    "roas": 1.07
+    "impressions": 55744,
+    "clicks": 2383,
+    "spend": 18892.96,
+    "purchases": 33,
+    "purchase_value": 20608.64,
+    "roas": 1.09
   }
 }
