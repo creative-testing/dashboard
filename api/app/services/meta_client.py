@@ -1,12 +1,10 @@
 """
 Client Meta/Facebook avec retry intelligent et timeouts
-Implémentation sécurisée avec appsecret_proof et gestion des rate limits
+Gestion des rate limits avec backoff exponentiel
 """
 import asyncio
 import json
 import random
-import hmac
-import hashlib
 from typing import Any, Dict, Optional
 import httpx
 from ..config import settings
@@ -24,8 +22,8 @@ class MetaClient:
     Features:
     - Timeouts explicites (connect/read)
     - Retry avec backoff exponentiel + jitter
-    - appsecret_proof automatique
     - Gestion intelligente des rate limits (429)
+    - Support user access tokens (long-lived)
     """
 
     def __init__(self):
@@ -34,16 +32,18 @@ class MetaClient:
         self.api_version = settings.META_API_VERSION
         self.base_url = f"https://graph.facebook.com/{self.api_version}"
 
-    def _generate_appsecret_proof(self, access_token: str) -> str:
-        """
-        Génère appsecret_proof pour sécuriser les appels Meta API
-        Best practice recommandée par Meta
-        """
-        return hmac.new(
-            key=self.app_secret.encode("utf-8"),
-            msg=access_token.encode("utf-8"),
-            digestmod=hashlib.sha256
-        ).hexdigest()
+    # DISABLED: appsecret_proof causes 400 errors with production tokens
+    # Meta docs say it's optional for user access tokens
+    # def _generate_appsecret_proof(self, access_token: str) -> str:
+    #     """
+    #     Génère appsecret_proof pour sécuriser les appels Meta API
+    #     Best practice recommandée par Meta
+    #     """
+    #     return hmac.new(
+    #         key=self.app_secret.encode("utf-8"),
+    #         msg=access_token.encode("utf-8"),
+    #         digestmod=hashlib.sha256
+    #     ).hexdigest()
 
     async def _request_with_retry(
         self,
@@ -191,14 +191,12 @@ class MetaClient:
             fields: Champs à récupérer (séparés par virgules)
         """
         me_url = f"{self.base_url}/me"
-        proof = self._generate_appsecret_proof(access_token)
 
         return await self._request_with_retry(
             "GET",
             me_url,
             params={
                 "access_token": access_token,
-                "appsecret_proof": proof,
                 "fields": fields,
             }
         )
@@ -219,14 +217,12 @@ class MetaClient:
             List of ad accounts with selected fields
         """
         accounts_url = f"{self.base_url}/me/adaccounts"
-        proof = self._generate_appsecret_proof(access_token)
 
         response = await self._request_with_retry(
             "GET",
             accounts_url,
             params={
                 "access_token": access_token,
-                "appsecret_proof": proof,
                 "fields": fields,
             }
         )
@@ -253,14 +249,12 @@ class MetaClient:
             List of campaigns with selected fields
         """
         campaigns_url = f"{self.base_url}/{ad_account_id}/campaigns"
-        proof = self._generate_appsecret_proof(access_token)
 
         response = await self._request_with_retry(
             "GET",
             campaigns_url,
             params={
                 "access_token": access_token,
-                "appsecret_proof": proof,
                 "fields": fields,
                 "limit": limit,
             }
@@ -298,7 +292,6 @@ class MetaClient:
             - created_time
         """
         insights_url = f"{self.base_url}/{ad_account_id}/insights"
-        proof = self._generate_appsecret_proof(access_token)
 
         # Fields matching production pipeline (fetch_with_smart_limits.py:271)
         fields = (
@@ -310,7 +303,6 @@ class MetaClient:
         all_insights = []
         params = {
             "access_token": access_token,
-            "appsecret_proof": proof,
             "level": "ad",
             "time_range": json.dumps({"since": since_date, "until": until_date}),
             "time_increment": "1",  # ← CRITICAL: daily data
