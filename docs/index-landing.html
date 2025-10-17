@@ -401,7 +401,7 @@
                 Analiza qué creativos funcionan mejor, identifica patrones ganadores y escala tus campañas rentables con insights basados en datos.
             </p>
             <div class="cta-buttons">
-                <a href="index-mvp.html" class="btn btn-primary">Comenzar Gratis</a>
+                <a href="#" class="btn btn-primary" onclick="handleComenzarGratis(event)">Comenzar Gratis</a>
                 <a href="#pricing" class="btn btn-secondary">Ver Precios</a>
             </div>
         </div>
@@ -484,7 +484,7 @@
                         <li>Exportación de datos (CSV)</li>
                         <li>Actualización automática cada 2 horas</li>
                     </ul>
-                    <a href="index-mvp.html" class="btn btn-primary">Comenzar Prueba Gratis</a>
+                    <a href="#" class="btn btn-primary" onclick="handleComenzarGratis(event)">Comenzar Prueba Gratis</a>
                 </div>
 
                 <div class="pricing-card featured">
@@ -502,7 +502,7 @@
                         <li>Reportes white-label</li>
                         <li>Account manager dedicado</li>
                     </ul>
-                    <a href="index-mvp.html" class="btn btn-primary">Comenzar Prueba Gratis</a>
+                    <a href="#" class="btn btn-primary" onclick="handleComenzarGratis(event)">Comenzar Prueba Gratis</a>
                 </div>
             </div>
         </div>
@@ -513,7 +513,7 @@
         <div class="container">
             <h2>¿Listo para Optimizar el Rendimiento de tus Creativos?</h2>
             <p>Únete a cientos de anunciantes que usan Creative Testing para escalar sus campañas rentables.</p>
-            <a href="index-mvp.html" class="btn btn-primary">Comenzar Gratis - Sin Tarjeta de Crédito</a>
+            <a href="#" class="btn btn-primary" onclick="handleComenzarGratis(event)">Comenzar Gratis - Sin Tarjeta de Crédito</a>
         </div>
     </section>
 
@@ -523,5 +523,65 @@
             <p>&copy; 2025 Creative Testing Dashboard. Todos los derechos reservados.</p>
         </div>
     </footer>
+
+    <script>
+        const API_URL = 'https://creative-testing-api.onrender.com';
+
+        function handleComenzarGratis(event) {
+            event.preventDefault();
+            const token = localStorage.getItem('auth_token');
+            const tenantId = localStorage.getItem('tenant_id');
+
+            if (token && tenantId) {
+                // Already authenticated → Check validity and redirect to dashboard
+                checkAuthAndRedirect(token, tenantId);
+            } else {
+                // Not authenticated → Direct to OAuth
+                window.location.href = `${API_URL}/auth/facebook/login`;
+            }
+        }
+
+        async function checkAuthAndRedirect(token, tenantId) {
+            try {
+                const response = await fetch(`${API_URL}/api/accounts/me`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    // Valid token → Get first account and redirect
+                    const accountsResponse = await fetch(`${API_URL}/api/accounts/`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    const data = await accountsResponse.json();
+                    const accounts = data.accounts || [];
+
+                    if (accounts.length > 0) {
+                        // Redirect to dashboard with first account
+                        const account = accounts[0];
+                        const params = new URLSearchParams({
+                            account_id: account.fb_account_id,
+                            account: account.name,
+                            token,
+                            tenant_id: tenantId,
+                            locked: '1'
+                        });
+                        window.location.href = `index-saas.html?${params.toString()}`;
+                    } else {
+                        // No accounts → Redirect to OAuth to link accounts
+                        window.location.href = `${API_URL}/auth/facebook/login`;
+                    }
+                } else {
+                    // Invalid token → Clear and redirect to OAuth
+                    localStorage.removeItem('auth_token');
+                    localStorage.removeItem('tenant_id');
+                    window.location.href = `${API_URL}/auth/facebook/login`;
+                }
+            } catch (error) {
+                // Error checking auth → Redirect to OAuth
+                console.error('Auth check failed:', error);
+                window.location.href = `${API_URL}/auth/facebook/login`;
+            }
+        }
+    </script>
 </body>
 </html>
