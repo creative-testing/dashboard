@@ -2,7 +2,7 @@
 Router pour la gestion des comptes publicitaires et informations utilisateur
 """
 from uuid import UUID
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
 from sqlalchemy import select
