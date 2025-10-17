@@ -1,16 +1,19 @@
 """
 Service de refresh des données Meta Ads
 Orchestre: fetch API → transform → storage
+
+IMPORTANT: Produces columnar format matching production pipeline
 """
 import json
 from datetime import datetime, timedelta, timezone
 from typing import Dict, Any
 from uuid import UUID
 from sqlalchemy.orm import Session
-from sqlalchemy import select, func
+from sqlalchemy import select
 
 from ..services.meta_client import meta_client, MetaAPIError
 from ..services import storage
+from ..services.columnar_transform import transform_to_columnar, validate_columnar_format
 from .. import models
 from cryptography.fernet import Fernet
 from ..config import settings
@@ -31,6 +34,9 @@ async def refresh_account_data(
 ) -> Dict[str, Any]:
     """
     Refresh les données d'un ad account et génère les fichiers optimisés
+
+    IMPORTANT: Generates columnar format (meta_v1, agg_v1, summary_v1)
+    matching production pipeline for dashboard compatibility
 
     Args:
         ad_account_id: ID du compte (ex: "act_123456")
@@ -78,221 +84,88 @@ async def refresh_account_data(
     except Exception as e:
         raise RefreshError(f"Failed to decrypt access token: {e}")
 
-    # 4. Fetch ads avec insights depuis Meta API
+    # 4. Calculer la plage de dates
+    # Par défaut: 30 derniers jours, EXCLUDE TODAY (données partielles)
+    # TODO: Configurable par tenant (30d, 90d, etc.)
+    today = datetime.now(timezone.utc).date()
+    since_date = (today - timedelta(days=30)).isoformat()
+    until_date = (today - timedelta(days=1)).isoformat()  # Yesterday
+    reference_date = until_date  # Reference date = last day of data
+
+    # 5. Fetch daily insights depuis Meta API
     try:
-        ads_data = await _fetch_ads_with_insights(ad_account_id, access_token)
+        daily_insights = await meta_client.get_insights_daily(
+            ad_account_id=ad_account_id,
+            access_token=access_token,
+            since_date=since_date,
+            until_date=until_date,
+            limit=500
+        )
     except MetaAPIError as e:
         raise RefreshError(f"Meta API error: {e}")
 
-    # 5. Transform en format optimisé
-    meta_v1 = _transform_to_meta_v1(ads_data, ad_account_id)
-    agg_v1 = _transform_to_agg_v1(ads_data)
-    summary_v1 = _transform_to_summary_v1(ads_data)
+    # 6. Transform en format columnar
+    try:
+        meta_v1, agg_v1, summary_v1 = transform_to_columnar(
+            daily_ads=daily_insights,
+            reference_date=reference_date,
+            ad_account_id=ad_account_id
+        )
+    except Exception as e:
+        raise RefreshError(f"Transform error: {e}")
 
-    # 6. Écrire dans le storage
+    # 7. Valider le format
+    validation_errors = validate_columnar_format(meta_v1, agg_v1, summary_v1)
+    if validation_errors:
+        raise RefreshError(f"Validation failed: {'; '.join(validation_errors)}")
+
+    # 8. Écrire dans le storage
     files_written = []
+    base_path = f"tenants/{tenant_id}/accounts/{ad_account_id}/data/optimized"
+
     for filename, data in [
         ("meta_v1.json", meta_v1),
         ("agg_v1.json", agg_v1),
         ("summary_v1.json", summary_v1),
     ]:
-        storage_key = f"tenants/{tenant_id}/accounts/{ad_account_id}/{filename}"
+        storage_key = f"{base_path}/{filename}"
         try:
-            storage.put_object(storage_key, json.dumps(data, indent=2).encode("utf-8"))
+            # Use compact JSON (no indent) for production
+            storage.put_object(storage_key, json.dumps(data, separators=(',', ':')).encode("utf-8"))
             files_written.append(filename)
         except storage.StorageError as e:
             raise RefreshError(f"Failed to write {filename}: {e}")
 
-    # 7. Mettre à jour last_refresh_at
+    # 9. Écrire manifest.json
+    manifest = {
+        "version": datetime.now(timezone.utc).isoformat(),
+        "ads_count": len(agg_v1.get('ads', [])),
+        "periods": agg_v1.get('periods', []),
+        "shards": {
+            "meta": {"path": "meta_v1.json"},
+            "agg": {"path": "agg_v1.json"},
+            "summary": {"path": "summary_v1.json"}
+        }
+    }
+    try:
+        storage.put_object(
+            f"{base_path}/manifest.json",
+            json.dumps(manifest, separators=(',', ':')).encode("utf-8")
+        )
+        files_written.append("manifest.json")
+    except storage.StorageError as e:
+        raise RefreshError(f"Failed to write manifest.json: {e}")
+
+    # 10. Mettre à jour last_refresh_at
     ad_account.last_refresh_at = datetime.now(timezone.utc)
     db.commit()
 
     return {
         "status": "success",
         "ad_account_id": ad_account_id,
-        "ads_fetched": len(ads_data),
+        "daily_rows_fetched": len(daily_insights),
+        "unique_ads": len(agg_v1.get('ads', [])),
         "files_written": files_written,
         "refreshed_at": ad_account.last_refresh_at.isoformat(),
-    }
-
-
-async def _fetch_ads_with_insights(
-    ad_account_id: str,
-    access_token: str
-) -> list[Dict[str, Any]]:
-    """
-    Fetch ads avec insights depuis Meta API
-
-    Returns:
-        Liste d'ads avec leurs insights (impressions, clics, spend, etc.)
-    """
-    # Pour l'instant, on va chercher les 30 derniers jours
-    # TODO: Adapter selon les besoins (90 jours comme dans le pipeline actuel)
-
-    # Calculer la plage de dates: 30 jours, EXCLUDE TODAY (données partielles)
-    today = datetime.now(timezone.utc).date()
-    since = (today - timedelta(days=30)).isoformat()
-    until = (today - timedelta(days=1)).isoformat()  # yesterday (INCLUDE_TODAY=0)
-
-    # Endpoint: /{ad_account_id}/ads
-    # Fields: Syntaxe simplifiée compatible Meta API
-    # Note: insights est demandé comme field séparé, le time_range est passé explicitement
-    fields = (
-        "id,name,status,created_time,updated_time,"
-        "creative{id,name,title,body,image_url,video_id,thumbnail_url},"
-        "insights{date_start,date_stop,impressions,clicks,spend,cpc,cpm,ctr,reach,frequency,actions,action_values}"
-    )
-
-    # Call Meta API (on réutilise la logique de meta_client)
-    ads_url = f"{meta_client.base_url}/{ad_account_id}/ads"
-    proof = meta_client._generate_appsecret_proof(access_token)
-
-    response = await meta_client._request_with_retry(
-        "GET",
-        ads_url,
-        params={
-            "access_token": access_token,
-            "appsecret_proof": proof,
-            "fields": fields,
-            "limit": 500,  # Max par page
-            "time_range": {"since": since, "until": until},  # Explicit date range, exclude today
-        }
-    )
-
-    return response.get("data", [])
-
-
-def _transform_to_meta_v1(ads_data: list[Dict[str, Any]], ad_account_id: str) -> Dict[str, Any]:
-    """
-    Transforme les ads en format meta_v1.json (structure columnar)
-
-    Format minimal MVP pour dashboard:
-    {
-        "metadata": {...},
-        "ads": [...],
-        "data_min_date": "YYYY-MM-DD",
-        "data_max_date": "YYYY-MM-DD"
-    }
-    """
-    now = datetime.now(timezone.utc)
-
-    # Extraire les dates min/max des insights
-    all_dates = []
-    for ad in ads_data:
-        if "insights" in ad and "data" in ad["insights"]:
-            for insight in ad["insights"]["data"]:
-                if "date_start" in insight:
-                    all_dates.append(insight["date_start"])
-                if "date_stop" in insight:
-                    all_dates.append(insight["date_stop"])
-
-    data_min_date = min(all_dates) if all_dates else now.strftime("%Y-%m-%d")
-    data_max_date = max(all_dates) if all_dates else now.strftime("%Y-%m-%d")
-
-    # Structure des ads
-    ads_list = []
-    for ad in ads_data:
-        # Agréger les insights (somme sur la période)
-        total_impressions = 0
-        total_clicks = 0
-        total_spend = 0.0
-
-        if "insights" in ad and "data" in ad["insights"]:
-            for insight in ad["insights"]["data"]:
-                total_impressions += int(insight.get("impressions", 0))
-                total_clicks += int(insight.get("clicks", 0))
-                total_spend += float(insight.get("spend", 0))
-
-        # Creative info
-        creative = ad.get("creative", {})
-
-        ads_list.append({
-            "id": ad.get("id"),
-            "name": ad.get("name"),
-            "status": ad.get("status"),
-            "creative_id": creative.get("id"),
-            "creative_name": creative.get("name"),
-            "creative_title": creative.get("title"),
-            "creative_body": creative.get("body"),
-            "creative_image_url": creative.get("image_url"),
-            "impressions": total_impressions,
-            "clicks": total_clicks,
-            "spend": total_spend,
-            "ctr": round((total_clicks / total_impressions * 100), 2) if total_impressions > 0 else 0,
-            "cpc": round((total_spend / total_clicks), 2) if total_clicks > 0 else 0,
-        })
-
-    return {
-        "metadata": {
-            "account_id": ad_account_id,
-            "generated_at": now.isoformat(),
-            "version": "v1",
-            "total_ads": len(ads_list),
-        },
-        "data_min_date": data_min_date,
-        "data_max_date": data_max_date,
-        "ads": ads_list,
-    }
-
-
-def _transform_to_agg_v1(ads_data: list[Dict[str, Any]]) -> Dict[str, Any]:
-    """
-    Transforme en format agg_v1.json (agrégations globales)
-
-    Format MVP:
-    {
-        "total_impressions": int,
-        "total_clicks": int,
-        "total_spend": float,
-        "avg_ctr": float,
-        "avg_cpc": float
-    }
-    """
-    total_impressions = 0
-    total_clicks = 0
-    total_spend = 0.0
-
-    for ad in ads_data:
-        if "insights" in ad and "data" in ad["insights"]:
-            for insight in ad["insights"]["data"]:
-                total_impressions += int(insight.get("impressions", 0))
-                total_clicks += int(insight.get("clicks", 0))
-                total_spend += float(insight.get("spend", 0))
-
-    return {
-        "total_impressions": total_impressions,
-        "total_clicks": total_clicks,
-        "total_spend": round(total_spend, 2),
-        "avg_ctr": round((total_clicks / total_impressions * 100), 2) if total_impressions > 0 else 0,
-        "avg_cpc": round((total_spend / total_clicks), 2) if total_clicks > 0 else 0,
-    }
-
-
-def _transform_to_summary_v1(ads_data: list[Dict[str, Any]]) -> Dict[str, Any]:
-    """
-    Transforme en format summary_v1.json (résumé rapide)
-
-    Format MVP:
-    {
-        "total_ads": int,
-        "active_ads": int,
-        "paused_ads": int,
-        "total_spend": float
-    }
-    """
-    total_ads = len(ads_data)
-    active_ads = sum(1 for ad in ads_data if ad.get("status") == "ACTIVE")
-    paused_ads = sum(1 for ad in ads_data if ad.get("status") == "PAUSED")
-
-    total_spend = 0.0
-    for ad in ads_data:
-        if "insights" in ad and "data" in ad["insights"]:
-            for insight in ad["insights"]["data"]:
-                total_spend += float(insight.get("spend", 0))
-
-    return {
-        "total_ads": total_ads,
-        "active_ads": active_ads,
-        "paused_ads": paused_ads,
-        "total_spend": round(total_spend, 2),
+        "date_range": f"{since_date} to {until_date}",
     }

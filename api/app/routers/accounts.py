@@ -116,6 +116,21 @@ async def refresh_account(
         return result
 
     except RefreshError as e:
+        # Handle specific error cases with appropriate status codes
+        error_msg = str(e).lower()
+
+        # No OAuth token (dev-login mode) → 400 Bad Request
+        if "no oauth token" in error_msg:
+            raise HTTPException(
+                status_code=400,
+                detail="No OAuth token found for this workspace. Connect your Facebook account first via OAuth."
+            )
+
+        # Account not found → 404 Not Found
+        if "not found" in error_msg:
+            raise HTTPException(status_code=404, detail=str(e))
+
+        # Other errors → 500 Internal Server Error
         raise HTTPException(
             status_code=500,
             detail=f"Refresh failed: {str(e)}"

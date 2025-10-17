@@ -226,6 +226,9 @@
             border-left: 4px solid #dc3545;
         }
     </style>
+    <!-- Data adapter and SaaS loader -->
+    <script src="data_adapter.js"></script>
+    <script src="data_loader_saas.js"></script>
 </head>
 <body>
     <div class="dev-mode-indicator" id="dev-mode-indicator">
@@ -282,13 +285,28 @@
             <h2>📈 Datos de Campañas</h2>
             <div id="campaign-data"></div>
         </div>
+
+        <!-- Dashboard Section -->
+        <div class="card" id="dashboard-section" style="display: none;">
+            <h2>📊 Dashboard Creativo - <span id="dashboard-account-name"></span></h2>
+            <p style="color: #666; margin-bottom: 24px;">Análisis de rendimiento creativo • Periodo: <span id="dashboard-period">7 días</span></p>
+
+            <div id="dashboard-kpis" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                <!-- KPIs will be populated here -->
+            </div>
+
+            <div id="dashboard-content" style="color: #666;">
+                <div class="loading">Cargando datos del dashboard...</div>
+            </div>
+        </div>
     </div>
 
     <script>
         const DEFAULT_API_URL = 'https://creative-testing-api.onrender.com';
         const API_URL = (() => {
             const stored = window.localStorage.getItem('api_url');
-            if (stored && stored.startsWith('http://localhost')) {
+            // Allow localhost and 127.0.0.1 for local development
+            if (stored && (stored.startsWith('http://localhost') || stored.startsWith('http://127.0.0.1'))) {
                 return stored;
             }
             if (stored) {
@@ -417,7 +435,7 @@
                         <p><strong>ID de Cuenta:</strong> ${account.fb_account_id}</p>
                         <p><strong>Perfil:</strong> ${account.profile.toUpperCase()}</p>
                         <p><strong>Última actualización:</strong> ${account.last_refresh_at ? new Date(account.last_refresh_at).toLocaleString('es-ES') : 'Nunca'}</p>
-                        <button class="btn" onclick="loadCampaigns('${account.fb_account_id}')">Ver Campañas</button>
+                        <button class="btn" onclick="viewDashboard('${account.fb_account_id}', '${account.name}')">📊 Ver Dashboard</button>
                         <button class="btn btn-secondary" onclick="refreshAccount('${account.fb_account_id}')">Actualizar Datos</button>
                     </div>
                 `).join('');
@@ -454,12 +472,22 @@
             try {
                 const response = await authFetch(`${API_URL}/api/accounts/refresh/${accountId}`, { method: 'POST' });
                 if (!response.ok) {
-                    throw new Error('Error al actualizar cuenta');
+                    // Extract detailed error message from API response
+                    let errorMessage = 'Error al actualizar cuenta';
+                    try {
+                        const errorData = await response.json();
+                        if (errorData.detail) {
+                            errorMessage = errorData.detail;
+                        }
+                    } catch (e) {
+                        // If parsing JSON fails, use default message
+                    }
+                    throw new Error(errorMessage);
                 }
                 alert('✅ ¡Cuenta actualizada exitosamente!');
                 await loadAccounts();
             } catch (error) {
-                alert('❌ Error al actualizar cuenta: ' + error.message);
+                alert('❌ Error: ' + error.message);
                 console.error('Refresh account error:', error);
             }
         }
@@ -485,12 +513,32 @@
             updateAuthStatus(false);
         }
 
+        function viewDashboard(accountId, accountName) {
+            const token    = localStorage.getItem('auth_token');
+            const tenantId = localStorage.getItem('tenant_id');
+            if (!token || !tenantId) {
+                alert('❌ Sesión inválida. Inicia sesión de nuevo.');
+                return;
+            }
+            // Construire l'URL vers la vue SaaS (même dossier sur GitHub Pages)
+            const base = location.pathname.replace('index-mvp.html', 'index-saas.html');
+            const params = new URLSearchParams({
+                account_id: accountId,
+                account: accountName,
+                token,
+                tenant_id: tenantId,
+                locked: '1'   // masque le sélecteur et « bloque » sur ce compte
+            });
+            location.href = `${base}?${params.toString()}`;
+        }
+
         window.loginWithMeta = loginWithMeta;
         window.devLogin = devLogin;
         window.logout = logout;
         window.loadAccounts = loadAccounts;
         window.loadCampaigns = loadCampaigns;
         window.refreshAccount = refreshAccount;
+        window.viewDashboard = viewDashboard;
 
         (async () => {
             const urlParams = new URLSearchParams(window.location.search);

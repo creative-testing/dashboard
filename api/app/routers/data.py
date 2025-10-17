@@ -72,7 +72,7 @@ async def get_file(
         )
 
     # 3. Construire la clé de stockage
-    storage_key = f"tenants/{current_tenant_id}/accounts/{act_id}/{filename}"
+    storage_key = f"tenants/{current_tenant_id}/accounts/{act_id}/data/optimized/{filename}"
 
     # 4. Lire le fichier depuis le storage
     try:
