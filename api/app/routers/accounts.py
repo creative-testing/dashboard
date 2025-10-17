@@ -13,6 +13,7 @@ from ..dependencies.auth import get_current_tenant_id, get_current_user_id
 from .. import models
 from ..models.refresh_job import RefreshJob, JobStatus
 from ..services.refresher import refresh_account_data, RefreshError
+from ..config import settings
 
 router = APIRouter()
 
@@ -249,3 +250,75 @@ async def get_refresh_status(
         "finished_at": job.finished_at.isoformat() if job.finished_at else None,
         "error": job.error
     }
+
+
+@router.post("/dev/test-refresh/{fb_account_id}")
+async def dev_test_refresh(
+    fb_account_id: str,
+    db: Session = Depends(get_db)
+) -> Dict[str, Any]:
+    """
+    🚧 DEBUG ONLY: Test refresh avec vraies données (synchrone)
+
+    Endpoint de test pour vérifier le refresh avec compte réel.
+    Lance le refresh de manière synchrone et retourne immédiatement les stats.
+
+    Utilise le token OAuth existant en DB (doit être valide).
+
+    Returns:
+        {
+            "success": true,
+            "ad_account_id": "act_XXX",
+            "tenant_id": "uuid",
+            "daily_rows_fetched": 150,
+            "unique_ads": 50,
+            "files_written": ["meta_v1.json", "agg_v1.json", "summary_v1.json", "manifest.json"],
+            "date_range": "2025-01-01 to 2025-01-30"
+        }
+    """
+    # Vérifier DEBUG mode
+    if not settings.DEBUG:
+        raise HTTPException(status_code=404, detail="Not found")
+
+    # Trouver le tenant associé à ce compte
+    ad_account = db.execute(
+        select(models.AdAccount).where(
+            models.AdAccount.fb_account_id == fb_account_id
+        )
+    ).scalar_one_or_none()
+
+    if not ad_account:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Ad account {fb_account_id} not found in database"
+        )
+
+    tenant_id = ad_account.tenant_id
+
+    # Lancer le refresh de manière synchrone
+    try:
+        result = await refresh_account_data(
+            ad_account_id=fb_account_id,
+            tenant_id=tenant_id,
+            db=db
+        )
+
+        return {
+            "success": True,
+            **result
+        }
+
+    except RefreshError as e:
+        return {
+            "success": False,
+            "error": str(e),
+            "ad_account_id": fb_account_id,
+            "tenant_id": str(tenant_id)
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": f"Unexpected error: {str(e)}",
+            "ad_account_id": fb_account_id,
+            "tenant_id": str(tenant_id)
+        }
