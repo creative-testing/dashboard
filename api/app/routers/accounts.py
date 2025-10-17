@@ -329,6 +329,75 @@ async def dev_test_refresh(fb_account_id: str) -> Dict[str, Any]:
         db.close()
 
 
+@router.get("/dev/check-files/{fb_account_id}")
+async def dev_check_files(fb_account_id: str) -> Dict[str, Any]:
+    """
+    🔍 DEBUG ONLY: Vérifie les fichiers générés pour un compte
+
+    Retourne la liste des fichiers avec leur taille pour vérifier
+    que le refresh a bien généré les données optimisées.
+
+    Returns:
+        {
+            "account_id": "act_XXX",
+            "tenant_id": "uuid",
+            "files": [
+                {"name": "meta_v1.json", "size_bytes": 12345},
+                ...
+            ]
+        }
+    """
+    from ..services import storage
+
+    db = SessionLocal()
+    try:
+        # Trouver le compte
+        ad_account = db.execute(
+            select(models.AdAccount).where(
+                models.AdAccount.fb_account_id == fb_account_id
+            )
+        ).scalar_one_or_none()
+
+        if not ad_account:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Ad account {fb_account_id} not found"
+            )
+
+        tenant_id = ad_account.tenant_id
+        base_path = f"tenants/{tenant_id}/accounts/{fb_account_id}/data/optimized"
+
+        # Liste des fichiers à vérifier
+        expected_files = ["meta_v1.json", "agg_v1.json", "summary_v1.json", "manifest.json"]
+        files_info = []
+
+        for filename in expected_files:
+            storage_key = f"{base_path}/{filename}"
+            try:
+                content = storage.get_object(storage_key)
+                files_info.append({
+                    "name": filename,
+                    "size_bytes": len(content),
+                    "exists": True
+                })
+            except storage.StorageError:
+                files_info.append({
+                    "name": filename,
+                    "size_bytes": 0,
+                    "exists": False
+                })
+
+        return {
+            "account_id": fb_account_id,
+            "tenant_id": str(tenant_id),
+            "base_path": base_path,
+            "files": files_info
+        }
+
+    finally:
+        db.close()
+
+
 @router.post("/dev/seed-production")
 async def seed_production_tenant() -> Dict[str, Any]:
     """
