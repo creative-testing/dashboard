@@ -25,6 +25,9 @@ class Settings(BaseSettings):
     META_API_VERSION: str = "v23.0"
     META_REDIRECT_URI: str
 
+    # Production token (for seeding Ads Alchimie tenant)
+    FACEBOOK_ACCESS_TOKEN: str = ""  # Optional, only for /dev/seed-production
+
     # Stripe
     STRIPE_SECRET_KEY: str
     STRIPE_PUBLISHABLE_KEY: str

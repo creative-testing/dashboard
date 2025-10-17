@@ -44,7 +44,7 @@ class CSRFFromCookieGuard(BaseHTTPMiddleware):
 
     # Prefixes excluded from CSRF check (for paths with dynamic segments)
     CSRF_EXEMPT_PREFIXES = (
-        "/api/accounts/dev/",  # DEBUG endpoints like /dev/test-refresh/{id}
+        "/api/accounts/dev/",  # DEBUG endpoints like /dev/test-refresh/{id}, /dev/seed-production
     )
 
     async def dispatch(self, request, call_next):
