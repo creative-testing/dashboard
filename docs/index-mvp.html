@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Creative Testing Dashboard</title>
-    <link rel="icon" href="data:,">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <style>
         * {
             margin: 0;
@@ -427,7 +427,7 @@
                 const accountsList = document.getElementById('accounts-list');
                 if (accounts.length === 0) {
                     accountsList.innerHTML = '<p style="color: #666;">No se encontraron cuentas publicitarias. Conecta una cuenta publicitaria de Facebook para comenzar.</p>';
-                    return;
+                    return accounts; // Return empty array
                 }
                 accountsList.innerHTML = accounts.map(account => `
                     <div class="account-card">
@@ -439,9 +439,11 @@
                         <button class="btn btn-secondary" onclick="refreshAccount('${account.fb_account_id}')">Actualizar Datos</button>
                     </div>
                 `).join('');
+                return accounts; // Return accounts for smart redirect
             } catch (error) {
                 alert('Error al cargar cuentas: ' + error.message);
                 console.error('Load accounts error:', error);
+                return []; // Return empty on error
             }
         }
 
@@ -492,7 +494,7 @@
             }
         }
 
-        async function checkAuth() {
+        async function checkAuth(isOAuthCallback = false) {
             try {
                 const response = await authFetch(`${API_URL}/api/accounts/me`);
                 if (response.ok) {
@@ -502,7 +504,15 @@
                         window.localStorage.setItem('tenant_id', me.tenant_id);
                     }
                     updateAuthStatus(true);
-                    await loadAccounts();
+                    const accounts = await loadAccounts();
+
+                    // 🚀 SMART REDIRECT: Si OAuth callback + 1 seul compte → Dashboard direct
+                    if (isOAuthCallback && accounts && accounts.length === 1) {
+                        console.log('🚀 Smart redirect: 1 compte détecté, redirection automatique...');
+                        setTimeout(() => {
+                            viewDashboard(accounts[0].fb_account_id, accounts[0].name);
+                        }, 500); // Small delay pour voir le message de connexion
+                    }
                     return;
                 }
             } catch (error) {
@@ -542,11 +552,15 @@
 
         (async () => {
             const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.has('token')) {
+            const isOAuthCallback = urlParams.has('token');
+
+            if (isOAuthCallback) {
                 setAuthContext(urlParams.get('token'), urlParams.get('tenant_id'));
                 window.history.replaceState({}, document.title, window.location.pathname);
             }
-            await checkAuth();
+
+            // Pass isOAuthCallback to enable smart redirect
+            await checkAuth(isOAuthCallback);
         })();
     </script>
 </body>
