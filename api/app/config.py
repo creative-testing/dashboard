@@ -54,10 +54,10 @@ class Settings(BaseSettings):
     COOKIE_DOMAIN: str = ""  # ".yourdomain.com" for subdomain sharing
 
     # CORS
-    ALLOWED_ORIGINS: str = "http://localhost:3000"
+    ALLOWED_ORIGINS: str = "http://localhost:3000,https://creative-testing.github.io"
 
     # Dashboard URL (for OAuth redirect after success)
-    DASHBOARD_URL: str = "http://localhost:3000"
+    DASHBOARD_URL: str = "https://creative-testing.github.io/dashboard/index-mvp.html"
 
     @property
     def allowed_origins_list(self) -> List[str]:
