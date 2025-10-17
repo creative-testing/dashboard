@@ -2,16 +2,67 @@
 Router pour la gestion des comptes publicitaires et informations utilisateur
 """
 from uuid import UUID
-from fastapi import APIRouter, Depends, HTTPException
+from datetime import datetime, timezone
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from typing import Dict, Any
 
-from ..database import get_db
+from ..database import get_db, SessionLocal
 from ..dependencies.auth import get_current_tenant_id, get_current_user_id
 from .. import models
+from ..models.refresh_job import RefreshJob, JobStatus
+from ..services.refresher import refresh_account_data, RefreshError
 
 router = APIRouter()
+
+
+def _utcnow():
+    """Helper pour datetime UTC"""
+    return datetime.now(timezone.utc)
+
+
+async def _run_refresh_job(job_id: UUID, fb_account_id: str, tenant_id: UUID):
+    """
+    Exécute le refresh en background et met à jour le statut du job.
+
+    Cette fonction tourne en background via FastAPI BackgroundTasks.
+    Elle crée sa propre session DB pour éviter les conflits.
+    """
+    db = SessionLocal()
+    try:
+        # 1. Marquer le job comme RUNNING
+        job = db.get(RefreshJob, job_id)
+        if not job:
+            return
+        job.status = JobStatus.RUNNING
+        job.started_at = _utcnow()
+        db.commit()
+
+        # 2. Exécuter le refresh (30s-15min selon la taille du compte)
+        await refresh_account_data(
+            ad_account_id=fb_account_id,
+            tenant_id=tenant_id,
+            db=db
+        )
+
+        # 3. Marquer comme OK
+        job = db.get(RefreshJob, job_id)
+        if job:
+            job.status = JobStatus.OK
+            job.finished_at = _utcnow()
+            db.commit()
+
+    except Exception as e:
+        # 4. En cas d'erreur, marquer comme ERROR
+        job = db.get(RefreshJob, job_id)
+        if job:
+            job.status = JobStatus.ERROR
+            job.error = str(e)[:1000]  # Limiter à 1000 chars
+            job.finished_at = _utcnow()
+            db.commit()
+    finally:
+        db.close()
 
 
 @router.get("/me")
@@ -82,41 +133,119 @@ async def list_accounts(
     }
 
 
-@router.post("/refresh/{account_id}")
-async def refresh_account(
-    account_id: str,
+@router.post("/refresh/{fb_account_id}")
+async def trigger_refresh(
+    fb_account_id: str,
+    background_tasks: BackgroundTasks,
     current_tenant_id: UUID = Depends(get_current_tenant_id),
     db: Session = Depends(get_db)
 ) -> Dict[str, Any]:
     """
-    Déclenche un refresh des données pour un compte
+    Déclenche un refresh asynchrone des données pour un compte
 
     🔒 Protected endpoint - requires valid JWT
     🏢 Tenant-isolated - can only refresh accounts belonging to your tenant
+    ⚡ Asynchronous - returns immediately with job_id, polling required
 
     Flow:
     1. Vérifie ownership du compte (tenant isolation)
-    2. Fetch ads + insights depuis Meta API via OAuth token
-    3. Transform en format optimisé (meta_v1.json, agg_v1.json, summary_v1.json)
-    4. Écrit dans storage
-    5. Update last_refresh_at
+    2. Crée un RefreshJob (status=QUEUED)
+    3. Lance le refresh en background
+    4. Retourne immédiatement avec job_id
 
-    TODO:
-    - Vérifier les quotas (subscription.quota_refresh_per_day)
-    - Enqueue via Redis pour async (pour l'instant sync MVP)
+    Returns:
+        {
+            "status": "processing",
+            "job_id": "uuid",
+            "already_processing": bool
+        }
     """
-    from ..services.refresher import refresh_account_data, RefreshError
-
-    try:
-        result = await refresh_account_data(
-            ad_account_id=account_id,
-            tenant_id=current_tenant_id,
-            db=db
+    # 1. Vérifier que l'ad account appartient au tenant
+    ad_account = db.execute(
+        select(models.AdAccount).where(
+            models.AdAccount.fb_account_id == fb_account_id,
+            models.AdAccount.tenant_id == current_tenant_id
         )
-        return result
+    ).scalar_one_or_none()
 
-    except RefreshError as e:
+    if not ad_account:
         raise HTTPException(
-            status_code=500,
-            detail=f"Refresh failed: {str(e)}"
+            status_code=404,
+            detail=f"Ad account {fb_account_id} not found for your workspace"
         )
+
+    # 2. Vérifier si un job est déjà en cours (idempotence)
+    existing_job = db.execute(
+        select(RefreshJob).where(
+            RefreshJob.tenant_id == current_tenant_id,
+            RefreshJob.ad_account_id == ad_account.id,
+            RefreshJob.status.in_([JobStatus.QUEUED, JobStatus.RUNNING])
+        )
+    ).scalar_one_or_none()
+
+    if existing_job:
+        return {
+            "status": "processing",
+            "job_id": str(existing_job.id),
+            "already_processing": True
+        }
+
+    # 3. Créer un nouveau job
+    job = RefreshJob(
+        tenant_id=current_tenant_id,
+        ad_account_id=ad_account.id,
+        status=JobStatus.QUEUED
+    )
+    db.add(job)
+    db.commit()
+    db.refresh(job)
+
+    # 4. Lancer le refresh en background
+    background_tasks.add_task(
+        _run_refresh_job,
+        job.id,
+        fb_account_id,
+        current_tenant_id
+    )
+
+    return {
+        "status": "processing",
+        "job_id": str(job.id),
+        "already_processing": False
+    }
+
+
+@router.get("/refresh/status/{job_id}")
+async def get_refresh_status(
+    job_id: UUID,
+    current_tenant_id: UUID = Depends(get_current_tenant_id),
+    db: Session = Depends(get_db)
+) -> Dict[str, Any]:
+    """
+    Récupère le statut d'un job de refresh
+
+    🔒 Protected endpoint - requires valid JWT
+    🏢 Tenant-isolated - can only check jobs belonging to your tenant
+
+    Returns:
+        {
+            "status": "queued" | "running" | "ok" | "error",
+            "started_at": "ISO datetime" | null,
+            "finished_at": "ISO datetime" | null,
+            "error": "error message" | null
+        }
+    """
+    job = db.get(RefreshJob, job_id)
+
+    if not job or job.tenant_id != current_tenant_id:
+        raise HTTPException(
+            status_code=404,
+            detail="Job not found"
+        )
+
+    return {
+        "status": job.status.value,  # Convertir enum en string
+        "started_at": job.started_at.isoformat() if job.started_at else None,
+        "finished_at": job.finished_at.isoformat() if job.finished_at else None,
+        "error": job.error
+    }

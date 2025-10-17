@@ -127,6 +127,59 @@
             document.getElementById('error-message').style.display = 'block';
         }
 
+        function updateSpinner(title, subtitle = '') {
+            document.querySelector('h1').textContent = title;
+            document.querySelector('p').textContent = subtitle;
+        }
+
+        async function dataExists(accountId, token) {
+            // Vérifier si les données existent via endpoint /api/data/files
+            try {
+                const response = await fetch(`${API_URL}/api/data/files/${accountId}/meta_v1.json`, {
+                    method: 'HEAD',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                return response.ok;
+            } catch (error) {
+                console.warn('Error checking data existence:', error);
+                return false;
+            }
+        }
+
+        async function triggerRefresh(accountId, token) {
+            const response = await fetch(`${API_URL}/api/accounts/refresh/${accountId}`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!response.ok) {
+                throw new Error('No se pudo iniciar la carga de datos');
+            }
+            return response.json(); // {status, job_id, already_processing}
+        }
+
+        async function waitUntilReady(jobId, token, onTick) {
+            // Poll toutes les 3s jusqu'à OK/ERROR
+            while (true) {
+                const response = await fetch(`${API_URL}/api/accounts/refresh/status/${jobId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) {
+                    throw new Error('Error consultando el estado del job');
+                }
+                const status = await response.json(); // {status, started_at, finished_at, error}
+
+                if (onTick) onTick(status);
+
+                if (status.status === 'ok') return true;
+                if (status.status === 'error') {
+                    throw new Error(status.error || 'Error en la preparación de datos');
+                }
+
+                // Attendre 3s avant le prochain poll
+                await new Promise(resolve => setTimeout(resolve, 3000));
+            }
+        }
+
         async function handleOAuthCallback() {
             const urlParams = new URLSearchParams(window.location.search);
             const token = urlParams.get('token');
@@ -175,11 +228,49 @@
                     return;
                 }
 
-                // 🚀 SMART REDIRECT: 1 account → Direct to dashboard
+                // 🚀 SMART REDIRECT: 1 account → Check data + async refresh if needed
                 if (accounts.length === 1) {
                     const account = accounts[0];
-                    console.log(`🚀 Smart redirect: 1 cuenta detectada (${account.name}), redirigiendo al dashboard...`);
+                    console.log(`🚀 Smart redirect: 1 cuenta detectada (${account.name})`);
 
+                    // Vérifier si les données existent déjà
+                    if (await dataExists(account.fb_account_id, token)) {
+                        console.log('✅ Datos ya disponibles, redirigiendo inmediatamente...');
+                        const params = new URLSearchParams({
+                            account_id: account.fb_account_id,
+                            account: account.name,
+                            token,
+                            tenant_id: tenantId,
+                            locked: '1'
+                        });
+                        setTimeout(() => {
+                            window.location.href = `index-saas.html?${params.toString()}`;
+                        }, 500);
+                        return;
+                    }
+
+                    // Pas de données → déclencher refresh + polling
+                    console.log('⏳ Datos no disponibles, iniciando carga...');
+                    updateSpinner(
+                        `Preparando tus datos de ${account.name}...`,
+                        'Esto puede tardar 30-90 segundos (cuentas grandes hasta 2 minutos)'
+                    );
+
+                    const { job_id } = await triggerRefresh(account.fb_account_id, token);
+                    console.log(`📋 Job iniciado: ${job_id}`);
+
+                    // Polling hasta que termine
+                    await waitUntilReady(job_id, token, (status) => {
+                        if (status.status === 'running') {
+                            updateSpinner(
+                                `Procesando datos de ${account.name}...`,
+                                'Mantén esta página abierta'
+                            );
+                        }
+                    });
+
+                    // Données prêtes → redirect
+                    console.log('✅ Datos listos, redirigiendo al dashboard...');
                     const params = new URLSearchParams({
                         account_id: account.fb_account_id,
                         account: account.name,
@@ -187,11 +278,10 @@
                         tenant_id: tenantId,
                         locked: '1'
                     });
-
-                    // Small delay to show spinner
                     setTimeout(() => {
                         window.location.href = `index-saas.html?${params.toString()}`;
-                    }, 800);
+                    }, 300);
+                    return;
                 } else {
                     // Multiple accounts → Show selection page
                     console.log(`📋 Multiple accounts (${accounts.length}), showing selection...`);
