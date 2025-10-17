@@ -72,11 +72,12 @@ class MetaClient:
             MetaAPIError: En cas d'erreur après tous les retries
         """
         # Timeouts explicites pour éviter les blocages
+        # Read timeout élevé (30s) pour gros comptes comme Mandala (2000+ ads)
         timeout = httpx.Timeout(
-            connect=3.0,  # 3s max pour établir la connexion
-            read=8.0,     # 8s max pour lire la réponse
-            write=3.0,    # 3s max pour écrire la requête
-            pool=3.0      # 3s max pour obtenir une connexion du pool
+            connect=5.0,  # 5s max pour établir la connexion
+            read=30.0,    # 30s max pour lire la réponse (Meta API peut être lent pour gros datasets)
+            write=5.0,    # 5s max pour écrire la requête
+            pool=5.0      # 5s max pour obtenir une connexion du pool
         )
 
         async with httpx.AsyncClient(timeout=timeout) as client:
