@@ -4,16 +4,16 @@
     "account_name": "LeanTravel",
     "period": "30d",
     "date_range": "2025-09-17..2025-10-16",
-    "generated_at": "2025-10-17T09:25:53.841146Z",
+    "generated_at": "2025-10-17T15:24:16.509082Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 36648,
+      "impressions": 36650,
       "clicks": 991,
-      "spend": 7772.86,
+      "spend": 7772.88,
       "purchases": 20,
       "purchase_value": 28542.0,
       "ctr": 2.7,
@@ -23,37 +23,37 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 37031,
+      "impressions": 37038,
       "clicks": 1959,
-      "spend": 7394.2,
+      "spend": 7395.34,
       "purchases": 22,
       "purchase_value": 22690.0,
       "ctr": 5.29,
-      "cpa": 336.1,
+      "cpa": 336.15,
       "roas": 3.07
     },
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 22118,
+      "impressions": 22119,
       "clicks": 421,
-      "spend": 3593.34,
+      "spend": 3593.35,
       "purchases": 7,
       "purchase_value": 6392.0,
       "ctr": 1.9,
-      "cpa": 513.33,
+      "cpa": 513.34,
       "roas": 1.78
     },
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 22620,
-      "clicks": 2241,
-      "spend": 3590.53,
+      "impressions": 22621,
+      "clicks": 2242,
+      "spend": 3590.55,
       "purchases": 7,
       "purchase_value": 7990.0,
       "ctr": 9.91,
-      "cpa": 512.93,
+      "cpa": 512.94,
       "roas": 2.23
     },
     {
@@ -95,9 +95,9 @@
     {
       "age": "65+",
       "gender": "male",
-      "impressions": 4662,
+      "impressions": 4664,
       "clicks": 512,
-      "spend": 322.07,
+      "spend": 322.13,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 10.98,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 149489,
-    "clicks": 7113,
-    "spend": 25508.97,
+    "impressions": 149502,
+    "clicks": 7114,
+    "spend": 25510.22,
     "purchases": 67,
     "purchase_value": 78727.0,
     "roas": 3.09
