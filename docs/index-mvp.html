@@ -513,108 +513,23 @@
             updateAuthStatus(false);
         }
 
-        async function viewDashboard(accountId, accountName) {
-            try {
-                // Show dashboard section
-                document.getElementById('dashboard-section').style.display = 'block';
-                document.getElementById('dashboard-account-name').textContent = accountName;
-                document.getElementById('dashboard-content').innerHTML = '<div class="loading">Cargando datos optimizados desde API...</div>';
-
-                // Hide other sections
-                document.getElementById('data-section').style.display = 'none';
-
-                // Load optimized data from API
-                console.log(`📦 Loading optimized data for account ${accountId}...`);
-                const success = await loadOptimizedDataFromAPI(accountId, API_URL);
-
-                if (!success) {
-                    throw new Error('Failed to load dashboard data from API');
-                }
-
-                // Get 7-day data (default period)
-                const data = window.periodsData[7];
-                if (!data || !data.ads) {
-                    throw new Error('No data available for 7-day period');
-                }
-
-                console.log(`✅ Dashboard data loaded: ${data.ads.length} ads`);
-
-                // Calculate KPIs
-                const activeAds = data.ads.filter(ad => parseFloat(ad.spend || 0) > 0).length;
-                const totalSpend = data.ads.reduce((sum, ad) => sum + parseFloat(ad.spend || 0), 0);
-                const totalRevenue = data.ads.reduce((sum, ad) => sum + (ad.purchase_value || 0), 0);
-                const totalPurchases = data.ads.reduce((sum, ad) => sum + (ad.purchases || 0), 0);
-                const avgRoas = totalSpend > 0 ? (totalRevenue / totalSpend) : 0;
-                const cpa = totalPurchases > 0 ? (totalSpend / totalPurchases) : 0;
-
-                // Display KPIs
-                document.getElementById('dashboard-kpis').innerHTML = `
-                    <div style="background: #e6f2ff; padding: 20px; border-radius: 10px;">
-                        <div style="font-size: 28px; font-weight: 700; color: #0066cc; margin-bottom: 5px;">${activeAds}</div>
-                        <div style="font-size: 14px; color: #666;">Anuncios con Inversión</div>
-                    </div>
-                    <div style="background: #e6f9e6; padding: 20px; border-radius: 10px;">
-                        <div style="font-size: 28px; font-weight: 700; color: #00a854; margin-bottom: 5px;">$${Math.round(totalSpend).toLocaleString()}</div>
-                        <div style="font-size: 14px; color: #666;">Inversión Total</div>
-                    </div>
-                    <div style="background: #f3e6ff; padding: 20px; border-radius: 10px;">
-                        <div style="font-size: 28px; font-weight: 700; color: #7928ca; margin-bottom: 5px;">${avgRoas.toFixed(2)}</div>
-                        <div style="font-size: 14px; color: #666;">ROAS Promedio</div>
-                    </div>
-                    <div style="background: #fff4e6; padding: 20px; border-radius: 10px;">
-                        <div style="font-size: 28px; font-weight: 700; color: #ff9500; margin-bottom: 5px;">$${Math.round(totalRevenue).toLocaleString()}</div>
-                        <div style="font-size: 14px; color: #666;">Valor de Conversión</div>
-                    </div>
-                    <div style="background: #fff4e6; padding: 20px; border-radius: 10px;">
-                        <div style="font-size: 28px; font-weight: 700; color: #ff9500; margin-bottom: 5px;">${cpa > 0 ? '$' + cpa.toFixed(2) : 'N/A'}</div>
-                        <div style="font-size: 14px; color: #666;">CPA Promedio</div>
-                    </div>
-                `;
-
-                // Display success message and data summary
-                document.getElementById('dashboard-content').innerHTML = `
-                    <div style="background: #d4edda; color: #155724; padding: 16px; border-radius: 8px; border-left: 4px solid #00a854; margin-bottom: 20px;">
-                        <strong>✅ Dashboard cargado exitosamente!</strong>
-                        <p style="margin-top: 8px; margin-bottom: 0;">
-                            Se cargaron ${data.ads.length} anuncios para el periodo de 7 días.
-                            Los datos están ahora disponibles en <code>window.periodsData</code>.
-                        </p>
-                    </div>
-                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border: 1px solid #dee2e6;">
-                        <h3 style="margin-bottom: 16px; font-size: 18px;">📊 Datos Disponibles</h3>
-                        <ul style="list-style: none; padding: 0;">
-                            <li style="padding: 8px 0; border-bottom: 1px solid #e9ecef;">
-                                ✅ Periodo 7 días: ${window.periodsData[7] ? window.periodsData[7].ads.length + ' ads' : 'Cargando...'}
-                            </li>
-                            <li style="padding: 8px 0; border-bottom: 1px solid #e9ecef;">
-                                ${window.periodsData[3] ? '✅' : '⏳'} Periodo 3 días: ${window.periodsData[3] ? window.periodsData[3].ads.length + ' ads' : 'En background...'}
-                            </li>
-                            <li style="padding: 8px 0; border-bottom: 1px solid #e9ecef;">
-                                ${window.periodsData[14] ? '✅' : '⏳'} Periodo 14 días: ${window.periodsData[14] ? window.periodsData[14].ads.length + ' ads' : 'En background...'}
-                            </li>
-                            <li style="padding: 8px 0; border-bottom: 1px solid #e9ecef;">
-                                ${window.periodsData[30] ? '✅' : '⏳'} Periodo 30 días: ${window.periodsData[30] ? window.periodsData[30].ads.length + ' ads' : 'En background...'}
-                            </li>
-                            <li style="padding: 8px 0; border-bottom: 1px solid #e9ecef;">
-                                ${window.periodsData[90] ? '✅' : '⏳'} Periodo 90 días: ${window.periodsData[90] ? window.periodsData[90].ads.length + ' ads' : 'En background...'}
-                            </li>
-                            <li style="padding: 8px 0;">
-                                ${window.prevWeekData ? '✅' : '⏳'} Semana anterior: ${window.prevWeekData ? window.prevWeekData.ads.length + ' ads' : 'En background...'}
-                            </li>
-                        </ul>
-                        <p style="color: #666; font-size: 13px; margin-top: 16px; margin-bottom: 0;">
-                            💡 Los datos están siendo cargados en background. El dashboard completo estará disponible próximamente.
-                        </p>
-                    </div>
-                `;
-            } catch (error) {
-                document.getElementById('dashboard-content').innerHTML = `
-                    <div class="error-message">
-                        <strong>❌ Error al cargar el dashboard:</strong> ${error.message}
-                    </div>
-                `;
-                console.error('Dashboard load error:', error);
+        function viewDashboard(accountId, accountName) {
+            const token    = localStorage.getItem('auth_token');
+            const tenantId = localStorage.getItem('tenant_id');
+            if (!token || !tenantId) {
+                alert('❌ Sesión inválida. Inicia sesión de nuevo.');
+                return;
             }
+            // Construire l'URL vers la vue SaaS (même dossier sur GitHub Pages)
+            const base = location.pathname.replace('index-mvp.html', 'index-saas.html');
+            const params = new URLSearchParams({
+                account_id: accountId,
+                account: accountName,
+                token,
+                tenant_id: tenantId,
+                locked: '1'   // masque le sélecteur et « bloque » sur ce compte
+            });
+            location.href = `${base}?${params.toString()}`;
         }
 
         window.loginWithMeta = loginWithMeta;
