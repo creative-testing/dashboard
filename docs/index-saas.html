@@ -127,7 +127,6 @@
             background: #1d4ed8;
         }
     </style>
-    <script src="data_adapter.js"></script>
 </head>
 <body>
     <div id="app">
@@ -148,6 +147,10 @@
                 fetch(`${API_URL}/api/data/files/${accountId}/agg_v1.json`, { headers }).then(r => r.json()),
                 fetch(`${API_URL}/api/data/files/${accountId}/summary_v1.json`, { headers }).then(r => r.json())
             ]);
+
+            console.log('📥 Loaded meta:', meta);
+            console.log('📥 Loaded agg:', agg);
+            console.log('📥 Loaded summary:', summary);
 
             return { meta, agg, summary };
         }
@@ -185,72 +188,69 @@
                 // Cargar datos
                 const { meta, agg, summary } = await loadSaaSData(accountId, token);
 
-                // Créer adapter
-                const adapter = new DataAdapter(meta, agg, summary);
-
-                // Convertir 7d pour affichage rapide
-                const data7d = adapter.convertToOldFormat('7d');
-
-                // Stocker pour utilisation future (si besoin d'autres périodes)
-                window.periodsData = { 7: data7d };
-                window.dataAdapter = adapter;
+                // Calcular métricas desde meta.ads
+                const totalAds = meta.ads.length;
+                const totalImpressions = meta.ads.reduce((sum, ad) => sum + (ad.impressions || 0), 0);
+                const totalClicks = meta.ads.reduce((sum, ad) => sum + (ad.clicks || 0), 0);
+                const totalSpend = meta.ads.reduce((sum, ad) => sum + (ad.spend || 0), 0);
+                const avgCTR = totalImpressions > 0 ? (totalClicks / totalImpressions * 100) : 0;
 
                 // Render UI
                 document.getElementById('app').innerHTML = `
                     <div class="container">
                         <header>
                             <h1>Dashboard Creativo</h1>
-                            <div class="subtitle">${accountName || accountId} • Últimos 7 días</div>
+                            <div class="subtitle">${accountName || accountId} • Últimos 30 días</div>
                         </header>
 
                         <div class="kpi-grid">
                             <div class="kpi-card">
                                 <div class="kpi-label">Gasto Total</div>
-                                <div class="kpi-value">${formatCurrency(data7d.summary.total_spend)}</div>
-                                <div class="kpi-subtext">Últimos 7 días</div>
+                                <div class="kpi-value">${formatCurrency(totalSpend)}</div>
+                                <div class="kpi-subtext">Desde ${meta.data_min_date} hasta ${meta.data_max_date}</div>
                             </div>
 
                             <div class="kpi-card">
-                                <div class="kpi-label">Anuncios con Gasto</div>
-                                <div class="kpi-value">${formatNumber(data7d.ads.length)}</div>
-                                <div class="kpi-subtext">Activos en el período</div>
+                                <div class="kpi-label">Anuncios con Datos</div>
+                                <div class="kpi-value">${formatNumber(totalAds)}</div>
+                                <div class="kpi-subtext">Total de anuncios</div>
                             </div>
 
                             <div class="kpi-card">
                                 <div class="kpi-label">Impresiones</div>
-                                <div class="kpi-value">${formatNumber(data7d.summary.total_impressions)}</div>
+                                <div class="kpi-value">${formatNumber(totalImpressions)}</div>
                                 <div class="kpi-subtext">Total del período</div>
                             </div>
 
                             <div class="kpi-card">
                                 <div class="kpi-label">Clics</div>
-                                <div class="kpi-value">${formatNumber(data7d.summary.total_clicks)}</div>
-                                <div class="kpi-subtext">CTR promedio: ${formatPercent(data7d.summary.avg_ctr)}</div>
+                                <div class="kpi-value">${formatNumber(totalClicks)}</div>
+                                <div class="kpi-subtext">CTR promedio: ${formatPercent(avgCTR)}</div>
                             </div>
 
                             <div class="kpi-card">
-                                <div class="kpi-label">Compras</div>
-                                <div class="kpi-value">${formatNumber(data7d.summary.total_purchases)}</div>
-                                <div class="kpi-subtext">CPA: ${formatCurrency(data7d.summary.avg_cpa)}</div>
+                                <div class="kpi-label">Activos</div>
+                                <div class="kpi-value">${formatNumber(summary.active_ads)}</div>
+                                <div class="kpi-subtext">En pausa: ${formatNumber(summary.paused_ads)}</div>
                             </div>
 
                             <div class="kpi-card">
-                                <div class="kpi-label">Ingresos</div>
-                                <div class="kpi-value">${formatCurrency(data7d.summary.total_revenue)}</div>
-                                <div class="kpi-subtext">ROAS: ${data7d.summary.avg_roas.toFixed(2)}x</div>
+                                <div class="kpi-label">CPC Promedio</div>
+                                <div class="kpi-value">${formatCurrency(totalClicks > 0 ? totalSpend / totalClicks : 0)}</div>
+                                <div class="kpi-subtext">Costo por clic</div>
                             </div>
                         </div>
 
                         <div style="background: white; padding: 24px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-                            <h2 style="font-size: 18px; margin-bottom: 16px; color: #1a1a1a;">Dashboard en Desarrollo</h2>
-                            <p style="color: #666; margin-bottom: 12px;">Este es un MVP del dashboard SaaS. Los KPIs básicos están funcionando correctamente.</p>
-                            <p style="color: #666;">Próximos pasos: Tablas de anuncios, filtros, gráficos, y todas las funcionalidades del dashboard completo.</p>
+                            <h2 style="font-size: 18px; margin-bottom: 16px; color: #1a1a1a;">✅ Dashboard SaaS Funcionando</h2>
+                            <p style="color: #666; margin-bottom: 12px;">Los datos se han cargado correctamente desde la API Render.</p>
+                            <p style="color: #666;">Próximos pasos: Tablas de anuncios, filtros por período (7d, 14d, 30d), gráficos, y análisis creativo completo.</p>
                             <button class="btn" onclick="window.location.reload()">Refrescar Datos</button>
                         </div>
                     </div>
                 `;
 
-                console.log('✅ Dashboard renderizado con', data7d.ads.length, 'anuncios');
+                console.log('✅ Dashboard renderizado con', totalAds, 'anuncios');
 
             } catch (error) {
                 console.error('Error loading dashboard:', error);
