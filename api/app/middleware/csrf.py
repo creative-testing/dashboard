@@ -42,9 +42,18 @@ class CSRFFromCookieGuard(BaseHTTPMiddleware):
         "/facebook/data-deletion",  # Meta data deletion callback
     )
 
+    # Prefixes excluded from CSRF check (for paths with dynamic segments)
+    CSRF_EXEMPT_PREFIXES = (
+        "/api/accounts/dev/",  # DEBUG endpoints like /dev/test-refresh/{id}
+    )
+
     async def dispatch(self, request, call_next):
         # Skip CSRF check for exempt paths (DEBUG endpoints)
         if request.url.path in self.CSRF_EXEMPT_PATHS:
+            return await call_next(request)
+
+        # Skip CSRF check for exempt prefixes
+        if any(request.url.path.startswith(prefix) for prefix in self.CSRF_EXEMPT_PREFIXES):
             return await call_next(request)
 
         # Skip CSRF check for safe methods
