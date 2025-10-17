@@ -327,3 +327,180 @@ async def dev_test_refresh(fb_account_id: str) -> Dict[str, Any]:
             }
     finally:
         db.close()
+
+
+@router.post("/dev/seed-production")
+async def seed_production_tenant() -> Dict[str, Any]:
+    """
+    🌱 Seed tenant de production pour Ads Alchimie
+
+    Crée automatiquement:
+    - Tenant "Ads Alchimie" (meta_user_id = "production")
+    - User "Production User"
+    - OAuth token de production (depuis .env)
+    - TOUS les ad accounts accessibles via le token (60+)
+    - Subscription FREE
+
+    Idempotent: peut être appelé plusieurs fois sans erreur
+
+    Returns:
+        {
+            "success": true,
+            "tenant_id": "uuid",
+            "accounts_added": 64,
+            "accounts": ["act_XXX", ...]
+        }
+    """
+    from cryptography.fernet import Fernet
+    from sqlalchemy.dialects.postgresql import insert
+    from sqlalchemy import func
+    import httpx
+
+    # Temporairement désactivé pour test en production
+    # if not settings.DEBUG:
+    #     raise HTTPException(status_code=404, detail="Not found")
+
+    # Lire token de production depuis .env
+    production_token = settings.FACEBOOK_ACCESS_TOKEN
+    if not production_token:
+        raise HTTPException(status_code=500, detail="FACEBOOK_ACCESS_TOKEN not configured in .env")
+
+    db = SessionLocal()
+    fernet = Fernet(settings.TOKEN_ENCRYPTION_KEY.encode())
+
+    try:
+        # 1. Créer/update tenant "Ads Alchimie"
+        stmt = insert(models.Tenant).values(
+            meta_user_id="production",
+            name="Ads Alchimie (Production)",
+        )
+        stmt = stmt.on_conflict_do_update(
+            index_elements=["meta_user_id"],
+            set_={"name": stmt.excluded.name, "updated_at": func.now()},
+        )
+        db.execute(stmt)
+        db.flush()
+
+        tenant = db.execute(
+            select(models.Tenant).where(models.Tenant.meta_user_id == "production")
+        ).scalar_one()
+
+        # 2. Créer/update user
+        stmt = insert(models.User).values(
+            tenant_id=tenant.id,
+            meta_user_id="production_user",
+            email="production@ads-alchimie.com",
+            name="Ads Alchimie Team",
+        )
+        stmt = stmt.on_conflict_do_update(
+            index_elements=["tenant_id", "meta_user_id"],
+            set_={
+                "email": stmt.excluded.email,
+                "name": stmt.excluded.name,
+                "updated_at": func.now(),
+            },
+        )
+        db.execute(stmt)
+        db.flush()
+
+        user = db.execute(
+            select(models.User).where(
+                models.User.tenant_id == tenant.id,
+                models.User.meta_user_id == "production_user"
+            )
+        ).scalar_one()
+
+        # 3. Stocker OAuth token (chiffré)
+        token_encrypted = fernet.encrypt(production_token.encode()).decode()
+        expires_at = datetime.now(timezone.utc) + timedelta(days=60)
+
+        stmt = insert(models.OAuthToken).values(
+            tenant_id=tenant.id,
+            user_id=user.id,
+            provider="meta",
+            fb_user_id="production_user",
+            access_token=token_encrypted.encode(),
+            expires_at=expires_at,
+            scopes=["ads_read", "email", "public_profile"],
+        )
+        stmt = stmt.on_conflict_do_update(
+            index_elements=["user_id", "provider"],
+            set_={
+                "access_token": stmt.excluded.access_token,
+                "expires_at": stmt.excluded.expires_at,
+            },
+        )
+        db.execute(stmt)
+
+        # 4. Fetch TOUS les ad accounts via Meta API
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            all_accounts = []
+            url = f"https://graph.facebook.com/v23.0/me/adaccounts"
+            params = {
+                "fields": "id,name,account_status",
+                "access_token": production_token,
+                "limit": 100,
+            }
+
+            while url:
+                response = await client.get(url, params=params if params else None)
+                response.raise_for_status()
+                data = response.json()
+
+                all_accounts.extend(data.get("data", []))
+
+                # Pagination
+                url = data.get("paging", {}).get("next")
+                params = None  # Next URL contient déjà les params
+
+        # 5. Insérer ad accounts dans la DB
+        accounts_added = []
+        for account in all_accounts:
+            fb_account_id = account["id"]
+            account_name = account.get("name", "Unknown")
+
+            stmt = insert(models.AdAccount).values(
+                tenant_id=tenant.id,
+                fb_account_id=fb_account_id,
+                name=account_name,
+            )
+            stmt = stmt.on_conflict_do_update(
+                index_elements=["tenant_id", "fb_account_id"],
+                set_={"name": stmt.excluded.name},
+            )
+            db.execute(stmt)
+            accounts_added.append(fb_account_id)
+
+        # 6. Créer subscription FREE si n'existe pas
+        existing_subscription = db.execute(
+            select(models.Subscription).where(models.Subscription.tenant_id == tenant.id)
+        ).scalar_one_or_none()
+
+        if not existing_subscription:
+            subscription = models.Subscription(
+                tenant_id=tenant.id,
+                plan="free",
+                status="active",
+                quota_accounts=100,  # Production: 100 comptes max
+                quota_refresh_per_day=24,  # 1 refresh/heure
+            )
+            db.add(subscription)
+
+        db.commit()
+
+        return {
+            "success": True,
+            "tenant_id": str(tenant.id),
+            "tenant_name": tenant.name,
+            "accounts_added": len(accounts_added),
+            "accounts": accounts_added,
+        }
+
+    except httpx.HTTPError as e:
+        db.rollback()
+        raise HTTPException(status_code=502, detail=f"Meta API error: {str(e)}")
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Seed error: {str(e)}")
+    finally:
+        db.close()
