@@ -253,10 +253,7 @@ async def get_refresh_status(
 
 
 @router.post("/dev/test-refresh/{fb_account_id}")
-async def dev_test_refresh(
-    fb_account_id: str,
-    db: Session = Depends(get_db)
-) -> Dict[str, Any]:
+async def dev_test_refresh(fb_account_id: str) -> Dict[str, Any]:
     """
     🚧 DEBUG ONLY: Test refresh avec vraies données (synchrone)
 
@@ -264,6 +261,8 @@ async def dev_test_refresh(
     Lance le refresh de manière synchrone et retourne immédiatement les stats.
 
     Utilise le token OAuth existant en DB (doit être valide).
+
+    ⚠️ NO AUTH REQUIRED - endpoint protégé par DEBUG mode uniquement
 
     Returns:
         {
@@ -280,45 +279,50 @@ async def dev_test_refresh(
     if not settings.DEBUG:
         raise HTTPException(status_code=404, detail="Not found")
 
-    # Trouver le tenant associé à ce compte
-    ad_account = db.execute(
-        select(models.AdAccount).where(
-            models.AdAccount.fb_account_id == fb_account_id
-        )
-    ).scalar_one_or_none()
-
-    if not ad_account:
-        raise HTTPException(
-            status_code=404,
-            detail=f"Ad account {fb_account_id} not found in database"
-        )
-
-    tenant_id = ad_account.tenant_id
-
-    # Lancer le refresh de manière synchrone
+    # Créer session DB manuellement (évite chaîne de dépendances auth)
+    db = SessionLocal()
     try:
-        result = await refresh_account_data(
-            ad_account_id=fb_account_id,
-            tenant_id=tenant_id,
-            db=db
-        )
+        # Trouver le tenant associé à ce compte
+        ad_account = db.execute(
+            select(models.AdAccount).where(
+                models.AdAccount.fb_account_id == fb_account_id
+            )
+        ).scalar_one_or_none()
 
-        return {
-            "success": True,
-            **result
-        }
+        if not ad_account:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Ad account {fb_account_id} not found in database"
+            )
 
-    except RefreshError as e:
-        return {
-            "success": False,
-            "error": str(e),
-            "ad_account_id": fb_account_id,
-            "tenant_id": str(tenant_id)
-        }
-    except Exception as e:
-        return {
-            "success": False,
-            "error": f"Unexpected error: {str(e)}",
-            "ad_account_id": fb_account_id,
-            "tenant_id": str(tenant_id)
-        }
+        tenant_id = ad_account.tenant_id
+
+        # Lancer le refresh de manière synchrone
+        try:
+            result = await refresh_account_data(
+                ad_account_id=fb_account_id,
+                tenant_id=tenant_id,
+                db=db
+            )
+
+            return {
+                "success": True,
+                **result
+            }
+
+        except RefreshError as e:
+            return {
+                "success": False,
+                "error": str(e),
+                "ad_account_id": fb_account_id,
+                "tenant_id": str(tenant_id)
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "error": f"Unexpected error: {str(e)}",
+                "ad_account_id": fb_account_id,
+                "tenant_id": str(tenant_id)
+            }
+    finally:
+        db.close()
