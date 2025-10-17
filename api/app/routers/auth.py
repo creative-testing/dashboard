@@ -241,48 +241,9 @@ async def facebook_callback(
             tenant_id=tenant.id
         )
 
-        # 8. Retourner page de redirection avec cookie HttpOnly
-        html_content = f"""<!DOCTYPE html>
-<html>
-<head>
-    <title>Connexion réussie</title>
-    <style>
-        body {{
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background: #f5f5f5;
-        }}
-        .success {{
-            text-align: center;
-            background: white;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }}
-        h1 {{ color: #28a745; margin: 0 0 20px 0; }}
-        p {{ color: #666; margin: 10px 0; }}
-    </style>
-</head>
-<body>
-    <div class="success">
-        <h1>✅ Connexion réussie !</h1>
-        <p><strong>{user_name}</strong></p>
-        <p>{len(ad_accounts)} compte(s) publicitaire(s) connecté(s)</p>
-        <p style="margin-top: 20px; color: #999;">Redirection vers le dashboard...</p>
-    </div>
-    <script>
-        setTimeout(() => {{
-            window.location.href = '{settings.DASHBOARD_URL}?token={access_token}&tenant_id={tenant.id}';
-        }}, 1500);
-    </script>
-</body>
-</html>"""
-
-        response = HTMLResponse(content=html_content)
+        # 8. Redirect direct vers dashboard avec token (pas de page intermédiaire)
+        redirect_url = f"{settings.DASHBOARD_URL}?token={access_token}&tenant_id={tenant.id}"
+        response = RedirectResponse(url=redirect_url, status_code=302)
 
         # Poser le JWT dans un cookie HttpOnly sécurisé
         response.set_cookie(
