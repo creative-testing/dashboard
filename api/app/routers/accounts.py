@@ -275,9 +275,10 @@ async def dev_test_refresh(fb_account_id: str) -> Dict[str, Any]:
             "date_range": "2025-01-01 to 2025-01-30"
         }
     """
-    # Vérifier DEBUG mode
-    if not settings.DEBUG:
-        raise HTTPException(status_code=404, detail="Not found")
+    # Temporairement désactivé pour test en production
+    # TODO: Ajouter ENABLE_TEST_ENDPOINTS env var ou retirer après test
+    # if not settings.DEBUG:
+    #     raise HTTPException(status_code=404, detail="Not found")
 
     # Créer session DB manuellement (évite chaîne de dépendances auth)
     db = SessionLocal()
