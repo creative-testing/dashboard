@@ -3256,7 +3256,7 @@
         function filterAdsByAccount(ads) {
             if (!ads) return [];
             // Make sure we handle all cases properly
-            if (currentAccountName === 'Todos' || currentAccountName === 'global' || !currentAccountName) {
+            if (currentAccountName === 'Todos' || currentAccountName === 'Todas las cuentas' || currentAccountName === 'global' || !currentAccountName) {
                 return ads; // Return all ads for "Todas las cuentas"
             }
             return ads.filter(a => a.account_name === currentAccountName);

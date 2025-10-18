@@ -353,3 +353,40 @@ async def logout(request: Request):
     """Déconnexion (clear session)"""
     request.session.clear()
     return {"message": "Logged out successfully"}
+
+
+@router.post("/test-token")
+def test_token(tenant_id: str, db: Session = Depends(get_db)):
+    """
+    TEMPORARY: Generate JWT token for testing
+    TODO: DELETE THIS ENDPOINT AFTER TESTING
+    """
+    from uuid import UUID
+
+    # Validate tenant exists
+    tenant = db.execute(
+        select(models.Tenant).where(models.Tenant.id == UUID(tenant_id))
+    ).scalar_one_or_none()
+
+    if not tenant:
+        raise HTTPException(status_code=404, detail="Tenant not found")
+
+    # Get user for this tenant
+    user = db.execute(
+        select(models.User).where(models.User.tenant_id == UUID(tenant_id))
+    ).first()
+
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found for tenant")
+
+    user = user[0]
+
+    # Generate token (7 days expiry)
+    token = create_access_token(user.id, tenant.id, expires_delta=timedelta(days=7))
+
+    return {
+        "access_token": token,
+        "tenant_id": str(tenant.id),
+        "user_id": str(user.id),
+        "message": "TEMPORARY test token - DELETE this endpoint after testing!"
+    }
