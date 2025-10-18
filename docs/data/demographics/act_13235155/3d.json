@@ -4,56 +4,56 @@
     "account_name": "CULTO APPAREL",
     "period": "3d",
     "date_range": "2025-10-15..2025-10-17",
-    "generated_at": "2025-10-18T09:18:31.645587Z",
+    "generated_at": "2025-10-18T15:17:01.361414Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 325906,
-      "clicks": 2758,
-      "spend": 925.17,
+      "impressions": 326087,
+      "clicks": 2760,
+      "spend": 925.66,
       "purchases": 55,
       "purchase_value": 6408.0,
       "ctr": 0.85,
-      "cpa": 16.82,
-      "roas": 6.93
+      "cpa": 16.83,
+      "roas": 6.92
     },
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 168387,
-      "clicks": 1619,
-      "spend": 796.41,
+      "impressions": 168491,
+      "clicks": 1620,
+      "spend": 796.76,
       "purchases": 47,
       "purchase_value": 5110.69,
       "ctr": 0.96,
-      "cpa": 16.94,
-      "roas": 6.42
+      "cpa": 16.95,
+      "roas": 6.41
     },
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 38703,
+      "impressions": 38724,
       "clicks": 433,
-      "spend": 239.13,
+      "spend": 239.37,
       "purchases": 14,
       "purchase_value": 1304.01,
       "ctr": 1.12,
-      "cpa": 17.08,
+      "cpa": 17.1,
       "roas": 5.45
     },
     {
       "age": "18-24",
       "gender": "male",
-      "impressions": 72155,
+      "impressions": 72178,
       "clicks": 691,
-      "spend": 148.84,
+      "spend": 148.91,
       "purchases": 4,
       "purchase_value": 699.34,
       "ctr": 0.96,
-      "cpa": 37.21,
+      "cpa": 37.23,
       "roas": 4.7
     },
     {
@@ -71,7 +71,7 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 15408,
+      "impressions": 15414,
       "clicks": 129,
       "spend": 40.14,
       "purchases": 1,
@@ -83,19 +83,19 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 7776,
+      "impressions": 7783,
       "clicks": 82,
-      "spend": 33.97,
+      "spend": 34.2,
       "purchases": 2,
       "purchase_value": 145.89,
       "ctr": 1.05,
-      "cpa": 16.98,
-      "roas": 4.3
+      "cpa": 17.1,
+      "roas": 4.27
     },
     {
       "age": "65+",
       "gender": "male",
-      "impressions": 4108,
+      "impressions": 4109,
       "clicks": 51,
       "spend": 20.14,
       "purchases": 0,
@@ -119,7 +119,7 @@
     {
       "age": "35-44",
       "gender": "unknown",
-      "impressions": 2271,
+      "impressions": 2273,
       "clicks": 20,
       "spend": 9.09,
       "purchases": 1,
@@ -131,7 +131,7 @@
     {
       "age": "45-54",
       "gender": "unknown",
-      "impressions": 1098,
+      "impressions": 1099,
       "clicks": 12,
       "spend": 7.78,
       "purchases": 1,
@@ -143,24 +143,24 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 964,
+      "impressions": 965,
       "clicks": 23,
       "spend": 7.05,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 2.39,
+      "ctr": 2.38,
       "cpa": 0,
       "roas": 0.0
     },
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 4084,
-      "clicks": 36,
+      "impressions": 4086,
+      "clicks": 37,
       "spend": 6.32,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 0.88,
+      "ctr": 0.91,
       "cpa": 0,
       "roas": 0.0
     },
@@ -177,6 +177,18 @@
       "roas": 0.0
     },
     {
+      "age": "55-64",
+      "gender": "unknown",
+      "impressions": 314,
+      "clicks": 5,
+      "spend": 2.01,
+      "purchases": 0,
+      "purchase_value": 0.0,
+      "ctr": 1.59,
+      "cpa": 0,
+      "roas": 0.0
+    },
+    {
       "age": "65+",
       "gender": "female",
       "impressions": 518,
@@ -185,18 +197,6 @@
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 2.9,
-      "cpa": 0,
-      "roas": 0.0
-    },
-    {
-      "age": "55-64",
-      "gender": "unknown",
-      "impressions": 313,
-      "clicks": 5,
-      "spend": 1.88,
-      "purchases": 0,
-      "purchase_value": 0.0,
-      "ctr": 1.6,
       "cpa": 0,
       "roas": 0.0
     },
@@ -238,11 +238,11 @@
     }
   ],
   "totals": {
-    "impressions": 654553,
-    "clicks": 6098,
-    "spend": 2333.31,
+    "impressions": 654903,
+    "clicks": 6102,
+    "spend": 2334.82,
     "purchases": 130,
     "purchase_value": 14621.95,
-    "roas": 6.27
+    "roas": 6.26
   }
 }

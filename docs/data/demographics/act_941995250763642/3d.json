@@ -4,7 +4,7 @@
     "account_name": "Swappp Energy",
     "period": "3d",
     "date_range": "2025-10-15..2025-10-17",
-    "generated_at": "2025-10-18T09:21:58.320387Z",
+    "generated_at": "2025-10-18T15:19:45.895165Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
@@ -24,11 +24,11 @@
       "age": "35-44",
       "gender": "male",
       "impressions": 2079,
-      "clicks": 22,
+      "clicks": 24,
       "spend": 403.3,
       "purchases": 1,
       "purchase_value": 1367.2,
-      "ctr": 1.06,
+      "ctr": 1.15,
       "cpa": 403.3,
       "roas": 3.39
     },
@@ -47,9 +47,9 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 1624,
+      "impressions": 1625,
       "clicks": 12,
-      "spend": 171.31,
+      "spend": 171.42,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 0.74,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 10823,
-    "clicks": 133,
-    "spend": 1828.15,
+    "impressions": 10824,
+    "clicks": 135,
+    "spend": 1828.26,
     "purchases": 2,
     "purchase_value": 1955.2,
     "roas": 1.07
