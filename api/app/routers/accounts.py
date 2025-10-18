@@ -718,6 +718,94 @@ async def generate_dashboard_link(tenant_id: str) -> Dict[str, Any]:
         db.close()
 
 
+@router.post("/dev/inject-production-token")
+def inject_production_token(
+    access_token: str,
+    tenant_id: str = "c0c595ab-3903-4256-b8d7-cb9709ac9206",
+    db: Session = Depends(get_db)
+) -> Dict[str, Any]:
+    """
+    🔧 BOOTSTRAP: Injecte un token Meta dans le tenant de production
+
+    Permet de migrer le token existant (GitHub Secrets) dans la DB
+    pour que le refresh fonctionne sans que les patrons fassent OAuth
+
+    Args:
+        access_token: Token Meta long-lived (celui de GitHub Secrets)
+        tenant_id: Tenant UUID (défaut = production)
+
+    Returns:
+        {"success": true, "tenant_id": "...", "message": "..."}
+    """
+    from uuid import UUID
+    from datetime import datetime, timedelta
+    from sqlalchemy.dialects.postgresql import insert
+
+    try:
+        # 1. Vérifier tenant existe
+        tenant = db.execute(
+            select(models.Tenant).where(models.Tenant.id == UUID(tenant_id))
+        ).scalar_one_or_none()
+
+        if not tenant:
+            raise HTTPException(status_code=404, detail=f"Tenant {tenant_id} not found")
+
+        # 2. Créer user fictif si n'existe pas (pour structure DB complète)
+        user = db.execute(
+            select(models.User).where(models.User.tenant_id == UUID(tenant_id))
+        ).first()
+
+        if not user:
+            user = models.User(
+                tenant_id=UUID(tenant_id),
+                meta_user_id="production_legacy",
+                email="production@adsalchemy.com",
+                name="Production (Legacy)"
+            )
+            db.add(user)
+            db.flush()
+        else:
+            user = user[0]
+
+        # 3. Chiffrer le token
+        token_encrypted = fernet.encrypt(access_token.encode()).decode()
+
+        # 4. Insérer/Update token OAuth
+        expires_at = datetime.utcnow() + timedelta(days=60)  # Long-lived token
+
+        stmt = insert(models.OAuthToken).values(
+            tenant_id=UUID(tenant_id),
+            user_id=user.id,
+            provider="meta",
+            fb_user_id="production_legacy",
+            access_token=token_encrypted.encode(),
+            expires_at=expires_at,
+            scopes=["ads_read", "public_profile"]
+        )
+        stmt = stmt.on_conflict_do_update(
+            index_elements=["user_id", "provider"],
+            set_={
+                "access_token": stmt.excluded.access_token,
+                "expires_at": stmt.excluded.expires_at,
+                "scopes": stmt.excluded.scopes
+            }
+        )
+        db.execute(stmt)
+        db.commit()
+
+        return {
+            "success": True,
+            "tenant_id": tenant_id,
+            "tenant_name": tenant.name,
+            "user_id": str(user.id),
+            "message": "✅ Token Meta injecté avec succès. Le refresh peut maintenant fonctionner."
+        }
+
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.post("/dev/refresh-all-production")
 async def refresh_all_production_accounts(
     background_tasks: BackgroundTasks,
