@@ -716,3 +716,91 @@ async def generate_dashboard_link(tenant_id: str) -> Dict[str, Any]:
 
     finally:
         db.close()
+
+
+@router.post("/dev/refresh-all-production")
+async def refresh_all_production_accounts(
+    tenant_id: str = "c0c595ab-3903-4256-b8d7-cb9709ac9206",
+    limit: Optional[int] = None
+) -> Dict[str, Any]:
+    """
+    🔄 Refresh TOUS les ad accounts d'un tenant (par défaut: Ads Alchimie Production)
+
+    Args:
+        tenant_id: Tenant UUID (défaut = production tenant)
+        limit: Limite le nombre de comptes à refresh (pour tests rapides)
+
+    Returns:
+        {
+            "tenant_id": "uuid",
+            "tenant_name": "Ads Alchimie (Production)",
+            "accounts_total": 70,
+            "accounts_refreshing": 70,
+            "jobs": [{"account_id": "act_XXX", "account_name": "...", "job_id": "uuid"}]
+        }
+    """
+    from uuid import UUID
+    from ..services import jobs
+
+    db = SessionLocal()
+
+    try:
+        tenant = db.execute(
+            select(models.Tenant).where(models.Tenant.id == UUID(tenant_id))
+        ).scalar_one_or_none()
+
+        if not tenant:
+            raise HTTPException(status_code=404, detail="Tenant not found")
+
+        # Get all ad accounts for this tenant
+        accounts = db.execute(
+            select(models.AdAccount).where(models.AdAccount.tenant_id == UUID(tenant_id))
+        ).scalars().all()
+
+        # Apply limit if specified (for testing)
+        if limit:
+            accounts = accounts[:limit]
+
+        # Get OAuth token for this tenant
+        oauth_token = db.execute(
+            select(models.OAuthToken).where(
+                models.OAuthToken.tenant_id == UUID(tenant_id),
+                models.OAuthToken.provider == "meta"
+            )
+        ).scalar_one_or_none()
+
+        if not oauth_token:
+            raise HTTPException(status_code=404, detail="OAuth token not found for tenant")
+
+        # Decrypt token
+        fernet = Fernet(settings.TOKEN_ENCRYPTION_KEY.encode())
+        access_token = fernet.decrypt(oauth_token.access_token).decode()
+
+        # Launch refresh job for each account
+        jobs_launched = []
+
+        for account in accounts:
+            job_id = await jobs.enqueue_refresh_job(
+                tenant_id=UUID(tenant_id),
+                account_id=account.fb_account_id,
+                access_token=access_token
+            )
+
+            jobs_launched.append({
+                "account_id": account.fb_account_id,
+                "account_name": account.name,
+                "job_id": str(job_id)
+            })
+
+        return {
+            "success": True,
+            "tenant_id": str(tenant.id),
+            "tenant_name": tenant.name,
+            "accounts_total": len(accounts),
+            "accounts_refreshing": len(jobs_launched),
+            "jobs": jobs_launched,
+            "message": f"🔄 Refresh lancé pour {len(jobs_launched)} comptes. Durée estimée: ~{len(jobs_launched) * 0.5:.0f} minutes"
+        }
+
+    finally:
+        db.close()
