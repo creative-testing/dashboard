@@ -455,14 +455,28 @@ async def dev_generate_jwt(fb_account_id: str) -> Dict[str, Any]:
             tenant_id=tenant_id
         )
 
-        # 4. Construire l'URL du dashboard
-        dashboard_url = f"{settings.DASHBOARD_URL}?account_id={fb_account_id}&token={jwt_token}"
+        # 4. Construire l'URL du dashboard (direct vers index-saas.html)
+        # Note: index-saas.html est le vrai dashboard, index-mvp.html est juste un intermédiaire OAuth
+        from urllib.parse import urlencode
+
+        dashboard_params = {
+            "account_id": fb_account_id,
+            "account": ad_account.name,
+            "token": jwt_token,
+            "tenant_id": str(tenant_id),
+            "locked": "1"  # Verrouiller le sélecteur de compte
+        }
+
+        # Pointer vers index-saas.html directement (pas index-mvp.html qui est pour OAuth callback)
+        base_url = settings.DASHBOARD_URL.replace("index-mvp.html", "index-saas.html")
+        dashboard_url = f"{base_url}?{urlencode(dashboard_params)}"
 
         return {
             "success": True,
             "jwt_token": jwt_token,
             "tenant_id": str(tenant_id),
             "account_id": fb_account_id,
+            "account_name": ad_account.name,
             "dashboard_url": dashboard_url,
             "expires_in_seconds": 7 * 24 * 60 * 60  # 7 jours
         }
