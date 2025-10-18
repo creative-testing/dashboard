@@ -37,8 +37,8 @@ class CSRFFromCookieGuard(BaseHTTPMiddleware):
 
     # Paths excluded from CSRF check (DEBUG endpoints, webhooks)
     CSRF_EXEMPT_PATHS = (
-        "/auth/facebook/dev-login",
-        "/auth/facebook/test-token",  # TEMPORARY: Testing endpoint - DELETE after testing
+        "/api/auth/facebook/dev-login",
+        "/api/auth/facebook/test-token",  # TEMPORARY: Testing endpoint - DELETE after testing
         "/billing/webhook",  # Stripe webhooks (verified via signature)
         "/facebook/data-deletion",  # Meta data deletion callback
     )
