@@ -109,7 +109,8 @@ async def refresh_account_data(
         meta_v1, agg_v1, summary_v1 = transform_to_columnar(
             daily_ads=daily_insights,
             reference_date=reference_date,
-            ad_account_id=ad_account_id
+            ad_account_id=ad_account_id,
+            account_name=ad_account.name  # Pass real account name from DB
         )
     except Exception as e:
         raise RefreshError(f"Transform error: {e}")
