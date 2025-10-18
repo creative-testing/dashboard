@@ -720,6 +720,7 @@ async def generate_dashboard_link(tenant_id: str) -> Dict[str, Any]:
 
 @router.post("/dev/refresh-all-production")
 async def refresh_all_production_accounts(
+    background_tasks: BackgroundTasks,
     tenant_id: str = "c0c595ab-3903-4256-b8d7-cb9709ac9206",
     limit: Optional[int] = None
 ) -> Dict[str, Any]:
@@ -740,7 +741,7 @@ async def refresh_all_production_accounts(
         }
     """
     from uuid import UUID
-    from ..services import jobs
+    from cryptography.fernet import Fernet
 
     db = SessionLocal()
 
@@ -761,35 +762,52 @@ async def refresh_all_production_accounts(
         if limit:
             accounts = accounts[:limit]
 
-        # Get OAuth token for this tenant
-        oauth_token = db.execute(
-            select(models.OAuthToken).where(
-                models.OAuthToken.tenant_id == UUID(tenant_id),
-                models.OAuthToken.provider == "meta"
-            )
-        ).scalar_one_or_none()
-
-        if not oauth_token:
-            raise HTTPException(status_code=404, detail="OAuth token not found for tenant")
-
-        # Decrypt token
-        fernet = Fernet(settings.TOKEN_ENCRYPTION_KEY.encode())
-        access_token = fernet.decrypt(oauth_token.access_token).decode()
-
-        # Launch refresh job for each account
+        # Launch refresh jobs using same mechanism as /refresh/{fb_account_id}
         jobs_launched = []
 
         for account in accounts:
-            job_id = await jobs.enqueue_refresh_job(
+            # Check for existing running job (idempotence)
+            existing_job = db.execute(
+                select(RefreshJob).where(
+                    RefreshJob.tenant_id == UUID(tenant_id),
+                    RefreshJob.ad_account_id == account.id,
+                    RefreshJob.status.in_([JobStatus.QUEUED, JobStatus.RUNNING])
+                )
+            ).scalar_one_or_none()
+
+            if existing_job:
+                # Skip if already running
+                jobs_launched.append({
+                    "account_id": account.fb_account_id,
+                    "account_name": account.name,
+                    "job_id": str(existing_job.id),
+                    "already_running": True
+                })
+                continue
+
+            # Create new job
+            job = RefreshJob(
                 tenant_id=UUID(tenant_id),
-                account_id=account.fb_account_id,
-                access_token=access_token
+                ad_account_id=account.id,
+                status=JobStatus.QUEUED
+            )
+            db.add(job)
+            db.commit()
+            db.refresh(job)
+
+            # Launch in background using BackgroundTasks
+            background_tasks.add_task(
+                _run_refresh_job,
+                job.id,
+                account.fb_account_id,
+                UUID(tenant_id)
             )
 
             jobs_launched.append({
                 "account_id": account.fb_account_id,
                 "account_name": account.name,
-                "job_id": str(job_id)
+                "job_id": str(job.id),
+                "already_running": False
             })
 
         return {
