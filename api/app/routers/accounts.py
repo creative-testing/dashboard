@@ -660,3 +660,59 @@ async def seed_production_tenant() -> Dict[str, Any]:
         raise HTTPException(status_code=500, detail=f"Seed error: {str(e)}")
     finally:
         db.close()
+
+
+@router.post("/dev/generate-dashboard-link")
+async def generate_dashboard_link(tenant_id: str) -> Dict[str, Any]:
+    """
+    Génère une URL dashboard permanente (JWT 7 jours) pour un tenant
+
+    Args:
+        tenant_id: UUID du tenant
+
+    Returns:
+        {
+            "dashboard_url": "https://creative-testing.github.io/dashboard/index-saas.html?token=XXX",
+            "tenant_id": "uuid",
+            "tenant_name": "Ads Alchimie (Production)",
+            "expires_in_days": 7
+        }
+    """
+    from uuid import UUID
+
+    db = SessionLocal()
+
+    try:
+        # Get tenant
+        tenant = db.execute(
+            select(models.Tenant).where(models.Tenant.id == UUID(tenant_id))
+        ).scalar_one_or_none()
+
+        if not tenant:
+            raise HTTPException(status_code=404, detail="Tenant not found")
+
+        # Get user
+        user = db.execute(
+            select(models.User).where(models.User.tenant_id == UUID(tenant_id))
+        ).first()
+
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found for tenant")
+
+        user = user[0]
+
+        # Generate JWT (7 days)
+        token = create_access_token(user.id, tenant.id, expires_delta=timedelta(days=7))
+
+        # Build dashboard URL
+        dashboard_url = f"https://creative-testing.github.io/dashboard/index-saas.html?token={token}&tenant_id={tenant.id}"
+
+        return {
+            "dashboard_url": dashboard_url,
+            "tenant_id": str(tenant.id),
+            "tenant_name": tenant.name,
+            "expires_in_days": 7
+        }
+
+    finally:
+        db.close()
