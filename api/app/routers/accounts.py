@@ -6,7 +6,7 @@ from datetime import datetime, timezone, timedelta
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
 from sqlalchemy import select
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 from ..database import get_db, SessionLocal
 from ..dependencies.auth import get_current_tenant_id, get_current_user_id
