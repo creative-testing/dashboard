@@ -14,6 +14,7 @@ from .. import models
 from ..models.refresh_job import RefreshJob, JobStatus
 from ..services.refresher import refresh_account_data, RefreshError
 from ..config import settings
+from ..utils.jwt import create_access_token
 
 router = APIRouter()
 
@@ -392,6 +393,78 @@ async def dev_check_files(fb_account_id: str) -> Dict[str, Any]:
             "tenant_id": str(tenant_id),
             "base_path": base_path,
             "files": files_info
+        }
+
+    finally:
+        db.close()
+
+
+@router.get("/dev/generate-jwt/{fb_account_id}")
+async def dev_generate_jwt(fb_account_id: str) -> Dict[str, Any]:
+    """
+    🔑 DEBUG ONLY: Génère un JWT pour accéder au dashboard d'un compte
+
+    Génère un JWT d'authentification backend pour le tenant qui possède
+    ce compte. Le JWT permet au dashboard de télécharger les fichiers JSON.
+
+    Returns:
+        {
+            "success": true,
+            "jwt_token": "eyJ...",
+            "tenant_id": "uuid",
+            "account_id": "act_XXX",
+            "dashboard_url": "https://...?account_id=act_XXX&token=eyJ...",
+            "expires_in_seconds": 604800  # 7 days
+        }
+    """
+    db = SessionLocal()
+    try:
+        # 1. Trouver le compte
+        ad_account = db.execute(
+            select(models.AdAccount).where(
+                models.AdAccount.fb_account_id == fb_account_id
+            )
+        ).scalar_one_or_none()
+
+        if not ad_account:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Ad account {fb_account_id} not found"
+            )
+
+        tenant_id = ad_account.tenant_id
+
+        # 2. Trouver un user de ce tenant (pour le JWT)
+        user = db.execute(
+            select(models.User).where(
+                models.User.tenant_id == tenant_id
+            )
+        ).first()
+
+        if not user:
+            raise HTTPException(
+                status_code=500,
+                detail=f"No user found for tenant {tenant_id}"
+            )
+
+        user = user[0]  # unpack from tuple
+
+        # 3. Générer le JWT
+        jwt_token = create_access_token(
+            user_id=user.id,
+            tenant_id=tenant_id
+        )
+
+        # 4. Construire l'URL du dashboard
+        dashboard_url = f"{settings.DASHBOARD_URL}?account_id={fb_account_id}&token={jwt_token}"
+
+        return {
+            "success": True,
+            "jwt_token": jwt_token,
+            "tenant_id": str(tenant_id),
+            "account_id": fb_account_id,
+            "dashboard_url": dashboard_url,
+            "expires_in_seconds": 7 * 24 * 60 * 60  # 7 jours
         }
 
     finally:
