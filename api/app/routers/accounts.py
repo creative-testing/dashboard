@@ -740,6 +740,10 @@ def inject_production_token(
     from uuid import UUID
     from datetime import datetime, timedelta
     from sqlalchemy.dialects.postgresql import insert
+    from cryptography.fernet import Fernet
+
+    # Fernet pour chiffrer le token
+    fernet = Fernet(settings.TOKEN_ENCRYPTION_KEY.encode())
 
     try:
         # 1. Vérifier tenant existe
