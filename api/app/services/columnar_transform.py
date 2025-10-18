@@ -100,7 +100,8 @@ def _process_unique_link_clicks(ad: Dict[str, Any]) -> int:
 def transform_to_columnar(
     daily_ads: List[Dict[str, Any]],
     reference_date: str,
-    ad_account_id: str
+    ad_account_id: str,
+    account_name: str = None
 ) -> tuple[Dict[str, Any], Dict[str, Any], Dict[str, Any]]:
     """
     Transform daily insights to columnar format
@@ -109,14 +110,19 @@ def transform_to_columnar(
         daily_ads: List of daily ad insights from Meta API
         reference_date: Reference date (YYYY-MM-DD)
         ad_account_id: Account ID for metadata
+        account_name: Account name for display (defaults to ID if not provided)
 
     Returns:
         (meta_v1, agg_v1, summary_v1)
     """
 
+    # Default account_name to ID if not provided
+    if account_name is None:
+        account_name = ad_account_id
+
     if not daily_ads:
         # Return empty but valid structures
-        return _empty_structures(reference_date, ad_account_id)
+        return _empty_structures(reference_date, ad_account_id, account_name)
 
     # Sort by date DESC to keep newest metadata (fresh URLs)
     daily_ads.sort(key=lambda ad: ad.get('date_start', ''), reverse=True)
@@ -212,7 +218,7 @@ def transform_to_columnar(
                     agg['campaign_id'] = ad.get('campaign_id', '')
                     agg['adset_name'] = ad.get('adset_name', '')
                     agg['adset_id'] = ad.get('adset_id', '')
-                    agg['account_name'] = ad_account_id  # We don't have account_name from API
+                    agg['account_name'] = account_name  # Use real account name from DB
                     agg['account_id'] = ad_account_id
                     agg['created_time'] = ad.get('created_time', '')
                     # Status and format will be enriched later if needed
@@ -355,11 +361,14 @@ def transform_to_columnar(
     return meta_v1, agg_v1, summary_v1
 
 
-def _empty_structures(reference_date: str, ad_account_id: str) -> tuple[Dict[str, Any], Dict[str, Any], Dict[str, Any]]:
+def _empty_structures(reference_date: str, ad_account_id: str, account_name: str = None) -> tuple[Dict[str, Any], Dict[str, Any], Dict[str, Any]]:
     """
     Return empty but valid structures when no data
     Prevents dashboard crashes with 0 ads
     """
+    if account_name is None:
+        account_name = ad_account_id
+
     periods = ['3d', '7d', '14d', '30d', '90d']
 
     meta_v1 = {
@@ -379,7 +388,7 @@ def _empty_structures(reference_date: str, ad_account_id: str) -> tuple[Dict[str
         "ads": [],
         "campaigns": {},
         "adsets": {},
-        "accounts": {ad_account_id: {"name": ad_account_id}}
+        "accounts": {ad_account_id: {"name": account_name}}
     }
 
     agg_v1 = {
