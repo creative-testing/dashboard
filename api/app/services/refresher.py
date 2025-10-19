@@ -107,13 +107,20 @@ async def refresh_account_data(
     # 5b. Enrich with creatives (format, media_url, status)
     # CRITICAL: Parité avec ancien pipeline (fetch_with_smart_limits.py)
     try:
+        print(f"🎨 Enriching {len(daily_insights)} insights with creatives...")
+        if daily_insights:
+            print(f"   Sample insight keys: {list(daily_insights[0].keys())[:10]}")
+
         daily_insights = await meta_client.enrich_ads_with_creatives(
             ads=daily_insights,
             access_token=access_token
         )
+        print(f"✅ Enrichment complete")
     except Exception as e:
         # Enrichment failure is non-fatal - continue with UNKNOWN formats
-        pass
+        print(f"⚠️ Enrichment failed: {e}")
+        import traceback
+        traceback.print_exc()
 
     # 6. Transform en format columnar
     try:
