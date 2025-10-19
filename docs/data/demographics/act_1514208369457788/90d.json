@@ -4,16 +4,16 @@
     "account_name": "Oaxacapsx",
     "period": "90d",
     "date_range": "2025-07-21..2025-10-18",
-    "generated_at": "2025-10-19T15:20:55.402620Z",
+    "generated_at": "2025-10-19T21:19:02.603295Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 1588945,
+      "impressions": 1588959,
       "clicks": 51607,
-      "spend": 70396.95,
+      "spend": 70397.14,
       "purchases": 157,
       "purchase_value": 294289.0,
       "ctr": 3.25,
@@ -23,21 +23,21 @@
     {
       "age": "18-24",
       "gender": "male",
-      "impressions": 1798821,
+      "impressions": 1798841,
       "clicks": 57616,
-      "spend": 68386.86,
+      "spend": 68387.15,
       "purchases": 130,
       "purchase_value": 226989.1,
       "ctr": 3.2,
-      "cpa": 526.05,
+      "cpa": 526.06,
       "roas": 3.32
     },
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 354873,
+      "impressions": 354875,
       "clicks": 13755,
-      "spend": 21244.86,
+      "spend": 21244.93,
       "purchases": 39,
       "purchase_value": 80985.0,
       "ctr": 3.88,
@@ -47,7 +47,7 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 396303,
+      "impressions": 396308,
       "clicks": 10900,
       "spend": 16369.82,
       "purchases": 36,
@@ -59,9 +59,9 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 293161,
+      "impressions": 293162,
       "clicks": 8288,
-      "spend": 12572.31,
+      "spend": 12572.32,
       "purchases": 14,
       "purchase_value": 26852.0,
       "ctr": 2.83,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 4816179,
+    "impressions": 4816221,
     "clicks": 155137,
-    "spend": 209828.62,
+    "spend": 209829.18,
     "purchases": 409,
     "purchase_value": 846526.1,
     "roas": 4.03

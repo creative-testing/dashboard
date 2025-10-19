@@ -4,20 +4,20 @@
     "account_name": "Petcare 2",
     "period": "3d",
     "date_range": "2025-10-16..2025-10-18",
-    "generated_at": "2025-10-19T15:21:19.507811Z",
+    "generated_at": "2025-10-19T21:19:20.452758Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 9765,
+      "impressions": 9767,
       "clicks": 223,
-      "spend": 1499.29,
+      "spend": 1499.71,
       "purchases": 4,
       "purchase_value": 3413.2,
       "ctr": 2.28,
-      "cpa": 374.82,
+      "cpa": 374.93,
       "roas": 2.28
     },
     {
@@ -35,7 +35,7 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 4790,
+      "impressions": 4792,
       "clicks": 148,
       "spend": 679.26,
       "purchases": 0,
@@ -47,7 +47,7 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 7655,
+      "impressions": 7656,
       "clicks": 128,
       "spend": 634.32,
       "purchases": 2,
@@ -83,7 +83,7 @@
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 3600,
+      "impressions": 3601,
       "clicks": 63,
       "spend": 429.31,
       "purchases": 1,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 57193,
+    "impressions": 57199,
     "clicks": 1003,
-    "spend": 6216.13,
+    "spend": 6216.55,
     "purchases": 13,
     "purchase_value": 12246.45,
     "roas": 1.97

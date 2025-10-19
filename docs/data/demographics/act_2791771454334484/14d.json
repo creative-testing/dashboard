@@ -4,16 +4,16 @@
     "account_name": "Koro Beauty",
     "period": "14d",
     "date_range": "2025-10-05..2025-10-18",
-    "generated_at": "2025-10-19T15:20:23.605622Z",
+    "generated_at": "2025-10-19T21:18:37.683763Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 487167,
-      "clicks": 8413,
-      "spend": 18716.93,
+      "impressions": 487183,
+      "clicks": 8415,
+      "spend": 18717.37,
       "purchases": 67,
       "purchase_value": 52268.6,
       "ctr": 1.73,
@@ -23,21 +23,21 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 248685,
-      "clicks": 5081,
-      "spend": 16332.75,
+      "impressions": 248698,
+      "clicks": 5084,
+      "spend": 16334.33,
       "purchases": 64,
       "purchase_value": 49408.4,
       "ctr": 2.04,
-      "cpa": 255.2,
-      "roas": 3.03
+      "cpa": 255.22,
+      "roas": 3.02
     },
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 77386,
+      "impressions": 77387,
       "clicks": 2073,
-      "spend": 6832.6,
+      "spend": 6832.62,
       "purchases": 32,
       "purchase_value": 22411.0,
       "ctr": 2.68,
@@ -47,9 +47,9 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 206892,
+      "impressions": 206897,
       "clicks": 4226,
-      "spend": 5040.4,
+      "spend": 5040.42,
       "purchases": 16,
       "purchase_value": 11230.4,
       "ctr": 2.04,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 1106722,
-    "clicks": 23131,
-    "spend": 50615.58,
+    "impressions": 1106757,
+    "clicks": 23136,
+    "spend": 50617.64,
     "purchases": 188,
     "purchase_value": 141856.5,
     "roas": 2.8
