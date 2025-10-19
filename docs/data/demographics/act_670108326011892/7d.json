@@ -4,26 +4,26 @@
     "account_name": "SCENTICA",
     "period": "7d",
     "date_range": "2025-10-12..2025-10-18",
-    "generated_at": "2025-10-19T09:21:33.487805Z",
+    "generated_at": "2025-10-19T15:21:35.217341Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 28982,
+      "impressions": 28984,
       "clicks": 545,
-      "spend": 1227.17,
+      "spend": 1227.22,
       "purchases": 2,
       "purchase_value": 3809.0,
       "ctr": 1.88,
-      "cpa": 613.59,
+      "cpa": 613.61,
       "roas": 3.1
     },
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 19900,
+      "impressions": 19901,
       "clicks": 443,
       "spend": 1154.04,
       "purchases": 2,
@@ -35,7 +35,7 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 16568,
+      "impressions": 16570,
       "clicks": 416,
       "spend": 1104.35,
       "purchases": 2,
@@ -71,9 +71,9 @@
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 6325,
+      "impressions": 6327,
       "clicks": 198,
-      "spend": 532.56,
+      "spend": 532.58,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 3.13,
@@ -107,7 +107,7 @@
     {
       "age": "18-24",
       "gender": "male",
-      "impressions": 8849,
+      "impressions": 8851,
       "clicks": 125,
       "spend": 323.32,
       "purchases": 0,
@@ -143,12 +143,12 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 1068,
+      "impressions": 1069,
       "clicks": 52,
       "spend": 98.53,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 4.87,
+      "ctr": 4.86,
       "cpa": 0,
       "roas": 0.0
     },
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 112190,
+    "impressions": 112200,
     "clicks": 2736,
-    "spend": 6982.56,
+    "spend": 6982.63,
     "purchases": 11,
     "purchase_value": 15262.0,
     "roas": 2.19

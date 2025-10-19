@@ -4,14 +4,14 @@
     "account_name": "La horma mx",
     "period": "3d",
     "date_range": "2025-10-16..2025-10-18",
-    "generated_at": "2025-10-19T09:18:57.153066Z",
+    "generated_at": "2025-10-19T15:18:33.468538Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 48700,
+      "impressions": 48706,
       "clicks": 1090,
       "spend": 2572.8,
       "purchases": 3,
@@ -23,19 +23,19 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 33572,
+      "impressions": 33584,
       "clicks": 995,
-      "spend": 2337.98,
+      "spend": 2337.99,
       "purchases": 4,
       "purchase_value": 4545.86,
       "ctr": 2.96,
-      "cpa": 584.49,
+      "cpa": 584.5,
       "roas": 1.94
     },
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 14262,
+      "impressions": 14264,
       "clicks": 684,
       "spend": 1199.76,
       "purchases": 3,
@@ -47,19 +47,19 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 8347,
-      "clicks": 443,
+      "impressions": 8353,
+      "clicks": 444,
       "spend": 921.42,
       "purchases": 2,
       "purchase_value": 1516.21,
-      "ctr": 5.31,
+      "ctr": 5.32,
       "cpa": 460.71,
       "roas": 1.65
     },
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 2107,
+      "impressions": 2108,
       "clicks": 128,
       "spend": 183.92,
       "purchases": 0,
@@ -167,12 +167,12 @@
     {
       "age": "65+",
       "gender": "male",
-      "impressions": 78,
+      "impressions": 79,
       "clicks": 6,
       "spend": 6.73,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 7.69,
+      "ctr": 7.59,
       "cpa": 0,
       "roas": 0.0
     },
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 113279,
-    "clicks": 3532,
-    "spend": 7502.24,
+    "impressions": 113307,
+    "clicks": 3533,
+    "spend": 7502.25,
     "purchases": 12,
     "purchase_value": 12748.03,
     "roas": 1.7

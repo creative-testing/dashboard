@@ -4,16 +4,16 @@
     "account_name": "Kyra Gold",
     "period": "30d",
     "date_range": "2025-09-19..2025-10-18",
-    "generated_at": "2025-10-19T09:19:47.544951Z",
+    "generated_at": "2025-10-19T15:19:30.318527Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 2034388,
-      "clicks": 23376,
-      "spend": 38529.41,
+      "impressions": 2034444,
+      "clicks": 23380,
+      "spend": 38529.58,
       "purchases": 164,
       "purchase_value": 114626.05,
       "ctr": 1.15,
@@ -23,9 +23,9 @@
     {
       "age": "18-24",
       "gender": "male",
-      "impressions": 2054745,
+      "impressions": 2054790,
       "clicks": 23895,
-      "spend": 36610.76,
+      "spend": 36610.86,
       "purchases": 169,
       "purchase_value": 114209.88,
       "ctr": 1.16,
@@ -47,7 +47,7 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 231010,
+      "impressions": 231014,
       "clicks": 5242,
       "spend": 6569.05,
       "purchases": 24,
@@ -59,7 +59,7 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 233634,
+      "impressions": 233639,
       "clicks": 4521,
       "spend": 5739.02,
       "purchases": 32,
@@ -71,9 +71,9 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 223711,
+      "impressions": 223720,
       "clicks": 3076,
-      "spend": 4860.11,
+      "spend": 4860.12,
       "purchases": 19,
       "purchase_value": 12316.65,
       "ctr": 1.37,
@@ -143,7 +143,7 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 24251,
+      "impressions": 24252,
       "clicks": 1507,
       "spend": 1032.98,
       "purchases": 1,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 5171225,
-    "clicks": 88287,
-    "spend": 111323.81,
+    "impressions": 5171345,
+    "clicks": 88291,
+    "spend": 111324.09,
     "purchases": 417,
     "purchase_value": 293140.3,
     "roas": 2.63
