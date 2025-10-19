@@ -104,6 +104,17 @@ async def refresh_account_data(
     except MetaAPIError as e:
         raise RefreshError(f"Meta API error: {e}")
 
+    # 5b. Enrich with creatives (format, media_url, status)
+    # CRITICAL: Parité avec ancien pipeline (fetch_with_smart_limits.py)
+    try:
+        daily_insights = await meta_client.enrich_ads_with_creatives(
+            ads=daily_insights,
+            access_token=access_token
+        )
+    except Exception as e:
+        # Enrichment failure is non-fatal - continue with UNKNOWN formats
+        pass
+
     # 6. Transform en format columnar
     try:
         meta_v1, agg_v1, summary_v1 = transform_to_columnar(

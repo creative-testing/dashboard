@@ -12,9 +12,9 @@ except ImportError:
 SECRET_KEY = "dev-secret-key-change-in-production-min-32-chars-long"
 ALGORITHM = "HS256"
 
-# Tenant ID from test
-tenant_id = "8f63e271-e2e4-49c4-965d-2a4370b3215b"
-user_email = "frederic@adsalchemy.com"
+# Tenant ID PRODUCTION
+tenant_id = "c0c595ab-3903-4256-b8d7-cb9709ac9206"
+user_email = "production@adsalchemy.com"
 
 # Create JWT token (expires in 7 days)
 expires_at = datetime.now(timezone.utc) + timedelta(days=7)
