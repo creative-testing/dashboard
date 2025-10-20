@@ -17,7 +17,7 @@ from sqlalchemy import select
 from app.database import SessionLocal
 from app import models
 from app.models import JobStatus, RefreshJob
-from app.services.refresher import MetaRefresher
+from app.services.refresher import refresh_account_data, RefreshError
 from app.services.meta_client import meta_client
 from cryptography.fernet import Fernet
 from app.config import settings
@@ -106,9 +106,12 @@ async def refresh_tenant(tenant_id: str, tenant_name: str, db: SessionLocal):
                 job.started_at = datetime.utcnow()
                 db.commit()
 
-                # Run refresh
-                refresher = MetaRefresher(access_token, account.fb_account_id, str(tenant_id))
-                await refresher.refresh()
+                # Run refresh (refresh_account_data gets token from DB internally)
+                result = await refresh_account_data(
+                    ad_account_id=account.fb_account_id,
+                    tenant_id=UUID(tenant_id),
+                    db=db
+                )
 
                 # Mark job as completed
                 job.status = JobStatus.COMPLETED
