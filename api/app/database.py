@@ -6,12 +6,12 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from .config import settings
 
-# Fix Render's postgres:// URL format for SQLAlchemy 1.4+
+# Fix Render's postgres:// URL format for SQLAlchemy 1.4+ with psycopg driver
 # Render provides DATABASE_URL as postgres:// (Heroku legacy format)
-# but SQLAlchemy 1.4+ requires postgresql://
+# but SQLAlchemy 1.4+ requires postgresql+psycopg:// (for psycopg v3 driver)
 database_url = settings.DATABASE_URL
 if database_url.startswith("postgres://"):
-    database_url = database_url.replace("postgres://", "postgresql://", 1)
+    database_url = database_url.replace("postgres://", "postgresql+psycopg://", 1)
 
 # Engine SQLAlchemy
 engine = create_engine(
