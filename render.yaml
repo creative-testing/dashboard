@@ -50,7 +50,7 @@ services:
       - key: STORAGE_MODE
         value: local
       - key: LOCAL_DATA_ROOT
-        value: ./data
+        value: /mnt/data  # Persistent disk (survit aux redémarrages)
       - key: TOKEN_ENCRYPTION_KEY
         value: NL60gr7GtOU1TPxj2qlbCB64R6sCIG4FTT8eANnABWw=
       - key: JWT_ISSUER
@@ -67,6 +67,31 @@ services:
         value: "60"
       - key: SENTRY_DSN
         value: ""  # Optionnel
+
+  # Cron Job - Refresh automatique toutes les 2h
+  - type: cron
+    name: creative-testing-cron-refresh
+    runtime: python
+    region: oregon
+    plan: free
+    branch: master
+    rootDir: api
+    schedule: "0 */2 * * *"  # Toutes les 2 heures
+    buildCommand: pip install -r requirements-api.txt
+    startCommand: python cron_refresh.py
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: creative-testing-db
+          property: connectionString
+      - key: TOKEN_ENCRYPTION_KEY
+        value: NL60gr7GtOU1TPxj2qlbCB64R6sCIG4FTT8eANnABWw=
+      - key: META_API_VERSION
+        value: v23.0
+      - key: STORAGE_MODE
+        value: local
+      - key: LOCAL_DATA_ROOT
+        value: /mnt/data
 
 databases:
   # PostgreSQL Database
