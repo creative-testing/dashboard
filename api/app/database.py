@@ -6,9 +6,16 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from .config import settings
 
+# Fix Render's postgres:// URL format for SQLAlchemy 1.4+
+# Render provides DATABASE_URL as postgres:// (Heroku legacy format)
+# but SQLAlchemy 1.4+ requires postgresql://
+database_url = settings.DATABASE_URL
+if database_url.startswith("postgres://"):
+    database_url = database_url.replace("postgres://", "postgresql://", 1)
+
 # Engine SQLAlchemy
 engine = create_engine(
-    settings.DATABASE_URL,
+    database_url,
     pool_pre_ping=True,  # Vérifie la connexion avant utilisation
     echo=settings.DEBUG,  # Log SQL queries en dev
 )
