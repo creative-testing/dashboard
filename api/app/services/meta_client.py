@@ -334,6 +334,142 @@ class MetaClient:
 
         return all_insights
 
+    async def fetch_creatives_batch(
+        self,
+        ad_ids: list[str],
+        access_token: str
+    ) -> Dict[str, dict]:
+        """
+        Récupère les creatives (format, media_url) pour un batch de max 50 ads
+
+        Utilise l'API Batch de Meta pour optimiser les appels
+        """
+        if not ad_ids or len(ad_ids) == 0:
+            return {}
+
+        # Limiter à 50 ads max par batch (limitation Meta API)
+        ad_ids = ad_ids[:50]
+
+        # Préparer les requêtes batch
+        batch_requests = []
+        for ad_id in ad_ids:
+            batch_requests.append({
+                "method": "GET",
+                "relative_url": f"{ad_id}?fields=status,effective_status,created_time,creative{{status,video_id,image_url,instagram_permalink_url,object_story_spec}}"
+            })
+
+        try:
+            params = {
+                "access_token": access_token,
+                "batch": json.dumps(batch_requests)
+            }
+
+            async with httpx.AsyncClient(timeout=httpx.Timeout(60.0)) as client:
+                response = await client.post(self.base_url, data=params)
+
+            if response.status_code != 200:
+                return {}
+
+            results = {}
+            batch_responses = response.json()
+
+            for i, resp in enumerate(batch_responses):
+                if resp.get("code") == 200:
+                    ad_data = json.loads(resp["body"])
+                    ad_id = ad_ids[i]
+
+                    # Extraire les infos creative
+                    creative = ad_data.get("creative", {})
+
+                    # Déterminer format et media_url
+                    format_type = "UNKNOWN"
+                    media_url = ""
+
+                    if creative.get("video_id"):
+                        format_type = "VIDEO"
+                        media_url = f"https://www.facebook.com/watch/?v={creative['video_id']}"
+                    elif creative.get("image_url"):
+                        format_type = "IMAGE"
+                        media_url = creative["image_url"]
+                    elif creative.get("instagram_permalink_url"):
+                        format_type = "CAROUSEL"
+                        media_url = creative["instagram_permalink_url"]
+                    elif creative.get("object_story_spec"):
+                        # Fallback: chercher dans object_story_spec
+                        story = creative.get("object_story_spec", {})
+                        if story.get("video_data"):
+                            format_type = "VIDEO"
+                        elif story.get("link_data", {}).get("image_hash"):
+                            format_type = "IMAGE"
+
+                    results[ad_id] = {
+                        "status": ad_data.get("status", "UNKNOWN"),
+                        "effective_status": ad_data.get("effective_status", "UNKNOWN"),
+                        "format": format_type,
+                        "media_url": media_url,
+                        "creative_status": creative.get("status", "UNKNOWN")
+                    }
+
+            return results
+
+        except Exception:
+            return {}
+
+    async def enrich_ads_with_creatives(
+        self,
+        ads: list[Dict[str, Any]],
+        access_token: str
+    ) -> list[Dict[str, Any]]:
+        """
+        Enrichit les ads avec leurs creatives (format, media_url, status)
+
+        Utilise des batch requests (50 ads/batch) en parallèle pour optimiser
+
+        Args:
+            ads: Liste des ads à enrichir (doit contenir 'ad_id')
+            access_token: Token Meta
+
+        Returns:
+            Liste des ads enrichies avec format, media_url, status
+        """
+        if not ads:
+            return ads
+
+        # Extraire les unique ad_ids
+        ad_ids = list(set(ad['ad_id'] for ad in ads if 'ad_id' in ad))
+
+        # Grouper en batchs de 50
+        batches = [ad_ids[i:i+50] for i in range(0, len(ad_ids), 50)]
+
+        # Fetch tous les batchs en parallèle (limité à 25 concurrent)
+        creative_data = {}
+
+        # Process by chunks of 25 batches at a time
+        for chunk_start in range(0, len(batches), 25):
+            chunk = batches[chunk_start:chunk_start+25]
+            tasks = [self.fetch_creatives_batch(batch, access_token) for batch in chunk]
+            results = await asyncio.gather(*tasks, return_exceptions=True)
+
+            for result in results:
+                if isinstance(result, dict):
+                    creative_data.update(result)
+
+        # Enrichir les ads avec les données creative
+        enriched_count = 0
+        for ad in ads:
+            ad_id = ad.get('ad_id')
+            if ad_id and ad_id in creative_data:
+                ad.update(creative_data[ad_id])
+                enriched_count += 1
+            else:
+                # Valeurs par défaut si pas de données creative
+                ad.setdefault('status', 'UNKNOWN')
+                ad.setdefault('effective_status', 'UNKNOWN')
+                ad.setdefault('format', 'UNKNOWN')
+                ad.setdefault('media_url', '')
+
+        return ads
+
 
 # Instance globale (singleton pattern)
 meta_client = MetaClient()

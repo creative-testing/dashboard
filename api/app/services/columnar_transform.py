@@ -221,11 +221,11 @@ def transform_to_columnar(
                     agg['account_name'] = account_name  # Use real account name from DB
                     agg['account_id'] = ad_account_id
                     agg['created_time'] = ad.get('created_time', '')
-                    # Status and format will be enriched later if needed
-                    agg['status'] = 'UNKNOWN'
-                    agg['effective_status'] = 'UNKNOWN'
-                    agg['format'] = 'UNKNOWN'
-                    agg['media_url'] = ''
+                    # Copy enriched creative data from daily row
+                    agg['status'] = ad.get('status', 'UNKNOWN')
+                    agg['effective_status'] = ad.get('effective_status', 'UNKNOWN')
+                    agg['format'] = ad.get('format', 'UNKNOWN')  # ← FIX: Use enriched format
+                    agg['media_url'] = ad.get('media_url', '')   # ← FIX: Use enriched media URL
 
     # Build columnar structures
     # Use largest period (90d) as base to include all ads

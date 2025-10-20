@@ -6,7 +6,7 @@ from datetime import datetime, timezone, timedelta
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
 from sqlalchemy import select
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 from ..database import get_db, SessionLocal
 from ..dependencies.auth import get_current_tenant_id, get_current_user_id
@@ -658,5 +658,259 @@ async def seed_production_tenant() -> Dict[str, Any]:
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Seed error: {str(e)}")
+    finally:
+        db.close()
+
+
+@router.post("/dev/generate-dashboard-link")
+async def generate_dashboard_link(tenant_id: str) -> Dict[str, Any]:
+    """
+    Génère une URL dashboard permanente (JWT 7 jours) pour un tenant
+
+    Args:
+        tenant_id: UUID du tenant
+
+    Returns:
+        {
+            "dashboard_url": "https://creative-testing.github.io/dashboard/index-saas.html?token=XXX",
+            "tenant_id": "uuid",
+            "tenant_name": "Ads Alchimie (Production)",
+            "expires_in_days": 7
+        }
+    """
+    from uuid import UUID
+
+    db = SessionLocal()
+
+    try:
+        # Get tenant
+        tenant = db.execute(
+            select(models.Tenant).where(models.Tenant.id == UUID(tenant_id))
+        ).scalar_one_or_none()
+
+        if not tenant:
+            raise HTTPException(status_code=404, detail="Tenant not found")
+
+        # Get user
+        user = db.execute(
+            select(models.User).where(models.User.tenant_id == UUID(tenant_id))
+        ).first()
+
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found for tenant")
+
+        user = user[0]
+
+        # Generate JWT (7 days)
+        token = create_access_token(user.id, tenant.id, expires_delta=timedelta(days=7))
+
+        # Build dashboard URL
+        dashboard_url = f"https://creative-testing.github.io/dashboard/index-saas.html?token={token}&tenant_id={tenant.id}"
+
+        return {
+            "dashboard_url": dashboard_url,
+            "tenant_id": str(tenant.id),
+            "tenant_name": tenant.name,
+            "expires_in_days": 7
+        }
+
+    finally:
+        db.close()
+
+
+@router.post("/dev/inject-production-token")
+def inject_production_token(
+    access_token: str,
+    tenant_id: str = "c0c595ab-3903-4256-b8d7-cb9709ac9206",
+    db: Session = Depends(get_db)
+) -> Dict[str, Any]:
+    """
+    🔧 BOOTSTRAP: Injecte un token Meta dans le tenant de production
+
+    Permet de migrer le token existant (GitHub Secrets) dans la DB
+    pour que le refresh fonctionne sans que les patrons fassent OAuth
+
+    Args:
+        access_token: Token Meta long-lived (celui de GitHub Secrets)
+        tenant_id: Tenant UUID (défaut = production)
+
+    Returns:
+        {"success": true, "tenant_id": "...", "message": "..."}
+    """
+    from uuid import UUID
+    from datetime import datetime, timedelta
+    from sqlalchemy.dialects.postgresql import insert
+    from cryptography.fernet import Fernet
+
+    # Fernet pour chiffrer le token
+    fernet = Fernet(settings.TOKEN_ENCRYPTION_KEY.encode())
+
+    try:
+        # 1. Vérifier tenant existe
+        tenant = db.execute(
+            select(models.Tenant).where(models.Tenant.id == UUID(tenant_id))
+        ).scalar_one_or_none()
+
+        if not tenant:
+            raise HTTPException(status_code=404, detail=f"Tenant {tenant_id} not found")
+
+        # 2. Créer user fictif si n'existe pas (pour structure DB complète)
+        user = db.execute(
+            select(models.User).where(models.User.tenant_id == UUID(tenant_id))
+        ).first()
+
+        if not user:
+            user = models.User(
+                tenant_id=UUID(tenant_id),
+                meta_user_id="production_legacy",
+                email="production@adsalchemy.com",
+                name="Production (Legacy)"
+            )
+            db.add(user)
+            db.flush()
+        else:
+            user = user[0]
+
+        # 3. Chiffrer le token
+        token_encrypted = fernet.encrypt(access_token.encode()).decode()
+
+        # 4. Insérer/Update token OAuth
+        expires_at = datetime.utcnow() + timedelta(days=60)  # Long-lived token
+
+        stmt = insert(models.OAuthToken).values(
+            tenant_id=UUID(tenant_id),
+            user_id=user.id,
+            provider="meta",
+            fb_user_id="production_legacy",
+            access_token=token_encrypted.encode(),
+            expires_at=expires_at,
+            scopes=["ads_read", "public_profile"]
+        )
+        stmt = stmt.on_conflict_do_update(
+            index_elements=["user_id", "provider"],
+            set_={
+                "access_token": stmt.excluded.access_token,
+                "expires_at": stmt.excluded.expires_at,
+                "scopes": stmt.excluded.scopes
+            }
+        )
+        db.execute(stmt)
+        db.commit()
+
+        return {
+            "success": True,
+            "tenant_id": tenant_id,
+            "tenant_name": tenant.name,
+            "user_id": str(user.id),
+            "message": "✅ Token Meta injecté avec succès. Le refresh peut maintenant fonctionner."
+        }
+
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/dev/refresh-all-production")
+async def refresh_all_production_accounts(
+    background_tasks: BackgroundTasks,
+    tenant_id: str = "c0c595ab-3903-4256-b8d7-cb9709ac9206",
+    limit: Optional[int] = None
+) -> Dict[str, Any]:
+    """
+    🔄 Refresh TOUS les ad accounts d'un tenant (par défaut: Ads Alchimie Production)
+
+    Args:
+        tenant_id: Tenant UUID (défaut = production tenant)
+        limit: Limite le nombre de comptes à refresh (pour tests rapides)
+
+    Returns:
+        {
+            "tenant_id": "uuid",
+            "tenant_name": "Ads Alchimie (Production)",
+            "accounts_total": 70,
+            "accounts_refreshing": 70,
+            "jobs": [{"account_id": "act_XXX", "account_name": "...", "job_id": "uuid"}]
+        }
+    """
+    from uuid import UUID
+    from cryptography.fernet import Fernet
+
+    db = SessionLocal()
+
+    try:
+        tenant = db.execute(
+            select(models.Tenant).where(models.Tenant.id == UUID(tenant_id))
+        ).scalar_one_or_none()
+
+        if not tenant:
+            raise HTTPException(status_code=404, detail="Tenant not found")
+
+        # Get all ad accounts for this tenant
+        accounts = db.execute(
+            select(models.AdAccount).where(models.AdAccount.tenant_id == UUID(tenant_id))
+        ).scalars().all()
+
+        # Apply limit if specified (for testing)
+        if limit:
+            accounts = accounts[:limit]
+
+        # Launch refresh jobs using same mechanism as /refresh/{fb_account_id}
+        jobs_launched = []
+
+        for account in accounts:
+            # Check for existing running job (idempotence)
+            existing_job = db.execute(
+                select(RefreshJob).where(
+                    RefreshJob.tenant_id == UUID(tenant_id),
+                    RefreshJob.ad_account_id == account.id,
+                    RefreshJob.status.in_([JobStatus.QUEUED, JobStatus.RUNNING])
+                )
+            ).scalar_one_or_none()
+
+            if existing_job:
+                # Skip if already running
+                jobs_launched.append({
+                    "account_id": account.fb_account_id,
+                    "account_name": account.name,
+                    "job_id": str(existing_job.id),
+                    "already_running": True
+                })
+                continue
+
+            # Create new job
+            job = RefreshJob(
+                tenant_id=UUID(tenant_id),
+                ad_account_id=account.id,
+                status=JobStatus.QUEUED
+            )
+            db.add(job)
+            db.commit()
+            db.refresh(job)
+
+            # Launch in background using BackgroundTasks
+            background_tasks.add_task(
+                _run_refresh_job,
+                job.id,
+                account.fb_account_id,
+                UUID(tenant_id)
+            )
+
+            jobs_launched.append({
+                "account_id": account.fb_account_id,
+                "account_name": account.name,
+                "job_id": str(job.id),
+                "already_running": False
+            })
+
+        return {
+            "success": True,
+            "tenant_id": str(tenant.id),
+            "tenant_name": tenant.name,
+            "accounts_total": len(accounts),
+            "accounts_refreshing": len(jobs_launched),
+            "jobs": jobs_launched,
+            "message": f"🔄 Refresh lancé pour {len(jobs_launched)} comptes. Durée estimée: ~{len(jobs_launched) * 0.5:.0f} minutes"
+        }
+
     finally:
         db.close()

@@ -1385,8 +1385,8 @@
         }
         // Charger toutes les données au démarrage
         // NOTE: periodsData is populated by data_loader_saas.js into window.periodsData
-        // All code now uses window.periodsData directly (no local variable)
-        window.periodsData = window.periodsData || {};  // Initialize if not already done
+        // We reference it here for backwards compatibility with existing code
+        let periodsData = window.periodsData || {};  // Will be populated by data_loader_saas.js
         let prevWeekData = null;  // Initialize as null, not empty object
         let currentPeriod = 7;
         
@@ -1457,7 +1457,7 @@
                 }
                 
                 // Display immediately with 7-day data - AFTER loading prevWeekData
-                if (window.periodsData[7]) {
+                if (periodsData[7]) {
                     updateDashboard(7);
                     console.log('✅ 7j loaded and displayed');
                 }
@@ -1595,13 +1595,13 @@
             currentPeriod = days;
             
             // Vérifier si les données sont chargées
-            if (!window.periodsData[days]) {
+            if (!periodsData[days]) {
                 console.log(`⏳ Datos ${days} días no cargados aún...`);
                 button.textContent = `${days} días ⏳`;
                 
                 // Attendre que les données soient chargées
                 const checkInterval = setInterval(() => {
-                    if (window.periodsData[days]) {
+                    if (periodsData[days]) {
                         clearInterval(checkInterval);
                         button.textContent = `${days} días`;
                         switchPeriod(button, days); // Réessayer
@@ -1617,7 +1617,7 @@
             }
             
             try {
-                const n = window.periodsData[days] && window.periodsData[days].ads ? window.periodsData[days].ads.length : 0;
+                const n = periodsData[days] && periodsData[days].ads ? periodsData[days].ads.length : 0;
                 console.log('🔄 Switching period ->', days, 'days; ads:', n);
             } catch (e) { console.warn('switchPeriod log error', e); }
             
@@ -2206,11 +2206,11 @@
         
         function updateDashboard(days) {
             // Load period data on demand if not already loaded
-            let data = window.periodsData[days];
+            let data = periodsData[days];
             if (!data && window.loadPeriodData) {
                 console.log(`⏳ Loading ${days}d data on demand...`);
                 data = window.loadPeriodData(days);
-                window.periodsData[days] = data;
+                periodsData[days] = data;
             }
             
             if (!data) {
@@ -3102,7 +3102,7 @@
         // Expose globally for async update
         window.updateComparisonTable = function updateComparisonTable() {
             // ALWAYS use 7-day data for weekly comparison, regardless of selected period
-            const currentData = window.periodsData[7];  // Always compare last 7 days
+            const currentData = periodsData[7];  // Always compare last 7 days
             const prevData = window.prevWeekData || prevWeekData;  // Check global variable
             
             // Vérifier que les données sont disponibles
@@ -3256,7 +3256,7 @@
         function filterAdsByAccount(ads) {
             if (!ads) return [];
             // Make sure we handle all cases properly
-            if (currentAccountName === 'Todos' || currentAccountName === 'Todas las cuentas' || currentAccountName === 'global' || !currentAccountName) {
+            if (currentAccountName === 'Todos' || currentAccountName === 'global' || !currentAccountName) {
                 return ads; // Return all ads for "Todas las cuentas"
             }
             return ads.filter(a => a.account_name === currentAccountName);
@@ -3276,7 +3276,7 @@
             } else {
                 const allNames = new Set();
                 [3,7,14,30,90].forEach(p => {
-                    const d = window.periodsData[p];
+                    const d = periodsData[p];
                     if (d && d.ads) d.ads.forEach(a => { if (a.account_name) allNames.add(a.account_name); });
                 });
                 names = Array.from(allNames).sort();
@@ -3810,7 +3810,7 @@
             }
             
             // For other accounts, use simulated data
-            const data = window.periodsData[period];
+            const data = periodsData[period];
             if (!data || !data.ads) return null;
             
             const filteredAds = filterAdsByAccount(data.ads);

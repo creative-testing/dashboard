@@ -13,28 +13,28 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
     DEBUG: bool = True
     API_VERSION: str = "v1"
-    SECRET_KEY: str
-    SESSION_SECRET: str
+    SECRET_KEY: str = ""  # Optional for cron jobs
+    SESSION_SECRET: str = ""  # Optional for cron jobs
 
     # Database
     DATABASE_URL: str
 
     # Meta/Facebook OAuth
-    META_APP_ID: str
-    META_APP_SECRET: str
+    META_APP_ID: str = ""  # Optional for cron jobs (no OAuth callback)
+    META_APP_SECRET: str = ""  # Optional for cron jobs
     META_API_VERSION: str = "v23.0"
-    META_REDIRECT_URI: str
+    META_REDIRECT_URI: str = ""  # Optional for cron jobs
 
     # Production token (for seeding Ads Alchimie tenant)
     FACEBOOK_ACCESS_TOKEN: str = ""  # Optional, only for /dev/seed-production
 
-    # Stripe
-    STRIPE_SECRET_KEY: str
-    STRIPE_PUBLISHABLE_KEY: str
-    STRIPE_WEBHOOK_SECRET: str
-    STRIPE_PRICE_FREE: str
-    STRIPE_PRICE_PRO: str
-    STRIPE_PRICE_ENTERPRISE: str
+    # Stripe (optional for cron jobs - no billing logic)
+    STRIPE_SECRET_KEY: str = ""
+    STRIPE_PUBLISHABLE_KEY: str = ""
+    STRIPE_WEBHOOK_SECRET: str = ""
+    STRIPE_PRICE_FREE: str = ""
+    STRIPE_PRICE_PRO: str = ""
+    STRIPE_PRICE_ENTERPRISE: str = ""
 
     # Redis
     REDIS_URL: str = "redis://localhost:6379/0"

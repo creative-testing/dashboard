@@ -4,8 +4,9 @@ Router pour servir les données optimisées (proxy vers R2/S3)
 from typing import Dict, Any
 from uuid import UUID
 from hashlib import md5
+import json
 from fastapi import APIRouter, Depends, HTTPException, Query
-from fastapi.responses import Response
+from fastapi.responses import Response, JSONResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from cryptography.fernet import Fernet
@@ -14,6 +15,7 @@ from ..database import get_db
 from ..config import settings
 from ..services.meta_client import meta_client, MetaAPIError
 from ..services import storage
+from ..services.columnar_aggregator import aggregate_columnar_data
 from ..dependencies.auth import get_current_tenant_id
 from .. import models
 
@@ -187,3 +189,126 @@ async def get_campaigns(
         "campaigns": campaigns,
         "count": len(campaigns),
     }
+
+
+@router.get("/tenant-aggregated")
+async def get_tenant_aggregated(
+    current_tenant_id: UUID = Depends(get_current_tenant_id),
+    db: Session = Depends(get_db)
+) -> JSONResponse:
+    """
+    Agrège les données de tous les ad accounts d'un tenant en un seul dataset
+
+    🔒 Protected endpoint - requires valid JWT
+    🏢 Tenant-isolated - aggregates only authenticated tenant's accounts
+    📊 Returns: Aggregated meta_v1, agg_v1, summary_v1 in columnar format
+
+    Use case: Dashboard "Todas las cuentas" mode for multi-account view
+
+    Returns:
+        JSONResponse with:
+        {
+            "meta_v1": {...},
+            "agg_v1": {...},
+            "summary_v1": {...},
+            "metadata": {
+                "tenant_id": "uuid",
+                "accounts_count": 60,
+                "total_ads": 5000
+            }
+        }
+    """
+    # 1. Récupérer tous les ad accounts du tenant
+    ad_accounts = db.execute(
+        select(models.AdAccount).where(
+            models.AdAccount.tenant_id == current_tenant_id
+        )
+    ).scalars().all()
+
+    if not ad_accounts:
+        raise HTTPException(
+            status_code=404,
+            detail="No ad accounts found for your workspace. Please connect accounts via OAuth."
+        )
+
+    # 2. Charger les fichiers optimized de chaque compte
+    accounts_data = []
+    successful_loads = 0
+    failed_accounts = []
+
+    for account in ad_accounts:
+        try:
+            base_path = f"tenants/{current_tenant_id}/accounts/{account.fb_account_id}/data/optimized"
+
+            # Charger les 3 fichiers
+            meta_data = storage.get_object(f"{base_path}/meta_v1.json")
+            agg_data = storage.get_object(f"{base_path}/agg_v1.json")
+            summary_data = storage.get_object(f"{base_path}/summary_v1.json")
+
+            # Parser JSON
+            meta_v1 = json.loads(meta_data)
+            agg_v1 = json.loads(agg_data)
+            summary_v1 = json.loads(summary_data)
+
+            accounts_data.append({
+                "account_id": account.fb_account_id,
+                "account_name": account.name,
+                "meta_v1": meta_v1,
+                "agg_v1": agg_v1,
+                "summary_v1": summary_v1
+            })
+            successful_loads += 1
+
+        except storage.StorageError:
+            # Account data not yet refreshed, skip it
+            failed_accounts.append({
+                "account_id": account.fb_account_id,
+                "account_name": account.name,
+                "reason": "data_not_refreshed"
+            })
+            continue
+        except json.JSONDecodeError as e:
+            # Corrupted data, skip
+            failed_accounts.append({
+                "account_id": account.fb_account_id,
+                "account_name": account.name,
+                "reason": f"json_error: {str(e)}"
+            })
+            continue
+
+    # 3. Si aucun compte n'a de données, retourner 404
+    if not accounts_data:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No data available for any account. {len(failed_accounts)} accounts need refresh."
+        )
+
+    # 4. Agréger les données
+    aggregated_meta, aggregated_agg, aggregated_summary = aggregate_columnar_data(accounts_data)
+
+    # 5. Calculer les statistiques
+    total_ads = len(aggregated_agg.get("ads", []))
+
+    # 6. Retourner le résultat agrégé
+    result = {
+        "meta_v1": aggregated_meta,
+        "agg_v1": aggregated_agg,
+        "summary_v1": aggregated_summary,
+        "metadata": {
+            "tenant_id": str(current_tenant_id),
+            "accounts_total": len(ad_accounts),
+            "accounts_loaded": successful_loads,
+            "accounts_failed": len(failed_accounts),
+            "failed_accounts": failed_accounts,
+            "total_ads": total_ads
+        }
+    }
+
+    return JSONResponse(
+        content=result,
+        headers={
+            "Cache-Control": "private, max-age=300",  # 5 min cache
+            "X-Tenant-Id": str(current_tenant_id),
+            "X-Accounts-Count": str(successful_loads)
+        }
+    )

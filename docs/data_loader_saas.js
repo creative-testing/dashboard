@@ -16,23 +16,56 @@ async function loadOptimizedData() {
         const accountId = urlParams.get('account_id');
         const token = urlParams.get('token');
 
-        if (!accountId || !token) {
-            console.error('Missing account_id or token in URL');
+        if (!token) {
+            console.error('Missing token in URL');
             return false;
         }
 
         const API_URL = 'https://creative-testing-api.onrender.com';
         const headers = { 'Authorization': `Bearer ${token}` };
-
-        // Load all optimized files from API
         const timestamp = Date.now();
-        const [meta, agg, summary] = await Promise.all([
-            fetch(`${API_URL}/api/data/files/${accountId}/meta_v1.json?t=${timestamp}`, { headers }).then(r => r.json()),
-            fetch(`${API_URL}/api/data/files/${accountId}/agg_v1.json?t=${timestamp}`, { headers }).then(r => r.json()),
-            fetch(`${API_URL}/api/data/files/${accountId}/summary_v1.json?t=${timestamp}`, { headers }).then(r => r.json())
-        ]);
 
-        console.log(`✅ Loaded ${agg.ads.length} ads from Render API (optimized format)`);
+        let meta, agg, summary;
+
+        // MODE 1: Aggregated tenant-wide (all accounts)
+        if (!accountId || accountId === 'all') {
+            console.log('📊 Loading aggregated data for ALL accounts (tenant-wide)...');
+
+            const response = await fetch(`${API_URL}/api/data/tenant-aggregated?t=${timestamp}`, { headers });
+            if (!response.ok) {
+                throw new Error(`Failed to load aggregated data: ${response.status} ${response.statusText}`);
+            }
+
+            const aggregatedData = await response.json();
+            meta = aggregatedData.meta_v1;
+            agg = aggregatedData.agg_v1;
+            summary = aggregatedData.summary_v1;
+
+            console.log(`✅ Loaded aggregated data: ${aggregatedData.metadata.accounts_loaded} accounts, ${agg.ads.length} total ads`);
+            if (aggregatedData.metadata.accounts_failed > 0) {
+                console.warn(`⚠️ ${aggregatedData.metadata.accounts_failed} accounts failed to load:`, aggregatedData.metadata.failed_accounts);
+            }
+        }
+        // MODE 2: Single account
+        else {
+            console.log(`📊 Loading data for single account: ${accountId}...`);
+
+            if (!accountId) {
+                console.error('Missing account_id in URL for single-account mode');
+                return false;
+            }
+
+            // Load all optimized files from API
+            [meta, agg, summary] = await Promise.all([
+                fetch(`${API_URL}/api/data/files/${accountId}/meta_v1.json?t=${timestamp}`, { headers }).then(r => r.json()),
+                fetch(`${API_URL}/api/data/files/${accountId}/agg_v1.json?t=${timestamp}`, { headers }).then(r => r.json()),
+                fetch(`${API_URL}/api/data/files/${accountId}/summary_v1.json?t=${timestamp}`, { headers }).then(r => r.json())
+            ]);
+
+            console.log(`✅ Loaded ${agg.ads.length} ads from account ${accountId}`);
+        }
+
+        console.log(`✅ Total ads loaded: ${agg.ads.length}`);
 
         // Create adapter (DataAdapter class is loaded from data_adapter.js)
         const adapter = new DataAdapter(meta, agg, summary);
