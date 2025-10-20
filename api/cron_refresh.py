@@ -114,8 +114,8 @@ async def refresh_tenant(tenant_id: str, tenant_name: str, db: SessionLocal):
                 )
 
                 # Mark job as completed
-                job.status = JobStatus.COMPLETED
-                job.completed_at = datetime.utcnow()
+                job.status = JobStatus.OK
+                job.finished_at = datetime.utcnow()
                 db.commit()
 
                 success_count += 1
@@ -123,9 +123,9 @@ async def refresh_tenant(tenant_id: str, tenant_name: str, db: SessionLocal):
 
             except Exception as e:
                 error_count += 1
-                job.status = JobStatus.FAILED
+                job.status = JobStatus.ERROR
                 job.error = str(e)[:500]  # Limiter à 500 chars
-                job.completed_at = datetime.utcnow()
+                job.finished_at = datetime.utcnow()
                 db.commit()
                 print(f"    ❌ Error: {account.fb_account_id} - {str(e)[:100]}")
 
