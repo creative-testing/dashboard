@@ -13,6 +13,12 @@ database_url = settings.DATABASE_URL
 if database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql+psycopg://", 1)
 
+# Ensure SSL is enabled for Render Postgres (required for all connections)
+if "sslmode=" not in database_url:
+    # Add sslmode=require if not already present
+    separator = "&" if "?" in database_url else "?"
+    database_url = f"{database_url}{separator}sslmode=require"
+
 # Engine SQLAlchemy
 engine = create_engine(
     database_url,
