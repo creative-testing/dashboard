@@ -4,43 +4,43 @@
     "account_name": "LeanTravel",
     "period": "3d",
     "date_range": "2025-10-17..2025-10-19",
-    "generated_at": "2025-10-20T15:24:38.648348Z",
+    "generated_at": "2025-10-20T21:22:04.880270Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 7490,
-      "clicks": 624,
-      "spend": 896.98,
+      "impressions": 7492,
+      "clicks": 625,
+      "spend": 897.84,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 8.33,
+      "ctr": 8.34,
       "cpa": 0,
       "roas": 0.0
     },
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 4873,
+      "impressions": 4874,
       "clicks": 194,
-      "spend": 764.72,
+      "spend": 764.73,
       "purchases": 1,
       "purchase_value": 799.0,
       "ctr": 3.98,
-      "cpa": 764.72,
+      "cpa": 764.73,
       "roas": 1.04
     },
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 7126,
+      "impressions": 7128,
       "clicks": 944,
-      "spend": 574.21,
+      "spend": 574.26,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 13.25,
+      "ctr": 13.24,
       "cpa": 0,
       "roas": 0.0
     },
@@ -71,12 +71,12 @@
     {
       "age": "65+",
       "gender": "male",
-      "impressions": 3621,
-      "clicks": 539,
-      "spend": 148.67,
+      "impressions": 3622,
+      "clicks": 540,
+      "spend": 148.82,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 14.89,
+      "ctr": 14.91,
       "cpa": 0,
       "roas": 0.0
     },
@@ -95,14 +95,14 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 1229,
+      "impressions": 1230,
       "clicks": 47,
-      "spend": 88.63,
+      "spend": 88.67,
       "purchases": 2,
       "purchase_value": 1598.0,
       "ctr": 3.82,
-      "cpa": 44.32,
-      "roas": 18.03
+      "cpa": 44.34,
+      "roas": 18.02
     },
     {
       "age": "35-44",
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 36126,
-    "clicks": 3290,
-    "spend": 3199.7,
+    "impressions": 36133,
+    "clicks": 3292,
+    "spend": 3200.81,
     "purchases": 3,
     "purchase_value": 2397.0,
     "roas": 0.75
