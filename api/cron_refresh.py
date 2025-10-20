@@ -7,7 +7,7 @@ Refresh les données Meta Ads de tous les tenants actifs
 """
 import asyncio
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 # Ajouter le répertoire parent au PYTHONPATH
@@ -65,7 +65,7 @@ async def refresh_tenant(tenant_id: str, tenant_name: str, db: SessionLocal):
         access_token = fernet.decrypt(oauth_token.access_token).decode()
 
         # Check if token is expired (ne pas refresh si expiré)
-        if oauth_token.expires_at and oauth_token.expires_at < datetime.utcnow():
+        if oauth_token.expires_at and oauth_token.expires_at < datetime.now(timezone.utc):
             print(f"  ⚠️  OAuth token expired for {tenant_name} (expired at {oauth_token.expires_at})")
             return
 
@@ -103,7 +103,7 @@ async def refresh_tenant(tenant_id: str, tenant_name: str, db: SessionLocal):
 
                 # Update job status
                 job.status = JobStatus.RUNNING
-                job.started_at = datetime.utcnow()
+                job.started_at = datetime.now(timezone.utc)
                 db.commit()
 
                 # Run refresh (refresh_account_data gets token from DB internally)
@@ -115,7 +115,7 @@ async def refresh_tenant(tenant_id: str, tenant_name: str, db: SessionLocal):
 
                 # Mark job as completed
                 job.status = JobStatus.OK
-                job.finished_at = datetime.utcnow()
+                job.finished_at = datetime.now(timezone.utc)
                 db.commit()
 
                 success_count += 1
@@ -125,7 +125,7 @@ async def refresh_tenant(tenant_id: str, tenant_name: str, db: SessionLocal):
                 error_count += 1
                 job.status = JobStatus.ERROR
                 job.error = str(e)[:500]  # Limiter à 500 chars
-                job.finished_at = datetime.utcnow()
+                job.finished_at = datetime.now(timezone.utc)
                 db.commit()
                 print(f"    ❌ Error: {account.fb_account_id} - {str(e)[:100]}")
 
@@ -140,7 +140,7 @@ async def main():
     Main cron entry point
     Refresh tous les tenants actifs
     """
-    print(f"🕐 Cron Refresh Started at {datetime.utcnow().isoformat()}")
+    print(f"🕐 Cron Refresh Started at {datetime.now(timezone.utc).isoformat()}")
 
     db = SessionLocal()
 
@@ -158,7 +158,7 @@ async def main():
         for tenant in tenants:
             await refresh_tenant(str(tenant.id), tenant.name, db)
 
-        print(f"\n✅ Cron Refresh Completed at {datetime.utcnow().isoformat()}")
+        print(f"\n✅ Cron Refresh Completed at {datetime.now(timezone.utc).isoformat()}")
 
     except Exception as e:
         print(f"❌ Fatal error in cron: {e}")
