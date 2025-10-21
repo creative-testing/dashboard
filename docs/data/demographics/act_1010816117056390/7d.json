@@ -4,7 +4,7 @@
     "account_name": "CP-SOHOCOLOR",
     "period": "7d",
     "date_range": "2025-10-14..2025-10-20",
-    "generated_at": "2025-10-21T09:25:50.300934Z",
+    "generated_at": "2025-10-21T15:25:03.933423Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
@@ -35,25 +35,25 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 3911,
+      "impressions": 3913,
       "clicks": 186,
-      "spend": 817.14,
+      "spend": 817.24,
       "purchases": 2,
       "purchase_value": 4007.1,
-      "ctr": 4.76,
-      "cpa": 408.57,
+      "ctr": 4.75,
+      "cpa": 408.62,
       "roas": 4.9
     },
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 5489,
+      "impressions": 5490,
       "clicks": 84,
-      "spend": 720.82,
+      "spend": 721.33,
       "purchases": 1,
       "purchase_value": 641.5,
       "ctr": 1.53,
-      "cpa": 720.82,
+      "cpa": 721.33,
       "roas": 0.89
     },
     {
@@ -71,13 +71,13 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 4100,
-      "clicks": 64,
-      "spend": 347.36,
+      "impressions": 4101,
+      "clicks": 65,
+      "spend": 347.59,
       "purchases": 1,
       "purchase_value": 809.81,
-      "ctr": 1.56,
-      "cpa": 347.36,
+      "ctr": 1.58,
+      "cpa": 347.59,
       "roas": 2.33
     },
     {
@@ -107,9 +107,9 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 4077,
+      "impressions": 4078,
       "clicks": 52,
-      "spend": 240.73,
+      "spend": 240.75,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.28,
@@ -238,11 +238,11 @@
     }
   ],
   "totals": {
-    "impressions": 43450,
-    "clicks": 985,
-    "spend": 6152.96,
+    "impressions": 43455,
+    "clicks": 986,
+    "spend": 6153.82,
     "purchases": 13,
     "purchase_value": 18922.26,
-    "roas": 3.08
+    "roas": 3.07
   }
 }

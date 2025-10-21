@@ -4,40 +4,40 @@
     "account_name": "Lactana cuenta publicitaria LFS",
     "period": "3d",
     "date_range": "2025-10-18..2025-10-20",
-    "generated_at": "2025-10-21T09:23:54.390287Z",
+    "generated_at": "2025-10-21T15:23:00.243283Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 32831,
+      "impressions": 32851,
       "clicks": 567,
-      "spend": 2378.32,
+      "spend": 2381.56,
       "purchases": 11,
       "purchase_value": 13870.5,
       "ctr": 1.73,
-      "cpa": 216.21,
-      "roas": 5.83
+      "cpa": 216.51,
+      "roas": 5.82
     },
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 14821,
+      "impressions": 14828,
       "clicks": 323,
-      "spend": 1808.84,
+      "spend": 1809.41,
       "purchases": 5,
       "purchase_value": 5820.0,
       "ctr": 2.18,
-      "cpa": 361.77,
+      "cpa": 361.88,
       "roas": 3.22
     },
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 2394,
+      "impressions": 2397,
       "clicks": 34,
-      "spend": 134.23,
+      "spend": 134.36,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.42,
@@ -59,9 +59,9 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 1175,
+      "impressions": 1176,
       "clicks": 32,
-      "spend": 54.25,
+      "spend": 54.27,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 2.72,
@@ -107,12 +107,12 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 155,
+      "impressions": 156,
       "clicks": 2,
-      "spend": 12.3,
+      "spend": 12.37,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 1.29,
+      "ctr": 1.28,
       "cpa": 0,
       "roas": 0.0
     },
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 53603,
+    "impressions": 53635,
     "clicks": 1010,
-    "spend": 4554.96,
+    "spend": 4558.99,
     "purchases": 17,
     "purchase_value": 20558.0,
     "roas": 4.51

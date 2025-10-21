@@ -4,16 +4,16 @@
     "account_name": "Acapella Apparel Ad Account",
     "period": "90d",
     "date_range": "2025-07-23..2025-10-20",
-    "generated_at": "2025-10-21T03:39:13.162113Z",
+    "generated_at": "2025-10-21T15:21:31.334318Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 3470591,
+      "impressions": 3470593,
       "clicks": 46848,
-      "spend": 23853.65,
+      "spend": 23853.66,
       "purchases": 422,
       "purchase_value": 100377.84,
       "ctr": 1.35,
@@ -23,14 +23,14 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 3330510,
+      "impressions": 3330513,
       "clicks": 46866,
       "spend": 13262.07,
-      "purchases": 245,
-      "purchase_value": 44346.22,
+      "purchases": 246,
+      "purchase_value": 44451.63,
       "ctr": 1.41,
-      "cpa": 54.13,
-      "roas": 3.34
+      "cpa": 53.91,
+      "roas": 3.35
     },
     {
       "age": "45-54",
@@ -47,7 +47,7 @@
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 318091,
+      "impressions": 318090,
       "clicks": 9081,
       "spend": 3899.45,
       "purchases": 56,
@@ -238,11 +238,11 @@
     }
   ],
   "totals": {
-    "impressions": 10619872,
+    "impressions": 10619876,
     "clicks": 176404,
-    "spend": 65589.4,
-    "purchases": 1080,
-    "purchase_value": 278041.65,
+    "spend": 65589.41,
+    "purchases": 1081,
+    "purchase_value": 278147.06,
     "roas": 4.24
   }
 }
