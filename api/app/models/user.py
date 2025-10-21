@@ -23,11 +23,12 @@ class User(Base):
     __tablename__ = "users"
     __table_args__ = (
         UniqueConstraint("tenant_id", "meta_user_id", name="uq_users_tenant_meta"),
+        UniqueConstraint("tenant_id", "email", name="uq_users_tenant_email"),
     )
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     tenant_id = Column(UUID(as_uuid=True), ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False)
-    email = Column(String(255), unique=True, nullable=False, index=True)
+    email = Column(String(255), nullable=False, index=True)  # Email unique par tenant (pas globalement)
     name = Column(String(255), nullable=True)  # User display name (from OAuth)
     role = Column(Enum(UserRole), nullable=False, default=UserRole.VIEWER)
     meta_user_id = Column(String(64), nullable=True)  # Meta/Facebook User ID (pour OAuth)
