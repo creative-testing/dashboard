@@ -4,16 +4,16 @@
     "account_name": "SCENTICA",
     "period": "90d",
     "date_range": "2025-07-24..2025-10-21",
-    "generated_at": "2025-10-22T15:25:43.226087Z",
+    "generated_at": "2025-10-22T21:18:47.656101Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 364116,
+      "impressions": 364118,
       "clicks": 6909,
-      "spend": 16813.6,
+      "spend": 16813.61,
       "purchases": 51,
       "purchase_value": 63064.0,
       "ctr": 1.9,
@@ -23,9 +23,9 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 284774,
+      "impressions": 284780,
       "clicks": 5823,
-      "spend": 15680.33,
+      "spend": 15680.6,
       "purchases": 34,
       "purchase_value": 35483.0,
       "ctr": 2.04,
@@ -35,21 +35,21 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 182044,
+      "impressions": 182049,
       "clicks": 4516,
-      "spend": 13025.21,
+      "spend": 13025.52,
       "purchases": 24,
       "purchase_value": 25783.0,
       "ctr": 2.48,
-      "cpa": 542.72,
+      "cpa": 542.73,
       "roas": 1.98
     },
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 114805,
+      "impressions": 114806,
       "clicks": 3283,
-      "spend": 9236.44,
+      "spend": 9236.45,
       "purchases": 20,
       "purchase_value": 21359.0,
       "ctr": 2.86,
@@ -59,13 +59,13 @@
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 63614,
+      "impressions": 63616,
       "clicks": 2119,
-      "spend": 6394.26,
+      "spend": 6394.43,
       "purchases": 15,
       "purchase_value": 12377.0,
       "ctr": 3.33,
-      "cpa": 426.28,
+      "cpa": 426.3,
       "roas": 1.94
     },
     {
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 1418863,
+    "impressions": 1418879,
     "clicks": 33118,
-    "spend": 86331.02,
+    "spend": 86331.79,
     "purchases": 217,
     "purchase_value": 223448.0,
     "roas": 2.59

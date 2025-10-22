@@ -4,16 +4,16 @@
     "account_name": "LeanTravel",
     "period": "90d",
     "date_range": "2025-07-24..2025-10-21",
-    "generated_at": "2025-10-22T15:25:48.925217Z",
+    "generated_at": "2025-10-22T21:18:50.654118Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 78886,
+      "impressions": 78890,
       "clicks": 3786,
-      "spend": 21444.87,
+      "spend": 21444.93,
       "purchases": 49,
       "purchase_value": 58760.78,
       "ctr": 4.8,
@@ -23,25 +23,25 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 78231,
+      "impressions": 78233,
       "clicks": 1965,
-      "spend": 21380.94,
+      "spend": 21381.98,
       "purchases": 50,
       "purchase_value": 78520.89,
       "ctr": 2.51,
-      "cpa": 427.62,
+      "cpa": 427.64,
       "roas": 3.67
     },
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 46225,
-      "clicks": 4120,
-      "spend": 10223.67,
+      "impressions": 46229,
+      "clicks": 4121,
+      "spend": 10223.9,
       "purchases": 24,
       "purchase_value": 30763.89,
       "ctr": 8.91,
-      "cpa": 425.99,
+      "cpa": 426.0,
       "roas": 3.01
     },
     {
@@ -71,7 +71,7 @@
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 12296,
+      "impressions": 12297,
       "clicks": 616,
       "spend": 1780.21,
       "purchases": 5,
@@ -131,9 +131,9 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 5308,
+      "impressions": 5309,
       "clicks": 260,
-      "spend": 466.97,
+      "spend": 466.99,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 4.9,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 326315,
-    "clicks": 15086,
-    "spend": 71979.34,
+    "impressions": 326327,
+    "clicks": 15087,
+    "spend": 71980.69,
     "purchases": 165,
     "purchase_value": 220179.56,
     "roas": 3.06
