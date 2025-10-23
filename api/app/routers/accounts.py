@@ -485,6 +485,77 @@ async def dev_generate_jwt(fb_account_id: str) -> Dict[str, Any]:
         db.close()
 
 
+@router.get("/dev/count-meta-accounts")
+async def count_meta_accounts(tenant_id: str = "c0c595ab-3903-4256-b8d7-cb9709ac9206") -> Dict[str, Any]:
+    """
+    🧪 DEBUG: Compare nombre de comptes Meta API vs DB
+
+    Vérifie si le fix de pagination a fonctionné sans toucher aux données.
+    Idéal pour valider avant de re-sync.
+
+    Args:
+        tenant_id: Tenant UUID (défaut = production)
+
+    Returns:
+        {
+            "meta_api_count": 70,
+            "database_count": 25,
+            "missing_count": 45,
+            "fix_needed": true/false
+        }
+    """
+    from uuid import UUID
+    from cryptography.fernet import Fernet
+    from ..services.meta_client import meta_client
+
+    db = SessionLocal()
+    fernet = Fernet(settings.TOKEN_ENCRYPTION_KEY.encode())
+
+    try:
+        # Get tenant + token
+        tenant = db.execute(
+            select(models.Tenant).where(models.Tenant.id == UUID(tenant_id))
+        ).scalar_one_or_none()
+
+        if not tenant:
+            raise HTTPException(status_code=404, detail="Tenant not found")
+
+        token_row = db.execute(
+            select(models.OAuthToken).where(models.OAuthToken.tenant_id == UUID(tenant_id))
+        ).scalar_one_or_none()
+
+        if not token_row:
+            raise HTTPException(status_code=404, detail="No OAuth token")
+
+        # Decrypt token
+        access_token = fernet.decrypt(token_row.access_token).decode()
+
+        # Call Meta API avec fix de pagination
+        accounts_from_api = await meta_client.get_ad_accounts(access_token)
+
+        # Count in DB
+        accounts_in_db = db.execute(
+            select(models.AdAccount).where(models.AdAccount.tenant_id == UUID(tenant_id))
+        ).scalars().all()
+
+        missing_count = len(accounts_from_api) - len(accounts_in_db)
+
+        return {
+            "success": True,
+            "tenant_id": tenant_id,
+            "tenant_name": tenant.name,
+            "meta_api_count": len(accounts_from_api),
+            "database_count": len(accounts_in_db),
+            "missing_count": missing_count,
+            "fix_needed": missing_count > 0,
+            "sample_from_api": [f"{a['name']} ({a['id']})" for a in accounts_from_api[:5]],
+            "sample_from_db": [f"{a.name} ({a.fb_account_id})" for a in accounts_in_db[:5]]
+        }
+
+    finally:
+        db.close()
+
+
 @router.post("/dev/seed-production")
 async def seed_production_tenant() -> Dict[str, Any]:
     """
@@ -588,26 +659,13 @@ async def seed_production_tenant() -> Dict[str, Any]:
         )
         db.execute(stmt)
 
-        # 4. Fetch TOUS les ad accounts via Meta API
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            all_accounts = []
-            url = f"https://graph.facebook.com/v23.0/me/adaccounts"
-            params = {
-                "fields": "id,name,account_status",
-                "access_token": production_token,
-                "limit": 100,
-            }
+        # 4. Fetch TOUS les ad accounts via Meta API (utilise meta_client centralisé)
+        from ..services.meta_client import meta_client
 
-            while url:
-                response = await client.get(url, params=params if params else None)
-                response.raise_for_status()
-                data = response.json()
-
-                all_accounts.extend(data.get("data", []))
-
-                # Pagination
-                url = data.get("paging", {}).get("next")
-                params = None  # Next URL contient déjà les params
+        all_accounts = await meta_client.get_ad_accounts(
+            access_token=production_token,
+            fields="id,name,account_status"
+        )
 
         # 5. Insérer ad accounts dans la DB
         accounts_added = []
