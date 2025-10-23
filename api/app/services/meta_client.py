@@ -205,30 +205,49 @@ class MetaClient:
     async def get_ad_accounts(
         self,
         access_token: str,
-        fields: str = "id,name,currency,timezone_name,account_status"
+        fields: str = "id,name,currency,timezone_name,account_status",
+        limit: int = 100
     ) -> list[Dict[str, Any]]:
         """
-        Récupère les ad accounts de l'utilisateur
+        Récupère TOUS les ad accounts de l'utilisateur (avec pagination)
 
         Args:
             access_token: Token de l'utilisateur
             fields: Champs à récupérer
+            limit: Nombre max de comptes par page (max 100)
 
         Returns:
-            List of ad accounts with selected fields
+            List of ALL ad accounts with selected fields (paginated)
         """
         accounts_url = f"{self.base_url}/me/adaccounts"
 
-        response = await self._request_with_retry(
-            "GET",
-            accounts_url,
-            params={
-                "access_token": access_token,
-                "fields": fields,
-            }
-        )
+        all_accounts = []
+        params = {
+            "access_token": access_token,
+            "fields": fields,
+            "limit": limit,
+        }
 
-        return response.get("data", [])
+        # Paginate through all results
+        next_url = accounts_url
+        page_count = 0
+        max_pages = 50  # Safety limit (50 pages * 100 comptes = 5000 max)
+
+        while next_url and page_count < max_pages:
+            response = await self._request_with_retry("GET", next_url, params=params)
+
+            if "data" in response:
+                all_accounts.extend(response["data"])
+
+            # Check for next page
+            if "paging" in response and "next" in response["paging"]:
+                next_url = response["paging"]["next"]
+                params = {}  # Next URL contient déjà les params
+                page_count += 1
+            else:
+                break
+
+        return all_accounts
 
     async def get_campaigns(
         self,
