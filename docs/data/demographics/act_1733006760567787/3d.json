@@ -4,7 +4,7 @@
     "account_name": "Moscca Fine Fragrance",
     "period": "3d",
     "date_range": "2025-10-21..2025-10-23",
-    "generated_at": "2025-10-24T09:24:56.805559Z",
+    "generated_at": "2025-10-24T21:20:39.476216Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
@@ -59,9 +59,9 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 2264,
+      "impressions": 2265,
       "clicks": 50,
-      "spend": 131.34,
+      "spend": 131.36,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 2.21,
@@ -71,9 +71,9 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 1645,
+      "impressions": 1646,
       "clicks": 21,
-      "spend": 130.6,
+      "spend": 130.61,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.28,
@@ -118,6 +118,18 @@
     },
     {
       "age": "65+",
+      "gender": "male",
+      "impressions": 141,
+      "clicks": 7,
+      "spend": 25.97,
+      "purchases": 0,
+      "purchase_value": 0.0,
+      "ctr": 4.96,
+      "cpa": 0,
+      "roas": 0.0
+    },
+    {
+      "age": "65+",
       "gender": "female",
       "impressions": 142,
       "clicks": 3,
@@ -125,18 +137,6 @@
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 2.11,
-      "cpa": 0,
-      "roas": 0.0
-    },
-    {
-      "age": "65+",
-      "gender": "male",
-      "impressions": 140,
-      "clicks": 7,
-      "spend": 25.37,
-      "purchases": 0,
-      "purchase_value": 0.0,
-      "ctr": 5.0,
       "cpa": 0,
       "roas": 0.0
     },
@@ -226,9 +226,9 @@
     }
   ],
   "totals": {
-    "impressions": 21939,
+    "impressions": 21942,
     "clicks": 484,
-    "spend": 2231.2,
+    "spend": 2231.83,
     "purchases": 1,
     "purchase_value": 939.5,
     "roas": 0.42

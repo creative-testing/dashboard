@@ -4,32 +4,32 @@
     "account_name": "BIANCA-CUENTA P",
     "period": "14d",
     "date_range": "2025-10-10..2025-10-23",
-    "generated_at": "2025-10-24T15:26:02.212750Z",
+    "generated_at": "2025-10-24T21:21:56.194819Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 259366,
+      "impressions": 259373,
       "clicks": 4152,
-      "spend": 8613.55,
+      "spend": 8613.68,
       "purchases": 22,
       "purchase_value": 48060.0,
       "ctr": 1.6,
-      "cpa": 391.52,
+      "cpa": 391.53,
       "roas": 5.58
     },
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 138494,
-      "clicks": 3088,
-      "spend": 7420.75,
+      "impressions": 138500,
+      "clicks": 3091,
+      "spend": 7421.02,
       "purchases": 24,
       "purchase_value": 59543.0,
       "ctr": 2.23,
-      "cpa": 309.2,
+      "cpa": 309.21,
       "roas": 8.02
     },
     {
@@ -37,7 +37,7 @@
       "gender": "female",
       "impressions": 45527,
       "clicks": 1672,
-      "spend": 4066.14,
+      "spend": 4066.17,
       "purchases": 11,
       "purchase_value": 20080.0,
       "ctr": 3.67,
@@ -47,13 +47,13 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 14568,
+      "impressions": 14569,
       "clicks": 704,
-      "spend": 1908.89,
+      "spend": 1909.17,
       "purchases": 1,
       "purchase_value": 1859.0,
       "ctr": 4.83,
-      "cpa": 1908.89,
+      "cpa": 1909.17,
       "roas": 0.97
     },
     {
@@ -108,11 +108,11 @@
       "age": "18-24",
       "gender": "male",
       "impressions": 9459,
-      "clicks": 659,
+      "clicks": 660,
       "spend": 245.86,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 6.97,
+      "ctr": 6.98,
       "cpa": 0,
       "roas": 0.0
     },
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 595736,
-    "clicks": 13520,
-    "spend": 26453.81,
+    "impressions": 595750,
+    "clicks": 13524,
+    "spend": 26454.52,
     "purchases": 65,
     "purchase_value": 146267.0,
     "roas": 5.53

@@ -4,28 +4,28 @@
     "account_name": "WU",
     "period": "90d",
     "date_range": "2025-07-26..2025-10-23",
-    "generated_at": "2025-10-24T15:22:35.149263Z",
+    "generated_at": "2025-10-24T21:18:54.878025Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 3830008,
+      "impressions": 3830044,
       "clicks": 42157,
-      "spend": 191538.9,
+      "spend": 191540.74,
       "purchases": 519,
       "purchase_value": 666428.99,
       "ctr": 1.1,
-      "cpa": 369.05,
+      "cpa": 369.06,
       "roas": 3.48
     },
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 2485471,
+      "impressions": 2485490,
       "clicks": 42278,
-      "spend": 171981.91,
+      "spend": 171984.17,
       "purchases": 383,
       "purchase_value": 462625.35,
       "ctr": 1.7,
@@ -35,9 +35,9 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 598115,
+      "impressions": 598122,
       "clicks": 15921,
-      "spend": 57018.51,
+      "spend": 57018.8,
       "purchases": 140,
       "purchase_value": 181857.95,
       "ctr": 2.66,
@@ -47,9 +47,9 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 651774,
+      "impressions": 651778,
       "clicks": 6147,
-      "spend": 24362.16,
+      "spend": 24362.39,
       "purchases": 82,
       "purchase_value": 95714.65,
       "ctr": 0.94,
@@ -59,19 +59,19 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 94745,
+      "impressions": 94746,
       "clicks": 3167,
-      "spend": 10286.58,
+      "spend": 10287.37,
       "purchases": 19,
       "purchase_value": 23516.7,
       "ctr": 3.34,
-      "cpa": 541.4,
+      "cpa": 541.44,
       "roas": 2.29
     },
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 168973,
+      "impressions": 168974,
       "clicks": 1453,
       "spend": 5645.47,
       "purchases": 30,
@@ -95,13 +95,13 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 53807,
+      "impressions": 53819,
       "clicks": 1282,
-      "spend": 4460.85,
+      "spend": 4461.6,
       "purchases": 5,
       "purchase_value": 5360.75,
       "ctr": 2.38,
-      "cpa": 892.17,
+      "cpa": 892.32,
       "roas": 1.2
     },
     {
@@ -155,7 +155,7 @@
     {
       "age": "25-34",
       "gender": "unknown",
-      "impressions": 21404,
+      "impressions": 21403,
       "clicks": 316,
       "spend": 881.79,
       "purchases": 0,
@@ -167,13 +167,13 @@
     {
       "age": "45-54",
       "gender": "unknown",
-      "impressions": 8812,
+      "impressions": 8813,
       "clicks": 189,
-      "spend": 795.45,
+      "spend": 795.52,
       "purchases": 3,
       "purchase_value": 4158.4,
       "ctr": 2.14,
-      "cpa": 265.15,
+      "cpa": 265.17,
       "roas": 5.23
     },
     {
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 8149930,
+    "impressions": 8150010,
     "clicks": 115922,
-    "spend": 478389.01,
+    "spend": 478395.24,
     "purchases": 1243,
     "purchase_value": 1547929.74,
     "roas": 3.24

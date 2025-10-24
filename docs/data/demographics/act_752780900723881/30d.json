@@ -4,16 +4,16 @@
     "account_name": "BIANCA-CUENTA P",
     "period": "30d",
     "date_range": "2025-09-24..2025-10-23",
-    "generated_at": "2025-10-24T15:26:03.328058Z",
+    "generated_at": "2025-10-24T21:21:57.188924Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 491071,
+      "impressions": 491077,
       "clicks": 7790,
-      "spend": 17121.33,
+      "spend": 17121.46,
       "purchases": 52,
       "purchase_value": 106799.0,
       "ctr": 1.59,
@@ -23,21 +23,21 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 296546,
-      "clicks": 6906,
-      "spend": 16589.08,
+      "impressions": 296552,
+      "clicks": 6909,
+      "spend": 16589.34,
       "purchases": 52,
       "purchase_value": 119603.5,
       "ctr": 2.33,
-      "cpa": 319.02,
+      "cpa": 319.03,
       "roas": 7.21
     },
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 101076,
+      "impressions": 101077,
       "clicks": 3575,
-      "spend": 8843.73,
+      "spend": 8843.76,
       "purchases": 26,
       "purchase_value": 50805.6,
       "ctr": 3.54,
@@ -47,13 +47,13 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 29869,
+      "impressions": 29870,
       "clicks": 1360,
-      "spend": 4030.8,
+      "spend": 4031.08,
       "purchases": 8,
       "purchase_value": 11220.0,
       "ctr": 4.55,
-      "cpa": 503.85,
+      "cpa": 503.88,
       "roas": 2.78
     },
     {
@@ -120,7 +120,7 @@
       "age": "18-24",
       "gender": "male",
       "impressions": 13945,
-      "clicks": 712,
+      "clicks": 713,
       "spend": 337.15,
       "purchases": 0,
       "purchase_value": 0.0,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 1158075,
-    "clicks": 25243,
-    "spend": 54480.67,
+    "impressions": 1158089,
+    "clicks": 25247,
+    "spend": 54481.37,
     "purchases": 166,
     "purchase_value": 350600.1,
     "roas": 6.44
