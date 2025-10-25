@@ -4,28 +4,28 @@
     "account_name": "Rose&Mimosas",
     "period": "14d",
     "date_range": "2025-10-11..2025-10-24",
-    "generated_at": "2025-10-25T09:19:34.935783Z",
+    "generated_at": "2025-10-25T15:18:52.487950Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 112591,
-      "clicks": 2144,
-      "spend": 14546.59,
+      "impressions": 112600,
+      "clicks": 2146,
+      "spend": 14547.02,
       "purchases": 26,
       "purchase_value": 72434.9,
-      "ctr": 1.9,
-      "cpa": 559.48,
+      "ctr": 1.91,
+      "cpa": 559.5,
       "roas": 4.98
     },
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 135836,
+      "impressions": 135840,
       "clicks": 2044,
-      "spend": 10172.57,
+      "spend": 10172.71,
       "purchases": 41,
       "purchase_value": 97668.85,
       "ctr": 1.5,
@@ -35,13 +35,13 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 32975,
+      "impressions": 32977,
       "clicks": 1071,
-      "spend": 6996.37,
+      "spend": 6996.61,
       "purchases": 19,
       "purchase_value": 67421.65,
       "ctr": 3.25,
-      "cpa": 368.23,
+      "cpa": 368.24,
       "roas": 9.64
     },
     {
@@ -107,14 +107,14 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 3931,
+      "impressions": 3933,
       "clicks": 61,
-      "spend": 221.48,
+      "spend": 221.58,
       "purchases": 1,
       "purchase_value": 12549.2,
       "ctr": 1.55,
-      "cpa": 221.48,
-      "roas": 56.66
+      "cpa": 221.58,
+      "roas": 56.63
     },
     {
       "age": "45-54",
@@ -250,9 +250,9 @@
     }
   ],
   "totals": {
-    "impressions": 325557,
-    "clicks": 6341,
-    "spend": 37473.95,
+    "impressions": 325574,
+    "clicks": 6343,
+    "spend": 37474.86,
     "purchases": 101,
     "purchase_value": 286699.7,
     "roas": 7.65
