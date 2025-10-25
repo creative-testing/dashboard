@@ -4,40 +4,40 @@
     "account_name": "Moscca Fine Fragrance",
     "period": "90d",
     "date_range": "2025-07-27..2025-10-24",
-    "generated_at": "2025-10-25T15:20:37.831590Z",
+    "generated_at": "2025-10-25T21:19:32.463287Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 256945,
+      "impressions": 256949,
       "clicks": 3889,
-      "spend": 16739.58,
+      "spend": 16740.0,
       "purchases": 24,
       "purchase_value": 37544.95,
       "ctr": 1.51,
-      "cpa": 697.48,
+      "cpa": 697.5,
       "roas": 2.24
     },
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 130170,
+      "impressions": 130175,
       "clicks": 2866,
-      "spend": 15057.72,
+      "spend": 15060.12,
       "purchases": 16,
       "purchase_value": 25499.5,
       "ctr": 2.2,
-      "cpa": 941.11,
+      "cpa": 941.26,
       "roas": 1.69
     },
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 67763,
+      "impressions": 67764,
       "clicks": 2174,
-      "spend": 8766.01,
+      "spend": 8766.07,
       "purchases": 16,
       "purchase_value": 24755.7,
       "ctr": 3.21,
@@ -72,7 +72,7 @@
       "age": "25-34",
       "gender": "male",
       "impressions": 122325,
-      "clicks": 2542,
+      "clicks": 2543,
       "spend": 6868.8,
       "purchases": 5,
       "purchase_value": 8626.6,
@@ -95,13 +95,13 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 20625,
+      "impressions": 20626,
       "clicks": 877,
-      "spend": 4923.55,
+      "spend": 4923.67,
       "purchases": 4,
       "purchase_value": 5568.3,
       "ctr": 4.25,
-      "cpa": 1230.89,
+      "cpa": 1230.92,
       "roas": 1.13
     },
     {
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 873179,
-    "clicks": 19769,
-    "spend": 83165.52,
+    "impressions": 873190,
+    "clicks": 19770,
+    "spend": 83168.52,
     "purchases": 96,
     "purchase_value": 140643.25,
     "roas": 1.69

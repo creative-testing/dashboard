@@ -4,7 +4,7 @@
     "account_name": "Reset A&F",
     "period": "3d",
     "date_range": "2025-10-22..2025-10-24",
-    "generated_at": "2025-10-25T15:18:46.693939Z",
+    "generated_at": "2025-10-25T21:17:52.887200Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
@@ -13,11 +13,11 @@
       "gender": "female",
       "impressions": 6747,
       "clicks": 60,
-      "spend": 713.12,
+      "spend": 713.14,
       "purchases": 2,
       "purchase_value": 6934.0,
       "ctr": 0.89,
-      "cpa": 356.56,
+      "cpa": 356.57,
       "roas": 9.72
     },
     {
@@ -25,34 +25,34 @@
       "gender": "female",
       "impressions": 1357,
       "clicks": 14,
-      "spend": 204.96,
+      "spend": 204.95,
       "purchases": 1,
       "purchase_value": 2358.0,
       "ctr": 1.03,
-      "cpa": 204.96,
-      "roas": 11.5
+      "cpa": 204.95,
+      "roas": 11.51
     },
     {
       "age": "25-34",
       "gender": "female",
       "impressions": 2244,
       "clicks": 19,
-      "spend": 175.33,
+      "spend": 175.32,
       "purchases": 1,
       "purchase_value": 700.0,
       "ctr": 0.85,
-      "cpa": 175.33,
+      "cpa": 175.32,
       "roas": 3.99
     },
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 235,
+      "impressions": 236,
       "clicks": 5,
-      "spend": 81.16,
+      "spend": 81.22,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 2.13,
+      "ctr": 2.12,
       "cpa": 0,
       "roas": 0.0
     },
@@ -83,14 +83,14 @@
     {
       "age": "35-44",
       "gender": "unknown",
-      "impressions": 470,
+      "impressions": 471,
       "clicks": 1,
-      "spend": 49.29,
+      "spend": 49.32,
       "purchases": 1,
       "purchase_value": 1000.0,
       "ctr": 0.21,
-      "cpa": 49.29,
-      "roas": 20.29
+      "cpa": 49.32,
+      "roas": 20.28
     },
     {
       "age": "45-54",
@@ -226,9 +226,9 @@
     }
   ],
   "totals": {
-    "impressions": 12661,
+    "impressions": 12663,
     "clicks": 111,
-    "spend": 1429.16,
+    "spend": 1429.25,
     "purchases": 5,
     "purchase_value": 10992.0,
     "roas": 7.69
