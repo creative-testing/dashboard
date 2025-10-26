@@ -4,28 +4,28 @@
     "account_name": "La horma mx",
     "period": "14d",
     "date_range": "2025-10-12..2025-10-25",
-    "generated_at": "2025-10-26T09:19:14.208744Z",
+    "generated_at": "2025-10-26T15:19:07.311882Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 281136,
+      "impressions": 281145,
       "clicks": 6652,
-      "spend": 13743.68,
+      "spend": 13744.01,
       "purchases": 31,
       "purchase_value": 34971.17,
       "ctr": 2.37,
-      "cpa": 443.34,
+      "cpa": 443.36,
       "roas": 2.54
     },
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 162588,
+      "impressions": 162595,
       "clicks": 4703,
-      "spend": 10936.58,
+      "spend": 10936.61,
       "purchases": 23,
       "purchase_value": 25108.33,
       "ctr": 2.89,
@@ -35,7 +35,7 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 58954,
+      "impressions": 58955,
       "clicks": 2455,
       "spend": 4925.41,
       "purchases": 6,
@@ -47,7 +47,7 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 33183,
+      "impressions": 33184,
       "clicks": 1713,
       "spend": 3366.19,
       "purchases": 6,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 579951,
+    "impressions": 579969,
     "clicks": 16997,
-    "spend": 35252.64,
+    "spend": 35253.0,
     "purchases": 70,
     "purchase_value": 73189.89,
     "roas": 2.08

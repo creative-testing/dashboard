@@ -4,28 +4,28 @@
     "account_name": "Kocare Beauty",
     "period": "3d",
     "date_range": "2025-10-23..2025-10-25",
-    "generated_at": "2025-10-26T09:18:46.772433Z",
+    "generated_at": "2025-10-26T15:18:36.841703Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 71773,
-      "clicks": 1064,
+      "impressions": 71784,
+      "clicks": 1063,
       "spend": 3945.75,
       "purchases": 6,
       "purchase_value": 16709.4,
       "ctr": 1.48,
-      "cpa": 657.62,
+      "cpa": 657.63,
       "roas": 4.23
     },
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 37699,
-      "clicks": 700,
-      "spend": 3849.41,
+      "impressions": 37710,
+      "clicks": 701,
+      "spend": 3849.44,
       "purchases": 7,
       "purchase_value": 13655.6,
       "ctr": 1.86,
@@ -35,7 +35,7 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 10388,
+      "impressions": 10390,
       "clicks": 295,
       "spend": 1672.63,
       "purchases": 1,
@@ -47,7 +47,7 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 19802,
+      "impressions": 19807,
       "clicks": 248,
       "spend": 710.64,
       "purchases": 2,
@@ -95,7 +95,7 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 1234,
+      "impressions": 1235,
       "clicks": 21,
       "spend": 66.42,
       "purchases": 0,
@@ -119,12 +119,12 @@
     {
       "age": "18-24",
       "gender": "male",
-      "impressions": 728,
+      "impressions": 730,
       "clicks": 13,
       "spend": 30.98,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 1.79,
+      "ctr": 1.78,
       "cpa": 0,
       "roas": 0.0
     },
@@ -226,9 +226,9 @@
     }
   ],
   "totals": {
-    "impressions": 149159,
+    "impressions": 149191,
     "clicks": 2533,
-    "spend": 11088.28,
+    "spend": 11088.31,
     "purchases": 16,
     "purchase_value": 32937.5,
     "roas": 2.97
