@@ -4,20 +4,20 @@
     "account_name": "SEPUA",
     "period": "30d",
     "date_range": "2025-09-26..2025-10-25",
-    "generated_at": "2025-10-26T15:20:09.266216Z",
+    "generated_at": "2025-10-26T21:18:42.621213Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 29987,
+      "impressions": 29990,
       "clicks": 344,
-      "spend": 4082.94,
+      "spend": 4083.06,
       "purchases": 6,
       "purchase_value": 10550.0,
       "ctr": 1.15,
-      "cpa": 680.49,
+      "cpa": 680.51,
       "roas": 2.58
     },
     {
@@ -35,25 +35,25 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 28746,
+      "impressions": 28749,
       "clicks": 278,
-      "spend": 3031.79,
+      "spend": 3032.4,
       "purchases": 5,
       "purchase_value": 8943.0,
       "ctr": 0.97,
-      "cpa": 606.36,
+      "cpa": 606.48,
       "roas": 2.95
     },
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 19258,
+      "impressions": 19259,
       "clicks": 262,
-      "spend": 2983.94,
+      "spend": 2983.97,
       "purchases": 2,
       "purchase_value": 9646.0,
       "ctr": 1.36,
-      "cpa": 1491.97,
+      "cpa": 1491.98,
       "roas": 3.23
     },
     {
@@ -119,9 +119,9 @@
     {
       "age": "65+",
       "gender": "male",
-      "impressions": 749,
+      "impressions": 750,
       "clicks": 21,
-      "spend": 180.16,
+      "spend": 180.27,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 2.8,
@@ -202,9 +202,9 @@
     }
   ],
   "totals": {
-    "impressions": 130560,
+    "impressions": 130568,
     "clicks": 1753,
-    "spend": 20652.78,
+    "spend": 20653.65,
     "purchases": 20,
     "purchase_value": 44825.7,
     "roas": 2.17

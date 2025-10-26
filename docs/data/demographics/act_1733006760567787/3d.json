@@ -4,14 +4,14 @@
     "account_name": "Moscca Fine Fragrance",
     "period": "3d",
     "date_range": "2025-10-23..2025-10-25",
-    "generated_at": "2025-10-26T15:21:16.971680Z",
+    "generated_at": "2025-10-26T21:19:32.316427Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 5903,
+      "impressions": 5904,
       "clicks": 128,
       "spend": 858.4,
       "purchases": 2,
@@ -23,13 +23,13 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 10706,
+      "impressions": 10708,
       "clicks": 176,
-      "spend": 820.06,
+      "spend": 820.1,
       "purchases": 3,
       "purchase_value": 2818.5,
       "ctr": 1.64,
-      "cpa": 273.35,
+      "cpa": 273.37,
       "roas": 3.44
     },
     {
@@ -45,6 +45,18 @@
       "roas": 3.82
     },
     {
+      "age": "35-44",
+      "gender": "male",
+      "impressions": 1644,
+      "clicks": 36,
+      "spend": 162.37,
+      "purchases": 1,
+      "purchase_value": 1690.0,
+      "ctr": 2.19,
+      "cpa": 162.37,
+      "roas": 10.41
+    },
+    {
       "age": "55-64",
       "gender": "female",
       "impressions": 586,
@@ -57,28 +69,16 @@
       "roas": 0.0
     },
     {
-      "age": "35-44",
-      "gender": "male",
-      "impressions": 1643,
-      "clicks": 36,
-      "spend": 162.23,
-      "purchases": 1,
-      "purchase_value": 1690.0,
-      "ctr": 2.19,
-      "cpa": 162.23,
-      "roas": 10.42
-    },
-    {
       "age": "25-34",
       "gender": "male",
-      "impressions": 2404,
+      "impressions": 2405,
       "clicks": 42,
-      "spend": 144.21,
+      "spend": 144.23,
       "purchases": 1,
       "purchase_value": 939.5,
       "ctr": 1.75,
-      "cpa": 144.21,
-      "roas": 6.52
+      "cpa": 144.23,
+      "roas": 6.51
     },
     {
       "age": "45-54",
@@ -119,7 +119,7 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 1019,
+      "impressions": 1020,
       "clicks": 10,
       "spend": 38.44,
       "purchases": 0,
@@ -226,9 +226,9 @@
     }
   ],
   "totals": {
-    "impressions": 26514,
+    "impressions": 26520,
     "clicks": 543,
-    "spend": 2878.75,
+    "spend": 2878.95,
     "purchases": 8,
     "purchase_value": 10771.5,
     "roas": 3.74

@@ -4,16 +4,16 @@
     "account_name": "SANTA_PHIA_1",
     "period": "14d",
     "date_range": "2025-10-12..2025-10-25",
-    "generated_at": "2025-10-26T15:21:01.411200Z",
+    "generated_at": "2025-10-26T21:19:20.075223Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 131319,
+      "impressions": 131322,
       "clicks": 5067,
-      "spend": 13037.64,
+      "spend": 13037.65,
       "purchases": 23,
       "purchase_value": 70513.0,
       "ctr": 3.86,
@@ -23,25 +23,25 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 84834,
-      "clicks": 4261,
-      "spend": 9931.5,
+      "impressions": 84841,
+      "clicks": 4263,
+      "spend": 9932.76,
       "purchases": 14,
       "purchase_value": 48402.0,
       "ctr": 5.02,
-      "cpa": 709.39,
+      "cpa": 709.48,
       "roas": 4.87
     },
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 103557,
-      "clicks": 3949,
-      "spend": 7325.21,
+      "impressions": 103564,
+      "clicks": 3950,
+      "spend": 7325.46,
       "purchases": 9,
       "purchase_value": 30580.0,
       "ctr": 3.81,
-      "cpa": 813.91,
+      "cpa": 813.94,
       "roas": 4.17
     },
     {
@@ -59,7 +59,7 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 44362,
+      "impressions": 44366,
       "clicks": 827,
       "spend": 2120.28,
       "purchases": 1,
@@ -71,7 +71,7 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 40458,
+      "impressions": 40462,
       "clicks": 1018,
       "spend": 1688.55,
       "purchases": 2,
@@ -95,7 +95,7 @@
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 23808,
+      "impressions": 23809,
       "clicks": 462,
       "spend": 1318.1,
       "purchases": 1,
@@ -107,7 +107,7 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 12278,
+      "impressions": 12280,
       "clicks": 884,
       "spend": 744.01,
       "purchases": 0,
@@ -132,11 +132,11 @@
       "age": "18-24",
       "gender": "male",
       "impressions": 6922,
-      "clicks": 513,
+      "clicks": 514,
       "spend": 316.11,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 7.41,
+      "ctr": 7.43,
       "cpa": 0,
       "roas": 0.0
     },
@@ -238,11 +238,11 @@
     }
   ],
   "totals": {
-    "impressions": 511997,
-    "clicks": 20445,
-    "spend": 43506.25,
+    "impressions": 512025,
+    "clicks": 20449,
+    "spend": 43507.77,
     "purchases": 57,
     "purchase_value": 181205.0,
-    "roas": 4.17
+    "roas": 4.16
   }
 }
