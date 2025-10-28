@@ -4,32 +4,32 @@
     "account_name": "Piu Pieza Unica",
     "period": "14d",
     "date_range": "2025-10-14..2025-10-27",
-    "generated_at": "2025-10-28T15:24:40.907530Z",
+    "generated_at": "2025-10-28T21:20:08.379079Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 62940,
+      "impressions": 62947,
       "clicks": 1056,
-      "spend": 4672.03,
+      "spend": 4672.3,
       "purchases": 7,
       "purchase_value": 7251.2,
       "ctr": 1.68,
-      "cpa": 667.43,
+      "cpa": 667.47,
       "roas": 1.55
     },
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 82395,
+      "impressions": 82403,
       "clicks": 1210,
-      "spend": 3686.87,
+      "spend": 3687.75,
       "purchases": 12,
       "purchase_value": 10224.0,
       "ctr": 1.47,
-      "cpa": 307.24,
+      "cpa": 307.31,
       "roas": 2.77
     },
     {
@@ -47,13 +47,13 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 18575,
+      "impressions": 18576,
       "clicks": 265,
-      "spend": 546.16,
+      "spend": 546.18,
       "purchases": 1,
       "purchase_value": 434.0,
       "ctr": 1.43,
-      "cpa": 546.16,
+      "cpa": 546.18,
       "roas": 0.79
     },
     {
@@ -71,7 +71,7 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 6587,
+      "impressions": 6588,
       "clicks": 94,
       "spend": 388.04,
       "purchases": 0,
@@ -83,9 +83,9 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 1826,
+      "impressions": 1827,
       "clicks": 42,
-      "spend": 192.03,
+      "spend": 192.05,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 2.3,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 203181,
+    "impressions": 203199,
     "clicks": 3233,
-    "spend": 11457.43,
+    "spend": 11458.62,
     "purchases": 22,
     "purchase_value": 20205.2,
     "roas": 1.76

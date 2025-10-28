@@ -4,16 +4,16 @@
     "account_name": "Piu Pieza Unica",
     "period": "90d",
     "date_range": "2025-07-30..2025-10-27",
-    "generated_at": "2025-10-28T15:24:43.995625Z",
+    "generated_at": "2025-10-28T21:20:10.451640Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 378729,
+      "impressions": 378735,
       "clicks": 7104,
-      "spend": 30043.58,
+      "spend": 30043.85,
       "purchases": 68,
       "purchase_value": 56036.0,
       "ctr": 1.88,
@@ -23,13 +23,13 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 424490,
+      "impressions": 424499,
       "clicks": 6610,
-      "spend": 21297.24,
+      "spend": 21298.12,
       "purchases": 50,
       "purchase_value": 37250.6,
       "ctr": 1.56,
-      "cpa": 425.94,
+      "cpa": 425.96,
       "roas": 1.75
     },
     {
@@ -37,7 +37,7 @@
       "gender": "female",
       "impressions": 89025,
       "clicks": 2436,
-      "spend": 9586.17,
+      "spend": 9586.18,
       "purchases": 17,
       "purchase_value": 13421.0,
       "ctr": 2.74,
@@ -47,21 +47,21 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 69317,
+      "impressions": 69318,
       "clicks": 1130,
-      "spend": 2338.04,
+      "spend": 2338.05,
       "purchases": 2,
       "purchase_value": 906.0,
       "ctr": 1.63,
-      "cpa": 1169.02,
+      "cpa": 1169.03,
       "roas": 0.39
     },
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 13844,
+      "impressions": 13845,
       "clicks": 599,
-      "spend": 1931.99,
+      "spend": 1932.01,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 4.33,
@@ -71,7 +71,7 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 27314,
+      "impressions": 27315,
       "clicks": 446,
       "spend": 1552.73,
       "purchases": 1,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 1077841,
+    "impressions": 1077859,
     "clicks": 19702,
-    "spend": 70707.58,
+    "spend": 70708.77,
     "purchases": 149,
     "purchase_value": 116048.0,
     "roas": 1.64

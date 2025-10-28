@@ -4,32 +4,32 @@
     "account_name": "Piu Pieza Unica",
     "period": "30d",
     "date_range": "2025-09-28..2025-10-27",
-    "generated_at": "2025-10-28T15:24:42.604958Z",
+    "generated_at": "2025-10-28T21:20:09.453621Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 136969,
+      "impressions": 136976,
       "clicks": 2547,
-      "spend": 9941.94,
+      "spend": 9942.21,
       "purchases": 19,
       "purchase_value": 19106.2,
       "ctr": 1.86,
-      "cpa": 523.26,
+      "cpa": 523.27,
       "roas": 1.92
     },
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 168949,
+      "impressions": 168957,
       "clicks": 2576,
-      "spend": 7664.74,
+      "spend": 7665.62,
       "purchases": 21,
       "purchase_value": 16982.0,
       "ctr": 1.52,
-      "cpa": 364.99,
+      "cpa": 365.03,
       "roas": 2.22
     },
     {
@@ -47,13 +47,13 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 40723,
+      "impressions": 40724,
       "clicks": 617,
-      "spend": 1192.82,
+      "spend": 1192.83,
       "purchases": 1,
       "purchase_value": 434.0,
       "ctr": 1.52,
-      "cpa": 1192.82,
+      "cpa": 1192.83,
       "roas": 0.36
     },
     {
@@ -71,7 +71,7 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 13087,
+      "impressions": 13088,
       "clicks": 224,
       "spend": 728.5,
       "purchases": 1,
@@ -83,9 +83,9 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 4763,
+      "impressions": 4764,
       "clicks": 163,
-      "spend": 591.86,
+      "spend": 591.88,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 3.42,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 434832,
+    "impressions": 434850,
     "clicks": 7604,
-    "spend": 25160.19,
+    "spend": 25161.37,
     "purchases": 57,
     "purchase_value": 47826.6,
     "roas": 1.9
