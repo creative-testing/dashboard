@@ -4,40 +4,40 @@
     "account_name": "Arua Joyería",
     "period": "90d",
     "date_range": "2025-07-31..2025-10-28",
-    "generated_at": "2025-10-29T09:21:51.355723Z",
+    "generated_at": "2025-10-29T15:23:59.948714Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 589337,
+      "impressions": 589349,
       "clicks": 14981,
-      "spend": 51520.51,
+      "spend": 51520.92,
       "purchases": 113,
       "purchase_value": 153134.5,
       "ctr": 2.54,
-      "cpa": 455.93,
+      "cpa": 455.94,
       "roas": 2.97
     },
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 773440,
+      "impressions": 773450,
       "clicks": 13971,
-      "spend": 43092.62,
+      "spend": 43093.21,
       "purchases": 78,
       "purchase_value": 98113.38,
       "ctr": 1.81,
-      "cpa": 552.47,
+      "cpa": 552.48,
       "roas": 2.28
     },
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 155948,
-      "clicks": 6520,
-      "spend": 20527.23,
+      "impressions": 155953,
+      "clicks": 6521,
+      "spend": 20527.33,
       "purchases": 44,
       "purchase_value": 68196.82,
       "ctr": 4.18,
@@ -59,7 +59,7 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 81885,
+      "impressions": 81886,
       "clicks": 1542,
       "spend": 3043.26,
       "purchases": 4,
@@ -71,13 +71,13 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 20240,
+      "impressions": 20241,
       "clicks": 1136,
-      "spend": 2666.52,
+      "spend": 2666.54,
       "purchases": 5,
       "purchase_value": 4035.5,
       "ctr": 5.61,
-      "cpa": 533.3,
+      "cpa": 533.31,
       "roas": 1.51
     },
     {
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 1805051,
-    "clicks": 43997,
-    "spend": 136487.14,
+    "impressions": 1805080,
+    "clicks": 43998,
+    "spend": 136488.26,
     "purchases": 265,
     "purchase_value": 349911.99,
     "roas": 2.56
