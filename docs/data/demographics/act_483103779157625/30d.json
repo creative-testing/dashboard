@@ -4,28 +4,28 @@
     "account_name": "Arua Joyería",
     "period": "30d",
     "date_range": "2025-09-29..2025-10-28",
-    "generated_at": "2025-10-29T15:23:59.099511Z",
+    "generated_at": "2025-10-29T21:19:09.538336Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 235936,
+      "impressions": 235941,
       "clicks": 5344,
-      "spend": 22919.5,
+      "spend": 22919.71,
       "purchases": 35,
       "purchase_value": 51353.6,
-      "ctr": 2.27,
-      "cpa": 654.84,
+      "ctr": 2.26,
+      "cpa": 654.85,
       "roas": 2.24
     },
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 263453,
+      "impressions": 263458,
       "clicks": 4240,
-      "spend": 16250.38,
+      "spend": 16250.51,
       "purchases": 23,
       "purchase_value": 27954.35,
       "ctr": 1.61,
@@ -35,20 +35,20 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 67377,
-      "clicks": 2551,
-      "spend": 10254.74,
+      "impressions": 67378,
+      "clicks": 2552,
+      "spend": 10254.9,
       "purchases": 20,
       "purchase_value": 31533.9,
       "ctr": 3.79,
-      "cpa": 512.74,
+      "cpa": 512.75,
       "roas": 3.08
     },
     {
       "age": "55-64",
       "gender": "female",
       "impressions": 21670,
-      "clicks": 1298,
+      "clicks": 1299,
       "spend": 4323.38,
       "purchases": 2,
       "purchase_value": 2645.0,
@@ -59,13 +59,13 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 8643,
+      "impressions": 8645,
       "clicks": 574,
-      "spend": 1454.82,
+      "spend": 1454.95,
       "purchases": 4,
       "purchase_value": 3341.5,
       "ctr": 6.64,
-      "cpa": 363.7,
+      "cpa": 363.74,
       "roas": 2.3
     },
     {
@@ -83,13 +83,13 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 16449,
+      "impressions": 16450,
       "clicks": 253,
-      "spend": 1017.76,
+      "spend": 1018.13,
       "purchases": 1,
       "purchase_value": 1740.0,
       "ctr": 1.54,
-      "cpa": 1017.76,
+      "cpa": 1018.13,
       "roas": 1.71
     },
     {
@@ -119,9 +119,9 @@
     {
       "age": "35-44",
       "gender": "unknown",
-      "impressions": 2543,
+      "impressions": 2544,
       "clicks": 71,
-      "spend": 197.84,
+      "spend": 198.1,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 2.79,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 678397,
-    "clicks": 15429,
-    "spend": 59410.03,
+    "impressions": 678412,
+    "clicks": 15431,
+    "spend": 59411.29,
     "purchases": 88,
     "purchase_value": 121770.75,
     "roas": 2.05

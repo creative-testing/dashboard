@@ -4,7 +4,7 @@
     "account_name": "YEKE ADS",
     "period": "30d",
     "date_range": "2025-09-29..2025-10-28",
-    "generated_at": "2025-10-29T15:26:29.981104Z",
+    "generated_at": "2025-10-29T21:21:22.303788Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
@@ -23,21 +23,21 @@
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 77277,
+      "impressions": 77285,
       "clicks": 5792,
-      "spend": 3133.61,
+      "spend": 3133.72,
       "purchases": 4,
       "purchase_value": 10280.75,
-      "ctr": 7.5,
-      "cpa": 783.4,
+      "ctr": 7.49,
+      "cpa": 783.43,
       "roas": 3.28
     },
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 91825,
-      "clicks": 7969,
-      "spend": 2983.29,
+      "impressions": 91830,
+      "clicks": 7970,
+      "spend": 2983.39,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 8.68,
@@ -47,7 +47,7 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 25422,
+      "impressions": 25421,
       "clicks": 774,
       "spend": 2695.65,
       "purchases": 5,
@@ -59,25 +59,25 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 67907,
+      "impressions": 67910,
       "clicks": 2347,
-      "spend": 2442.18,
+      "spend": 2442.21,
       "purchases": 1,
       "purchase_value": 1250.0,
       "ctr": 3.46,
-      "cpa": 2442.18,
+      "cpa": 2442.21,
       "roas": 0.51
     },
     {
       "age": "65+",
       "gender": "male",
-      "impressions": 75215,
-      "clicks": 7294,
-      "spend": 2117.69,
+      "impressions": 75221,
+      "clicks": 7295,
+      "spend": 2117.89,
       "purchases": 1,
       "purchase_value": 850.0,
       "ctr": 9.7,
-      "cpa": 2117.69,
+      "cpa": 2117.89,
       "roas": 0.4
     },
     {
@@ -119,9 +119,9 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 58169,
+      "impressions": 58170,
       "clicks": 1658,
-      "spend": 1217.9,
+      "spend": 1217.91,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 2.85,
@@ -143,12 +143,12 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 8849,
-      "clicks": 914,
-      "spend": 402.87,
+      "impressions": 8852,
+      "clicks": 915,
+      "spend": 403.02,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 10.33,
+      "ctr": 10.34,
       "cpa": 0,
       "roas": 0.0
     },
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 592231,
-    "clicks": 34617,
-    "spend": 25529.42,
+    "impressions": 592256,
+    "clicks": 34620,
+    "spend": 25530.02,
     "purchases": 25,
     "purchase_value": 48288.13,
     "roas": 1.89
