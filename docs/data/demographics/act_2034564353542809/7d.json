@@ -4,14 +4,14 @@
     "account_name": "PULENSHOP",
     "period": "7d",
     "date_range": "2025-10-23..2025-10-29",
-    "generated_at": "2025-10-30T03:44:59.671284Z",
+    "generated_at": "2025-10-30T09:24:18.005355Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 19979,
+      "impressions": 19981,
       "clicks": 351,
       "spend": 94.84,
       "purchases": 10,
@@ -23,21 +23,21 @@
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 18572,
+      "impressions": 18577,
       "clicks": 216,
-      "spend": 79.25,
+      "spend": 79.26,
       "purchases": 1,
       "purchase_value": 39.95,
       "ctr": 1.16,
-      "cpa": 79.25,
+      "cpa": 79.26,
       "roas": 0.5
     },
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 11199,
+      "impressions": 11202,
       "clicks": 411,
-      "spend": 71.38,
+      "spend": 71.41,
       "purchases": 5,
       "purchase_value": 239.75,
       "ctr": 3.67,
@@ -47,7 +47,7 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 8903,
+      "impressions": 8904,
       "clicks": 241,
       "spend": 55.39,
       "purchases": 2,
@@ -59,9 +59,9 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 7762,
+      "impressions": 7766,
       "clicks": 389,
-      "spend": 55.17,
+      "spend": 55.18,
       "purchases": 3,
       "purchase_value": 119.85,
       "ctr": 5.01,
@@ -95,9 +95,9 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 3936,
+      "impressions": 3937,
       "clicks": 75,
-      "spend": 25.55,
+      "spend": 25.56,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.91,
@@ -226,9 +226,9 @@
     }
   ],
   "totals": {
-    "impressions": 93314,
+    "impressions": 93330,
     "clicks": 2088,
-    "spend": 496.63,
+    "spend": 496.69,
     "purchases": 28,
     "purchase_value": 1309.48,
     "roas": 2.64
