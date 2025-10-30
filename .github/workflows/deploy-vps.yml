@@ -1,0 +1,51 @@
+name: 🚀 Deploy SaaS to VPS Vultr
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - 'api/**'
+      - 'docs/index-landing.html'
+      - 'docs/index-mvp.html'
+      - 'docs/index-saas.html'
+      - 'docs/data_loader_saas.js'
+      - 'docs/data_adapter.js'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🔐 Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          script: |
+            set -e
+            echo "📥 Pulling latest code from GitHub..."
+            cd /root/creative-testing-backend
+            git pull origin master
+
+            echo "🐳 Rebuilding Docker containers..."
+            cd api
+            docker compose -f docker-compose.prod.yml up -d --build
+
+            echo "📋 Waiting for containers to be healthy..."
+            sleep 15
+
+            echo "🌐 Deploying frontend files..."
+            cp ../docs/index-landing.html /var/www/creative-testing/
+            cp ../docs/index-mvp.html /var/www/creative-testing/
+            cp ../docs/index-saas.html /var/www/creative-testing/
+            cp ../docs/data_loader_saas.js /var/www/creative-testing/
+            cp ../docs/data_adapter.js /var/www/creative-testing/
+
+            echo "🔧 Setting permissions..."
+            chown -R www-data:www-data /var/www/creative-testing/
+
+            echo "✅ Deployment complete!"
+            echo "🔍 Container status:"
+            docker ps --filter "name=creative-testing" --format "table {{.Names}}\t{{.Status}}"

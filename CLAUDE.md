@@ -7,18 +7,11 @@
 La branche `master` alimente le dashboard de production utilisé par l'entreprise et les patrons de Frederic.
 **Toute modification de master peut CASSER le système en production !**
 
-### ❌ INTERDIT sur `master`:
-- ❌ `git push origin master` → **STRICTEMENT INTERDIT**
-- ❌ Merge vers master
-- ❌ Modifications des workflows GitHub Actions
-- ❌ Déploiement sur GitHub Pages depuis master
+### ✅ CI/CD AUTOMATIQUE (Oct 30, 2025)
+**Push master → GitHub Actions déploie automatiquement sur VPS Vultr** (`.github/workflows/deploy-vps.yml` : git pull + docker rebuild + copie frontend)
 
-### ✅ AUTORISÉ sur `saas-mvp`:
-- ✅ `git push origin saas-mvp` → **AUTORISÉ** (branche de développement isolée)
-- ✅ Commits sur saas-mvp
-- ✅ Tests et déploiements Render depuis saas-mvp
-
-**Règle simple: saas-mvp = liberté totale | master = demander autorisation explicite**
+### ❌ NE JAMAIS modifier directement sur le VPS
+Toute modification doit être faite en local puis pushée sur master (sinon écrasée par CI/CD)
 
 ---
 
@@ -42,7 +35,7 @@ Le dashboard de production fonctionne actuellement pour les patrons de Frederic 
 
 **NOUVEAU DASHBOARD SAAS** :
 - ✅ `docs/index-mvp.html` (nouvelle interface SaaS multi-tenant)
-- ✅ API Render : `creative-testing-api.onrender.com`
+- ✅ API VPS : `creative-testing.theaipipe.com` (Vultr, déploiement auto via CI/CD)
 - ✅ Données isolées par tenant : `tenants/{tenant_id}/accounts/{act_id}/...`
 - ✅ Authentification OAuth Facebook
 
@@ -51,7 +44,7 @@ Le dashboard de production fonctionne actuellement pour les patrons de Frederic 
 ```
 PRODUCTION (Patrons)                     SAAS (Nouveaux utilisateurs)
 ├── index_full.html                      ├── index-mvp.html
-├── GitHub Actions refresh               ├── API Render
+├── GitHub Actions refresh               ├── API VPS (Vultr)
 ├── Token hardcodé dans secrets          ├── OAuth Facebook
 ├── Données globales                     ├── Données par tenant
 └── docs/data/optimized/*.json           └── tenants/{tenant}/accounts/{act}/*.json

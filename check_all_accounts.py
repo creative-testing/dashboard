@@ -83,7 +83,7 @@ ACCOUNTS = [
 ]
 
 headers = {"Authorization": f"Bearer {TOKEN}"}
-api_url = "https://creative-testing-api.onrender.com"
+api_url = "https://creative-testing.theaipipe.com"
 
 print(f"🔍 Vérification de {len(ACCOUNTS)} comptes...\n")
 

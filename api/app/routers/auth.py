@@ -101,7 +101,7 @@ async def facebook_callback(
             redirect_uri=settings.META_REDIRECT_URI
         )
         access_token = token_data["access_token"]
-        expires_in = token_data.get("expires_in", 5184000)  # ~60 jours par défaut
+        expires_in = token_data.get("expires_in") or 5184000  # ~60 jours par défaut
 
         # 2. Récupérer métadonnées du token (user_id, scopes)
         token_info = await meta_client.debug_token(access_token)
