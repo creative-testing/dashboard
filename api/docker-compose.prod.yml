@@ -1,0 +1,86 @@
+version: "3.9"
+
+services:
+  # API FastAPI - Web service principal
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: creative-testing-api
+    network_mode: host  # Utilise le réseau de l'hôte pour accéder à PostgreSQL et Redis locaux
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+      - TOKEN_ENCRYPTION_KEY=${TOKEN_ENCRYPTION_KEY}
+      - META_API_VERSION=${META_API_VERSION}
+      - META_APP_ID=${META_APP_ID}
+      - META_APP_SECRET=${META_APP_SECRET}
+      - FB_APP_ID=${FB_APP_ID}
+      - STORAGE_MODE=${STORAGE_MODE}
+      - STORAGE_ACCESS_KEY=${STORAGE_ACCESS_KEY}
+      - STORAGE_SECRET_KEY=${STORAGE_SECRET_KEY}
+      - STORAGE_ENDPOINT=${STORAGE_ENDPOINT}
+      - STORAGE_BUCKET=${STORAGE_BUCKET}
+      - STORAGE_REGION=${STORAGE_REGION}
+      - LOCAL_DATA_ROOT=${LOCAL_DATA_ROOT}
+      - ENVIRONMENT=${ENVIRONMENT}
+      - API_VERSION=${API_VERSION}
+      - SESSION_SECRET=${SESSION_SECRET}
+      - PORT=${PORT}
+      - STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_PRICE_PRO=${STRIPE_PRICE_PRO}
+      - DASHBOARD_URL=${DASHBOARD_URL}
+      - META_REDIRECT_URI=${META_REDIRECT_URI}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
+      - COOKIE_DOMAIN=${COOKIE_DOMAIN}
+      - COOKIE_SAMESITE=${COOKIE_SAMESITE}
+      - SECRET_KEY=${SECRET_KEY}
+      - JWT_ISSUER=${JWT_ISSUER}
+      - RATE_LIMIT_PER_MINUTE=${RATE_LIMIT_PER_MINUTE}
+      - DEBUG=${DEBUG}
+    volumes:
+      - /mnt/data:/mnt/data  # Volume pour les données locales
+      - ./app:/app/app       # Code source (pour debug si besoin)
+    command: bash start.sh
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${PORT}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Cron job - Rafraîchissement toutes les 2h
+  cron:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: creative-testing-cron
+    network_mode: host  # Utilise le réseau de l'hôte
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+      - TOKEN_ENCRYPTION_KEY=${TOKEN_ENCRYPTION_KEY}
+      - META_API_VERSION=${META_API_VERSION}
+      - META_APP_ID=${META_APP_ID}
+      - META_APP_SECRET=${META_APP_SECRET}
+      - STORAGE_MODE=${STORAGE_MODE}
+      - STORAGE_ACCESS_KEY=${STORAGE_ACCESS_KEY}
+      - STORAGE_SECRET_KEY=${STORAGE_SECRET_KEY}
+      - STORAGE_ENDPOINT=${STORAGE_ENDPOINT}
+      - STORAGE_BUCKET=${STORAGE_BUCKET}
+      - STORAGE_REGION=${STORAGE_REGION}
+      - LOCAL_DATA_ROOT=${LOCAL_DATA_ROOT}
+    volumes:
+      - /mnt/data:/mnt/data
+      - ./app:/app/app
+    # Boucle infinie : exécute cron_refresh.py puis attend 2h
+    command: >
+      sh -c "while true; do
+        echo '🔄 Starting data refresh at $(date)';
+        python cron_refresh.py;
+        echo '✅ Refresh completed. Waiting 2 hours...';
+        sleep 7200;
+      done"
+    restart: unless-stopped
