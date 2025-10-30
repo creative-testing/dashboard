@@ -27,7 +27,8 @@ jobs:
             set -e
             echo "📥 Pulling latest code from GitHub..."
             cd /root/creative-testing-backend
-            git pull origin master
+            git fetch origin master
+            git reset --hard origin/master
 
             echo "🐳 Rebuilding Docker containers..."
             cd api
