@@ -21,7 +21,7 @@ async function loadOptimizedData() {
             return false;
         }
 
-        const API_URL = 'https://creative-testing-api.onrender.com';
+        const API_URL = 'https://creative-testing.theaipipe.com';
         const headers = { 'Authorization': `Bearer ${token}` };
         const timestamp = Date.now();
 
