@@ -4,15 +4,15 @@
     "account_name": "GRUPO PRESLOW/ROCKHAMPTON",
     "period": "90d",
     "date_range": "2025-08-01..2025-10-29",
-    "generated_at": "2025-10-30T03:43:11.503108Z",
+    "generated_at": "2025-10-30T15:23:18.806103Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 1754272,
-      "clicks": 39068,
+      "impressions": 1754300,
+      "clicks": 39069,
       "spend": 49513.38,
       "purchases": 153,
       "purchase_value": 208662.85,
@@ -23,20 +23,20 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 1093692,
-      "clicks": 28711,
+      "impressions": 1093715,
+      "clicks": 28710,
       "spend": 40873.84,
-      "purchases": 107,
-      "purchase_value": 150891.83,
-      "ctr": 2.63,
-      "cpa": 382.0,
-      "roas": 3.69
+      "purchases": 108,
+      "purchase_value": 151495.2,
+      "ctr": 2.62,
+      "cpa": 378.46,
+      "roas": 3.71
     },
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 715804,
-      "clicks": 26313,
+      "impressions": 715815,
+      "clicks": 26317,
       "spend": 40776.89,
       "purchases": 122,
       "purchase_value": 149707.45,
@@ -47,19 +47,19 @@
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 328305,
-      "clicks": 14756,
+      "impressions": 328313,
+      "clicks": 14761,
       "spend": 24055.97,
       "purchases": 72,
       "purchase_value": 77097.61,
-      "ctr": 4.49,
+      "ctr": 4.5,
       "cpa": 334.11,
       "roas": 3.2
     },
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 689487,
+      "impressions": 689497,
       "clicks": 14959,
       "spend": 21178.03,
       "purchases": 76,
@@ -71,8 +71,8 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 464386,
-      "clicks": 13797,
+      "impressions": 464392,
+      "clicks": 13798,
       "spend": 21044.53,
       "purchases": 50,
       "purchase_value": 62303.39,
@@ -83,8 +83,8 @@
     {
       "age": "18-24",
       "gender": "male",
-      "impressions": 702534,
-      "clicks": 16106,
+      "impressions": 702552,
+      "clicks": 16107,
       "spend": 17368.23,
       "purchases": 47,
       "purchase_value": 67756.37,
@@ -95,7 +95,7 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 255681,
+      "impressions": 255686,
       "clicks": 10478,
       "spend": 15778.88,
       "purchases": 50,
@@ -107,7 +107,7 @@
     {
       "age": "65+",
       "gender": "male",
-      "impressions": 119477,
+      "impressions": 119484,
       "clicks": 5589,
       "spend": 8625.48,
       "purchases": 20,
@@ -119,7 +119,7 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 77809,
+      "impressions": 77814,
       "clicks": 4376,
       "spend": 6425.42,
       "purchases": 21,
@@ -131,7 +131,7 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 219938,
+      "impressions": 219943,
       "clicks": 4520,
       "spend": 4656.18,
       "purchases": 17,
@@ -143,7 +143,7 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 34449,
+      "impressions": 34450,
       "clicks": 1766,
       "spend": 2942.11,
       "purchases": 14,
@@ -179,7 +179,7 @@
     {
       "age": "25-34",
       "gender": "unknown",
-      "impressions": 12214,
+      "impressions": 12216,
       "clicks": 294,
       "spend": 441.54,
       "purchases": 2,
@@ -191,7 +191,7 @@
     {
       "age": "55-64",
       "gender": "unknown",
-      "impressions": 4604,
+      "impressions": 4605,
       "clicks": 142,
       "spend": 430.13,
       "purchases": 0,
@@ -238,11 +238,11 @@
     }
   ],
   "totals": {
-    "impressions": 6505949,
-    "clicks": 181789,
+    "impressions": 6506079,
+    "clicks": 181800,
     "spend": 255478.54,
-    "purchases": 751,
-    "purchase_value": 975280.71,
+    "purchases": 752,
+    "purchase_value": 975884.08,
     "roas": 3.82
   }
 }
