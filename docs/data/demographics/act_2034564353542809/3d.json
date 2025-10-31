@@ -4,14 +4,14 @@
     "account_name": "PULENSHOP",
     "period": "3d",
     "date_range": "2025-10-28..2025-10-30",
-    "generated_at": "2025-10-31T09:23:56.782085Z",
+    "generated_at": "2025-10-31T15:22:02.778154Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 6401,
+      "impressions": 6402,
       "clicks": 122,
       "spend": 32.64,
       "purchases": 3,
@@ -23,25 +23,25 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 3766,
+      "impressions": 3769,
       "clicks": 123,
-      "spend": 26.56,
+      "spend": 26.57,
       "purchases": 1,
       "purchase_value": 39.95,
-      "ctr": 3.27,
-      "cpa": 26.56,
+      "ctr": 3.26,
+      "cpa": 26.57,
       "roas": 1.5
     },
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 2808,
+      "impressions": 2809,
       "clicks": 118,
-      "spend": 25.21,
+      "spend": 25.23,
       "purchases": 1,
       "purchase_value": 39.95,
       "ctr": 4.2,
-      "cpa": 25.21,
+      "cpa": 25.23,
       "roas": 1.58
     },
     {
@@ -71,7 +71,7 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 2722,
+      "impressions": 2723,
       "clicks": 76,
       "spend": 18.8,
       "purchases": 2,
@@ -83,14 +83,14 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 2281,
+      "impressions": 2283,
       "clicks": 31,
-      "spend": 12.34,
+      "spend": 12.35,
       "purchases": 1,
       "purchase_value": 79.95,
       "ctr": 1.36,
-      "cpa": 12.34,
-      "roas": 6.48
+      "cpa": 12.35,
+      "roas": 6.47
     },
     {
       "age": "35-44",
@@ -238,11 +238,11 @@
     }
   ],
   "totals": {
-    "impressions": 29222,
+    "impressions": 29230,
     "clicks": 663,
-    "spend": 178.03,
+    "spend": 178.07,
     "purchases": 12,
     "purchase_value": 581.39,
-    "roas": 3.27
+    "roas": 3.26
   }
 }
