@@ -4,16 +4,16 @@
     "account_name": "La horma mx",
     "period": "30d",
     "date_range": "2025-10-02..2025-10-31",
-    "generated_at": "2025-11-01T15:17:59.342820Z",
+    "generated_at": "2025-11-01T21:16:38.971351Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 553637,
+      "impressions": 553639,
       "clicks": 12853,
-      "spend": 27593.18,
+      "spend": 27593.28,
       "purchases": 66,
       "purchase_value": 70559.66,
       "ctr": 2.32,
@@ -23,9 +23,9 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 332037,
+      "impressions": 332042,
       "clicks": 9402,
-      "spend": 22277.08,
+      "spend": 22277.26,
       "purchases": 59,
       "purchase_value": 66100.53,
       "ctr": 2.83,
@@ -35,9 +35,9 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 125761,
+      "impressions": 125762,
       "clicks": 5227,
-      "spend": 10565.55,
+      "spend": 10565.56,
       "purchases": 18,
       "purchase_value": 15482.99,
       "ctr": 4.16,
@@ -47,13 +47,13 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 67162,
+      "impressions": 67163,
       "clicks": 3567,
-      "spend": 6822.09,
+      "spend": 6822.24,
       "purchases": 11,
       "purchase_value": 8884.08,
       "ctr": 5.31,
-      "cpa": 620.19,
+      "cpa": 620.2,
       "roas": 1.3
     },
     {
@@ -107,9 +107,9 @@
     {
       "age": "45-54",
       "gender": "unknown",
-      "impressions": 2129,
+      "impressions": 2130,
       "clicks": 71,
-      "spend": 194.73,
+      "spend": 194.78,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 3.33,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 1164406,
+    "impressions": 1164416,
     "clicks": 34025,
-    "spend": 71822.53,
+    "spend": 71823.02,
     "purchases": 163,
     "purchase_value": 168486.5,
     "roas": 2.35

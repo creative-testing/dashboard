@@ -4,14 +4,14 @@
     "account_name": "PULENSHOP",
     "period": "3d",
     "date_range": "2025-10-29..2025-10-31",
-    "generated_at": "2025-11-01T15:19:20.088642Z",
+    "generated_at": "2025-11-01T21:17:46.917564Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 5880,
+      "impressions": 5881,
       "clicks": 86,
       "spend": 28.81,
       "purchases": 1,
@@ -23,7 +23,7 @@
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 4880,
+      "impressions": 4882,
       "clicks": 69,
       "spend": 23.12,
       "purchases": 3,
@@ -47,7 +47,7 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 2344,
+      "impressions": 2345,
       "clicks": 93,
       "spend": 21.99,
       "purchases": 2,
@@ -59,7 +59,7 @@
     {
       "age": "65+",
       "gender": "male",
-      "impressions": 2931,
+      "impressions": 2932,
       "clicks": 60,
       "spend": 16.93,
       "purchases": 2,
@@ -71,24 +71,24 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 2377,
+      "impressions": 2378,
       "clicks": 59,
-      "spend": 15.69,
+      "spend": 15.71,
       "purchases": 2,
       "purchase_value": 81.89,
       "ctr": 2.48,
-      "cpa": 7.84,
-      "roas": 5.22
+      "cpa": 7.86,
+      "roas": 5.21
     },
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 2108,
-      "clicks": 25,
-      "spend": 10.11,
+      "impressions": 2111,
+      "clicks": 26,
+      "spend": 10.12,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 1.19,
+      "ctr": 1.23,
       "cpa": 0,
       "roas": 0.0
     },
@@ -107,12 +107,12 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 394,
+      "impressions": 395,
       "clicks": 7,
       "spend": 3.88,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 1.78,
+      "ctr": 1.77,
       "cpa": 0,
       "roas": 0.0
     },
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 26083,
-    "clicks": 551,
-    "spend": 155.51,
+    "impressions": 26093,
+    "clicks": 552,
+    "spend": 155.54,
     "purchases": 13,
     "purchase_value": 549.29,
     "roas": 3.53

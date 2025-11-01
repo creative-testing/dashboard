@@ -4,20 +4,20 @@
     "account_name": "Reset A&F",
     "period": "30d",
     "date_range": "2025-10-02..2025-10-31",
-    "generated_at": "2025-11-01T15:18:08.617827Z",
+    "generated_at": "2025-11-01T21:16:46.874000Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 98155,
+      "impressions": 98157,
       "clicks": 1204,
-      "spend": 12433.26,
+      "spend": 12433.44,
       "purchases": 24,
       "purchase_value": 41170.5,
       "ctr": 1.23,
-      "cpa": 518.05,
+      "cpa": 518.06,
       "roas": 3.31
     },
     {
@@ -35,19 +35,19 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 40610,
+      "impressions": 40611,
       "clicks": 486,
-      "spend": 3630.69,
+      "spend": 3630.73,
       "purchases": 7,
       "purchase_value": 23815.1,
       "ctr": 1.2,
-      "cpa": 518.67,
+      "cpa": 518.68,
       "roas": 6.56
     },
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 5053,
+      "impressions": 5054,
       "clicks": 140,
       "spend": 1265.94,
       "purchases": 1,
@@ -59,13 +59,13 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 6927,
+      "impressions": 6928,
       "clicks": 70,
-      "spend": 977.21,
+      "spend": 977.31,
       "purchases": 3,
       "purchase_value": 5345.0,
       "ctr": 1.01,
-      "cpa": 325.74,
+      "cpa": 325.77,
       "roas": 5.47
     },
     {
@@ -143,21 +143,21 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 1863,
-      "clicks": 31,
-      "spend": 78.21,
+      "impressions": 1864,
+      "clicks": 32,
+      "spend": 78.27,
       "purchases": 1,
       "purchase_value": 798.0,
-      "ctr": 1.66,
-      "cpa": 78.21,
+      "ctr": 1.72,
+      "cpa": 78.27,
       "roas": 10.2
     },
     {
       "age": "25-34",
       "gender": "unknown",
-      "impressions": 1563,
+      "impressions": 1564,
       "clicks": 14,
-      "spend": 69.85,
+      "spend": 69.91,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 0.9,
@@ -250,9 +250,9 @@
     }
   ],
   "totals": {
-    "impressions": 193292,
-    "clicks": 2588,
-    "spend": 24484.08,
+    "impressions": 193299,
+    "clicks": 2589,
+    "spend": 24484.52,
     "purchases": 50,
     "purchase_value": 100201.55,
     "roas": 4.09
