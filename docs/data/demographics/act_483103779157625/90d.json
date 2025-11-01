@@ -4,16 +4,16 @@
     "account_name": "Arua Joyería",
     "period": "90d",
     "date_range": "2025-08-03..2025-10-31",
-    "generated_at": "2025-11-01T09:19:02.510066Z",
+    "generated_at": "2025-11-01T15:17:17.155431Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 587389,
+      "impressions": 587392,
       "clicks": 14850,
-      "spend": 51706.54,
+      "spend": 51706.8,
       "purchases": 112,
       "purchase_value": 155389.4,
       "ctr": 2.53,
@@ -23,7 +23,7 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 771040,
+      "impressions": 771041,
       "clicks": 13815,
       "spend": 42932.29,
       "purchases": 74,
@@ -35,9 +35,9 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 156141,
+      "impressions": 156146,
       "clicks": 6491,
-      "spend": 20691.49,
+      "spend": 20691.64,
       "purchases": 45,
       "purchase_value": 70940.92,
       "ctr": 4.16,
@@ -107,25 +107,25 @@
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 8306,
-      "clicks": 252,
-      "spend": 755.3,
+      "impressions": 8307,
+      "clicks": 253,
+      "spend": 755.37,
       "purchases": 1,
       "purchase_value": 861.0,
-      "ctr": 3.03,
-      "cpa": 755.3,
+      "ctr": 3.05,
+      "cpa": 755.37,
       "roas": 1.14
     },
     {
       "age": "35-44",
       "gender": "unknown",
-      "impressions": 6029,
+      "impressions": 6030,
       "clicks": 159,
-      "spend": 400.99,
+      "spend": 401.38,
       "purchases": 1,
       "purchase_value": 550.0,
       "ctr": 2.64,
-      "cpa": 400.99,
+      "cpa": 401.38,
       "roas": 1.37
     },
     {
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 1802164,
-    "clicks": 43700,
-    "spend": 136782.15,
+    "impressions": 1802175,
+    "clicks": 43701,
+    "spend": 136783.02,
     "purchases": 259,
     "purchase_value": 348547.24,
     "roas": 2.55
