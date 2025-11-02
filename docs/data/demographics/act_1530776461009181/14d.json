@@ -4,26 +4,26 @@
     "account_name": "YEKE ADS",
     "period": "14d",
     "date_range": "2025-10-19..2025-11-01",
-    "generated_at": "2025-11-02T09:20:09.263578Z",
+    "generated_at": "2025-11-02T15:20:03.519907Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 23276,
+      "impressions": 23278,
       "clicks": 871,
-      "spend": 2174.38,
+      "spend": 2174.46,
       "purchases": 3,
       "purchase_value": 6393.88,
       "ctr": 3.74,
-      "cpa": 724.79,
+      "cpa": 724.82,
       "roas": 2.94
     },
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 30628,
+      "impressions": 30632,
       "clicks": 1997,
       "spend": 1613.07,
       "purchases": 1,
@@ -35,9 +35,9 @@
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 37974,
+      "impressions": 37981,
       "clicks": 2870,
-      "spend": 1585.89,
+      "spend": 1585.96,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 7.56,
@@ -59,7 +59,7 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 10119,
+      "impressions": 10121,
       "clicks": 305,
       "spend": 1049.57,
       "purchases": 1,
@@ -71,8 +71,8 @@
     {
       "age": "65+",
       "gender": "male",
-      "impressions": 37173,
-      "clicks": 3030,
+      "impressions": 37179,
+      "clicks": 3031,
       "spend": 1011.19,
       "purchases": 1,
       "purchase_value": 850.0,
@@ -83,13 +83,13 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 9031,
+      "impressions": 9032,
       "clicks": 429,
-      "spend": 942.55,
+      "spend": 942.56,
       "purchases": 2,
       "purchase_value": 3105.0,
       "ctr": 4.75,
-      "cpa": 471.27,
+      "cpa": 471.28,
       "roas": 3.29
     },
     {
@@ -143,7 +143,7 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 4209,
+      "impressions": 4210,
       "clicks": 447,
       "spend": 198.9,
       "purchases": 0,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 241932,
-    "clicks": 12671,
-    "spend": 11931.07,
+    "impressions": 241955,
+    "clicks": 12672,
+    "spend": 11931.23,
     "purchases": 10,
     "purchase_value": 19936.63,
     "roas": 1.67

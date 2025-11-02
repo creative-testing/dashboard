@@ -4,16 +4,16 @@
     "account_name": "Koro Beauty",
     "period": "30d",
     "date_range": "2025-10-03..2025-11-01",
-    "generated_at": "2025-11-02T09:20:29.996852Z",
+    "generated_at": "2025-11-02T15:20:24.891599Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 953131,
+      "impressions": 953153,
       "clicks": 16239,
-      "spend": 36317.09,
+      "spend": 36317.24,
       "purchases": 133,
       "purchase_value": 96720.7,
       "ctr": 1.7,
@@ -23,33 +23,33 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 500457,
-      "clicks": 10693,
-      "spend": 31282.5,
+      "impressions": 500480,
+      "clicks": 10695,
+      "spend": 31282.67,
       "purchases": 128,
       "purchase_value": 101987.1,
       "ctr": 2.14,
-      "cpa": 244.39,
+      "cpa": 244.4,
       "roas": 3.26
     },
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 160503,
+      "impressions": 160506,
       "clicks": 4541,
-      "spend": 13379.85,
+      "spend": 13379.96,
       "purchases": 54,
       "purchase_value": 39481.0,
       "ctr": 2.83,
-      "cpa": 247.77,
+      "cpa": 247.78,
       "roas": 2.95
     },
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 397363,
-      "clicks": 7806,
-      "spend": 9520.08,
+      "impressions": 397366,
+      "clicks": 7807,
+      "spend": 9520.09,
       "purchases": 35,
       "purchase_value": 23111.4,
       "ctr": 1.96,
@@ -107,13 +107,13 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 12850,
+      "impressions": 12852,
       "clicks": 433,
-      "spend": 483.64,
+      "spend": 483.65,
       "purchases": 1,
       "purchase_value": 599.0,
       "ctr": 3.37,
-      "cpa": 483.64,
+      "cpa": 483.65,
       "roas": 1.24
     },
     {
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 2176712,
-    "clicks": 45977,
-    "spend": 97503.72,
+    "impressions": 2176765,
+    "clicks": 45980,
+    "spend": 97504.17,
     "purchases": 366,
     "purchase_value": 273227.5,
     "roas": 2.8

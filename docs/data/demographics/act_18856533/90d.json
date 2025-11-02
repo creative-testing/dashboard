@@ -4,7 +4,7 @@
     "account_name": "18856533",
     "period": "90d",
     "date_range": "2025-08-04..2025-11-01",
-    "generated_at": "2025-11-02T09:17:49.939888Z",
+    "generated_at": "2025-11-02T15:17:37.209663Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
@@ -23,9 +23,9 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 162003,
-      "clicks": 4854,
-      "spend": 3935.87,
+      "impressions": 162004,
+      "clicks": 4855,
+      "spend": 3935.88,
       "purchases": 6,
       "purchase_value": 7627.9,
       "ctr": 3.0,
@@ -35,7 +35,7 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 220860,
+      "impressions": 220862,
       "clicks": 5429,
       "spend": 3760.18,
       "purchases": 2,
@@ -47,25 +47,25 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 199245,
+      "impressions": 199248,
       "clicks": 5149,
-      "spend": 3257.14,
+      "spend": 3257.17,
       "purchases": 8,
       "purchase_value": 6189.3,
       "ctr": 2.58,
-      "cpa": 407.14,
+      "cpa": 407.15,
       "roas": 1.9
     },
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 103905,
+      "impressions": 103906,
       "clicks": 5186,
-      "spend": 2531.91,
+      "spend": 2531.94,
       "purchases": 2,
       "purchase_value": 1082.2,
       "ctr": 4.99,
-      "cpa": 1265.95,
+      "cpa": 1265.97,
       "roas": 0.43
     },
     {
@@ -167,9 +167,9 @@
     {
       "age": "25-34",
       "gender": "unknown",
-      "impressions": 3214,
+      "impressions": 3215,
       "clicks": 89,
-      "spend": 57.37,
+      "spend": 57.49,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 2.77,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 1155672,
-    "clicks": 39196,
-    "spend": 24454.07,
+    "impressions": 1155680,
+    "clicks": 39197,
+    "spend": 24454.26,
     "purchases": 29,
     "purchase_value": 25797.6,
     "roas": 1.05
