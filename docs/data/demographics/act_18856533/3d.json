@@ -4,14 +4,14 @@
     "account_name": "18856533",
     "period": "3d",
     "date_range": "2025-10-30..2025-11-01",
-    "generated_at": "2025-11-02T15:17:34.410248Z",
+    "generated_at": "2025-11-02T21:16:05.334229Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 12053,
+      "impressions": 12054,
       "clicks": 575,
       "spend": 693.53,
       "purchases": 3,
@@ -23,9 +23,9 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 10845,
+      "impressions": 10847,
       "clicks": 338,
-      "spend": 381.76,
+      "spend": 381.77,
       "purchases": 2,
       "purchase_value": 937.2,
       "ctr": 3.12,
@@ -35,19 +35,19 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 3511,
+      "impressions": 3514,
       "clicks": 234,
-      "spend": 257.45,
+      "spend": 257.47,
       "purchases": 2,
       "purchase_value": 1082.2,
       "ctr": 6.66,
-      "cpa": 128.72,
+      "cpa": 128.74,
       "roas": 4.2
     },
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 5711,
+      "impressions": 5712,
       "clicks": 128,
       "spend": 243.13,
       "purchases": 0,
@@ -59,7 +59,7 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 5591,
+      "impressions": 5592,
       "clicks": 117,
       "spend": 147.78,
       "purchases": 1,
@@ -95,12 +95,12 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 296,
+      "impressions": 297,
       "clicks": 12,
       "spend": 26.83,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 4.05,
+      "ctr": 4.04,
       "cpa": 0,
       "roas": 0.0
     },
@@ -226,9 +226,9 @@
     }
   ],
   "totals": {
-    "impressions": 42401,
+    "impressions": 42410,
     "clicks": 1588,
-    "spend": 2041.72,
+    "spend": 2041.75,
     "purchases": 12,
     "purchase_value": 8798.7,
     "roas": 4.31

@@ -4,16 +4,16 @@
     "account_name": "SEPUA",
     "period": "3d",
     "date_range": "2025-10-30..2025-11-01",
-    "generated_at": "2025-11-02T15:19:35.287701Z",
+    "generated_at": "2025-11-02T21:18:08.887519Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 4168,
+      "impressions": 4171,
       "clicks": 60,
-      "spend": 407.04,
+      "spend": 407.67,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.44,
@@ -23,9 +23,9 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 4715,
+      "impressions": 4717,
       "clicks": 22,
-      "spend": 381.38,
+      "spend": 381.53,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 0.47,
@@ -35,9 +35,9 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 2791,
+      "impressions": 2793,
       "clicks": 40,
-      "spend": 304.0,
+      "spend": 304.12,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.43,
@@ -47,13 +47,13 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 3148,
+      "impressions": 3149,
       "clicks": 24,
-      "spend": 280.83,
+      "spend": 280.87,
       "purchases": 1,
       "purchase_value": 9600.0,
       "ctr": 0.76,
-      "cpa": 280.83,
+      "cpa": 280.87,
       "roas": 34.18
     },
     {
@@ -71,9 +71,9 @@
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 1087,
+      "impressions": 1088,
       "clicks": 25,
-      "spend": 137.37,
+      "spend": 137.53,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 2.3,
@@ -83,12 +83,12 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 744,
+      "impressions": 745,
       "clicks": 24,
-      "spend": 100.71,
+      "spend": 100.72,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 3.23,
+      "ctr": 3.22,
       "cpa": 0,
       "roas": 0.0
     },
@@ -107,12 +107,12 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 556,
+      "impressions": 557,
       "clicks": 33,
       "spend": 63.92,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 5.94,
+      "ctr": 5.92,
       "cpa": 0,
       "roas": 0.0
     },
@@ -190,9 +190,9 @@
     }
   ],
   "totals": {
-    "impressions": 20491,
+    "impressions": 20502,
     "clicks": 303,
-    "spend": 2119.16,
+    "spend": 2120.27,
     "purchases": 2,
     "purchase_value": 11549.0,
     "roas": 5.45
