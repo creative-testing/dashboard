@@ -4,28 +4,28 @@
     "account_name": "AHAL BIO ",
     "period": "90d",
     "date_range": "2025-08-05..2025-11-02",
-    "generated_at": "2025-11-03T15:25:51.513075Z",
+    "generated_at": "2025-11-03T21:22:15.120885Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 1540113,
+      "impressions": 1540124,
       "clicks": 17804,
-      "spend": 166681.92,
+      "spend": 166683.51,
       "purchases": 340,
       "purchase_value": 633920.1,
       "ctr": 1.16,
-      "cpa": 490.24,
+      "cpa": 490.25,
       "roas": 3.8
     },
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 684605,
+      "impressions": 684614,
       "clicks": 11493,
-      "spend": 104714.04,
+      "spend": 104714.32,
       "purchases": 176,
       "purchase_value": 335822.51,
       "ctr": 1.68,
@@ -35,9 +35,9 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 983759,
+      "impressions": 983769,
       "clicks": 9104,
-      "spend": 63185.85,
+      "spend": 63185.99,
       "purchases": 111,
       "purchase_value": 215172.73,
       "ctr": 0.93,
@@ -47,9 +47,9 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 230351,
+      "impressions": 230354,
       "clicks": 5587,
-      "spend": 50311.81,
+      "spend": 50311.84,
       "purchases": 76,
       "purchase_value": 133121.16,
       "ctr": 2.43,
@@ -71,9 +71,9 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 152958,
+      "impressions": 152960,
       "clicks": 1468,
-      "spend": 6062.26,
+      "spend": 6062.28,
       "purchases": 12,
       "purchase_value": 27579.0,
       "ctr": 0.96,
@@ -119,13 +119,13 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 88236,
+      "impressions": 88237,
       "clicks": 737,
-      "spend": 2777.41,
+      "spend": 2777.43,
       "purchases": 3,
       "purchase_value": 5382.0,
       "ctr": 0.84,
-      "cpa": 925.8,
+      "cpa": 925.81,
       "roas": 1.94
     },
     {
@@ -167,13 +167,13 @@
     {
       "age": "18-24",
       "gender": "male",
-      "impressions": 31776,
+      "impressions": 31777,
       "clicks": 228,
-      "spend": 746.9,
+      "spend": 746.91,
       "purchases": 2,
       "purchase_value": 2550.0,
       "ctr": 0.72,
-      "cpa": 373.45,
+      "cpa": 373.46,
       "roas": 3.41
     },
     {
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 4003977,
+    "impressions": 4004014,
     "clicks": 50957,
-    "spend": 431569.03,
+    "spend": 431571.12,
     "purchases": 767,
     "purchase_value": 1434410.2,
     "roas": 3.32
