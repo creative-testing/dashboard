@@ -4,16 +4,16 @@
     "account_name": "Swappp Energy",
     "period": "3d",
     "date_range": "2025-10-31..2025-11-02",
-    "generated_at": "2025-11-03T09:27:47.458822Z",
+    "generated_at": "2025-11-03T15:24:31.679127Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 2595,
+      "impressions": 2596,
       "clicks": 30,
-      "spend": 436.9,
+      "spend": 437.02,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.16,
@@ -71,24 +71,24 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 848,
+      "impressions": 850,
       "clicks": 13,
-      "spend": 185.89,
+      "spend": 187.28,
       "purchases": 1,
       "purchase_value": 588.0,
       "ctr": 1.53,
-      "cpa": 185.89,
-      "roas": 3.16
+      "cpa": 187.28,
+      "roas": 3.14
     },
     {
       "age": "55-64",
       "gender": "male",
       "impressions": 208,
-      "clicks": 2,
+      "clicks": 3,
       "spend": 109.65,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 0.96,
+      "ctr": 1.44,
       "cpa": 0,
       "roas": 0.0
     },
@@ -226,9 +226,9 @@
     }
   ],
   "totals": {
-    "impressions": 12739,
-    "clicks": 138,
-    "spend": 1937.36,
+    "impressions": 12742,
+    "clicks": 139,
+    "spend": 1938.87,
     "purchases": 1,
     "purchase_value": 588.0,
     "roas": 0.3
