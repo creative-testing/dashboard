@@ -4,44 +4,44 @@
     "account_name": "Reset A&F",
     "period": "30d",
     "date_range": "2025-10-05..2025-11-03",
-    "generated_at": "2025-11-04T09:24:49.815994Z",
+    "generated_at": "2025-11-04T15:24:03.742921Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 102870,
+      "impressions": 102875,
       "clicks": 1223,
-      "spend": 12406.16,
-      "purchases": 25,
-      "purchase_value": 43950.5,
+      "spend": 12406.76,
+      "purchases": 26,
+      "purchase_value": 45350.5,
       "ctr": 1.19,
-      "cpa": 496.25,
-      "roas": 3.54
+      "cpa": 477.18,
+      "roas": 3.66
     },
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 23848,
+      "impressions": 23849,
       "clicks": 380,
-      "spend": 3807.73,
+      "spend": 3807.89,
       "purchases": 8,
       "purchase_value": 22056.95,
       "ctr": 1.59,
-      "cpa": 475.97,
+      "cpa": 475.99,
       "roas": 5.79
     },
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 38188,
+      "impressions": 38189,
       "clicks": 418,
-      "spend": 3199.83,
+      "spend": 3200.5,
       "purchases": 10,
       "purchase_value": 28569.1,
       "ctr": 1.09,
-      "cpa": 319.98,
+      "cpa": 320.05,
       "roas": 8.93
     },
     {
@@ -155,13 +155,13 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 1733,
+      "impressions": 1734,
       "clicks": 33,
-      "spend": 68.39,
+      "spend": 68.41,
       "purchases": 1,
       "purchase_value": 798.0,
       "ctr": 1.9,
-      "cpa": 68.39,
+      "cpa": 68.41,
       "roas": 11.67
     },
     {
@@ -250,11 +250,11 @@
     }
   ],
   "totals": {
-    "impressions": 197051,
+    "impressions": 197059,
     "clicks": 2568,
-    "spend": 24034.32,
-    "purchases": 57,
-    "purchase_value": 119952.7,
-    "roas": 4.99
+    "spend": 24035.77,
+    "purchases": 58,
+    "purchase_value": 121352.7,
+    "roas": 5.05
   }
 }

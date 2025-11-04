@@ -4,52 +4,52 @@
     "account_name": "Olimpo Backup",
     "period": "7d",
     "date_range": "2025-10-28..2025-11-03",
-    "generated_at": "2025-11-04T09:26:00.024085Z",
+    "generated_at": "2025-11-04T15:25:00.295290Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 391,
+      "impressions": 393,
       "clicks": 31,
-      "spend": 26.16,
+      "spend": 26.19,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 7.93,
+      "ctr": 7.89,
       "cpa": 0,
       "roas": 0.0
     },
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 419,
+      "impressions": 420,
       "clicks": 27,
-      "spend": 19.14,
+      "spend": 19.15,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 6.44,
+      "ctr": 6.43,
       "cpa": 0,
       "roas": 0.0
     },
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 371,
+      "impressions": 372,
       "clicks": 13,
-      "spend": 14.0,
+      "spend": 14.06,
       "purchases": 1,
       "purchase_value": 34.3,
-      "ctr": 3.5,
-      "cpa": 14.0,
-      "roas": 2.45
+      "ctr": 3.49,
+      "cpa": 14.06,
+      "roas": 2.44
     },
     {
       "age": "65+",
       "gender": "female",
       "impressions": 228,
       "clicks": 17,
-      "spend": 13.23,
+      "spend": 13.24,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 7.46,
@@ -59,12 +59,12 @@
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 177,
+      "impressions": 179,
       "clicks": 9,
-      "spend": 11.22,
+      "spend": 11.57,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 5.08,
+      "ctr": 5.03,
       "cpa": 0,
       "roas": 0.0
     },
@@ -83,12 +83,12 @@
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 223,
+      "impressions": 224,
       "clicks": 8,
-      "spend": 7.01,
+      "spend": 7.03,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 3.59,
+      "ctr": 3.57,
       "cpa": 0,
       "roas": 0.0
     },
@@ -214,11 +214,11 @@
     }
   ],
   "totals": {
-    "impressions": 2483,
+    "impressions": 2490,
     "clicks": 119,
-    "spend": 112.16,
+    "spend": 112.64,
     "purchases": 1,
     "purchase_value": 34.3,
-    "roas": 0.31
+    "roas": 0.3
   }
 }

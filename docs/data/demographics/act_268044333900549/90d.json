@@ -4,16 +4,16 @@
     "account_name": "S & S GOURMET",
     "period": "90d",
     "date_range": "2025-08-06..2025-11-03",
-    "generated_at": "2025-11-04T09:23:47.950171Z",
+    "generated_at": "2025-11-04T15:22:54.255463Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 509358,
+      "impressions": 509363,
       "clicks": 7784,
-      "spend": 45591.92,
+      "spend": 45592.24,
       "purchases": 193,
       "purchase_value": 194688.09,
       "ctr": 1.53,
@@ -23,21 +23,21 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 479627,
+      "impressions": 479631,
       "clicks": 7128,
-      "spend": 28826.49,
-      "purchases": 123,
-      "purchase_value": 129289.37,
+      "spend": 28826.56,
+      "purchases": 124,
+      "purchase_value": 130119.87,
       "ctr": 1.49,
-      "cpa": 234.36,
-      "roas": 4.49
+      "cpa": 232.47,
+      "roas": 4.51
     },
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 165984,
+      "impressions": 165985,
       "clicks": 3552,
-      "spend": 20483.41,
+      "spend": 20483.42,
       "purchases": 77,
       "purchase_value": 70962.98,
       "ctr": 2.14,
@@ -47,9 +47,9 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 39982,
+      "impressions": 39983,
       "clicks": 1224,
-      "spend": 6771.12,
+      "spend": 6771.13,
       "purchases": 13,
       "purchase_value": 13536.65,
       "ctr": 3.06,
@@ -59,13 +59,13 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 35133,
+      "impressions": 35134,
       "clicks": 695,
-      "spend": 3005.44,
+      "spend": 3005.48,
       "purchases": 10,
       "purchase_value": 8798.11,
       "ctr": 1.98,
-      "cpa": 300.54,
+      "cpa": 300.55,
       "roas": 2.93
     },
     {
@@ -250,11 +250,11 @@
     }
   ],
   "totals": {
-    "impressions": 1384894,
+    "impressions": 1384906,
     "clicks": 23341,
-    "spend": 116039.45,
-    "purchases": 452,
-    "purchase_value": 455880.27,
-    "roas": 3.93
+    "spend": 116039.9,
+    "purchases": 453,
+    "purchase_value": 456710.77,
+    "roas": 3.94
   }
 }
