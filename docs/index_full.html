@@ -894,8 +894,10 @@
                 return;
             }
 
-            // Vérifier l'authentification
-            if (!sessionStorage.getItem('dashboard_authenticated')) {
+            // Vérifier authentification avec expiration (30 jours)
+            const auth = localStorage.getItem('dashboard_auth');
+            const isAuthenticated = auth && (Date.now() - parseInt(auth)) < (30 * 24 * 60 * 60 * 1000);
+            if (!isAuthenticated) {
                 // Créer popup custom moderne AVANT de montrer le body
                 const overlay = document.createElement('div');
                 overlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:linear-gradient(135deg, #0ea5e9 0%, #2563eb 50%, #1e40af 100%);display:flex;align-items:center;justify-content:center;z-index:999999;';
@@ -969,7 +971,7 @@
 
                 const checkPassword = () => {
                     if (input.value === 'CreativeTesting2024!') {
-                        sessionStorage.setItem('dashboard_authenticated', '1');
+                        localStorage.setItem('dashboard_auth', Date.now().toString());
                         // Suppression immédiate sans animation pour éviter tout flash
                         overlay.remove();
                         document.body.style.overflow = '';
