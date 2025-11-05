@@ -880,7 +880,123 @@
     </style>
     <script src="data_adapter.js"></script>
 </head>
-<body>
+<body style="visibility: hidden;">
+    <!-- 🔒 Protection immédiate - S'exécute AVANT l'affichage du contenu -->
+    <script>
+        (function() {
+            // Lire les paramètres URL
+            const params = new URLSearchParams(window.location.search);
+            const isLocked = params.get('locked') === '1';
+
+            // Si locked=1 (lien client), afficher directement
+            if (isLocked) {
+                document.body.style.visibility = 'visible';
+                return;
+            }
+
+            // Vérifier l'authentification
+            if (!sessionStorage.getItem('dashboard_authenticated')) {
+                // Créer popup custom moderne AVANT de montrer le body
+                const overlay = document.createElement('div');
+                overlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:linear-gradient(135deg, #0ea5e9 0%, #2563eb 50%, #1e40af 100%);display:flex;align-items:center;justify-content:center;z-index:999999;';
+
+                const modal = document.createElement('div');
+                modal.style.cssText = 'background:rgba(255,255,255,0.98);backdrop-filter:blur(20px);padding:50px 60px;border-radius:24px;box-shadow:0 30px 90px rgba(0,0,0,0.4);max-width:420px;width:90%;';
+                modal.innerHTML = `
+                    <style>
+                        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+                        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+                        .auth-input {
+                            width: 100%;
+                            padding: 16px 20px;
+                            border: 2.5px solid #e0e0e0;
+                            border-radius: 12px;
+                            font-size: 16px;
+                            font-family: system-ui, -apple-system, sans-serif;
+                            transition: all 0.3s ease;
+                            outline: none;
+                            box-sizing: border-box;
+                        }
+                        .auth-input:focus {
+                            border-color: #0ea5e9;
+                            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
+                            transform: translateY(-2px);
+                        }
+                        .auth-btn {
+                            width: 100%;
+                            padding: 16px;
+                            background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+                            color: white;
+                            border: none;
+                            border-radius: 12px;
+                            font-size: 16px;
+                            font-weight: 600;
+                            cursor: pointer;
+                            transition: all 0.3s ease;
+                            font-family: system-ui, -apple-system, sans-serif;
+                            margin-top: 20px;
+                        }
+                        .auth-btn:hover {
+                            transform: translateY(-2px);
+                            box-shadow: 0 10px 30px rgba(14, 165, 233, 0.4);
+                        }
+                        .auth-btn:active {
+                            transform: translateY(0);
+                        }
+                        .shake { animation: shake 0.5s; }
+                        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+                    </style>
+                    <div style="text-align:center;margin-bottom:30px;">
+                        <div style="font-size:56px;margin-bottom:12px;">🔒</div>
+                        <h2 style="margin:0;font-size:26px;color:#2c3e50;font-weight:700;font-family:system-ui;">Dashboard Protegido</h2>
+                        <p style="margin:8px 0 0;color:#7f8c8d;font-size:15px;">Ingresa la contraseña para continuar</p>
+                    </div>
+                    <input type="password" id="auth-pwd" class="auth-input" placeholder="Contraseña" autocomplete="off" />
+                    <button id="auth-btn" class="auth-btn">Acceder</button>
+                `;
+
+                overlay.appendChild(modal);
+                document.body.appendChild(overlay);
+
+                // Maintenant on peut montrer le body (overlay déjà en place)
+                document.body.style.visibility = 'visible';
+                document.body.style.overflow = 'hidden';
+
+                const input = document.getElementById('auth-pwd');
+                const btn = document.getElementById('auth-btn');
+
+                setTimeout(() => input.focus(), 100);
+
+                const checkPassword = () => {
+                    if (input.value === 'CreativeTesting2024!') {
+                        sessionStorage.setItem('dashboard_authenticated', '1');
+                        // Suppression immédiate sans animation pour éviter tout flash
+                        overlay.remove();
+                        document.body.style.overflow = '';
+                    } else {
+                        modal.classList.add('shake');
+                        input.style.borderColor = '#e74c3c';
+                        input.value = '';
+                        input.placeholder = '❌ Contraseña incorrecta';
+                        setTimeout(() => {
+                            modal.classList.remove('shake');
+                            input.style.borderColor = '#e0e0e0';
+                            input.placeholder = 'Contraseña';
+                            input.focus();
+                        }, 500);
+                    }
+                };
+
+                btn.addEventListener('click', checkPassword);
+                input.addEventListener('keypress', (e) => { if (e.key === 'Enter') checkPassword(); });
+
+                return; // Bloquer l'exécution jusqu'à authentification
+            }
+
+            // Authentifié, afficher le dashboard
+            document.body.style.visibility = 'visible';
+        })();
+    </script>
     <div class="header">
         <h1>🚀 Creative Testing Dashboard</h1>
         <p>Análisis de rendimiento creativo • Última actualización: <span id="data-date">Cargando...</span></p>
@@ -4049,7 +4165,7 @@
                 const btnText = document.getElementById('account-dropdown-text');
                 if (btnText) btnText.textContent = currentAccountName.length > 28 ? currentAccountName.substring(0,25) + '...' : currentAccountName;
             }
-            
+
             await loadAllData();
             
             // Sorting header listeners
