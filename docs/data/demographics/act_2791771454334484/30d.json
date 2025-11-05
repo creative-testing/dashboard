@@ -4,16 +4,16 @@
     "account_name": "Koro Beauty",
     "period": "30d",
     "date_range": "2025-10-06..2025-11-04",
-    "generated_at": "2025-11-05T09:26:07.617373Z",
+    "generated_at": "2025-11-05T15:24:09.620042Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 958529,
-      "clicks": 16209,
-      "spend": 36095.09,
+      "impressions": 958552,
+      "clicks": 16210,
+      "spend": 36095.73,
       "purchases": 132,
       "purchase_value": 95621.9,
       "ctr": 1.69,
@@ -23,33 +23,33 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 497447,
+      "impressions": 497467,
       "clicks": 10636,
-      "spend": 30572.48,
+      "spend": 30573.65,
       "purchases": 128,
       "purchase_value": 98595.5,
       "ctr": 2.14,
-      "cpa": 238.85,
+      "cpa": 238.86,
       "roas": 3.22
     },
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 159619,
-      "clicks": 4516,
-      "spend": 13200.5,
+      "impressions": 159627,
+      "clicks": 4518,
+      "spend": 13201.16,
       "purchases": 50,
       "purchase_value": 35735.2,
       "ctr": 2.83,
-      "cpa": 264.01,
+      "cpa": 264.02,
       "roas": 2.71
     },
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 399477,
+      "impressions": 399485,
       "clicks": 7752,
-      "spend": 9433.59,
+      "spend": 9433.69,
       "purchases": 34,
       "purchase_value": 22762.3,
       "ctr": 1.94,
@@ -59,13 +59,13 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 31128,
+      "impressions": 31130,
       "clicks": 1438,
-      "spend": 3074.93,
+      "spend": 3075.37,
       "purchases": 7,
       "purchase_value": 5838.1,
       "ctr": 4.62,
-      "cpa": 439.28,
+      "cpa": 439.34,
       "roas": 1.9
     },
     {
@@ -167,13 +167,13 @@
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 1159,
+      "impressions": 1160,
       "clicks": 39,
-      "spend": 44.11,
+      "spend": 44.12,
       "purchases": 1,
       "purchase_value": 998.0,
       "ctr": 3.36,
-      "cpa": 44.11,
+      "cpa": 44.12,
       "roas": 22.62
     },
     {
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 2168190,
-    "clicks": 45293,
-    "spend": 95892.26,
+    "impressions": 2168252,
+    "clicks": 45296,
+    "spend": 95895.28,
     "purchases": 359,
     "purchase_value": 264043.2,
     "roas": 2.75
