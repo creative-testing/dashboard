@@ -66,24 +66,19 @@ jobs:
         run: |
           set -e
           mkdir -p _site
-
-          # Sauvegarder les données optimisées si elles existent
-          if [ -d "_site_prev/data/optimized" ]; then
-            mkdir -p _site_optimized_backup
-            cp -a _site_prev/data/optimized/. _site_optimized_backup/
-            echo "✅ Backup des données optimisées créé"
+          if [ -d "_site_prev" ] && [ -n "$(ls -A _site_prev 2>/dev/null)" ]; then
+            cp -a _site_prev/. _site/
+          else
+            cp -a docs/. _site/
           fi
-
-          # Copier TOUT depuis docs/ (code frais depuis le repo)
-          cp -a docs/. _site/
-
-          # Restaurer les données optimisées depuis le backup
-          if [ -d "_site_optimized_backup" ]; then
-            rm -rf _site/data/optimized
-            mkdir -p _site/data/optimized
-            cp -a _site_optimized_backup/. _site/data/optimized/
-            echo "✅ Données optimisées restaurées depuis le backup"
-          fi
+          # Met à jour uniquement HTML/JS/CSS depuis le repo (NE TOUCHE PAS aux data optimisées)
+          rsync -a \
+            --include="*/" \
+            --include="**/*.html" --include="**/*.js" --include="**/*.css" \
+            --include="**/account_profiles.json" \
+            --exclude="docs/data/optimized/**" \
+            --exclude="*" \
+            docs/ _site/
 
       - name: 📊 Overlay demographics (repo → _site)
         run: |
