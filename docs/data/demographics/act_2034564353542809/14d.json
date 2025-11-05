@@ -4,14 +4,14 @@
     "account_name": "PULENSHOP",
     "period": "14d",
     "date_range": "2025-10-22..2025-11-04",
-    "generated_at": "2025-11-05T15:23:32.680239Z",
+    "generated_at": "2025-11-05T21:21:34.220104Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 37535,
+      "impressions": 37534,
       "clicks": 631,
       "spend": 169.45,
       "purchases": 11,
@@ -23,9 +23,9 @@
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 34460,
+      "impressions": 34463,
       "clicks": 414,
-      "spend": 145.55,
+      "spend": 145.56,
       "purchases": 4,
       "purchase_value": 167.75,
       "ctr": 1.2,
@@ -35,9 +35,9 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 21087,
+      "impressions": 21088,
       "clicks": 717,
-      "spend": 131.14,
+      "spend": 131.15,
       "purchases": 9,
       "purchase_value": 403.02,
       "ctr": 3.4,
@@ -47,9 +47,9 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 16505,
+      "impressions": 16506,
       "clicks": 436,
-      "spend": 101.24,
+      "spend": 101.23,
       "purchases": 6,
       "purchase_value": 269.64,
       "ctr": 2.64,
@@ -59,9 +59,9 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 14512,
+      "impressions": 14514,
       "clicks": 629,
-      "spend": 97.89,
+      "spend": 97.88,
       "purchases": 5,
       "purchase_value": 199.75,
       "ctr": 4.33,
@@ -73,7 +73,7 @@
       "gender": "male",
       "impressions": 18117,
       "clicks": 390,
-      "spend": 96.24,
+      "spend": 96.23,
       "purchases": 6,
       "purchase_value": 327.65,
       "ctr": 2.15,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 174073,
+    "impressions": 174079,
     "clicks": 3704,
-    "spend": 899.09,
+    "spend": 899.08,
     "purchases": 47,
     "purchase_value": 2169.86,
     "roas": 2.41

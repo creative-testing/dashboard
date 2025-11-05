@@ -4,16 +4,16 @@
     "account_name": "Anuncios MEETIK",
     "period": "30d",
     "date_range": "2025-10-06..2025-11-04",
-    "generated_at": "2025-11-05T15:20:46.400047Z",
+    "generated_at": "2025-11-05T21:19:17.523165Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 252201,
+      "impressions": 252207,
       "clicks": 4452,
-      "spend": 12764.18,
+      "spend": 12764.36,
       "purchases": 25,
       "purchase_value": 39300.9,
       "ctr": 1.77,
@@ -23,21 +23,21 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 84483,
+      "impressions": 84485,
       "clicks": 1979,
-      "spend": 6491.44,
+      "spend": 6491.57,
       "purchases": 13,
       "purchase_value": 14335.9,
       "ctr": 2.34,
-      "cpa": 499.34,
+      "cpa": 499.35,
       "roas": 2.21
     },
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 93181,
-      "clicks": 1433,
-      "spend": 3285.81,
+      "impressions": 93185,
+      "clicks": 1434,
+      "spend": 3285.86,
       "purchases": 8,
       "purchase_value": 6450.0,
       "ctr": 1.54,
@@ -47,13 +47,13 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 29714,
+      "impressions": 29715,
       "clicks": 440,
-      "spend": 1167.52,
+      "spend": 1167.55,
       "purchases": 5,
       "purchase_value": 5005.5,
       "ctr": 1.48,
-      "cpa": 233.5,
+      "cpa": 233.51,
       "roas": 4.29
     },
     {
@@ -71,9 +71,9 @@
     {
       "age": "18-24",
       "gender": "male",
-      "impressions": 17292,
+      "impressions": 17294,
       "clicks": 263,
-      "spend": 583.9,
+      "spend": 583.91,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.52,
@@ -250,9 +250,9 @@
     }
   ],
   "totals": {
-    "impressions": 521562,
-    "clicks": 9980,
-    "spend": 26598.04,
+    "impressions": 521577,
+    "clicks": 9981,
+    "spend": 26598.44,
     "purchases": 51,
     "purchase_value": 65092.3,
     "roas": 2.45
