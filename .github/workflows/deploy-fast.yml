@@ -72,12 +72,13 @@ jobs:
             cp -a docs/. _site/
           fi
           # Met à jour uniquement HTML/JS/CSS depuis le repo (NE TOUCHE PAS aux data optimisées)
-          rsync -a \
-            --include="*/" \
-            --include="**/*.html" --include="**/*.js" --include="**/*.css" \
-            --include="**/account_profiles.json" \
-            --exclude="docs/data/optimized/**" \
-            --exclude="*" \
+          # Note: rsync ne supporte PAS **/*.html - on utilise des patterns simples avec -r
+          rsync -av \
+            --include='*/' \
+            --include='*.html' --include='*.js' --include='*.css' \
+            --include='account_profiles.json' \
+            --exclude='data/optimized/' \
+            --exclude='*' \
             docs/ _site/
 
       - name: 📊 Overlay demographics (repo → _site)
