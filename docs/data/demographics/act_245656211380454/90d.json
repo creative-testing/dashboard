@@ -4,7 +4,7 @@
     "account_name": "Olimpo Backup",
     "period": "90d",
     "date_range": "2025-08-08..2025-11-05",
-    "generated_at": "2025-11-06T15:24:59.029552Z",
+    "generated_at": "2025-11-06T21:20:21.089154Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
@@ -47,13 +47,13 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 3566,
+      "impressions": 3567,
       "clicks": 84,
-      "spend": 185.8,
+      "spend": 185.81,
       "purchases": 3,
       "purchase_value": 102.9,
-      "ctr": 2.36,
-      "cpa": 61.93,
+      "ctr": 2.35,
+      "cpa": 61.94,
       "roas": 0.55
     },
     {
@@ -119,9 +119,9 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 1070,
+      "impressions": 1071,
       "clicks": 14,
-      "spend": 36.18,
+      "spend": 36.76,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.31,
@@ -226,9 +226,9 @@
     }
   ],
   "totals": {
-    "impressions": 23822,
+    "impressions": 23824,
     "clicks": 626,
-    "spend": 1652.31,
+    "spend": 1652.9,
     "purchases": 8,
     "purchase_value": 289.1,
     "roas": 0.17

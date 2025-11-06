@@ -4,16 +4,16 @@
     "account_name": "Petcare 2",
     "period": "30d",
     "date_range": "2025-10-07..2025-11-05",
-    "generated_at": "2025-11-06T15:26:20.886244Z",
+    "generated_at": "2025-11-06T21:21:46.143847Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 182076,
+      "impressions": 182077,
       "clicks": 4533,
-      "spend": 28773.14,
+      "spend": 28773.2,
       "purchases": 45,
       "purchase_value": 42301.15,
       "ctr": 2.49,
@@ -23,9 +23,9 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 196332,
+      "impressions": 196335,
       "clicks": 3322,
-      "spend": 22348.47,
+      "spend": 22348.61,
       "purchases": 34,
       "purchase_value": 34475.65,
       "ctr": 1.69,
@@ -59,13 +59,13 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 159609,
+      "impressions": 159610,
       "clicks": 2184,
-      "spend": 12642.05,
+      "spend": 12642.16,
       "purchases": 17,
       "purchase_value": 18441.05,
       "ctr": 1.37,
-      "cpa": 743.65,
+      "cpa": 743.66,
       "roas": 1.46
     },
     {
@@ -83,13 +83,13 @@
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 68749,
+      "impressions": 68751,
       "clicks": 1555,
-      "spend": 9430.71,
+      "spend": 9431.1,
       "purchases": 18,
       "purchase_value": 18632.25,
       "ctr": 2.26,
-      "cpa": 523.93,
+      "cpa": 523.95,
       "roas": 1.98
     },
     {
@@ -119,13 +119,13 @@
     {
       "age": "65+",
       "gender": "male",
-      "impressions": 24324,
+      "impressions": 24326,
       "clicks": 774,
-      "spend": 4540.7,
+      "spend": 4552.03,
       "purchases": 6,
       "purchase_value": 5415.85,
       "ctr": 3.18,
-      "cpa": 756.78,
+      "cpa": 758.67,
       "roas": 1.19
     },
     {
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 1160467,
+    "impressions": 1160476,
     "clicks": 22974,
-    "spend": 132884.95,
+    "spend": 132896.98,
     "purchases": 190,
     "purchase_value": 190208.66,
     "roas": 1.43

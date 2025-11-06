@@ -4,16 +4,16 @@
     "account_name": "La horma mx",
     "period": "90d",
     "date_range": "2025-08-08..2025-11-05",
-    "generated_at": "2025-11-06T15:23:55.743028Z",
+    "generated_at": "2025-11-06T21:19:16.384817Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 1733753,
+      "impressions": 1733759,
       "clicks": 40373,
-      "spend": 87224.39,
+      "spend": 87225.02,
       "purchases": 251,
       "purchase_value": 276731.34,
       "ctr": 2.33,
@@ -23,9 +23,9 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 1164764,
+      "impressions": 1164763,
       "clicks": 32780,
-      "spend": 77448.6,
+      "spend": 77448.56,
       "purchases": 183,
       "purchase_value": 196892.29,
       "ctr": 2.81,
@@ -35,9 +35,9 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 490722,
-      "clicks": 20148,
-      "spend": 39134.21,
+      "impressions": 490725,
+      "clicks": 20151,
+      "spend": 39134.2,
       "purchases": 82,
       "purchase_value": 80742.76,
       "ctr": 4.11,
@@ -47,9 +47,9 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 259586,
+      "impressions": 259587,
       "clicks": 13388,
-      "spend": 25413.75,
+      "spend": 25413.8,
       "purchases": 62,
       "purchase_value": 57789.49,
       "ctr": 5.16,
@@ -59,21 +59,21 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 71655,
+      "impressions": 71656,
       "clicks": 3810,
-      "spend": 6989.44,
+      "spend": 6989.49,
       "purchases": 8,
       "purchase_value": 7502.25,
       "ctr": 5.32,
-      "cpa": 873.68,
+      "cpa": 873.69,
       "roas": 1.07
     },
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 131340,
+      "impressions": 131341,
       "clicks": 3367,
-      "spend": 4456.19,
+      "spend": 4456.2,
       "purchases": 9,
       "purchase_value": 8842.56,
       "ctr": 2.56,
@@ -167,9 +167,9 @@
     {
       "age": "18-24",
       "gender": "male",
-      "impressions": 3357,
+      "impressions": 3358,
       "clicks": 142,
-      "spend": 308.43,
+      "spend": 308.45,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 4.23,
@@ -234,7 +234,7 @@
       "purchase_value": 1510.12,
       "ctr": 0.0,
       "cpa": 0.3,
-      "roas": 2516.83
+      "roas": 2516.84
     },
     {
       "age": "Unknown",
@@ -250,9 +250,9 @@
     }
   ],
   "totals": {
-    "impressions": 3932850,
-    "clicks": 116457,
-    "spend": 245419.07,
+    "impressions": 3932862,
+    "clicks": 116460,
+    "spend": 245419.78,
     "purchases": 607,
     "purchase_value": 638986.29,
     "roas": 2.6
