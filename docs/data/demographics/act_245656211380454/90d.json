@@ -4,7 +4,7 @@
     "account_name": "Olimpo Backup",
     "period": "90d",
     "date_range": "2025-08-08..2025-11-05",
-    "generated_at": "2025-11-06T09:25:23.300137Z",
+    "generated_at": "2025-11-06T15:24:59.029552Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
@@ -23,9 +23,9 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 3196,
+      "impressions": 3198,
       "clicks": 147,
-      "spend": 290.92,
+      "spend": 290.97,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 4.6,
@@ -35,9 +35,9 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 1645,
+      "impressions": 1646,
       "clicks": 74,
-      "spend": 246.17,
+      "spend": 246.27,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 4.5,
@@ -47,25 +47,25 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 3564,
+      "impressions": 3566,
       "clicks": 84,
-      "spend": 185.66,
+      "spend": 185.8,
       "purchases": 3,
       "purchase_value": 102.9,
       "ctr": 2.36,
-      "cpa": 61.89,
+      "cpa": 61.93,
       "roas": 0.55
     },
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 2024,
+      "impressions": 2025,
       "clicks": 46,
-      "spend": 160.29,
+      "spend": 160.38,
       "purchases": 1,
       "purchase_value": 34.3,
       "ctr": 2.27,
-      "cpa": 160.29,
+      "cpa": 160.38,
       "roas": 0.21
     },
     {
@@ -107,13 +107,13 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 1054,
+      "impressions": 1055,
       "clicks": 19,
-      "spend": 42.71,
+      "spend": 42.73,
       "purchases": 1,
       "purchase_value": 49.0,
       "ctr": 1.8,
-      "cpa": 42.71,
+      "cpa": 42.73,
       "roas": 1.15
     },
     {
@@ -226,11 +226,11 @@
     }
   ],
   "totals": {
-    "impressions": 23815,
+    "impressions": 23822,
     "clicks": 626,
-    "spend": 1651.91,
+    "spend": 1652.31,
     "purchases": 8,
     "purchase_value": 289.1,
-    "roas": 0.18
+    "roas": 0.17
   }
 }
