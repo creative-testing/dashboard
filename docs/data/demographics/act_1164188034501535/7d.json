@@ -4,31 +4,31 @@
     "account_name": "Lactana cuenta publicitaria LFS",
     "period": "7d",
     "date_range": "2025-10-31..2025-11-06",
-    "generated_at": "2025-11-07T09:22:44.438360Z",
+    "generated_at": "2025-11-07T15:22:38.001623Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 74765,
+      "impressions": 74782,
       "clicks": 1290,
-      "spend": 6053.51,
+      "spend": 6056.81,
       "purchases": 14,
       "purchase_value": 21037.2,
       "ctr": 1.73,
-      "cpa": 432.39,
-      "roas": 3.48
+      "cpa": 432.63,
+      "roas": 3.47
     },
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 35373,
-      "clicks": 787,
-      "spend": 4439.99,
+      "impressions": 35377,
+      "clicks": 788,
+      "spend": 4439.94,
       "purchases": 20,
       "purchase_value": 29137.0,
-      "ctr": 2.22,
+      "ctr": 2.23,
       "cpa": 222.0,
       "roas": 6.56
     },
@@ -37,7 +37,7 @@
       "gender": "female",
       "impressions": 4863,
       "clicks": 101,
-      "spend": 227.92,
+      "spend": 227.91,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 2.08,
@@ -49,11 +49,11 @@
       "gender": "female",
       "impressions": 1234,
       "clicks": 53,
-      "spend": 226.55,
+      "spend": 226.54,
       "purchases": 1,
       "purchase_value": 867.5,
       "ctr": 4.29,
-      "cpa": 226.55,
+      "cpa": 226.54,
       "roas": 3.83
     },
     {
@@ -61,11 +61,11 @@
       "gender": "male",
       "impressions": 2481,
       "clicks": 50,
-      "spend": 171.63,
+      "spend": 171.62,
       "purchases": 1,
       "purchase_value": 1790.0,
       "ctr": 2.02,
-      "cpa": 171.63,
+      "cpa": 171.62,
       "roas": 10.43
     },
     {
@@ -155,24 +155,24 @@
     {
       "age": "18-24",
       "gender": "male",
-      "impressions": 233,
+      "impressions": 234,
       "clicks": 4,
-      "spend": 4.67,
+      "spend": 4.69,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 1.72,
+      "ctr": 1.71,
       "cpa": 0,
       "roas": 0.0
     },
     {
       "age": "65+",
       "gender": "male",
-      "impressions": 60,
+      "impressions": 61,
       "clicks": 4,
-      "spend": 3.28,
+      "spend": 3.3,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 6.67,
+      "ctr": 6.56,
       "cpa": 0,
       "roas": 0.0
     },
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 124399,
-    "clicks": 2411,
-    "spend": 11448.37,
+    "impressions": 124422,
+    "clicks": 2412,
+    "spend": 11451.63,
     "purchases": 37,
     "purchase_value": 54204.45,
     "roas": 4.73
