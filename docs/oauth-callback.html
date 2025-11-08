@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Conectando...</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <script src="i18n/i18n.js"></script>
     <style>
         * {
             margin: 0;
@@ -109,13 +110,13 @@
 <body>
     <div class="spinner-container">
         <div class="spinner"></div>
-        <h1>Conectando tu cuenta...</h1>
-        <p>Espera un momento mientras te redirigimos</p>
+        <h1 data-i18n="oauth.connecting">Conectando tu cuenta...</h1>
+        <p data-i18n="oauth.wait">Espera un momento mientras te redirigimos</p>
 
         <div id="error-message" class="error-message">
-            <strong>⚠️ Error de Autenticación</strong>
+            <strong data-i18n="oauth.error_title">⚠️ Error de Autenticación</strong>
             <p id="error-text"></p>
-            <button class="btn" onclick="window.location.href='index-landing.html'">Volver al Inicio</button>
+            <button class="btn" onclick="window.location.href='index-landing.html'" data-i18n="oauth.back_home">Volver al Inicio</button>
         </div>
 
         <!-- Dashboard Section -->
@@ -135,6 +136,11 @@
 
     <script>
         const API_URL = 'https://creative-testing.theaipipe.com';
+
+        // Update document title when i18n is ready
+        document.addEventListener('i18n:ready', () => {
+            document.title = t('oauth.title');
+        });
 
         function showError(message) {
             document.querySelector('.spinner').style.display = 'none';
@@ -169,7 +175,7 @@
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (!response.ok) {
-                throw new Error('No se pudo iniciar la carga de datos');
+                throw new Error(t('oauth.errors.cannot_start'));
             }
             return response.json(); // {status, job_id, already_processing}
         }
@@ -181,7 +187,7 @@
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (!response.ok) {
-                    throw new Error('Error consultando el estado del job');
+                    throw new Error(t('oauth.errors.job_status'));
                 }
                 const status = await response.json(); // {status, started_at, finished_at, error}
 
@@ -189,7 +195,7 @@
 
                 if (status.status === 'ok') return true;
                 if (status.status === 'error') {
-                    throw new Error(status.error || 'Error en la preparación de datos');
+                    throw new Error(status.error || t('oauth.errors.data_prep'));
                 }
 
                 // Attendre 3s avant le prochain poll
@@ -223,7 +229,7 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error('Token inválido o expirado');
+                    throw new Error(t('oauth.errors.invalid_token'));
                 }
 
                 const me = await response.json();
@@ -234,14 +240,14 @@
                 });
 
                 if (!accountsResponse.ok) {
-                    throw new Error('Error al cargar cuentas');
+                    throw new Error(t('oauth.errors.load_accounts'));
                 }
 
                 const data = await accountsResponse.json();
                 const accounts = data.accounts || [];
 
                 if (accounts.length === 0) {
-                    showError('No se encontraron cuentas publicitarias. Por favor, conecta una cuenta publicitaria de Facebook primero.');
+                    showError(t('oauth.no_accounts'));
                     return;
                 }
 
@@ -269,8 +275,8 @@
                     // Pas de données → déclencher refresh + polling
                     console.log('⏳ Datos no disponibles, iniciando carga...');
                     updateSpinner(
-                        `Preparando tus datos de ${account.name}...`,
-                        'Esto puede tardar 30-90 segundos (cuentas grandes hasta 2 minutos)'
+                        t('oauth.preparing_data', { account: account.name }),
+                        t('oauth.eta')
                     );
 
                     const { job_id } = await triggerRefresh(account.fb_account_id, token);
@@ -280,8 +286,8 @@
                     await waitUntilReady(job_id, token, (status) => {
                         if (status.status === 'running') {
                             updateSpinner(
-                                `Procesando datos de ${account.name}...`,
-                                'Mantén esta página abierta'
+                                t('oauth.processing', { account: account.name }),
+                                t('oauth.keep_open')
                             );
                         }
                     });
@@ -307,7 +313,7 @@
 
             } catch (error) {
                 console.error('OAuth callback error:', error);
-                showError(error.message || 'Error al procesar la autenticación. Por favor, intenta de nuevo.');
+                showError(error.message || t('oauth.errors.generic'));
             }
         }
 
@@ -315,29 +321,29 @@
             // Transform spinner into account selector
             const container = document.querySelector('.spinner-container');
             container.innerHTML = `
-                <h1 style="margin-bottom: 24px;">Selecciona tu Cuenta Publicitaria</h1>
+                <h1 style="margin-bottom: 24px;">${t('oauth.select_account')}</h1>
                 <div style="background: rgba(255, 255, 255, 0.95); border-radius: 16px; padding: 32px; max-width: 600px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
                     <!-- Option: Todas las cuentas -->
                     <div style="background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%); padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #1e40af; cursor: pointer; transition: transform 0.2s; color: white;"
                          onclick="selectAllAccounts('${token}', '${tenantId}')"
                          onmouseover="this.style.transform='translateX(4px)'"
                          onmouseout="this.style.transform='translateX(0)'">
-                        <h3 style="color: white; font-size: 18px; margin-bottom: 8px;">📊 Todas las Cuentas</h3>
-                        <p style="color: rgba(255,255,255,0.9); font-size: 14px; margin: 4px 0;">Vista agregada de ${accounts.length} cuentas publicitarias</p>
-                        <p style="color: rgba(255,255,255,0.8); font-size: 13px; margin-top: 8px;">✨ Recomendado para vista general</p>
+                        <h3 style="color: white; font-size: 18px; margin-bottom: 8px;">📊 ${t('oauth.all_accounts')}</h3>
+                        <p style="color: rgba(255,255,255,0.9); font-size: 14px; margin: 4px 0;">${t('oauth.aggregated_view', { count: accounts.length })}</p>
+                        <p style="color: rgba(255,255,255,0.8); font-size: 13px; margin-top: 8px;">${t('oauth.recommended')}</p>
                     </div>
 
                     <!-- Individual accounts -->
                     <div style="border-top: 2px solid #e5e7eb; padding-top: 20px; margin-top: 20px;">
-                        <p style="color: #666; font-size: 14px; margin-bottom: 16px; text-align: center;">O selecciona una cuenta individual:</p>
+                        <p style="color: #666; font-size: 14px; margin-bottom: 16px; text-align: center;">${t('oauth.or_individual')}</p>
                         ${accounts.map(account => `
                             <div style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); padding: 20px; border-radius: 12px; margin-bottom: 16px; border-left: 4px solid #2563eb; cursor: pointer; transition: transform 0.2s;"
                                  onclick="selectAccount('${account.fb_account_id}', '${account.name}', '${token}', '${tenantId}')"
                                  onmouseover="this.style.transform='translateX(4px)'"
                                  onmouseout="this.style.transform='translateX(0)'">
                                 <h3 style="color: #1a1a1a; font-size: 18px; margin-bottom: 8px;">${account.name}</h3>
-                                <p style="color: #555; font-size: 14px; margin: 4px 0;">ID: ${account.fb_account_id}</p>
-                                <p style="color: #555; font-size: 14px; margin: 4px 0;">Perfil: ${account.profile.toUpperCase()}</p>
+                                <p style="color: #555; font-size: 14px; margin: 4px 0;">${t('oauth.account_id')}: ${account.fb_account_id}</p>
+                                <p style="color: #555; font-size: 14px; margin: 4px 0;">${t('oauth.profile')}: ${account.profile.toUpperCase()}</p>
                             </div>
                         `).join('')}
                     </div>

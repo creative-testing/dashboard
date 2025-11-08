@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Creative Testing - Optimiza el Rendimiento de tus Anuncios Meta</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <script src="i18n/i18n.js"></script>
     <style>
         * {
             margin: 0;
@@ -394,19 +395,19 @@
     <!-- Header Navigation -->
     <nav class="header-nav">
         <a href="index-landing.html" class="logo">📊 Creative Testing</a>
-        <a href="#" class="btn-login" onclick="handleComenzarGratis(event)">Iniciar Sesión</a>
+        <a href="#" class="btn-login" onclick="handleComenzarGratis(event)" data-i18n="nav.login">Iniciar Sesión</a>
     </nav>
 
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
-            <h1>📊 Optimiza el Rendimiento de tus Creativos en Meta Ads</h1>
-            <p>
+            <h1 data-i18n="hero.title">📊 Optimiza el Rendimiento de tus Creativos en Meta Ads</h1>
+            <p data-i18n="hero.subtitle">
                 Analiza qué creativos funcionan mejor, identifica patrones ganadores y escala tus campañas rentables con insights basados en datos.
             </p>
             <div class="cta-buttons">
-                <a href="#" class="btn btn-primary" onclick="handleComenzarGratis(event)">Comenzar Gratis</a>
-                <a href="#pricing" class="btn btn-secondary">Ver Precios</a>
+                <a href="#" class="btn btn-primary" onclick="handleComenzarGratis(event)" data-i18n="hero.cta_primary">Comenzar Gratis</a>
+                <a href="#pricing" class="btn btn-secondary" data-i18n="hero.cta_secondary">Ver Precios</a>
             </div>
         </div>
     </section>
@@ -414,57 +415,11 @@
     <!-- Features Section -->
     <section class="features">
         <div class="container">
-            <h2 class="section-title">Funcionalidades Potentes para Testing Creativo</h2>
-            <p class="section-subtitle">Todo lo que necesitas para optimizar el rendimiento de tus creativos en Meta Ads</p>
+            <h2 class="section-title" data-i18n="features.title">Funcionalidades Potentes para Testing Creativo</h2>
+            <p class="section-subtitle" data-i18n="features.subtitle">Todo lo que necesitas para optimizar el rendimiento de tus creativos en Meta Ads</p>
 
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">📈</div>
-                    <h3>Analítica en Tiempo Real</h3>
-                    <p>
-                        Monitorea el rendimiento de tus creativos en tiempo real con actualización automática cada 2 horas. Rastrea impresiones, clics, CTR, conversiones y ROAS en todas tus campañas.
-                    </p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">🎯</div>
-                    <h3>Framework de Testing Creativo</h3>
-                    <p>
-                        Identifica ángulos, hooks y estilos de creadores ganadores con nuestro sistema avanzado de nomenclatura. Parsea y categoriza tus anuncios automáticamente para descubrir patrones que generan resultados.
-                    </p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">💰</div>
-                    <h3>Optimización de ROI</h3>
-                    <p>
-                        Maximiza el retorno de inversión publicitaria identificando tus creativos de mejor rendimiento. Toma decisiones basadas en datos para escalar ganadores y cortar perdedores rápidamente.
-                    </p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">🔄</div>
-                    <h3>Gestión Multi-Cuenta</h3>
-                    <p>
-                        Administra múltiples cuentas publicitarias de Facebook desde un solo dashboard. Perfecto para agencias y empresas que gestionan campañas de diferentes marcas.
-                    </p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">📊</div>
-                    <h3>Métricas y Filtros Personalizados</h3>
-                    <p>
-                        Filtra por rangos de fechas, campañas, conjuntos de anuncios y métricas personalizadas. Exporta datos para análisis profundos y reportes para stakeholders.
-                    </p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon">🚀</div>
-                    <h3>Rápido y Confiable</h3>
-                    <p>
-                        Construido con tecnología moderna para un rendimiento ultrarrápido. Tus datos siempre están disponibles, seguros y actualizados.
-                    </p>
-                </div>
+            <div class="features-grid" id="features-grid">
+                <!-- Features will be generated dynamically by i18n script -->
             </div>
         </div>
     </section>
@@ -472,42 +427,11 @@
     <!-- Pricing Section -->
     <section class="pricing" id="pricing">
         <div class="container">
-            <h2 class="section-title">Precios Simples y Transparentes</h2>
-            <p class="section-subtitle">Elige el plan que se ajuste a las necesidades de tu negocio</p>
+            <h2 class="section-title" data-i18n="pricing.title">Precios Simples y Transparentes</h2>
+            <p class="section-subtitle" data-i18n="pricing.subtitle">Elige el plan que se ajuste a las necesidades de tu negocio</p>
 
-            <div class="pricing-grid">
-                <div class="pricing-card">
-                    <div class="plan-name">PRO</div>
-                    <div class="plan-price">$47<span>/mes</span></div>
-                    <div class="plan-description">Perfecto para pequeñas empresas y emprendedores independientes</div>
-                    <ul class="plan-features">
-                        <li>Hasta 3 cuentas publicitarias</li>
-                        <li>Analítica en tiempo real</li>
-                        <li>Framework de testing creativo</li>
-                        <li>Soporte básico</li>
-                        <li>Exportación de datos (CSV)</li>
-                        <li>Actualización automática cada 2 horas</li>
-                    </ul>
-                    <a href="#" class="btn btn-primary" onclick="handleComenzarGratis(event)">Comenzar Prueba Gratis</a>
-                </div>
-
-                <div class="pricing-card featured">
-                    <div class="pricing-badge">Más Popular</div>
-                    <div class="plan-name">ENTERPRISE</div>
-                    <div class="plan-price">$197<span>/mes</span></div>
-                    <div class="plan-description">Para agencias y empresas en crecimiento acelerado</div>
-                    <ul class="plan-features">
-                        <li>Cuentas publicitarias ilimitadas</li>
-                        <li>Analítica en tiempo real</li>
-                        <li>Testing creativo avanzado</li>
-                        <li>Soporte prioritario</li>
-                        <li>Acceso a API</li>
-                        <li>Integraciones personalizadas</li>
-                        <li>Reportes white-label</li>
-                        <li>Account manager dedicado</li>
-                    </ul>
-                    <a href="#" class="btn btn-primary" onclick="handleComenzarGratis(event)">Comenzar Prueba Gratis</a>
-                </div>
+            <div class="pricing-grid" id="pricing-grid">
+                <!-- Pricing cards will be generated dynamically by i18n script -->
             </div>
         </div>
     </section>
@@ -515,16 +439,16 @@
     <!-- CTA Section -->
     <section class="cta-section">
         <div class="container">
-            <h2>¿Listo para Optimizar el Rendimiento de tus Creativos?</h2>
-            <p>Únete a cientos de anunciantes que usan Creative Testing para escalar sus campañas rentables.</p>
-            <a href="#" class="btn btn-primary" onclick="handleComenzarGratis(event)">Comenzar Gratis - Sin Tarjeta de Crédito</a>
+            <h2 data-i18n="cta.title">¿Listo para Optimizar el Rendimiento de tus Creativos?</h2>
+            <p data-i18n="cta.subtitle">Únete a cientos de anunciantes que usan Creative Testing para escalar sus campañas rentables.</p>
+            <a href="#" class="btn btn-primary" onclick="handleComenzarGratis(event)" data-i18n="cta.button">Comenzar Gratis - Sin Tarjeta de Crédito</a>
         </div>
     </section>
 
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2025 Creative Testing Dashboard. Todos los derechos reservados.</p>
+            <p data-i18n="footer.copyright">&copy; 2025 Creative Testing Dashboard. Todos los derechos reservados.</p>
         </div>
     </footer>
 
@@ -541,7 +465,11 @@
                 checkAuthAndRedirect(token, tenantId);
             } else {
                 // Not authenticated → Direct to OAuth
-                window.location.href = `${API_URL}/auth/facebook/login`;
+                // Pass lang parameter to force Facebook popup in English if needed
+                const urlParams = new URLSearchParams(window.location.search);
+                const lang = urlParams.get('lang');
+                const oauthUrl = lang ? `${API_URL}/auth/facebook/login?lang=${lang}` : `${API_URL}/auth/facebook/login`;
+                window.location.href = oauthUrl;
             }
         }
 
@@ -586,6 +514,42 @@
                 window.location.href = `${API_URL}/auth/facebook/login`;
             }
         }
+
+        // i18n Dynamic Content Generation
+        document.addEventListener('i18n:ready', (e) => {
+            // Update document title
+            document.title = t('meta.title');
+
+            // Generate features cards
+            const featuresGrid = document.getElementById('features-grid');
+            const featureIcons = ['📈', '🎯', '💰', '🔄', '📊', '🚀'];
+            const featureCards = t('features.cards');
+
+            featuresGrid.innerHTML = featureCards.map((card, index) => `
+                <div class="feature-card">
+                    <div class="feature-icon">${featureIcons[index]}</div>
+                    <h3>${card.title}</h3>
+                    <p>${card.description}</p>
+                </div>
+            `).join('');
+
+            // Generate pricing cards
+            const pricingGrid = document.getElementById('pricing-grid');
+            const plans = t('pricing.plans');
+
+            pricingGrid.innerHTML = plans.map((plan, index) => `
+                <div class="pricing-card ${index === 1 ? 'featured' : ''}">
+                    ${index === 1 ? `<div class="pricing-badge">${t('pricing.badge_popular')}</div>` : ''}
+                    <div class="plan-name">${plan.name}</div>
+                    <div class="plan-price">${plan.price}<span>${t('pricing.period')}</span></div>
+                    <div class="plan-description">${plan.description}</div>
+                    <ul class="plan-features">
+                        ${plan.features.map(feature => `<li>${feature}</li>`).join('')}
+                    </ul>
+                    <a href="#" class="btn btn-primary" onclick="handleComenzarGratis(event)">${plan.cta}</a>
+                </div>
+            `).join('');
+        });
     </script>
 </body>
 </html>

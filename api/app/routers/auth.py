@@ -27,10 +27,11 @@ fernet = Fernet(settings.TOKEN_ENCRYPTION_KEY.encode())
 
 
 @router.get("/login")
-async def facebook_login(request: Request):
+async def facebook_login(request: Request, lang: Optional[str] = None):
     """
     Initie le flux OAuth Facebook
     Génère un state sécurisé et redirige vers Facebook
+    Supporte ?lang=en pour forcer la popup OAuth en anglais
     """
     # Générer state sécurisé pour CSRF protection avec TTL
     state = secrets.token_urlsafe(32)
@@ -47,6 +48,10 @@ async def facebook_login(request: Request):
         "state": state,
         "scope": "email,ads_read,public_profile",
     }
+
+    # Force English locale for Facebook OAuth popup if lang=en
+    if lang == "en":
+        params["locale"] = "en_US"
 
     # URL d'autorisation Facebook
     auth_url = f"https://www.facebook.com/{settings.META_API_VERSION}/dialog/oauth?{urlencode(params)}"
