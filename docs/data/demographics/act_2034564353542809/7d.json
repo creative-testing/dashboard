@@ -4,14 +4,14 @@
     "account_name": "PULENSHOP",
     "period": "7d",
     "date_range": "2025-11-01..2025-11-07",
-    "generated_at": "2025-11-08T15:20:26.271408Z",
+    "generated_at": "2025-11-08T21:18:13.506367Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 20853,
+      "impressions": 20856,
       "clicks": 302,
       "spend": 80.89,
       "purchases": 2,
@@ -23,31 +23,31 @@
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 18635,
+      "impressions": 18639,
       "clicks": 239,
-      "spend": 71.71,
+      "spend": 71.73,
       "purchases": 2,
       "purchase_value": 87.85,
       "ctr": 1.28,
-      "cpa": 35.86,
-      "roas": 1.23
+      "cpa": 35.87,
+      "roas": 1.22
     },
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 13170,
+      "impressions": 13171,
       "clicks": 351,
-      "spend": 68.39,
+      "spend": 68.4,
       "purchases": 5,
       "purchase_value": 201.71,
-      "ctr": 2.67,
+      "ctr": 2.66,
       "cpa": 13.68,
       "roas": 2.95
     },
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 10598,
+      "impressions": 10599,
       "clicks": 278,
       "spend": 59.64,
       "purchases": 5,
@@ -71,19 +71,19 @@
     {
       "age": "65+",
       "gender": "male",
-      "impressions": 11714,
+      "impressions": 11717,
       "clicks": 214,
-      "spend": 50.18,
+      "spend": 50.19,
       "purchases": 1,
       "purchase_value": 79.95,
       "ctr": 1.83,
-      "cpa": 50.18,
+      "cpa": 50.19,
       "roas": 1.59
     },
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 8463,
+      "impressions": 8464,
       "clicks": 90,
       "spend": 32.33,
       "purchases": 1,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 107953,
+    "impressions": 107966,
     "clicks": 2030,
-    "spend": 476.19,
+    "spend": 476.23,
     "purchases": 20,
     "purchase_value": 927.71,
     "roas": 1.95

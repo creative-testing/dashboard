@@ -4,28 +4,28 @@
     "account_name": "La horma mx",
     "period": "3d",
     "date_range": "2025-11-05..2025-11-07",
-    "generated_at": "2025-11-08T15:19:12.944524Z",
+    "generated_at": "2025-11-08T21:16:49.535201Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 41683,
-      "clicks": 993,
-      "spend": 2125.03,
+      "impressions": 41694,
+      "clicks": 994,
+      "spend": 2125.47,
       "purchases": 4,
       "purchase_value": 5509.6,
       "ctr": 2.38,
-      "cpa": 531.26,
+      "cpa": 531.37,
       "roas": 2.59
     },
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 24462,
+      "impressions": 24464,
       "clicks": 689,
-      "spend": 1702.56,
+      "spend": 1702.6,
       "purchases": 10,
       "purchase_value": 8820.0,
       "ctr": 2.82,
@@ -35,21 +35,21 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 7344,
+      "impressions": 7348,
       "clicks": 280,
-      "spend": 581.91,
+      "spend": 582.15,
       "purchases": 3,
       "purchase_value": 4066.92,
       "ctr": 3.81,
-      "cpa": 193.97,
+      "cpa": 194.05,
       "roas": 6.99
     },
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 4221,
+      "impressions": 4224,
       "clicks": 201,
-      "spend": 379.98,
+      "spend": 381.39,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 4.76,
@@ -59,9 +59,9 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 2563,
+      "impressions": 2564,
       "clicks": 73,
-      "spend": 91.97,
+      "spend": 92.01,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 2.85,
@@ -238,11 +238,11 @@
     }
   ],
   "totals": {
-    "impressions": 82692,
-    "clicks": 2332,
-    "spend": 5046.68,
+    "impressions": 82713,
+    "clicks": 2333,
+    "spend": 5048.85,
     "purchases": 17,
     "purchase_value": 18396.52,
-    "roas": 3.65
+    "roas": 3.64
   }
 }
