@@ -4,16 +4,16 @@
     "account_name": "Smellers MX",
     "period": "90d",
     "date_range": "2025-08-10..2025-11-07",
-    "generated_at": "2025-11-08T09:20:12.277144Z",
+    "generated_at": "2025-11-08T15:20:14.510734Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 1660671,
+      "impressions": 1660678,
       "clicks": 25766,
-      "spend": 132547.72,
+      "spend": 132548.4,
       "purchases": 605,
       "purchase_value": 504461.31,
       "ctr": 1.55,
@@ -23,9 +23,9 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 934682,
-      "clicks": 21785,
-      "spend": 101609.72,
+      "impressions": 934689,
+      "clicks": 21786,
+      "spend": 101611.23,
       "purchases": 442,
       "purchase_value": 365485.77,
       "ctr": 2.33,
@@ -35,9 +35,9 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 1448656,
+      "impressions": 1448659,
       "clicks": 17021,
-      "spend": 78844.95,
+      "spend": 78845.07,
       "purchases": 372,
       "purchase_value": 298799.35,
       "ctr": 1.17,
@@ -47,9 +47,9 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 295066,
+      "impressions": 295068,
       "clicks": 9805,
-      "spend": 39411.5,
+      "spend": 39411.54,
       "purchases": 173,
       "purchase_value": 135345.31,
       "ctr": 3.32,
@@ -59,9 +59,9 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 397342,
+      "impressions": 397347,
       "clicks": 4682,
-      "spend": 24645.25,
+      "spend": 24645.5,
       "purchases": 107,
       "purchase_value": 91097.5,
       "ctr": 1.18,
@@ -73,7 +73,7 @@
       "gender": "male",
       "impressions": 207932,
       "clicks": 3411,
-      "spend": 16756.28,
+      "spend": 16756.3,
       "purchases": 81,
       "purchase_value": 71238.2,
       "ctr": 1.64,
@@ -85,7 +85,7 @@
       "gender": "female",
       "impressions": 98874,
       "clicks": 3459,
-      "spend": 12979.71,
+      "spend": 12979.72,
       "purchases": 50,
       "purchase_value": 42012.28,
       "ctr": 3.5,
@@ -95,9 +95,9 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 264470,
+      "impressions": 264472,
       "clicks": 2777,
-      "spend": 11861.38,
+      "spend": 11861.51,
       "purchases": 46,
       "purchase_value": 38293.95,
       "ctr": 1.05,
@@ -107,13 +107,13 @@
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 85731,
-      "clicks": 1736,
-      "spend": 7901.59,
+      "impressions": 85732,
+      "clicks": 1737,
+      "spend": 7901.84,
       "purchases": 29,
       "purchase_value": 25945.8,
-      "ctr": 2.02,
-      "cpa": 272.47,
+      "ctr": 2.03,
+      "cpa": 272.48,
       "roas": 3.28
     },
     {
@@ -131,7 +131,7 @@
     {
       "age": "65+",
       "gender": "male",
-      "impressions": 27924,
+      "impressions": 27925,
       "clicks": 669,
       "spend": 2851.03,
       "purchases": 10,
@@ -145,7 +145,7 @@
       "gender": "unknown",
       "impressions": 35111,
       "clicks": 444,
-      "spend": 2637.69,
+      "spend": 2637.7,
       "purchases": 8,
       "purchase_value": 7475.3,
       "ctr": 1.26,
@@ -234,7 +234,7 @@
       "purchase_value": 6895.48,
       "ctr": 0.0,
       "cpa": 0.07,
-      "roas": 14674.23
+      "roas": 14674.2
     },
     {
       "age": "Unknown",
@@ -250,9 +250,9 @@
     }
   ],
   "totals": {
-    "impressions": 5615062,
-    "clicks": 93780,
-    "spend": 440957.03,
+    "impressions": 5615090,
+    "clicks": 93782,
+    "spend": 440960.05,
     "purchases": 1963,
     "purchase_value": 1629375.15,
     "roas": 3.7
