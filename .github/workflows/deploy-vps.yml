@@ -10,6 +10,7 @@ on:
       - 'docs/index-saas.html'
       - 'docs/data_loader_saas.js'
       - 'docs/data_adapter.js'
+      - 'docs/i18n/**'
   workflow_dispatch:
 
 jobs:
@@ -43,6 +44,10 @@ jobs:
             cp ../docs/index-saas.html /var/www/creative-testing/
             cp ../docs/data_loader_saas.js /var/www/creative-testing/
             cp ../docs/data_adapter.js /var/www/creative-testing/
+
+            echo "🌍 Deploying i18n files..."
+            mkdir -p /var/www/creative-testing/i18n
+            cp -r ../docs/i18n/* /var/www/creative-testing/i18n/
 
             echo "🔧 Setting permissions..."
             chown -R www-data:www-data /var/www/creative-testing/
