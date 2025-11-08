@@ -34,7 +34,7 @@ Le dashboard de production fonctionne actuellement pour les patrons de Frederic 
 - ❌ Tout fichier qui pourrait affecter index_full.html
 
 **NOUVEAU DASHBOARD SAAS** :
-- ✅ `docs/index-mvp.html` (nouvelle interface SaaS multi-tenant)
+- ✅ `docs/oauth-callback.html` (page callback OAuth)
 - ✅ API VPS : `creative-testing.theaipipe.com` (Vultr, déploiement auto via CI/CD)
 - ✅ Données isolées par tenant : `tenants/{tenant_id}/accounts/{act_id}/...`
 - ✅ Authentification OAuth Facebook
@@ -43,7 +43,7 @@ Le dashboard de production fonctionne actuellement pour les patrons de Frederic 
 
 ```
 PRODUCTION (Patrons)                     SAAS (Nouveaux utilisateurs)
-├── index_full.html                      ├── index-mvp.html
+├── index_full.html                      ├── oauth-callback.html
 ├── GitHub Actions refresh               ├── API VPS (Vultr)
 ├── Token hardcodé dans secrets          ├── OAuth Facebook
 ├── Données globales                     ├── Données par tenant
@@ -53,8 +53,8 @@ PRODUCTION (Patrons)                     SAAS (Nouveaux utilisateurs)
 ### WORKFLOW DE DÉPLOIEMENT SÉCURISÉ
 
 1. **Développement** : Toujours sur `saas-mvp`
-2. **Tests locaux** : `http://localhost:8080/index-mvp.html`
-3. **Publication** : PR séparée qui ajoute UNIQUEMENT `index-mvp.html`
+2. **Tests locaux** : `http://localhost:8080/oauth-callback.html`
+3. **Publication** : PR séparée qui ajoute UNIQUEMENT les fichiers SaaS nécessaires
 4. **Vérification** : Confirmer qu'aucun fichier existant n'est modifié
 5. **Validation** : L'URL des patrons doit rester fonctionnelle après merge
 

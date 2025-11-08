@@ -6,7 +6,7 @@ on:
     paths:
       - 'api/**'
       - 'docs/index-landing.html'
-      - 'docs/index-mvp.html'
+      - 'docs/oauth-callback.html'
       - 'docs/index-saas.html'
       - 'docs/data_loader_saas.js'
       - 'docs/data_adapter.js'
@@ -39,7 +39,7 @@ jobs:
 
             echo "🌐 Deploying frontend files..."
             cp ../docs/index-landing.html /var/www/creative-testing/
-            cp ../docs/index-mvp.html /var/www/creative-testing/
+            cp ../docs/oauth-callback.html /var/www/creative-testing/
             cp ../docs/index-saas.html /var/www/creative-testing/
             cp ../docs/data_loader_saas.js /var/www/creative-testing/
             cp ../docs/data_adapter.js /var/www/creative-testing/

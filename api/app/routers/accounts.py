@@ -456,7 +456,7 @@ async def dev_generate_jwt(fb_account_id: str) -> Dict[str, Any]:
         )
 
         # 4. Construire l'URL du dashboard (direct vers index-saas.html)
-        # Note: index-saas.html est le vrai dashboard, index-mvp.html est juste un intermédiaire OAuth
+        # Note: index-saas.html est le vrai dashboard, oauth-callback.html est juste un intermédiaire OAuth
         from urllib.parse import urlencode
 
         dashboard_params = {
@@ -467,8 +467,8 @@ async def dev_generate_jwt(fb_account_id: str) -> Dict[str, Any]:
             "locked": "1"  # Verrouiller le sélecteur de compte
         }
 
-        # Pointer vers index-saas.html directement (pas index-mvp.html qui est pour OAuth callback)
-        base_url = settings.DASHBOARD_URL.replace("index-mvp.html", "index-saas.html")
+        # Pointer vers index-saas.html directement (pas oauth-callback.html qui est pour OAuth callback)
+        base_url = settings.DASHBOARD_URL.replace("oauth-callback.html", "index-saas.html")
         dashboard_url = f"{base_url}?{urlencode(dashboard_params)}"
 
         return {

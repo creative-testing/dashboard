@@ -52,7 +52,7 @@ COOKIE_SAMESITE=none
 COOKIE_DOMAIN=
 
 # Dashboard URL (pour la redirection post-callback)
-DASHBOARD_URL=https://creative-testing.github.io/dashboard/index-mvp.html
+DASHBOARD_URL=https://creative-testing.github.io/dashboard/oauth-callback.html
 
 # Storage: d'abord local, puis R2
 STORAGE_MODE=local

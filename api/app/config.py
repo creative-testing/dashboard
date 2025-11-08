@@ -60,7 +60,7 @@ class Settings(BaseSettings):
     ALLOWED_ORIGINS: str = "http://localhost:3000,https://creative-testing.github.io"
 
     # Dashboard URL (for OAuth redirect after success)
-    DASHBOARD_URL: str = "https://creative-testing.github.io/dashboard/index-mvp.html"
+    DASHBOARD_URL: str = "https://creative-testing.github.io/dashboard/oauth-callback.html"
 
     @property
     def allowed_origins_list(self) -> List[str]:
