@@ -4,26 +4,26 @@
     "account_name": "SEPUA",
     "period": "3d",
     "date_range": "2025-11-06..2025-11-08",
-    "generated_at": "2025-11-09T09:19:55.939483Z",
+    "generated_at": "2025-11-09T15:19:40.863958Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 3143,
-      "clicks": 48,
-      "spend": 391.64,
+      "impressions": 3146,
+      "clicks": 49,
+      "spend": 392.2,
       "purchases": 2,
       "purchase_value": 3899.0,
-      "ctr": 1.53,
-      "cpa": 195.82,
-      "roas": 9.96
+      "ctr": 1.56,
+      "cpa": 196.1,
+      "roas": 9.94
     },
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 3706,
+      "impressions": 3707,
       "clicks": 42,
       "spend": 362.49,
       "purchases": 1,
@@ -47,9 +47,9 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 1942,
+      "impressions": 1944,
       "clicks": 33,
-      "spend": 267.16,
+      "spend": 267.26,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.7,
@@ -71,12 +71,12 @@
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 761,
+      "impressions": 762,
       "clicks": 11,
       "spend": 123.16,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 1.45,
+      "ctr": 1.44,
       "cpa": 0,
       "roas": 0.0
     },
@@ -107,12 +107,12 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 262,
-      "clicks": 15,
-      "spend": 27.93,
+      "impressions": 263,
+      "clicks": 16,
+      "spend": 28.15,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 5.73,
+      "ctr": 6.08,
       "cpa": 0,
       "roas": 0.0
     },
@@ -190,9 +190,9 @@
     }
   ],
   "totals": {
-    "impressions": 14637,
-    "clicks": 252,
-    "spend": 1912.62,
+    "impressions": 14645,
+    "clicks": 254,
+    "spend": 1913.5,
     "purchases": 4,
     "purchase_value": 8698.0,
     "roas": 4.55
