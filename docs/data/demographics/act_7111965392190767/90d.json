@@ -4,16 +4,16 @@
     "account_name": "SANTA_PHIA_1",
     "period": "90d",
     "date_range": "2025-08-11..2025-11-08",
-    "generated_at": "2025-11-09T15:20:41.264818Z",
+    "generated_at": "2025-11-09T21:19:12.897782Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 1075307,
+      "impressions": 1075312,
       "clicks": 51962,
-      "spend": 99313.34,
+      "spend": 99313.45,
       "purchases": 206,
       "purchase_value": 591055.75,
       "ctr": 4.83,
@@ -23,9 +23,9 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 583610,
+      "impressions": 583613,
       "clicks": 31800,
-      "spend": 66456.19,
+      "spend": 66456.22,
       "purchases": 118,
       "purchase_value": 322369.2,
       "ctr": 5.45,
@@ -35,7 +35,7 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 932532,
+      "impressions": 932535,
       "clicks": 43378,
       "spend": 59522.84,
       "purchases": 129,
@@ -47,21 +47,21 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 229853,
-      "clicks": 13361,
-      "spend": 27561.63,
+      "impressions": 229855,
+      "clicks": 13362,
+      "spend": 27561.87,
       "purchases": 32,
       "purchase_value": 80150.8,
       "ctr": 5.81,
-      "cpa": 861.3,
+      "cpa": 861.31,
       "roas": 2.91
     },
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 248519,
+      "impressions": 248520,
       "clicks": 5382,
-      "spend": 13519.77,
+      "spend": 13519.81,
       "purchases": 19,
       "purchase_value": 57397.0,
       "ctr": 2.17,
@@ -71,13 +71,13 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 251653,
+      "impressions": 251656,
       "clicks": 6479,
-      "spend": 10751.09,
+      "spend": 10751.31,
       "purchases": 25,
       "purchase_value": 64948.0,
       "ctr": 2.57,
-      "cpa": 430.04,
+      "cpa": 430.05,
       "roas": 6.04
     },
     {
@@ -107,8 +107,8 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 118083,
-      "clicks": 6790,
+      "impressions": 118085,
+      "clicks": 6791,
       "spend": 5467.41,
       "purchases": 7,
       "purchase_value": 17100.0,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 3790623,
-    "clicks": 172360,
-    "spend": 309141.16,
+    "impressions": 3790642,
+    "clicks": 172362,
+    "spend": 309141.8,
     "purchases": 551,
     "purchase_value": 1514961.0,
     "roas": 4.9
