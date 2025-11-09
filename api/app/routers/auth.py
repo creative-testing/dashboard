@@ -37,7 +37,8 @@ async def facebook_login(request: Request, lang: Optional[str] = None):
     state = secrets.token_urlsafe(32)
     request.session["oauth_state"] = {
         "value": state,
-        "timestamp": int(time.time())
+        "timestamp": int(time.time()),
+        "lang": lang  # Store lang to preserve it through OAuth flow
     }
 
     # Paramètres OAuth
@@ -248,6 +249,12 @@ async def facebook_callback(
 
         # 8. Redirect direct vers dashboard avec token (pas de page intermédiaire)
         redirect_url = f"{settings.DASHBOARD_URL}?token={access_token}&tenant_id={tenant.id}"
+
+        # Preserve lang parameter if it was set during login
+        lang_from_session = state_data.get("lang") if isinstance(state_data, dict) else None
+        if lang_from_session:
+            redirect_url += f"&lang={lang_from_session}"
+
         response = RedirectResponse(url=redirect_url, status_code=302)
 
         # Poser le JWT dans un cookie HttpOnly sécurisé
