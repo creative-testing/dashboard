@@ -881,24 +881,26 @@
     <!-- Data adapter and SaaS loader -->
     <script src="data_adapter.js"></script>
     <script src="data_loader_saas.js"></script>
+    <!-- i18n support -->
+    <script src="i18n/i18n.js"></script>
 </head>
 <body>
     <div class="header">
-        <h1>🚀 Creative Testing Dashboard</h1>
-        <p>Análisis de rendimiento creativo • Última actualización: <span id="data-date">Cargando...</span></p>
+        <h1 data-i18n="dashboard.header_title">🚀 Creative Testing Dashboard</h1>
+        <p><span data-i18n="dashboard.header_subtitle">Análisis de rendimiento creativo • Última actualización:</span> <span id="data-date" data-i18n="dashboard.loading">Cargando...</span></p>
         
         <div class="period-selector">
-            <button class="period-btn" onclick="switchPeriod(this, 3)">3 días</button>
-            <button class="period-btn active" onclick="switchPeriod(this, 7)">7 días</button>
-            <button class="period-btn" onclick="switchPeriod(this, 14)">14 días</button>
-            <button class="period-btn" onclick="switchPeriod(this, 30)">30 días</button>
-            <button class="period-btn" onclick="switchPeriod(this, 90)">90 días</button>
+            <button class="period-btn" onclick="switchPeriod(this, 3)" data-i18n="dashboard.periods.3d">3 días</button>
+            <button class="period-btn active" onclick="switchPeriod(this, 7)" data-i18n="dashboard.periods.7d">7 días</button>
+            <button class="period-btn" onclick="switchPeriod(this, 14)" data-i18n="dashboard.periods.14d">14 días</button>
+            <button class="period-btn" onclick="switchPeriod(this, 30)" data-i18n="dashboard.periods.30d">30 días</button>
+            <button class="period-btn" onclick="switchPeriod(this, 90)" data-i18n="dashboard.periods.90d">90 días</button>
         </div>
-        
+
         <div class="account-selector" style="margin-top:15px; display:flex; justify-content:center; gap:8px; align-items:center;">
             <div class="custom-dropdown" style="position: relative;">
                 <button id="account-dropdown-btn" class="dropdown-btn" style="background: rgba(255,255,255,0.2); border: 2px solid rgba(255,255,255,0.3); color: white; padding: 10px 20px; padding-right: 35px; border-radius: 25px; cursor: pointer; font-weight: 600; font-size: 14px; min-width: 150px; max-width: 280px; outline: none; text-align: center; position: relative;">
-                    <span id="account-dropdown-text">Todas las cuentas</span>
+                    <span id="account-dropdown-text" data-i18n="dashboard.accounts.all">Todas las cuentas</span>
                     <svg style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); transition: transform 0.3s;" width="12" height="12" viewBox="0 0 20 20" fill="white">
                         <path d="M10 12L6 8h8z"/>
                     </svg>
@@ -981,7 +983,7 @@
             </div>
             
             <div class="chart-card fixed-height">
-                <h3>📊 Distribución por Formato</h3>
+                <h3 data-i18n="dashboard.charts.format_distribution">📊 Distribución por Formato</h3>
                 <div class="donut-chart">
                     <svg class="donut-svg" viewBox="0 0 180 180">
                         <circle cx="90" cy="90" r="60" fill="none" stroke="#667eea" 
@@ -1023,47 +1025,47 @@
         <div class="main-table-card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <div>
-                    <h2>Top 10 Anuncios por ROAS</h2>
-                    <p>Solo anuncios con inversión mayor a $3,000 MXN</p>
+                    <h2 id="table-title">Top 10 Anuncios por ROAS</h2>
+                    <p data-i18n="dashboard.table.subtitle">Solo anuncios con inversión mayor a $3,000 MXN</p>
                 </div>
-                <button id="export-excel" class="export-btn">
+                <button id="export-excel" class="export-btn" data-i18n="dashboard.table.export">
                     Exportar Excel
                 </button>
             </div>
-            
+
             <div class="table-container">
                 <table id="ads-table">
                     <thead>
                     <tr>
-                        <th>Anuncio</th>
-                        <th>Estado</th>
-                        <th>Formato</th>
-                        <th>Fecha Inicio</th>
-                        <th>Importe Gastado</th>
-                        <th>ROAS</th>
-                        <th>CPA</th>
-                        <th>Compras</th>
-                        <th>Awareness</th>
-                        <th>Tipo</th>
-                        <th>Ángulo</th>
-                        <th>Tipo de Hook</th>
-                        <th>Ver</th>
-                        <th>Hipótesis</th>
-                        <th>Aprendizajes</th>
-                        <th>Resultado</th>
+                        <th data-i18n="dashboard.table.headers.ad">Anuncio</th>
+                        <th data-i18n="dashboard.table.headers.status">Estado</th>
+                        <th data-i18n="dashboard.table.headers.format">Formato</th>
+                        <th data-i18n="dashboard.table.headers.start_date">Fecha Inicio</th>
+                        <th data-i18n="dashboard.table.headers.amount_spent">Importe Gastado</th>
+                        <th data-i18n="dashboard.table.headers.roas">ROAS</th>
+                        <th data-i18n="dashboard.table.headers.cpa">CPA</th>
+                        <th data-i18n="dashboard.table.headers.purchases">Compras</th>
+                        <th data-i18n="dashboard.table.headers.awareness">Awareness</th>
+                        <th data-i18n="dashboard.table.headers.type">Tipo</th>
+                        <th data-i18n="dashboard.table.headers.angle">Ángulo</th>
+                        <th data-i18n="dashboard.table.headers.hook_type">Tipo de Hook</th>
+                        <th data-i18n="dashboard.table.headers.view">Ver</th>
+                        <th data-i18n="dashboard.table.headers.hypothesis">Hipótesis</th>
+                        <th data-i18n="dashboard.table.headers.learnings">Aprendizajes</th>
+                        <th data-i18n="dashboard.table.headers.result">Resultado</th>
                     </tr>
                     <tr class="filter-row">
-                        <th><input type="text" class="table-filter" data-column="0" placeholder="Filtrar..."></th>
+                        <th><input type="text" class="table-filter" data-column="0" data-i18n-placeholder="dashboard.table.filters.filter" placeholder="Filtrar..."></th>
                         <th>
                             <select class="table-filter" data-column="1">
-                                <option value="">Todos</option>
-                                <option value="active">Activo</option>
-                                <option value="paused">Pausado</option>
+                                <option value="" data-i18n="dashboard.table.filters.all">Todos</option>
+                                <option value="active" data-i18n="dashboard.table.filters.active">Activo</option>
+                                <option value="paused" data-i18n="dashboard.table.filters.paused">Pausado</option>
                             </select>
                         </th>
                         <th>
                             <select class="table-filter" data-column="2">
-                                <option value="">Todos</option>
+                                <option value="" data-i18n="dashboard.table.filters.all">Todos</option>
                                 <option value="video">Video</option>
                                 <option value="image">Image</option>
                                 <option value="carousel">Carousel</option>
@@ -1131,8 +1133,8 @@
         
         <!-- TABLA EFICIENCIA POR FORMATO -->
         <div class="main-table-card">
-            <h2>📊 Eficiencia por Tipo de Formato</h2>
-            <p id="formato-subtitle">Análisis comparativo de rendimiento por formato creativo</p>
+            <h2 data-i18n="dashboard.efficiency_table.title">📊 Eficiencia por Tipo de Formato</h2>
+            <p id="formato-subtitle" data-i18n="dashboard.efficiency_table.subtitle">Análisis comparativo de rendimiento por formato creativo</p>
             
             <table>
                 <thead>
@@ -1154,16 +1156,16 @@
         
         <!-- TABLA COMPARACIÓN SEMANA A SEMANA -->
         <div class="main-table-card">
-            <h2>📈 Comparación Semana a Semana</h2>
+            <h2 data-i18n="dashboard.comparison_table.title">📈 Comparación Semana a Semana</h2>
             <p id="comparison-dates">Comparación entre semana actual (21-27 ago) vs semana anterior (14-20 ago)</p>
-            
+
             <table>
                 <thead>
                     <tr>
-                        <th>Métrica</th>
-                        <th>Semana Actual</th>
-                        <th>Semana Anterior</th>
-                        <th>Cambio</th>
+                        <th data-i18n="dashboard.comparison_table.headers.metric">Métrica</th>
+                        <th data-i18n="dashboard.comparison_table.headers.current_week">Semana Actual</th>
+                        <th data-i18n="dashboard.comparison_table.headers.previous_week">Semana Anterior</th>
+                        <th data-i18n="dashboard.comparison_table.headers.change">Cambio</th>
                     </tr>
                 </thead>
                 <tbody id="comparison-table">
@@ -1307,6 +1309,19 @@
     <script src="./scripts/shared/nomenclature_parser.js"></script>
     
     <script>
+        // i18n fallback function (in case i18n.js fails to load)
+        window.t = window.t || function(key, replacements) {
+            console.warn('i18n not loaded, using fallback for key:', key);
+            // Return the Spanish text as fallback (original language)
+            const fallbackTexts = {
+                'dashboard.header_title': '🚀 Creative Testing Dashboard',
+                'dashboard.kpis.ads_with_spend': 'Anuncios con Inversión',
+                'dashboard.kpis.total_spend': 'Inversión Total (MXN)',
+                'dashboard.accounts.all': 'Todas las cuentas'
+            };
+            return fallbackTexts[key] || key;
+        };
+
         // State filter compte - DÉCLARÉ EN PREMIER
         let currentAccountName = 'Todos';
         
@@ -2288,47 +2303,50 @@
                 // KPI 1: Anuncios con Inversión (ceux qui ont eu du spend) - unchanged
                 kpiCards[0].innerHTML = `
                     <h3>${activeAds.toLocaleString()}</h3>
-                    <p>Anuncios con Inversión</p>
+                    <p>${t('dashboard.kpis.ads_with_spend')}</p>
                 `;
 
-                // KPI 2: Total Spend - unchanged
-                kpiCards[1].querySelector('h3').textContent = `$${Math.round(totalSpend).toLocaleString()}`;
+                // KPI 2: Total Spend
+                kpiCards[1].innerHTML = `
+                    <h3>$${Math.round(totalSpend).toLocaleString()}</h3>
+                    <p>${t('dashboard.kpis.total_spend')}</p>
+                `;
 
                 if (profile === 'leads') {
                     // KPI 3 → CTR único
                     const v3 = document.getElementById('kpi-roas-value');
                     const l3 = document.getElementById('kpi-roas-label');
                     if (v3) v3.textContent = (ctrUnique > 0 ? ctrUnique.toFixed(2) + '%' : 'N/A');
-                    if (l3) l3.textContent = 'CTR único';
+                    if (l3) l3.textContent = t('dashboard.kpis.unique_ctr');
 
                     // KPI 4 → CPM
                     const v4 = document.getElementById('kpi-extra-value');
                     const l4 = document.getElementById('kpi-extra-label');
                     if (v4) v4.textContent = (cpm > 0 ? `$${cpm.toFixed(2)}` : 'N/A');
-                    if (l4) l4.textContent = 'CPM';
+                    if (l4) l4.textContent = t('dashboard.kpis.cpm');
 
                     // KPI 5 → Costo por Resultado
                     const v5 = document.getElementById('kpi-cpa-value');
                     const l5 = document.getElementById('kpi-cpa-label');
                     const cpr = totalLeads > 0 ? (totalSpend / totalLeads) : 0;
                     if (v5) v5.textContent = (cpr > 0 ? `$${cpr.toFixed(2)}` : 'N/A');
-                    if (l5) l5.textContent = 'Costo por Resultado';
+                    if (l5) l5.textContent = t('dashboard.kpis.cost_per_result');
                 } else {
                     // ecom defaults
                     const v3 = document.getElementById('kpi-roas-value');
                     const l3 = document.getElementById('kpi-roas-label');
                     if (v3) v3.textContent = avgRoas.toFixed(2);
-                    if (l3) l3.textContent = 'ROAS Promedio';
+                    if (l3) l3.textContent = t('dashboard.kpis.avg_roas');
 
                     const v4 = document.getElementById('kpi-extra-value');
                     const l4 = document.getElementById('kpi-extra-label');
                     if (v4) v4.textContent = `$${Math.round(totalRevenue).toLocaleString()}`;
-                    if (l4) l4.textContent = 'Valor de Conversión';
+                    if (l4) l4.textContent = t('dashboard.kpis.conversion_value');
 
                     const v5 = document.getElementById('kpi-cpa-value');
                     const l5 = document.getElementById('kpi-cpa-label');
                     if (v5) v5.textContent = cpa > 0 ? `$${cpa.toFixed(2)}` : 'N/A';
-                    if (l5) l5.textContent = 'CPA Promedio';
+                    if (l5) l5.textContent = t('dashboard.kpis.avg_cpa');
                 }
             }
         }
@@ -2348,7 +2366,7 @@
             
             if (currentAccountName === 'Todos') {
                 // Mode TODOS: Top 5 comptes par spend
-                if (chartTitle) chartTitle.textContent = '💰 Top 5 Cuentas por Inversión';
+                if (chartTitle) chartTitle.textContent = t('dashboard.charts.top_accounts');
                 
                 const accountSpend = {};
                 ads.forEach(ad => {
@@ -2373,13 +2391,13 @@
             } else {
                 // Mode COMPTE SPÉCIFIQUE: Top 5 anuncios
                 const sortBy = window.topSortBy || 'purchases'; // Default to purchases (ventas)
-                const displayMetric = sortBy === 'purchases' ? 'Ventas' : 'Gastos';
+                const displayMetric = sortBy === 'purchases' ? t('dashboard.charts.by_sales') : t('dashboard.charts.by_spend');
                 if (chartTitle) {
                     chartTitle.innerHTML = `
-                        🎯 Top 5 Anuncios de ${escapeHtml(currentAccountName.substring(0, 20))}
+                        ${t('dashboard.charts.top_ads')} ${escapeHtml(currentAccountName.substring(0, 20))}
                         <select id="top5-sort" style="margin-left: 10px; padding: 4px 8px; border-radius: 6px; border: 1px solid #d1d1d6; font-size: 12px;" onchange="window.topSortBy = this.value; if(window.currentData) updateCharts(window.currentData);">
-                            <option value="spend" ${sortBy === 'spend' ? 'selected' : ''}>Por Gastos</option>
-                            <option value="purchases" ${sortBy === 'purchases' ? 'selected' : ''}>Por Ventas</option>
+                            <option value="spend" ${sortBy === 'spend' ? 'selected' : ''}>${t('dashboard.charts.by_spend')}</option>
+                            <option value="purchases" ${sortBy === 'purchases' ? 'selected' : ''}>${t('dashboard.charts.by_sales')}</option>
                         </select>
                     `;
                 }
@@ -2761,9 +2779,9 @@
         
         function renderTable() {
             // Mettre à jour le titre de la table
-            const tableTitle = document.querySelector('.main-table-card h2');
+            const tableTitle = document.getElementById('table-title');
             if (tableTitle) {
-                tableTitle.textContent = `Historial de Anuncios (${currentPeriod} días)`;
+                tableTitle.textContent = t('dashboard.table.title', { period: currentPeriod });
             }
             
             // Appliquer le tri aux données filtrées
@@ -2776,11 +2794,15 @@
             const pageData = sortedData.slice(startIndex, endIndex);
             
             const tableSubtitle = document.querySelector('.main-table-card p');
-            if (tableSubtitle) {
-                const filterInfo = filteredTableData.length < currentTableData.length 
-                    ? ` (${filteredTableData.length} filtrados de ${currentTableData.length})`
+            if (tableSubtitle && !tableSubtitle.hasAttribute('data-i18n')) {
+                const filterInfo = filteredTableData.length < currentTableData.length
+                    ? ` (${filteredTableData.length} ${t('dashboard.table.pagination.filtered')} ${currentTableData.length})`
                     : '';
-                tableSubtitle.textContent = `Mostrando ${startIndex + 1}-${Math.min(endIndex, sortedData.length)} de ${sortedData.length.toLocaleString()} anuncios${filterInfo}`;
+                tableSubtitle.textContent = t('dashboard.table.pagination.showing', {
+                    start: startIndex + 1,
+                    end: Math.min(endIndex, sortedData.length),
+                    total: sortedData.length.toLocaleString()
+                }) + filterInfo;
             }
             
             // Charger les données sauvegardées depuis localStorage
@@ -2858,7 +2880,7 @@
                             <td>${mediaLink}</td>
                             <td>
                                 <div class="hypothesis-wrapper">
-                                    <textarea class="hypothesis-input" placeholder="Agregar hipótesis..." data-ad-id="${ad.ad_id}" 
+                                    <textarea class="hypothesis-input" placeholder="${t('dashboard.table.filters.hypothesis_placeholder')}" data-ad-id="${ad.ad_id}"
                                         rows="1"
                                         style="height: 36px;"
                                         onkeyup="this.style.height='36px'; this.style.height = Math.min(this.scrollHeight, 100) + 'px';"
@@ -2868,7 +2890,7 @@
                             </td>
                             <td>
                                 <div class="hypothesis-wrapper">
-                                    <textarea class="learning-input" placeholder="Aprendizajes y siguiente paso..." data-ad-id="${ad.ad_id}"
+                                    <textarea class="learning-input" placeholder="${t('dashboard.table.filters.learnings_placeholder')}" data-ad-id="${ad.ad_id}"
                                         rows="1"
                                         style="height: 36px;"
                                         onkeyup="this.style.height='36px'; this.style.height = Math.min(this.scrollHeight, 100) + 'px';"
@@ -2906,7 +2928,7 @@
 
             paginationContainer.innerHTML = `
                 <div class="page-size">
-                    Filas:
+                    ${t('dashboard.table.pagination.rows')}
                     <select id="page-size">
                         <option value="10">10</option>
                         <option value="25">25</option>
@@ -2915,9 +2937,9 @@
                     </select>
                 </div>
                 <button onclick="changePage(1)" ${currentPage === 1 ? 'disabled' : ''} style="padding: 8px 12px; border: 1px solid #e0e0e2; background: white; border-radius: 6px; ${currentPage === 1 ? 'opacity:0.5; cursor:not-allowed;' : 'cursor:pointer;'}">←</button>
-                <button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} style="padding: 8px 12px; border: 1px solid #e0e0e2; background: white; border-radius: 6px; ${currentPage === 1 ? 'opacity:0.5; cursor:not-allowed;' : 'cursor:pointer;'}">Anterior</button>
-                <span style="padding: 8px 16px; background: #f5f5f7; border-radius: 6px;">Página <strong>${currentPage}</strong> de <strong>${totalPages}</strong></span>
-                <button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''} style="padding: 8px 12px; border: 1px solid #e0e0e2; background: white; border-radius: 6px; ${currentPage === totalPages ? 'opacity:0.5; cursor:not-allowed;' : 'cursor:pointer;'}">Siguiente</button>
+                <button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''} style="padding: 8px 12px; border: 1px solid #e0e0e2; background: white; border-radius: 6px; ${currentPage === 1 ? 'opacity:0.5; cursor:not-allowed;' : 'cursor:pointer;'}">${t('dashboard.table.pagination.previous')}</button>
+                <span style="padding: 8px 16px; background: #f5f5f7; border-radius: 6px;">${t('dashboard.table.pagination.page')} <strong>${currentPage}</strong> ${t('dashboard.table.pagination.of')} <strong>${totalPages}</strong></span>
+                <button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''} style="padding: 8px 12px; border: 1px solid #e0e0e2; background: white; border-radius: 6px; ${currentPage === totalPages ? 'opacity:0.5; cursor:not-allowed;' : 'cursor:pointer;'}">${t('dashboard.table.pagination.next')}</button>
                 <button onclick="changePage(${totalPages})" ${currentPage === totalPages ? 'disabled' : ''} style="padding: 8px 12px; border: 1px solid #e0e0e2; background: white; border-radius: 6px; ${currentPage === totalPages ? 'opacity:0.5; cursor:not-allowed;' : 'cursor:pointer;'}">→</button>
             `;
 
@@ -3282,7 +3304,7 @@
                 names = Array.from(allNames).sort();
             }
 
-            let optionsHTML = `<div class="dropdown-option ${currentAccountName === 'Todos' ? 'active' : ''}" data-value="Todos">Todas las cuentas</div>`;
+            let optionsHTML = `<div class="dropdown-option ${currentAccountName === 'Todos' ? 'active' : ''}" data-value="Todos">${t('dashboard.accounts.all')}</div>`;
             names.forEach(n => {
                 const displayName = n.length > 28 ? n.substring(0, 25) + '...' : n;
                 optionsHTML += `<div class="dropdown-option ${currentAccountName === n ? 'active' : ''}" data-value="${n}" title="${n}">${displayName}</div>`;
@@ -3291,7 +3313,7 @@
             // Injecter la barre de recherche + options
             menu.innerHTML = `
               <div class="dropdown-search">
-                <input id="account-search" type="text" placeholder="Buscar cuenta...">
+                <input id="account-search" type="text" placeholder="${t('dashboard.accounts.search')}">
               </div>
               ${optionsHTML}
             `;
@@ -3325,7 +3347,7 @@
             currentAccountName = value;
             const btnText = document.getElementById('account-dropdown-text');
             if (btnText) {
-                btnText.textContent = value === 'Todos' ? 'Todas las cuentas' : 
+                btnText.textContent = value === 'Todos' ? t('dashboard.accounts.all') :
                                      (value.length > 28 ? value.substring(0, 25) + '...' : value);
             }
             
@@ -4038,6 +4060,18 @@
             return accountProfiles.default || 'ecom';
         }
 
+        // i18n: Update dynamic elements when translations are loaded
+        document.addEventListener('i18n:ready', () => {
+            // Update document title
+            document.title = t('dashboard.page_title');
+
+            // Update placeholders for inputs (data-i18n-placeholder)
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                el.placeholder = t(key);
+            });
+        });
+
         document.addEventListener('DOMContentLoaded', async () => {
             // Charger la configuration des profils
             await loadAccountProfiles();
@@ -4053,14 +4087,14 @@
                 const btnText = document.getElementById('account-dropdown-text');
                 if (btnText) btnText.textContent = currentAccountName.length > 28 ? currentAccountName.substring(0,25) + '...' : currentAccountName;
             }
-            
+
             await loadAllData();
-            
+
             // Sorting header listeners
             initTableSorting();
-            
+
             buildAccountOptions();
-            
+
             // Si locked=1, masquer le dropdown et afficher le badge
             if (qp.locked) {
                 const dropdown = document.querySelector('.custom-dropdown');

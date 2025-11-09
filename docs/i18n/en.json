@@ -114,5 +114,94 @@
       "load_accounts": "Error loading accounts",
       "generic": "Error processing authentication. Please try again."
     }
+  },
+  "dashboard": {
+    "page_title": "Meta Ads Performance Dashboard",
+    "header_title": "🚀 Creative Testing Dashboard",
+    "header_subtitle": "Creative Performance Analysis • Last updated:",
+    "loading": "Loading...",
+    "periods": {
+      "3d": "3 days",
+      "7d": "7 days",
+      "14d": "14 days",
+      "30d": "30 days",
+      "90d": "90 days"
+    },
+    "accounts": {
+      "all": "All accounts",
+      "search": "Search account..."
+    },
+    "kpis": {
+      "ads_with_spend": "Ads with Spend",
+      "total_spend": "Total Spend (MXN)",
+      "avg_roas": "Average ROAS",
+      "conversion_value": "Conversion Value",
+      "avg_cpa": "Average CPA",
+      "unique_ctr": "Unique CTR",
+      "cpm": "CPM",
+      "cost_per_result": "Cost per Result"
+    },
+    "charts": {
+      "top_accounts": "💰 Top 5 Accounts by Spend",
+      "format_distribution": "📊 Distribution by Format",
+      "top_ads": "🎯 Top 5 Ads from",
+      "by_spend": "By Spend",
+      "by_sales": "By Sales"
+    },
+    "table": {
+      "title": "Ad History ({period} days)",
+      "subtitle": "Only ads with spend over $3,000 MXN",
+      "export": "Export Excel",
+      "headers": {
+        "ad": "Ad",
+        "status": "Status",
+        "format": "Format",
+        "start_date": "Start Date",
+        "amount_spent": "Amount Spent",
+        "roas": "ROAS",
+        "cpa": "CPA",
+        "purchases": "Purchases",
+        "awareness": "Awareness",
+        "type": "Type",
+        "angle": "Angle",
+        "hook_type": "Hook Type",
+        "view": "View",
+        "hypothesis": "Hypothesis",
+        "learnings": "Learnings",
+        "result": "Result"
+      },
+      "filters": {
+        "filter": "Filter...",
+        "all": "All",
+        "active": "Active",
+        "paused": "Paused",
+        "min": "Min...",
+        "max": "Max...",
+        "hypothesis_placeholder": "Add hypothesis...",
+        "learnings_placeholder": "Learnings and next step..."
+      },
+      "pagination": {
+        "rows": "Rows:",
+        "previous": "Previous",
+        "next": "Next",
+        "page": "Page",
+        "of": "of",
+        "showing": "Showing {start}-{end} of {total} ads",
+        "filtered": "filtered from"
+      }
+    },
+    "efficiency_table": {
+      "title": "📊 Efficiency by Format Type",
+      "subtitle": "Comparative performance analysis by creative format"
+    },
+    "comparison_table": {
+      "title": "📈 Week-over-Week Comparison",
+      "headers": {
+        "metric": "Metric",
+        "current_week": "Current Week",
+        "previous_week": "Previous Week",
+        "change": "Change"
+      }
+    }
   }
 }

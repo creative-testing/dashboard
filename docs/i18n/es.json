@@ -114,5 +114,94 @@
       "load_accounts": "Error al cargar cuentas",
       "generic": "Error al procesar la autenticación. Por favor, intenta de nuevo."
     }
+  },
+  "dashboard": {
+    "page_title": "Meta Ads Performance Dashboard",
+    "header_title": "🚀 Creative Testing Dashboard",
+    "header_subtitle": "Análisis de rendimiento creativo • Última actualización:",
+    "loading": "Cargando...",
+    "periods": {
+      "3d": "3 días",
+      "7d": "7 días",
+      "14d": "14 días",
+      "30d": "30 días",
+      "90d": "90 días"
+    },
+    "accounts": {
+      "all": "Todas las cuentas",
+      "search": "Buscar cuenta..."
+    },
+    "kpis": {
+      "ads_with_spend": "Anuncios con Inversión",
+      "total_spend": "Inversión Total (MXN)",
+      "avg_roas": "ROAS Promedio",
+      "conversion_value": "Valor de Conversión",
+      "avg_cpa": "CPA Promedio",
+      "unique_ctr": "CTR único",
+      "cpm": "CPM",
+      "cost_per_result": "Costo por Resultado"
+    },
+    "charts": {
+      "top_accounts": "💰 Top 5 Cuentas por Inversión",
+      "format_distribution": "📊 Distribución por Formato",
+      "top_ads": "🎯 Top 5 Anuncios de",
+      "by_spend": "Por Gastos",
+      "by_sales": "Por Ventas"
+    },
+    "table": {
+      "title": "Historial de Anuncios ({period} días)",
+      "subtitle": "Solo anuncios con inversión mayor a $3,000 MXN",
+      "export": "Exportar Excel",
+      "headers": {
+        "ad": "Anuncio",
+        "status": "Estado",
+        "format": "Formato",
+        "start_date": "Fecha Inicio",
+        "amount_spent": "Importe Gastado",
+        "roas": "ROAS",
+        "cpa": "CPA",
+        "purchases": "Compras",
+        "awareness": "Awareness",
+        "type": "Tipo",
+        "angle": "Ángulo",
+        "hook_type": "Tipo de Hook",
+        "view": "Ver",
+        "hypothesis": "Hipótesis",
+        "learnings": "Aprendizajes",
+        "result": "Resultado"
+      },
+      "filters": {
+        "filter": "Filtrar...",
+        "all": "Todos",
+        "active": "Activo",
+        "paused": "Pausado",
+        "min": "Min...",
+        "max": "Max...",
+        "hypothesis_placeholder": "Agregar hipótesis...",
+        "learnings_placeholder": "Aprendizajes y siguiente paso..."
+      },
+      "pagination": {
+        "rows": "Filas:",
+        "previous": "Anterior",
+        "next": "Siguiente",
+        "page": "Página",
+        "of": "de",
+        "showing": "Mostrando {start}-{end} de {total} anuncios",
+        "filtered": "filtrados de"
+      }
+    },
+    "efficiency_table": {
+      "title": "📊 Eficiencia por Tipo de Formato",
+      "subtitle": "Análisis comparativo de rendimiento por formato creativo"
+    },
+    "comparison_table": {
+      "title": "📈 Comparación Semana a Semana",
+      "headers": {
+        "metric": "Métrica",
+        "current_week": "Semana Actual",
+        "previous_week": "Semana Anterior",
+        "change": "Cambio"
+      }
+    }
   }
 }
