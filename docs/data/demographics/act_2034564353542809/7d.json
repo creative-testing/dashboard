@@ -4,26 +4,26 @@
     "account_name": "PULENSHOP",
     "period": "7d",
     "date_range": "2025-11-03..2025-11-09",
-    "generated_at": "2025-11-10T03:58:11.113475Z",
+    "generated_at": "2025-11-10T09:26:53.552487Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 20765,
+      "impressions": 20771,
       "clicks": 309,
-      "spend": 83.93,
+      "spend": 83.97,
       "purchases": 2,
       "purchase_value": 134.85,
       "ctr": 1.49,
-      "cpa": 41.97,
+      "cpa": 41.98,
       "roas": 1.61
     },
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 18657,
+      "impressions": 18661,
       "clicks": 261,
       "spend": 77.12,
       "purchases": 2,
@@ -35,7 +35,7 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 13764,
+      "impressions": 13765,
       "clicks": 392,
       "spend": 72.49,
       "purchases": 5,
@@ -47,19 +47,19 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 11565,
+      "impressions": 11569,
       "clicks": 341,
-      "spend": 65.87,
+      "spend": 65.95,
       "purchases": 7,
       "purchase_value": 307.6,
       "ctr": 2.95,
-      "cpa": 9.41,
-      "roas": 4.67
+      "cpa": 9.42,
+      "roas": 4.66
     },
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 9842,
+      "impressions": 9843,
       "clicks": 379,
       "spend": 55.21,
       "purchases": 3,
@@ -71,7 +71,7 @@
     {
       "age": "65+",
       "gender": "male",
-      "impressions": 11358,
+      "impressions": 11359,
       "clicks": 221,
       "spend": 50.01,
       "purchases": 2,
@@ -83,7 +83,7 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 8357,
+      "impressions": 8360,
       "clicks": 92,
       "spend": 34.75,
       "purchases": 2,
@@ -95,7 +95,7 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 5805,
+      "impressions": 5807,
       "clicks": 104,
       "spend": 27.77,
       "purchases": 0,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 109396,
+    "impressions": 109418,
     "clicks": 2222,
-    "spend": 502.95,
+    "spend": 503.07,
     "purchases": 27,
     "purchase_value": 1201.24,
     "roas": 2.39
