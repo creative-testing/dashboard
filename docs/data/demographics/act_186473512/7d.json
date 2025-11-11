@@ -4,21 +4,21 @@
     "account_name": "Essentiasl Mx",
     "period": "7d",
     "date_range": "2025-11-04..2025-11-10",
-    "generated_at": "2025-11-11T15:21:44.862950Z",
+    "generated_at": "2025-11-11T21:18:15.925167Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 2150,
+      "impressions": 2151,
       "clicks": 42,
-      "spend": 122.49,
+      "spend": 122.63,
       "purchases": 2,
       "purchase_value": 2482.0,
       "ctr": 1.95,
-      "cpa": 61.24,
-      "roas": 20.26
+      "cpa": 61.31,
+      "roas": 20.24
     },
     {
       "age": "25-34",
@@ -35,9 +35,9 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 714,
+      "impressions": 715,
       "clicks": 19,
-      "spend": 50.74,
+      "spend": 50.89,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 2.66,
@@ -47,21 +47,21 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 348,
+      "impressions": 349,
       "clicks": 5,
-      "spend": 30.01,
+      "spend": 30.07,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 1.44,
+      "ctr": 1.43,
       "cpa": 0,
       "roas": 0.0
     },
     {
       "age": "18-24",
       "gender": "male",
-      "impressions": 650,
+      "impressions": 651,
       "clicks": 8,
-      "spend": 26.2,
+      "spend": 26.22,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.23,
@@ -214,11 +214,11 @@
     }
   ],
   "totals": {
-    "impressions": 5731,
+    "impressions": 5735,
     "clicks": 111,
-    "spend": 349.23,
+    "spend": 349.6,
     "purchases": 3,
     "purchase_value": 3261.0,
-    "roas": 9.34
+    "roas": 9.33
   }
 }
