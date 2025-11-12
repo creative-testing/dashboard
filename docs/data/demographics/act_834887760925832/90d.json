@@ -4,40 +4,40 @@
     "account_name": "SEPUA",
     "period": "90d",
     "date_range": "2025-08-14..2025-11-11",
-    "generated_at": "2025-11-12T09:24:44.424088Z",
+    "generated_at": "2025-11-12T15:25:17.991167Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 82866,
+      "impressions": 82869,
       "clicks": 1138,
-      "spend": 11935.18,
+      "spend": 11935.67,
       "purchases": 18,
       "purchase_value": 31224.5,
       "ctr": 1.37,
-      "cpa": 663.07,
+      "cpa": 663.09,
       "roas": 2.62
     },
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 82269,
+      "impressions": 82270,
       "clicks": 916,
-      "spend": 8631.14,
+      "spend": 8631.2,
       "purchases": 13,
       "purchase_value": 32553.33,
       "ctr": 1.11,
-      "cpa": 663.93,
+      "cpa": 663.94,
       "roas": 3.77
     },
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 34828,
+      "impressions": 34829,
       "clicks": 824,
-      "spend": 8127.08,
+      "spend": 8127.14,
       "purchases": 15,
       "purchase_value": 41783.4,
       "ctr": 2.37,
@@ -107,9 +107,9 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 5022,
+      "impressions": 5023,
       "clicks": 250,
-      "spend": 1356.11,
+      "spend": 1356.19,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 4.98,
@@ -167,14 +167,14 @@
     {
       "age": "35-44",
       "gender": "unknown",
-      "impressions": 3484,
+      "impressions": 3485,
       "clicks": 24,
-      "spend": 297.11,
+      "spend": 297.38,
       "purchases": 1,
       "purchase_value": 1799.0,
       "ctr": 0.69,
-      "cpa": 297.11,
-      "roas": 6.06
+      "cpa": 297.38,
+      "roas": 6.05
     },
     {
       "age": "65+",
@@ -202,9 +202,9 @@
     }
   ],
   "totals": {
-    "impressions": 358273,
+    "impressions": 358280,
     "clicks": 5560,
-    "spend": 55533.58,
+    "spend": 55534.54,
     "purchases": 70,
     "purchase_value": 189664.33,
     "roas": 3.42
