@@ -4,28 +4,28 @@
     "account_name": "SEPUA",
     "period": "90d",
     "date_range": "2025-08-14..2025-11-11",
-    "generated_at": "2025-11-12T15:25:17.991167Z",
+    "generated_at": "2025-11-12T21:21:30.967040Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 82869,
+      "impressions": 82870,
       "clicks": 1138,
-      "spend": 11935.67,
+      "spend": 11935.89,
       "purchases": 18,
       "purchase_value": 31224.5,
       "ctr": 1.37,
-      "cpa": 663.09,
+      "cpa": 663.11,
       "roas": 2.62
     },
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 82270,
+      "impressions": 82271,
       "clicks": 916,
-      "spend": 8631.2,
+      "spend": 8631.21,
       "purchases": 13,
       "purchase_value": 32553.33,
       "ctr": 1.11,
@@ -47,9 +47,9 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 49110,
+      "impressions": 49111,
       "clicks": 667,
-      "spend": 6998.44,
+      "spend": 6998.45,
       "purchases": 11,
       "purchase_value": 44605.2,
       "ctr": 1.36,
@@ -59,13 +59,13 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 51888,
+      "impressions": 51889,
       "clicks": 608,
-      "spend": 6230.79,
+      "spend": 6230.93,
       "purchases": 7,
       "purchase_value": 29308.9,
       "ctr": 1.17,
-      "cpa": 890.11,
+      "cpa": 890.13,
       "roas": 4.7
     },
     {
@@ -179,12 +179,12 @@
     {
       "age": "65+",
       "gender": "unknown",
-      "impressions": 268,
+      "impressions": 269,
       "clicks": 13,
-      "spend": 41.52,
+      "spend": 41.81,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 4.85,
+      "ctr": 4.83,
       "cpa": 0,
       "roas": 0.0
     },
@@ -202,9 +202,9 @@
     }
   ],
   "totals": {
-    "impressions": 358280,
+    "impressions": 358285,
     "clicks": 5560,
-    "spend": 55534.54,
+    "spend": 55535.21,
     "purchases": 70,
     "purchase_value": 189664.33,
     "roas": 3.42
