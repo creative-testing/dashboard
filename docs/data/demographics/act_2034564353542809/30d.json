@@ -4,40 +4,40 @@
     "account_name": "PULENSHOP",
     "period": "30d",
     "date_range": "2025-10-13..2025-11-11",
-    "generated_at": "2025-11-12T03:52:39.387747Z",
+    "generated_at": "2025-11-12T09:25:09.713749Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 90100,
+      "impressions": 90106,
       "clicks": 1476,
-      "spend": 378.69,
+      "spend": 378.75,
       "purchases": 21,
       "purchase_value": 996.53,
       "ctr": 1.64,
-      "cpa": 18.03,
+      "cpa": 18.04,
       "roas": 2.63
     },
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 81893,
+      "impressions": 81897,
       "clicks": 997,
-      "spend": 331.71,
+      "spend": 331.74,
       "purchases": 15,
       "purchase_value": 642.15,
       "ctr": 1.22,
-      "cpa": 22.11,
+      "cpa": 22.12,
       "roas": 1.94
     },
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 52629,
+      "impressions": 52630,
       "clicks": 1701,
-      "spend": 294.27,
+      "spend": 294.29,
       "purchases": 17,
       "purchase_value": 730.57,
       "ctr": 3.23,
@@ -47,9 +47,9 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 41708,
+      "impressions": 41710,
       "clicks": 1208,
-      "spend": 243.81,
+      "spend": 243.83,
       "purchases": 16,
       "purchase_value": 697.09,
       "ctr": 2.9,
@@ -60,7 +60,7 @@
       "age": "65+",
       "gender": "female",
       "impressions": 35480,
-      "clicks": 1514,
+      "clicks": 1515,
       "spend": 216.63,
       "purchases": 13,
       "purchase_value": 597.12,
@@ -71,7 +71,7 @@
     {
       "age": "65+",
       "gender": "male",
-      "impressions": 43827,
+      "impressions": 43828,
       "clicks": 894,
       "spend": 211.53,
       "purchases": 12,
@@ -83,7 +83,7 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 34761,
+      "impressions": 34764,
       "clicks": 398,
       "spend": 141.64,
       "purchases": 9,
@@ -107,13 +107,13 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 11600,
+      "impressions": 11601,
       "clicks": 137,
-      "spend": 47.91,
+      "spend": 47.95,
       "purchases": 3,
       "purchase_value": 127.8,
       "ctr": 1.18,
-      "cpa": 15.97,
+      "cpa": 15.98,
       "roas": 2.67
     },
     {
@@ -126,7 +126,7 @@
       "purchase_value": 270.55,
       "ctr": 2.23,
       "cpa": 6.85,
-      "roas": 6.58
+      "roas": 6.59
     },
     {
       "age": "18-24",
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 425208,
-    "clicks": 9027,
-    "spend": 2042.2,
+    "impressions": 425226,
+    "clicks": 9028,
+    "spend": 2042.37,
     "purchases": 117,
     "purchase_value": 5433.95,
     "roas": 2.66
