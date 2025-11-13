@@ -1,3 +1,7 @@
+# NOTE: This Render blueprint is historical. As of Nov 2025 the backend and Postgres
+# run on the VPS. Keep static sites only on Render. Do NOT recreate the Render
+# Postgres instance. The databases section below is intentionally disabled.
+
 services:
   # API Backend (FastAPI)
   - type: web
@@ -93,9 +97,10 @@ services:
       - key: LOCAL_DATA_ROOT
         value: /mnt/data
 
-databases:
-  # PostgreSQL Database
-  - name: creative-testing-db
-    databaseName: creative_testing_saas
-    plan: free  # gratuit pour commencer
-    region: oregon  # même région que l'API
+# databases:
+#   # PostgreSQL Database (deprecated — migrated to VPS)
+#   # DO NOT RECREATE ON RENDER (would incur ~$7/mo)
+#   - name: creative-testing-db
+#     databaseName: creative_testing_saas
+#     plan: basic
+#     region: oregon
