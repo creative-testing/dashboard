@@ -4,38 +4,38 @@
     "account_name": "Essentiasl Mx",
     "period": "30d",
     "date_range": "2025-10-14..2025-11-12",
-    "generated_at": "2025-11-13T15:23:56.708578Z",
+    "generated_at": "2025-11-13T21:19:20.365338Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 12786,
+      "impressions": 12793,
       "clicks": 295,
-      "spend": 530.14,
+      "spend": 530.32,
       "purchases": 15,
       "purchase_value": 48207.7,
       "ctr": 2.31,
-      "cpa": 35.34,
-      "roas": 90.93
+      "cpa": 35.35,
+      "roas": 90.9
     },
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 6046,
+      "impressions": 6047,
       "clicks": 157,
-      "spend": 294.54,
+      "spend": 294.55,
       "purchases": 7,
       "purchase_value": 13915.45,
       "ctr": 2.6,
       "cpa": 42.08,
-      "roas": 47.25
+      "roas": 47.24
     },
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 4004,
+      "impressions": 4003,
       "clicks": 95,
       "spend": 209.58,
       "purchases": 1,
@@ -47,7 +47,7 @@
     {
       "age": "18-24",
       "gender": "male",
-      "impressions": 4030,
+      "impressions": 4029,
       "clicks": 69,
       "spend": 132.67,
       "purchases": 2,
@@ -61,7 +61,7 @@
       "gender": "female",
       "impressions": 1688,
       "clicks": 47,
-      "spend": 112.61,
+      "spend": 112.6,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 2.78,
@@ -71,9 +71,9 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 1502,
+      "impressions": 1503,
       "clicks": 23,
-      "spend": 56.75,
+      "spend": 56.77,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.53,
@@ -214,11 +214,11 @@
     }
   ],
   "totals": {
-    "impressions": 31839,
+    "impressions": 31846,
     "clicks": 755,
-    "spend": 1476.87,
+    "spend": 1477.07,
     "purchases": 26,
     "purchase_value": 72944.5,
-    "roas": 49.39
+    "roas": 49.38
   }
 }

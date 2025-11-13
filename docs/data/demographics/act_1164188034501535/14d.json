@@ -4,40 +4,40 @@
     "account_name": "Lactana cuenta publicitaria LFS",
     "period": "14d",
     "date_range": "2025-10-30..2025-11-12",
-    "generated_at": "2025-11-13T15:26:11.351479Z",
+    "generated_at": "2025-11-13T21:21:29.966235Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 162886,
+      "impressions": 162900,
       "clicks": 2801,
-      "spend": 13748.69,
+      "spend": 13749.66,
       "purchases": 29,
       "purchase_value": 39709.45,
       "ctr": 1.72,
-      "cpa": 474.09,
+      "cpa": 474.13,
       "roas": 2.89
     },
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 79432,
-      "clicks": 1712,
-      "spend": 10650.53,
+      "impressions": 79435,
+      "clicks": 1713,
+      "spend": 10650.84,
       "purchases": 33,
       "purchase_value": 44822.7,
       "ctr": 2.16,
-      "cpa": 322.74,
+      "cpa": 322.75,
       "roas": 4.21
     },
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 9705,
+      "impressions": 9706,
       "clicks": 193,
-      "spend": 487.31,
+      "spend": 487.32,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.99,
@@ -47,13 +47,13 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 5737,
+      "impressions": 5738,
       "clicks": 121,
-      "spend": 478.22,
+      "spend": 478.46,
       "purchases": 2,
       "purchase_value": 2785.0,
       "ctr": 2.11,
-      "cpa": 239.11,
+      "cpa": 239.23,
       "roas": 5.82
     },
     {
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 273005,
-    "clicks": 5224,
-    "spend": 26711.89,
+    "impressions": 273024,
+    "clicks": 5225,
+    "spend": 26713.42,
     "purchases": 67,
     "purchase_value": 91105.15,
     "roas": 3.41

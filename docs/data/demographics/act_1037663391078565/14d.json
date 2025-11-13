@@ -4,14 +4,14 @@
     "account_name": "Botanical Doctor",
     "period": "14d",
     "date_range": "2025-10-30..2025-11-12",
-    "generated_at": "2025-11-13T15:27:54.595961Z",
+    "generated_at": "2025-11-13T21:23:00.714111Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 29204,
+      "impressions": 29205,
       "clicks": 1492,
       "spend": 6521.0,
       "purchases": 49,
@@ -35,9 +35,9 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 13090,
+      "impressions": 13092,
       "clicks": 906,
-      "spend": 4132.39,
+      "spend": 4132.43,
       "purchases": 31,
       "purchase_value": 20860.71,
       "ctr": 6.92,
@@ -59,21 +59,21 @@
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 10389,
+      "impressions": 10390,
       "clicks": 352,
-      "spend": 1944.08,
+      "spend": 1944.19,
       "purchases": 12,
       "purchase_value": 10127.7,
       "ctr": 3.39,
-      "cpa": 162.01,
+      "cpa": 162.02,
       "roas": 5.21
     },
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 23678,
+      "impressions": 23679,
       "clicks": 553,
-      "spend": 1798.81,
+      "spend": 1798.85,
       "purchases": 11,
       "purchase_value": 5395.48,
       "ctr": 2.34,
@@ -95,25 +95,25 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 3549,
+      "impressions": 3550,
       "clicks": 261,
-      "spend": 984.75,
+      "spend": 984.81,
       "purchases": 7,
       "purchase_value": 4948.86,
       "ctr": 7.35,
-      "cpa": 140.68,
+      "cpa": 140.69,
       "roas": 5.03
     },
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 3834,
+      "impressions": 3835,
       "clicks": 155,
-      "spend": 912.63,
+      "spend": 912.69,
       "purchases": 9,
       "purchase_value": 5898.71,
       "ctr": 4.04,
-      "cpa": 101.4,
+      "cpa": 101.41,
       "roas": 6.46
     },
     {
@@ -262,9 +262,9 @@
     }
   ],
   "totals": {
-    "impressions": 164594,
+    "impressions": 164601,
     "clicks": 6133,
-    "spend": 26340.95,
+    "spend": 26341.26,
     "purchases": 187,
     "purchase_value": 119447.32,
     "roas": 4.53
