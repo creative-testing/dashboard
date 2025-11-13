@@ -4,7 +4,7 @@
     "account_name": "LeanTravel",
     "period": "30d",
     "date_range": "2025-10-14..2025-11-12",
-    "generated_at": "2025-11-13T09:27:51.829930Z",
+    "generated_at": "2025-11-13T15:28:58.530114Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
@@ -23,9 +23,9 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 38883,
+      "impressions": 38884,
       "clicks": 2227,
-      "spend": 8237.66,
+      "spend": 8237.67,
       "purchases": 18,
       "purchase_value": 17727.0,
       "ctr": 5.73,
@@ -35,25 +35,25 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 27038,
+      "impressions": 27039,
       "clicks": 2891,
-      "spend": 3972.37,
+      "spend": 3972.42,
       "purchases": 5,
       "purchase_value": 4673.0,
       "ctr": 10.69,
-      "cpa": 794.47,
+      "cpa": 794.48,
       "roas": 1.18
     },
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 19990,
+      "impressions": 19991,
       "clicks": 396,
-      "spend": 3218.34,
+      "spend": 3218.36,
       "purchases": 7,
       "purchase_value": 7161.0,
       "ctr": 1.98,
-      "cpa": 459.76,
+      "cpa": 459.77,
       "roas": 2.23
     },
     {
@@ -71,9 +71,9 @@
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 11117,
+      "impressions": 11119,
       "clicks": 1127,
-      "spend": 571.42,
+      "spend": 571.49,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 10.14,
@@ -83,9 +83,9 @@
     {
       "age": "65+",
       "gender": "male",
-      "impressions": 10808,
+      "impressions": 10809,
       "clicks": 1484,
-      "spend": 494.33,
+      "spend": 494.35,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 13.73,
@@ -250,9 +250,9 @@
     }
   ],
   "totals": {
-    "impressions": 171208,
+    "impressions": 171214,
     "clicks": 10520,
-    "spend": 27050.58,
+    "spend": 27050.75,
     "purchases": 60,
     "purchase_value": 65723.0,
     "roas": 2.43

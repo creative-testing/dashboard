@@ -4,19 +4,19 @@
     "account_name": "LeanTravel",
     "period": "3d",
     "date_range": "2025-11-10..2025-11-12",
-    "generated_at": "2025-11-13T09:27:49.391482Z",
+    "generated_at": "2025-11-13T15:28:55.171990Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 2128,
+      "impressions": 2129,
       "clicks": 58,
-      "spend": 804.11,
+      "spend": 804.12,
       "purchases": 4,
       "purchase_value": 5383.0,
-      "ctr": 2.73,
+      "ctr": 2.72,
       "cpa": 201.03,
       "roas": 6.69
     },
@@ -35,9 +35,9 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 933,
+      "impressions": 934,
       "clicks": 34,
-      "spend": 410.62,
+      "spend": 410.67,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 3.64,
@@ -47,13 +47,13 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 1316,
+      "impressions": 1317,
       "clicks": 20,
-      "spend": 283.01,
+      "spend": 283.03,
       "purchases": 1,
       "purchase_value": 769.0,
       "ctr": 1.52,
-      "cpa": 283.01,
+      "cpa": 283.03,
       "roas": 2.72
     },
     {
@@ -71,9 +71,9 @@
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 93,
+      "impressions": 95,
       "clicks": 0,
-      "spend": 37.44,
+      "spend": 37.51,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 0.0,
@@ -143,12 +143,12 @@
     {
       "age": "65+",
       "gender": "male",
-      "impressions": 89,
+      "impressions": 90,
       "clicks": 2,
-      "spend": 13.63,
+      "spend": 13.65,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 2.25,
+      "ctr": 2.22,
       "cpa": 0,
       "roas": 0.0
     },
@@ -202,9 +202,9 @@
     }
   ],
   "totals": {
-    "impressions": 8082,
+    "impressions": 8088,
     "clicks": 174,
-    "spend": 2500.34,
+    "spend": 2500.51,
     "purchases": 13,
     "purchase_value": 13362.0,
     "roas": 5.34
