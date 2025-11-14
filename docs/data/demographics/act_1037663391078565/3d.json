@@ -4,20 +4,20 @@
     "account_name": "Botanical Doctor",
     "period": "3d",
     "date_range": "2025-11-11..2025-11-13",
-    "generated_at": "2025-11-14T15:22:09.313388Z",
+    "generated_at": "2025-11-14T21:21:49.644880Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 12210,
+      "impressions": 12215,
       "clicks": 490,
-      "spend": 3212.95,
+      "spend": 3213.64,
       "purchases": 11,
       "purchase_value": 6001.17,
       "ctr": 4.01,
-      "cpa": 292.09,
+      "cpa": 292.15,
       "roas": 1.87
     },
     {
@@ -59,13 +59,13 @@
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 5272,
+      "impressions": 5273,
       "clicks": 159,
-      "spend": 1156.76,
+      "spend": 1156.84,
       "purchases": 3,
       "purchase_value": 1487.25,
       "ctr": 3.02,
-      "cpa": 385.59,
+      "cpa": 385.61,
       "roas": 1.29
     },
     {
@@ -97,7 +97,7 @@
       "gender": "female",
       "impressions": 6131,
       "clicks": 172,
-      "spend": 759.98,
+      "spend": 759.99,
       "purchases": 4,
       "purchase_value": 2507.84,
       "ctr": 2.81,
@@ -107,24 +107,24 @@
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 2313,
+      "impressions": 2314,
       "clicks": 71,
-      "spend": 614.54,
+      "spend": 621.81,
       "purchases": 2,
       "purchase_value": 1469.97,
       "ctr": 3.07,
-      "cpa": 307.27,
-      "roas": 2.39
+      "cpa": 310.9,
+      "roas": 2.36
     },
     {
       "age": "65+",
       "gender": "male",
-      "impressions": 832,
+      "impressions": 833,
       "clicks": 37,
-      "spend": 239.97,
+      "spend": 240.61,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 4.45,
+      "ctr": 4.44,
       "cpa": 0,
       "roas": 0.0
     },
@@ -250,9 +250,9 @@
     }
   ],
   "totals": {
-    "impressions": 66522,
+    "impressions": 66530,
     "clicks": 2235,
-    "spend": 13891.72,
+    "spend": 13900.41,
     "purchases": 62,
     "purchase_value": 40257.61,
     "roas": 2.9

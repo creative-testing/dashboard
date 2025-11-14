@@ -4,52 +4,52 @@
     "account_name": "Reset A&F",
     "period": "30d",
     "date_range": "2025-10-15..2025-11-13",
-    "generated_at": "2025-11-14T15:20:13.562292Z",
+    "generated_at": "2025-11-14T21:19:58.548361Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 114148,
+      "impressions": 114154,
       "clicks": 1512,
-      "spend": 15998.54,
+      "spend": 16000.47,
       "purchases": 43,
       "purchase_value": 81562.8,
       "ctr": 1.32,
-      "cpa": 372.06,
+      "cpa": 372.1,
       "roas": 5.1
     },
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 27248,
+      "impressions": 27250,
       "clicks": 528,
-      "spend": 5212.96,
+      "spend": 5214.79,
       "purchases": 13,
       "purchase_value": 29183.95,
       "ctr": 1.94,
-      "cpa": 401.0,
+      "cpa": 401.14,
       "roas": 5.6
     },
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 39092,
+      "impressions": 39095,
       "clicks": 460,
-      "spend": 3824.24,
+      "spend": 3824.51,
       "purchases": 11,
       "purchase_value": 21249.75,
       "ctr": 1.18,
-      "cpa": 347.66,
+      "cpa": 347.68,
       "roas": 5.56
     },
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 12269,
+      "impressions": 12270,
       "clicks": 148,
-      "spend": 1830.37,
+      "spend": 1830.38,
       "purchases": 2,
       "purchase_value": 2993.1,
       "ctr": 1.21,
@@ -131,7 +131,7 @@
     {
       "age": "45-54",
       "gender": "unknown",
-      "impressions": 1264,
+      "impressions": 1265,
       "clicks": 14,
       "spend": 166.79,
       "purchases": 0,
@@ -250,11 +250,11 @@
     }
   ],
   "totals": {
-    "impressions": 223169,
+    "impressions": 223182,
     "clicks": 3185,
-    "spend": 32127.41,
+    "spend": 32131.45,
     "purchases": 80,
     "purchase_value": 154379.9,
-    "roas": 4.81
+    "roas": 4.8
   }
 }

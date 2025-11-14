@@ -4,44 +4,44 @@
     "account_name": "Reset A&F",
     "period": "3d",
     "date_range": "2025-11-11..2025-11-13",
-    "generated_at": "2025-11-14T15:20:11.402683Z",
+    "generated_at": "2025-11-14T21:19:56.302452Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 17687,
+      "impressions": 17693,
       "clicks": 291,
-      "spend": 3593.23,
+      "spend": 3595.16,
       "purchases": 6,
       "purchase_value": 13374.15,
-      "ctr": 1.65,
-      "cpa": 598.87,
+      "ctr": 1.64,
+      "cpa": 599.19,
       "roas": 3.72
     },
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 4552,
+      "impressions": 4554,
       "clicks": 113,
-      "spend": 1166.48,
+      "spend": 1168.31,
       "purchases": 1,
       "purchase_value": 2292.45,
       "ctr": 2.48,
-      "cpa": 1166.48,
-      "roas": 1.97
+      "cpa": 1168.31,
+      "roas": 1.96
     },
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 7121,
+      "impressions": 7124,
       "clicks": 100,
-      "spend": 992.07,
+      "spend": 992.34,
       "purchases": 4,
       "purchase_value": 9296.45,
       "ctr": 1.4,
-      "cpa": 248.02,
+      "cpa": 248.08,
       "roas": 9.37
     },
     {
@@ -59,9 +59,9 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 1908,
+      "impressions": 1909,
       "clicks": 22,
-      "spend": 315.98,
+      "spend": 315.99,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.15,
@@ -143,7 +143,7 @@
     {
       "age": "45-54",
       "gender": "unknown",
-      "impressions": 244,
+      "impressions": 245,
       "clicks": 0,
       "spend": 42.76,
       "purchases": 0,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 36928,
+    "impressions": 36941,
     "clicks": 628,
-    "spend": 7364.96,
+    "spend": 7369.0,
     "purchases": 12,
     "purchase_value": 26691.05,
     "roas": 3.62

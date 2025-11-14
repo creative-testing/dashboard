@@ -4,16 +4,16 @@
     "account_name": "Cuenta Comercial 2",
     "period": "90d",
     "date_range": "2025-08-16..2025-11-13",
-    "generated_at": "2025-11-14T15:21:15.012471Z",
+    "generated_at": "2025-11-14T21:20:58.739542Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 1675905,
+      "impressions": 1675912,
       "clicks": 35672,
-      "spend": 144995.35,
+      "spend": 144997.01,
       "purchases": 460,
       "purchase_value": 407909.0,
       "ctr": 2.13,
@@ -23,9 +23,9 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 1390022,
+      "impressions": 1390025,
       "clicks": 21361,
-      "spend": 99229.97,
+      "spend": 99230.26,
       "purchases": 268,
       "purchase_value": 244732.0,
       "ctr": 1.54,
@@ -35,9 +35,9 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 1006885,
+      "impressions": 1006888,
       "clicks": 27019,
-      "spend": 89594.19,
+      "spend": 89594.43,
       "purchases": 221,
       "purchase_value": 200538.67,
       "ctr": 2.68,
@@ -47,21 +47,21 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 456823,
+      "impressions": 456828,
       "clicks": 14404,
-      "spend": 41790.43,
+      "spend": 41791.66,
       "purchases": 101,
       "purchase_value": 84236.5,
       "ctr": 3.15,
-      "cpa": 413.77,
+      "cpa": 413.78,
       "roas": 2.02
     },
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 696000,
+      "impressions": 696001,
       "clicks": 9361,
-      "spend": 38670.11,
+      "spend": 38670.2,
       "purchases": 90,
       "purchase_value": 80607.0,
       "ctr": 1.34,
@@ -71,9 +71,9 @@
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 560132,
+      "impressions": 560133,
       "clicks": 8903,
-      "spend": 37604.17,
+      "spend": 37604.26,
       "purchases": 100,
       "purchase_value": 91014.5,
       "ctr": 1.59,
@@ -83,9 +83,9 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 583870,
+      "impressions": 583873,
       "clicks": 7107,
-      "spend": 33302.18,
+      "spend": 33302.49,
       "purchases": 97,
       "purchase_value": 92646.67,
       "ctr": 1.22,
@@ -95,9 +95,9 @@
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 400073,
+      "impressions": 400075,
       "clicks": 7633,
-      "spend": 29067.01,
+      "spend": 29067.1,
       "purchases": 81,
       "purchase_value": 65765.25,
       "ctr": 1.91,
@@ -107,9 +107,9 @@
     {
       "age": "65+",
       "gender": "male",
-      "impressions": 208068,
+      "impressions": 208069,
       "clicks": 5066,
-      "spend": 16703.17,
+      "spend": 16703.22,
       "purchases": 35,
       "purchase_value": 34680.0,
       "ctr": 2.43,
@@ -121,7 +121,7 @@
       "gender": "male",
       "impressions": 341896,
       "clicks": 3934,
-      "spend": 14805.06,
+      "spend": 14805.07,
       "purchases": 50,
       "purchase_value": 45144.0,
       "ctr": 1.15,
@@ -131,13 +131,13 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 94876,
+      "impressions": 94882,
       "clicks": 1571,
-      "spend": 3765.28,
+      "spend": 3766.03,
       "purchases": 7,
       "purchase_value": 4830.0,
       "ctr": 1.66,
-      "cpa": 537.9,
+      "cpa": 538.0,
       "roas": 1.28
     },
     {
@@ -173,7 +173,7 @@
       "purchases": 2,
       "purchase_value": 1448.0,
       "ctr": 1.25,
-      "cpa": 715.68,
+      "cpa": 715.69,
       "roas": 1.01
     },
     {
@@ -234,13 +234,13 @@
       "purchase_value": 3319.33,
       "ctr": 0.0,
       "cpa": 0.08,
-      "roas": 10375.89
+      "roas": 10375.86
     }
   ],
   "totals": {
-    "impressions": 7541080,
+    "impressions": 7541112,
     "clicks": 143982,
-    "spend": 558102.9,
+    "spend": 558107.71,
     "purchases": 1523,
     "purchase_value": 1362521.92,
     "roas": 2.44
