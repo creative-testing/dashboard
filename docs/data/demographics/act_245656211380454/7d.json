@@ -4,28 +4,28 @@
     "account_name": "Olimpo Backup",
     "period": "7d",
     "date_range": "2025-11-07..2025-11-13",
-    "generated_at": "2025-11-14T09:25:17.577622Z",
+    "generated_at": "2025-11-14T15:21:16.095543Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 968,
+      "impressions": 970,
       "clicks": 52,
-      "spend": 286.0,
+      "spend": 286.35,
       "purchases": 1,
       "purchase_value": 49.0,
-      "ctr": 5.37,
-      "cpa": 286.0,
+      "ctr": 5.36,
+      "cpa": 286.35,
       "roas": 0.17
     },
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 1378,
+      "impressions": 1379,
       "clicks": 55,
-      "spend": 222.74,
+      "spend": 222.78,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 3.99,
@@ -35,12 +35,12 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 1780,
+      "impressions": 1781,
       "clicks": 51,
-      "spend": 202.97,
+      "spend": 202.99,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 2.87,
+      "ctr": 2.86,
       "cpa": 0,
       "roas": 0.0
     },
@@ -59,13 +59,13 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 1025,
+      "impressions": 1026,
       "clicks": 39,
-      "spend": 118.37,
+      "spend": 118.42,
       "purchases": 1,
       "purchase_value": 34.3,
       "ctr": 3.8,
-      "cpa": 118.37,
+      "cpa": 118.42,
       "roas": 0.29
     },
     {
@@ -107,12 +107,12 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 456,
+      "impressions": 457,
       "clicks": 23,
-      "spend": 23.52,
+      "spend": 23.53,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 5.04,
+      "ctr": 5.03,
       "cpa": 0,
       "roas": 0.0
     },
@@ -214,9 +214,9 @@
     }
   ],
   "totals": {
-    "impressions": 7991,
+    "impressions": 7997,
     "clicks": 315,
-    "spend": 1194.78,
+    "spend": 1195.25,
     "purchases": 2,
     "purchase_value": 83.3,
     "roas": 0.07
