@@ -4,28 +4,28 @@
     "account_name": "Blue Banana Brand México",
     "period": "7d",
     "date_range": "2025-11-08..2025-11-14",
-    "generated_at": "2025-11-15T09:21:47.731382Z",
+    "generated_at": "2025-11-15T15:21:44.887289Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 6425,
+      "impressions": 6427,
       "clicks": 173,
-      "spend": 1120.33,
+      "spend": 1120.41,
       "purchases": 1,
       "purchase_value": 1638.88,
       "ctr": 2.69,
-      "cpa": 1120.33,
+      "cpa": 1120.41,
       "roas": 1.46
     },
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 3461,
+      "impressions": 3463,
       "clicks": 88,
-      "spend": 864.02,
+      "spend": 864.08,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 2.54,
@@ -35,13 +35,13 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 6109,
+      "impressions": 6108,
       "clicks": 127,
-      "spend": 613.44,
+      "spend": 613.43,
       "purchases": 1,
       "purchase_value": 2031.36,
       "ctr": 2.08,
-      "cpa": 613.44,
+      "cpa": 613.43,
       "roas": 3.31
     },
     {
@@ -49,11 +49,11 @@
       "gender": "female",
       "impressions": 1136,
       "clicks": 50,
-      "spend": 439.88,
+      "spend": 439.87,
       "purchases": 1,
       "purchase_value": 7647.72,
       "ctr": 4.4,
-      "cpa": 439.88,
+      "cpa": 439.87,
       "roas": 17.39
     },
     {
@@ -73,7 +73,7 @@
       "gender": "female",
       "impressions": 439,
       "clicks": 26,
-      "spend": 200.28,
+      "spend": 200.27,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 5.92,
@@ -95,12 +95,12 @@
     {
       "age": "65+",
       "gender": "male",
-      "impressions": 401,
+      "impressions": 402,
       "clicks": 6,
       "spend": 105.78,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 1.5,
+      "ctr": 1.49,
       "cpa": 0,
       "roas": 0.0
     },
@@ -145,7 +145,7 @@
       "gender": "unknown",
       "impressions": 152,
       "clicks": 4,
-      "spend": 39.14,
+      "spend": 39.13,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 2.63,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 24265,
+    "impressions": 24269,
     "clicks": 598,
-    "spend": 4198.14,
+    "spend": 4198.24,
     "purchases": 4,
     "purchase_value": 12243.3,
     "roas": 2.92
