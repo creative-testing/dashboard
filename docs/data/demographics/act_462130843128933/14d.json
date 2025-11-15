@@ -4,26 +4,26 @@
     "account_name": "Shorbull's ad account",
     "period": "14d",
     "date_range": "2025-11-01..2025-11-14",
-    "generated_at": "2025-11-15T15:21:29.253430Z",
+    "generated_at": "2025-11-15T21:19:07.111284Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 7300,
+      "impressions": 7301,
       "clicks": 307,
       "spend": 735.35,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 4.21,
+      "ctr": 4.2,
       "cpa": 0,
       "roas": 0.0
     },
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 5985,
+      "impressions": 5987,
       "clicks": 298,
       "spend": 686.24,
       "purchases": 0,
@@ -35,7 +35,7 @@
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 4178,
+      "impressions": 4179,
       "clicks": 232,
       "spend": 598.2,
       "purchases": 1,
@@ -59,13 +59,13 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 3811,
+      "impressions": 3813,
       "clicks": 283,
-      "spend": 488.86,
+      "spend": 489.0,
       "purchases": 1,
       "purchase_value": 3868.2,
-      "ctr": 7.43,
-      "cpa": 488.86,
+      "ctr": 7.42,
+      "cpa": 489.0,
       "roas": 7.91
     },
     {
@@ -83,7 +83,7 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 4388,
+      "impressions": 4389,
       "clicks": 247,
       "spend": 403.31,
       "purchases": 1,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 44395,
+    "impressions": 44402,
     "clicks": 2797,
-    "spend": 4673.32,
+    "spend": 4673.46,
     "purchases": 5,
     "purchase_value": 8580.6,
     "roas": 1.84
