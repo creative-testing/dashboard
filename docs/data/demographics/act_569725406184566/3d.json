@@ -4,28 +4,28 @@
     "account_name": "LeanTravel",
     "period": "3d",
     "date_range": "2025-11-14..2025-11-16",
-    "generated_at": "2025-11-17T15:27:13.889889Z",
+    "generated_at": "2025-11-17T21:23:12.718002Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 13318,
+      "impressions": 13319,
       "clicks": 495,
-      "spend": 6687.89,
+      "spend": 6688.1,
       "purchases": 21,
       "purchase_value": 18814.38,
       "ctr": 3.72,
-      "cpa": 318.47,
+      "cpa": 318.48,
       "roas": 2.81
     },
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 14791,
+      "impressions": 14793,
       "clicks": 355,
-      "spend": 6163.12,
+      "spend": 6163.16,
       "purchases": 23,
       "purchase_value": 26153.77,
       "ctr": 2.4,
@@ -35,25 +35,25 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 5291,
+      "impressions": 5294,
       "clicks": 277,
-      "spend": 3392.49,
+      "spend": 3393.83,
       "purchases": 10,
       "purchase_value": 11804.24,
-      "ctr": 5.24,
-      "cpa": 339.25,
+      "ctr": 5.23,
+      "cpa": 339.38,
       "roas": 3.48
     },
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 7548,
+      "impressions": 7549,
       "clicks": 146,
-      "spend": 2247.22,
+      "spend": 2248.34,
       "purchases": 8,
       "purchase_value": 8219.0,
       "ctr": 1.93,
-      "cpa": 280.9,
+      "cpa": 281.04,
       "roas": 3.66
     },
     {
@@ -71,14 +71,14 @@
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 1302,
+      "impressions": 1303,
       "clicks": 32,
-      "spend": 407.68,
+      "spend": 407.85,
       "purchases": 2,
       "purchase_value": 1783.61,
       "ctr": 2.46,
-      "cpa": 203.84,
-      "roas": 4.38
+      "cpa": 203.92,
+      "roas": 4.37
     },
     {
       "age": "45-54",
@@ -203,12 +203,12 @@
     {
       "age": "18-24",
       "gender": "male",
-      "impressions": 67,
+      "impressions": 68,
       "clicks": 1,
-      "spend": 5.0,
+      "spend": 5.04,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 1.49,
+      "ctr": 1.47,
       "cpa": 0,
       "roas": 0.0
     },
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 50019,
+    "impressions": 50028,
     "clicks": 1455,
-    "spend": 20853.94,
+    "spend": 20856.86,
     "purchases": 71,
     "purchase_value": 74465.0,
     "roas": 3.57
