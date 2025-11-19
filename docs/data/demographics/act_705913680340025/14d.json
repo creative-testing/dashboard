@@ -4,16 +4,16 @@
     "account_name": "shopify",
     "period": "14d",
     "date_range": "2025-11-05..2025-11-18",
-    "generated_at": "2025-11-19T15:25:42.868306Z",
+    "generated_at": "2025-11-19T21:17:07.693778Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 654745,
-      "clicks": 20118,
-      "spend": 26169.98,
+      "impressions": 654755,
+      "clicks": 20120,
+      "spend": 26170.37,
       "purchases": 144,
       "purchase_value": 179996.14,
       "ctr": 3.07,
@@ -23,33 +23,33 @@
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 444982,
+      "impressions": 444997,
       "clicks": 20091,
-      "spend": 24031.36,
+      "spend": 24033.59,
       "purchases": 143,
       "purchase_value": 173393.14,
-      "ctr": 4.52,
-      "cpa": 168.05,
-      "roas": 7.22
+      "ctr": 4.51,
+      "cpa": 168.07,
+      "roas": 7.21
     },
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 669465,
+      "impressions": 669491,
       "clicks": 14675,
-      "spend": 19213.8,
+      "spend": 19214.4,
       "purchases": 103,
       "purchase_value": 132480.87,
       "ctr": 2.19,
-      "cpa": 186.54,
-      "roas": 6.9
+      "cpa": 186.55,
+      "roas": 6.89
     },
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 177063,
+      "impressions": 177070,
       "clicks": 10525,
-      "spend": 13082.74,
+      "spend": 13082.87,
       "purchases": 65,
       "purchase_value": 75901.1,
       "ctr": 5.94,
@@ -59,21 +59,21 @@
     {
       "age": "65+",
       "gender": "male",
-      "impressions": 55635,
+      "impressions": 55636,
       "clicks": 3232,
-      "spend": 3984.81,
+      "spend": 3985.64,
       "purchases": 18,
       "purchase_value": 23196.06,
       "ctr": 5.81,
-      "cpa": 221.38,
+      "cpa": 221.42,
       "roas": 5.82
     },
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 107696,
+      "impressions": 107700,
       "clicks": 2114,
-      "spend": 3523.22,
+      "spend": 3523.26,
       "purchases": 12,
       "purchase_value": 20459.01,
       "ctr": 1.96,
@@ -83,21 +83,21 @@
     {
       "age": "18-24",
       "gender": "male",
-      "impressions": 144741,
+      "impressions": 144747,
       "clicks": 2552,
-      "spend": 3439.83,
+      "spend": 3440.07,
       "purchases": 19,
       "purchase_value": 24062.07,
       "ctr": 1.76,
-      "cpa": 181.04,
-      "roas": 7.0
+      "cpa": 181.06,
+      "roas": 6.99
     },
     {
       "age": "35-44",
       "gender": "female",
       "impressions": 70660,
       "clicks": 2315,
-      "spend": 2848.62,
+      "spend": 2848.61,
       "purchases": 12,
       "purchase_value": 12813.76,
       "ctr": 3.28,
@@ -107,9 +107,9 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 32936,
+      "impressions": 32937,
       "clicks": 1684,
-      "spend": 1756.69,
+      "spend": 1756.7,
       "purchases": 11,
       "purchase_value": 15254.55,
       "ctr": 5.11,
@@ -119,13 +119,13 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 34041,
+      "impressions": 34043,
       "clicks": 419,
-      "spend": 808.0,
+      "spend": 808.15,
       "purchases": 5,
       "purchase_value": 4439.38,
       "ctr": 1.23,
-      "cpa": 161.6,
+      "cpa": 161.63,
       "roas": 5.49
     },
     {
@@ -143,13 +143,13 @@
     {
       "age": "35-44",
       "gender": "unknown",
-      "impressions": 8204,
+      "impressions": 8205,
       "clicks": 253,
-      "spend": 341.22,
+      "spend": 341.33,
       "purchases": 4,
       "purchase_value": 5228.96,
       "ctr": 3.08,
-      "cpa": 85.31,
+      "cpa": 85.33,
       "roas": 15.32
     },
     {
@@ -250,9 +250,9 @@
     }
   ],
   "totals": {
-    "impressions": 2431682,
-    "clicks": 79231,
-    "spend": 100714.94,
+    "impressions": 2431755,
+    "clicks": 79233,
+    "spend": 100719.66,
     "purchases": 543,
     "purchase_value": 675498.58,
     "roas": 6.71
