@@ -78,7 +78,7 @@ jobs:
         USE_UNIFIED_ATTR: 1              # Attribution unifiée
         FILTER_IMPR_GT0: 0               # Ne PAS filtrer les 0 impressions
         # 7 jours pour couvrir les ads moins actives et éviter les URLs expirées
-        TAIL_BACKFILL_DAYS: 7
+        TAIL_BACKFILL_DAYS: 3
         RUN_BASELINE: 0
       timeout-minutes: 60
       run: |
