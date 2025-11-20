@@ -4,16 +4,16 @@
     "account_name": "Koro Beauty",
     "period": "14d",
     "date_range": "2025-11-06..2025-11-19",
-    "generated_at": "2025-11-20T09:25:03.578243Z",
+    "generated_at": "2025-11-20T15:24:15.481369Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 1067494,
-      "clicks": 19519,
-      "spend": 55020.84,
+      "impressions": 1067535,
+      "clicks": 19520,
+      "spend": 55021.84,
       "purchases": 324,
       "purchase_value": 210409.87,
       "ctr": 1.83,
@@ -23,21 +23,21 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 564877,
+      "impressions": 564911,
       "clicks": 14919,
-      "spend": 48006.29,
+      "spend": 48008.61,
       "purchases": 323,
       "purchase_value": 224916.1,
       "ctr": 2.64,
       "cpa": 148.63,
-      "roas": 4.69
+      "roas": 4.68
     },
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 178098,
+      "impressions": 178108,
       "clicks": 6515,
-      "spend": 19976.65,
+      "spend": 19976.88,
       "purchases": 135,
       "purchase_value": 98279.14,
       "ctr": 3.66,
@@ -47,9 +47,9 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 380482,
+      "impressions": 380488,
       "clicks": 6070,
-      "spend": 12389.9,
+      "spend": 12389.98,
       "purchases": 82,
       "purchase_value": 53643.42,
       "ctr": 1.6,
@@ -59,9 +59,9 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 33859,
+      "impressions": 33860,
       "clicks": 1582,
-      "spend": 4333.85,
+      "spend": 4333.94,
       "purchases": 26,
       "purchase_value": 16213.73,
       "ctr": 4.67,
@@ -262,9 +262,9 @@
     }
   ],
   "totals": {
-    "impressions": 2327813,
-    "clicks": 51756,
-    "spend": 145371.47,
+    "impressions": 2327905,
+    "clicks": 51757,
+    "spend": 145375.19,
     "purchases": 932,
     "purchase_value": 626889.77,
     "roas": 4.31

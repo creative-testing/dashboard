@@ -4,44 +4,44 @@
     "account_name": "AHAL BIO ",
     "period": "3d",
     "date_range": "2025-11-17..2025-11-19",
-    "generated_at": "2025-11-20T09:26:23.990075Z",
+    "generated_at": "2025-11-20T15:25:25.430511Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 70136,
-      "clicks": 1240,
-      "spend": 15402.97,
+      "impressions": 70147,
+      "clicks": 1242,
+      "spend": 15404.26,
       "purchases": 66,
       "purchase_value": 127773.8,
       "ctr": 1.77,
-      "cpa": 233.38,
-      "roas": 8.3
+      "cpa": 233.4,
+      "roas": 8.29
     },
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 30282,
+      "impressions": 30283,
       "clicks": 648,
-      "spend": 7836.47,
+      "spend": 7836.87,
       "purchases": 37,
       "purchase_value": 76624.0,
       "ctr": 2.14,
-      "cpa": 211.8,
+      "cpa": 211.81,
       "roas": 9.78
     },
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 46408,
+      "impressions": 46414,
       "clicks": 556,
-      "spend": 5851.41,
+      "spend": 5852.0,
       "purchases": 19,
       "purchase_value": 38489.5,
       "ctr": 1.2,
-      "cpa": 307.97,
+      "cpa": 308.0,
       "roas": 6.58
     },
     {
@@ -107,9 +107,9 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 6421,
+      "impressions": 6422,
       "clicks": 34,
-      "spend": 245.76,
+      "spend": 245.87,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 0.53,
@@ -155,12 +155,12 @@
     {
       "age": "25-34",
       "gender": "unknown",
-      "impressions": 618,
+      "impressions": 619,
       "clicks": 3,
-      "spend": 63.99,
+      "spend": 64.06,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 0.49,
+      "ctr": 0.48,
       "cpa": 0,
       "roas": 0.0
     },
@@ -250,9 +250,9 @@
     }
   ],
   "totals": {
-    "impressions": 196634,
-    "clicks": 2985,
-    "spend": 34638.99,
+    "impressions": 196654,
+    "clicks": 2987,
+    "spend": 34641.45,
     "purchases": 135,
     "purchase_value": 265616.3,
     "roas": 7.67

@@ -4,20 +4,20 @@
     "account_name": "Piu Pieza Unica",
     "period": "7d",
     "date_range": "2025-11-13..2025-11-19",
-    "generated_at": "2025-11-20T09:23:46.689214Z",
+    "generated_at": "2025-11-20T15:23:12.277383Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 30105,
+      "impressions": 30109,
       "clicks": 457,
-      "spend": 3771.66,
+      "spend": 3772.03,
       "purchases": 10,
       "purchase_value": 7802.0,
       "ctr": 1.52,
-      "cpa": 377.17,
+      "cpa": 377.2,
       "roas": 2.07
     },
     {
@@ -59,21 +59,21 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 1556,
+      "impressions": 1557,
       "clicks": 75,
-      "spend": 461.06,
+      "spend": 461.33,
       "purchases": 1,
       "purchase_value": 468.0,
       "ctr": 4.82,
-      "cpa": 461.06,
-      "roas": 1.02
+      "cpa": 461.33,
+      "roas": 1.01
     },
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 4019,
+      "impressions": 4020,
       "clicks": 35,
-      "spend": 294.73,
+      "spend": 294.74,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 0.87,
@@ -83,7 +83,7 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 5297,
+      "impressions": 5298,
       "clicks": 35,
       "spend": 264.95,
       "purchases": 1,
@@ -95,12 +95,12 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 658,
+      "impressions": 659,
       "clicks": 19,
-      "spend": 200.23,
+      "spend": 200.27,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 2.89,
+      "ctr": 2.88,
       "cpa": 0,
       "roas": 0.0
     },
@@ -250,9 +250,9 @@
     }
   ],
   "totals": {
-    "impressions": 96309,
+    "impressions": 96317,
     "clicks": 1428,
-    "spend": 9947.15,
+    "spend": 9947.84,
     "purchases": 22,
     "purchase_value": 17788.0,
     "roas": 1.79

@@ -4,16 +4,16 @@
     "account_name": "La horma mx",
     "period": "30d",
     "date_range": "2025-10-21..2025-11-19",
-    "generated_at": "2025-11-20T09:23:09.873094Z",
+    "generated_at": "2025-11-20T15:22:43.120331Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 510422,
+      "impressions": 510433,
       "clicks": 12212,
-      "spend": 32797.63,
+      "spend": 32798.0,
       "purchases": 101,
       "purchase_value": 110336.79,
       "ctr": 2.39,
@@ -23,37 +23,37 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 307211,
+      "impressions": 307223,
       "clicks": 9087,
-      "spend": 25863.91,
+      "spend": 25864.97,
       "purchases": 110,
       "purchase_value": 116179.55,
       "ctr": 2.96,
-      "cpa": 235.13,
+      "cpa": 235.14,
       "roas": 4.49
     },
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 101570,
+      "impressions": 101575,
       "clicks": 4151,
-      "spend": 9737.86,
+      "spend": 9738.14,
       "purchases": 29,
       "purchase_value": 32136.82,
       "ctr": 4.09,
-      "cpa": 335.79,
+      "cpa": 335.8,
       "roas": 3.3
     },
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 54402,
+      "impressions": 54403,
       "clicks": 2804,
-      "spend": 5862.54,
+      "spend": 5862.56,
       "purchases": 13,
       "purchase_value": 11634.15,
       "ctr": 5.15,
-      "cpa": 450.96,
+      "cpa": 450.97,
       "roas": 1.98
     },
     {
@@ -71,7 +71,7 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 13818,
+      "impressions": 13819,
       "clicks": 788,
       "spend": 1440.7,
       "purchases": 0,
@@ -250,9 +250,9 @@
     }
   ],
   "totals": {
-    "impressions": 1045211,
+    "impressions": 1045241,
     "clicks": 30504,
-    "spend": 78863.95,
+    "spend": 78865.68,
     "purchases": 260,
     "purchase_value": 277418.37,
     "roas": 3.52

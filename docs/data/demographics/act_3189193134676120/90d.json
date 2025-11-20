@@ -4,16 +4,16 @@
     "account_name": "Piu Pieza Unica",
     "period": "90d",
     "date_range": "2025-08-22..2025-11-19",
-    "generated_at": "2025-11-20T09:23:49.221913Z",
+    "generated_at": "2025-11-20T15:23:14.416842Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 382832,
+      "impressions": 382836,
       "clicks": 6558,
-      "spend": 31980.56,
+      "spend": 31980.93,
       "purchases": 64,
       "purchase_value": 53418.0,
       "ctr": 1.71,
@@ -59,31 +59,31 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 14623,
+      "impressions": 14624,
       "clicks": 636,
-      "spend": 2316.1,
+      "spend": 2316.37,
       "purchases": 2,
       "purchase_value": 1016.0,
       "ctr": 4.35,
-      "cpa": 1158.05,
+      "cpa": 1158.18,
       "roas": 0.44
     },
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 37656,
+      "impressions": 37657,
       "clicks": 557,
-      "spend": 2214.03,
+      "spend": 2214.04,
       "purchases": 1,
       "purchase_value": 434.0,
       "ctr": 1.48,
-      "cpa": 2214.03,
+      "cpa": 2214.04,
       "roas": 0.2
     },
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 53106,
+      "impressions": 53107,
       "clicks": 667,
       "spend": 2061.59,
       "purchases": 5,
@@ -95,13 +95,13 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 7949,
+      "impressions": 7950,
       "clicks": 273,
-      "spend": 945.58,
+      "spend": 945.62,
       "purchases": 1,
       "purchase_value": 713.0,
       "ctr": 3.43,
-      "cpa": 945.58,
+      "cpa": 945.62,
       "roas": 0.75
     },
     {
@@ -250,9 +250,9 @@
     }
   ],
   "totals": {
-    "impressions": 1156712,
+    "impressions": 1156720,
     "clicks": 19242,
-    "spend": 78570.53,
+    "spend": 78571.22,
     "purchases": 151,
     "purchase_value": 120158.0,
     "roas": 1.53
