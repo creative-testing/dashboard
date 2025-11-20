@@ -4,16 +4,16 @@
     "account_name": "Piu Pieza Unica",
     "period": "30d",
     "date_range": "2025-10-21..2025-11-19",
-    "generated_at": "2025-11-20T15:23:13.634893Z",
+    "generated_at": "2025-11-20T21:20:48.527581Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 136059,
+      "impressions": 136062,
       "clicks": 2079,
-      "spend": 11917.1,
+      "spend": 11917.16,
       "purchases": 22,
       "purchase_value": 20498.2,
       "ctr": 1.53,
@@ -23,13 +23,13 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 171377,
+      "impressions": 171379,
       "clicks": 2214,
-      "spend": 8983.42,
+      "spend": 8983.56,
       "purchases": 20,
       "purchase_value": 14984.0,
       "ctr": 1.29,
-      "cpa": 449.17,
+      "cpa": 449.18,
       "roas": 1.67
     },
     {
@@ -47,13 +47,13 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 34733,
+      "impressions": 34735,
       "clicks": 408,
-      "spend": 1275.73,
+      "spend": 1275.78,
       "purchases": 2,
       "purchase_value": 1636.0,
       "ctr": 1.17,
-      "cpa": 637.86,
+      "cpa": 637.89,
       "roas": 1.28
     },
     {
@@ -250,9 +250,9 @@
     }
   ],
   "totals": {
-    "impressions": 441979,
+    "impressions": 441986,
     "clicks": 6452,
-    "spend": 30621.14,
+    "spend": 30621.39,
     "purchases": 55,
     "purchase_value": 47008.0,
     "roas": 1.54

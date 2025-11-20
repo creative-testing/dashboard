@@ -4,16 +4,16 @@
     "account_name": "AHAL BIO ",
     "period": "7d",
     "date_range": "2025-11-13..2025-11-19",
-    "generated_at": "2025-11-20T15:25:26.190555Z",
+    "generated_at": "2025-11-20T21:23:21.117843Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 228258,
+      "impressions": 228264,
       "clicks": 3304,
-      "spend": 47281.34,
+      "spend": 47281.63,
       "purchases": 169,
       "purchase_value": 350235.39,
       "ctr": 1.45,
@@ -23,9 +23,9 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 98204,
+      "impressions": 98206,
       "clicks": 1818,
-      "spend": 24214.18,
+      "spend": 24214.29,
       "purchases": 86,
       "purchase_value": 172162.5,
       "ctr": 1.85,
@@ -35,9 +35,9 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 151998,
-      "clicks": 1580,
-      "spend": 18418.92,
+      "impressions": 152006,
+      "clicks": 1581,
+      "spend": 18419.11,
       "purchases": 45,
       "purchase_value": 95927.25,
       "ctr": 1.04,
@@ -262,9 +262,9 @@
     }
   ],
   "totals": {
-    "impressions": 619198,
-    "clicks": 8284,
-    "spend": 107838.74,
+    "impressions": 619214,
+    "clicks": 8285,
+    "spend": 107839.33,
     "purchases": 337,
     "purchase_value": 685750.1,
     "roas": 6.36
