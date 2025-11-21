@@ -4,16 +4,16 @@
     "account_name": "AHAL BIO ",
     "period": "30d",
     "date_range": "2025-10-22..2025-11-20",
-    "generated_at": "2025-11-21T15:22:44.119565Z",
+    "generated_at": "2025-11-21T21:22:52.952300Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 635180,
+      "impressions": 635190,
       "clicks": 9385,
-      "spend": 97150.62,
+      "spend": 97151.22,
       "purchases": 235,
       "purchase_value": 471630.34,
       "ctr": 1.48,
@@ -35,9 +35,9 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 426582,
+      "impressions": 426590,
       "clicks": 5333,
-      "spend": 38701.4,
+      "spend": 38701.96,
       "purchases": 73,
       "purchase_value": 152344.65,
       "ctr": 1.25,
@@ -47,9 +47,9 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 91141,
+      "impressions": 91143,
       "clicks": 2462,
-      "spend": 22954.55,
+      "spend": 22954.63,
       "purchases": 31,
       "purchase_value": 58023.5,
       "ctr": 2.7,
@@ -71,13 +71,13 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 74141,
+      "impressions": 74142,
       "clicks": 1253,
-      "spend": 3867.52,
+      "spend": 3867.65,
       "purchases": 6,
       "purchase_value": 9840.25,
       "ctr": 1.69,
-      "cpa": 644.59,
+      "cpa": 644.61,
       "roas": 2.54
     },
     {
@@ -143,9 +143,9 @@
     {
       "age": "55-64",
       "gender": "unknown",
-      "impressions": 1388,
+      "impressions": 1389,
       "clicks": 20,
-      "spend": 449.26,
+      "spend": 449.32,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.44,
@@ -262,9 +262,9 @@
     }
   ],
   "totals": {
-    "impressions": 1697610,
+    "impressions": 1697632,
     "clicks": 25983,
-    "spend": 232272.2,
+    "spend": 232273.63,
     "purchases": 485,
     "purchase_value": 972973.65,
     "roas": 4.19

@@ -4,28 +4,28 @@
     "account_name": "SEPUA",
     "period": "7d",
     "date_range": "2025-11-14..2025-11-20",
-    "generated_at": "2025-11-21T15:20:39.645756Z",
+    "generated_at": "2025-11-21T21:20:39.995399Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 14026,
+      "impressions": 14027,
       "clicks": 173,
-      "spend": 4841.18,
+      "spend": 4842.72,
       "purchases": 7,
       "purchase_value": 20676.5,
       "ctr": 1.23,
-      "cpa": 691.6,
+      "cpa": 691.82,
       "roas": 4.27
     },
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 8964,
+      "impressions": 8965,
       "clicks": 104,
-      "spend": 2960.0,
+      "spend": 2960.11,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.16,
@@ -35,14 +35,14 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 15679,
+      "impressions": 15682,
       "clicks": 200,
-      "spend": 2889.13,
+      "spend": 2889.51,
       "purchases": 4,
       "purchase_value": 13450.5,
       "ctr": 1.28,
-      "cpa": 722.28,
-      "roas": 4.66
+      "cpa": 722.38,
+      "roas": 4.65
     },
     {
       "age": "45-54",
@@ -83,9 +83,9 @@
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 3411,
+      "impressions": 3412,
       "clicks": 44,
-      "spend": 1352.37,
+      "spend": 1358.94,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.29,
@@ -155,9 +155,9 @@
     {
       "age": "25-34",
       "gender": "unknown",
-      "impressions": 479,
+      "impressions": 480,
       "clicks": 7,
-      "spend": 67.82,
+      "spend": 67.87,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.46,
@@ -250,9 +250,9 @@
     }
   ],
   "totals": {
-    "impressions": 63240,
+    "impressions": 63247,
     "clicks": 897,
-    "spend": 20179.97,
+    "spend": 20188.62,
     "purchases": 17,
     "purchase_value": 56475.0,
     "roas": 2.8

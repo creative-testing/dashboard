@@ -4,16 +4,16 @@
     "account_name": "MUUD chocolate",
     "period": "90d",
     "date_range": "2025-08-23..2025-11-20",
-    "generated_at": "2025-11-21T15:22:18.298503Z",
+    "generated_at": "2025-11-21T21:22:25.175187Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 595680,
+      "impressions": 595681,
       "clicks": 25114,
-      "spend": 28578.51,
+      "spend": 28578.53,
       "purchases": 102,
       "purchase_value": 70475.9,
       "ctr": 4.22,
@@ -23,9 +23,9 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 526636,
+      "impressions": 526638,
       "clicks": 21016,
-      "spend": 21337.3,
+      "spend": 21337.32,
       "purchases": 65,
       "purchase_value": 45018.7,
       "ctr": 3.99,
@@ -35,9 +35,9 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 403397,
-      "clicks": 23833,
-      "spend": 19501.09,
+      "impressions": 403400,
+      "clicks": 23834,
+      "spend": 19501.14,
       "purchases": 61,
       "purchase_value": 44636.0,
       "ctr": 5.91,
@@ -59,9 +59,9 @@
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 489235,
-      "clicks": 45245,
-      "spend": 17122.81,
+      "impressions": 489243,
+      "clicks": 45246,
+      "spend": 17122.95,
       "purchases": 31,
       "purchase_value": 22765.7,
       "ctr": 9.25,
@@ -71,13 +71,13 @@
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 360854,
-      "clicks": 48997,
-      "spend": 10805.88,
+      "impressions": 360864,
+      "clicks": 49000,
+      "spend": 10806.06,
       "purchases": 17,
       "purchase_value": 12765.0,
       "ctr": 13.58,
-      "cpa": 635.64,
+      "cpa": 635.65,
       "roas": 1.18
     },
     {
@@ -107,13 +107,13 @@
     {
       "age": "65+",
       "gender": "male",
-      "impressions": 188682,
-      "clicks": 30972,
-      "spend": 5668.92,
+      "impressions": 188686,
+      "clicks": 30973,
+      "spend": 5669.04,
       "purchases": 8,
       "purchase_value": 5811.0,
-      "ctr": 16.41,
-      "cpa": 708.61,
+      "ctr": 16.42,
+      "cpa": 708.63,
       "roas": 1.03
     },
     {
@@ -250,9 +250,9 @@
     }
   ],
   "totals": {
-    "impressions": 3379599,
-    "clicks": 241952,
-    "spend": 144554.12,
+    "impressions": 3379627,
+    "clicks": 241958,
+    "spend": 144554.65,
     "purchases": 450,
     "purchase_value": 315580.7,
     "roas": 2.18
