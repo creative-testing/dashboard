@@ -4,20 +4,20 @@
     "account_name": "Blue Banana Brand México",
     "period": "30d",
     "date_range": "2025-10-23..2025-11-21",
-    "generated_at": "2025-11-22T09:22:37.140012Z",
+    "generated_at": "2025-11-22T21:20:24.214099Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 33002,
+      "impressions": 33004,
       "clicks": 925,
-      "spend": 4605.08,
+      "spend": 4605.12,
       "purchases": 1,
       "purchase_value": 1638.88,
       "ctr": 2.8,
-      "cpa": 4605.08,
+      "cpa": 4605.12,
       "roas": 0.36
     },
     {
@@ -35,13 +35,13 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 32077,
+      "impressions": 32078,
       "clicks": 750,
-      "spend": 2391.88,
+      "spend": 2391.89,
       "purchases": 1,
       "purchase_value": 2183.13,
       "ctr": 2.34,
-      "cpa": 2391.88,
+      "cpa": 2391.89,
       "roas": 0.91
     },
     {
@@ -131,9 +131,9 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 1207,
+      "impressions": 1208,
       "clicks": 47,
-      "spend": 368.32,
+      "spend": 368.34,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 3.89,
@@ -155,7 +155,7 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 1467,
+      "impressions": 1468,
       "clicks": 17,
       "spend": 104.86,
       "purchases": 0,
@@ -250,9 +250,9 @@
     }
   ],
   "totals": {
-    "impressions": 125075,
+    "impressions": 125080,
     "clicks": 3477,
-    "spend": 17914.51,
+    "spend": 17914.58,
     "purchases": 10,
     "purchase_value": 23501.62,
     "roas": 1.31
