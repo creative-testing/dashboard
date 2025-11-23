@@ -4,16 +4,16 @@
     "account_name": "MUUD chocolate",
     "period": "30d",
     "date_range": "2025-10-24..2025-11-22",
-    "generated_at": "2025-11-23T09:22:58.733478Z",
+    "generated_at": "2025-11-23T15:22:41.174462Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 232876,
-      "clicks": 27931,
-      "spend": 7880.78,
+      "impressions": 232883,
+      "clicks": 27932,
+      "spend": 7880.86,
       "purchases": 15,
       "purchase_value": 10462.0,
       "ctr": 11.99,
@@ -23,9 +23,9 @@
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 273834,
+      "impressions": 273846,
       "clicks": 39797,
-      "spend": 7466.88,
+      "spend": 7466.95,
       "purchases": 13,
       "purchase_value": 10531.0,
       "ctr": 14.53,
@@ -35,7 +35,7 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 146934,
+      "impressions": 146936,
       "clicks": 7777,
       "spend": 6970.46,
       "purchases": 15,
@@ -47,13 +47,13 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 137680,
+      "impressions": 137682,
       "clicks": 12031,
-      "spend": 6965.93,
+      "spend": 6965.98,
       "purchases": 29,
       "purchase_value": 21771.0,
       "ctr": 8.74,
-      "cpa": 240.2,
+      "cpa": 240.21,
       "roas": 3.13
     },
     {
@@ -71,7 +71,7 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 46919,
+      "impressions": 46920,
       "clicks": 2582,
       "spend": 4215.19,
       "purchases": 18,
@@ -83,12 +83,12 @@
     {
       "age": "65+",
       "gender": "male",
-      "impressions": 139604,
+      "impressions": 139607,
       "clicks": 23712,
       "spend": 4060.04,
       "purchases": 3,
       "purchase_value": 2133.0,
-      "ctr": 16.99,
+      "ctr": 16.98,
       "cpa": 1353.35,
       "roas": 0.53
     },
@@ -119,13 +119,13 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 37621,
+      "impressions": 37622,
       "clicks": 1253,
-      "spend": 1898.93,
+      "spend": 1898.98,
       "purchases": 9,
       "purchase_value": 5712.0,
       "ctr": 3.33,
-      "cpa": 210.99,
+      "cpa": 211.0,
       "roas": 3.01
     },
     {
@@ -250,9 +250,9 @@
     }
   ],
   "totals": {
-    "impressions": 1216962,
-    "clicks": 126073,
-    "spend": 51202.77,
+    "impressions": 1216990,
+    "clicks": 126074,
+    "spend": 51203.02,
     "purchases": 155,
     "purchase_value": 113798.6,
     "roas": 2.22

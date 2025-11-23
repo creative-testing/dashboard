@@ -4,28 +4,28 @@
     "account_name": "La horma mx",
     "period": "7d",
     "date_range": "2025-11-16..2025-11-22",
-    "generated_at": "2025-11-23T09:20:35.812482Z",
+    "generated_at": "2025-11-23T15:19:43.714153Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 116853,
+      "impressions": 116864,
       "clicks": 3057,
-      "spend": 8904.94,
+      "spend": 8905.01,
       "purchases": 37,
       "purchase_value": 35738.59,
       "ctr": 2.62,
-      "cpa": 240.67,
+      "cpa": 240.68,
       "roas": 4.01
     },
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 72536,
+      "impressions": 72541,
       "clicks": 2371,
-      "spend": 7091.11,
+      "spend": 7091.12,
       "purchases": 33,
       "purchase_value": 34409.35,
       "ctr": 3.27,
@@ -35,7 +35,7 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 24776,
+      "impressions": 24779,
       "clicks": 1099,
       "spend": 2777.51,
       "purchases": 7,
@@ -59,7 +59,7 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 8228,
+      "impressions": 8229,
       "clicks": 205,
       "spend": 431.62,
       "purchases": 1,
@@ -71,7 +71,7 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 3428,
+      "impressions": 3429,
       "clicks": 209,
       "spend": 354.2,
       "purchases": 0,
@@ -155,12 +155,12 @@
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 284,
+      "impressions": 285,
       "clicks": 13,
       "spend": 25.57,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 4.58,
+      "ctr": 4.56,
       "cpa": 0,
       "roas": 0.0
     },
@@ -250,9 +250,9 @@
     }
   ],
   "totals": {
-    "impressions": 244970,
+    "impressions": 244992,
     "clicks": 7806,
-    "spend": 21388.75,
+    "spend": 21388.83,
     "purchases": 84,
     "purchase_value": 84470.44,
     "roas": 3.95
