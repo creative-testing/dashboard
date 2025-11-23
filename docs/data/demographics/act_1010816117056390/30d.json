@@ -4,28 +4,28 @@
     "account_name": "CP-SOHOCOLOR",
     "period": "30d",
     "date_range": "2025-10-24..2025-11-22",
-    "generated_at": "2025-11-23T15:22:46.578515Z",
+    "generated_at": "2025-11-23T21:21:44.098020Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 47446,
+      "impressions": 47451,
       "clicks": 1776,
-      "spend": 9406.98,
+      "spend": 9407.97,
       "purchases": 25,
       "purchase_value": 35749.72,
       "ctr": 3.74,
-      "cpa": 376.28,
+      "cpa": 376.32,
       "roas": 3.8
     },
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 50485,
+      "impressions": 50487,
       "clicks": 1453,
-      "spend": 8792.95,
+      "spend": 8792.96,
       "purchases": 15,
       "purchase_value": 34532.34,
       "ctr": 2.88,
@@ -35,7 +35,7 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 29040,
+      "impressions": 29042,
       "clicks": 1484,
       "spend": 6514.63,
       "purchases": 16,
@@ -59,7 +59,7 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 44529,
+      "impressions": 44530,
       "clicks": 716,
       "spend": 4133.84,
       "purchases": 8,
@@ -83,7 +83,7 @@
     {
       "age": "65+",
       "gender": "male",
-      "impressions": 21003,
+      "impressions": 21009,
       "clicks": 868,
       "spend": 2595.56,
       "purchases": 7,
@@ -107,9 +107,9 @@
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 27521,
+      "impressions": 27524,
       "clicks": 696,
-      "spend": 2296.84,
+      "spend": 2296.86,
       "purchases": 7,
       "purchase_value": 12587.98,
       "ctr": 2.53,
@@ -250,9 +250,9 @@
     }
   ],
   "totals": {
-    "impressions": 384309,
+    "impressions": 384328,
     "clicks": 10435,
-    "spend": 48353.65,
+    "spend": 48354.67,
     "purchases": 109,
     "purchase_value": 191563.85,
     "roas": 3.96
