@@ -1471,10 +1471,10 @@
                 // Accounts index - skip for optimized version
                 accountsIndex = null;
 
-                console.log('📊 Données chargées:', Object.keys(periodsData), 'prev_week');
+                console.log('📊 Datos cargados:', Object.keys(periodsData), 'prev_week');
                 
             } catch (error) {
-                console.error('❌ Erreur chargement données:', error);
+                console.error('❌ Error al cargar datos:', error);
             }
         }
         
@@ -2214,7 +2214,7 @@
             }
             
             if (!data) {
-                console.error(`Pas de données pour ${days} jours`);
+                console.error(`No hay datos para ${days} días`);
                 return;
             }
             console.log('✅ Rendering period', days, 'ads:', data.ads ? data.ads.length : 'n/a');
@@ -3107,7 +3107,7 @@
             
             // Vérifier que les données sont disponibles
             if (!currentData || !currentData.ads) {
-                console.warn('Données courantes non disponibles');
+                console.warn('Datos actuales no disponibles');
                 return;
             }
             
@@ -3115,7 +3115,7 @@
             if (!prevData || !prevData.ads || prevData.ads.length === 0) {
                 const comparisonTable = document.getElementById('comparison-table');
                 if (comparisonTable) {
-                    comparisonTable.innerHTML = '<tr><td colspan="4" style="text-align: center;">Données de comparaison non disponibles</td></tr>';
+                    comparisonTable.innerHTML = '<tr><td colspan="4" style="text-align: center;">Datos de comparación no disponibles</td></tr>';
                 }
                 return;
             }
@@ -3128,7 +3128,7 @@
             if (current.length === 0 || previous.length === 0) {
                 const comparisonTable = document.getElementById('comparison-table');
                 if (comparisonTable) {
-                    comparisonTable.innerHTML = '<tr><td colspan="4" style="text-align: center;">Pas de données pour ce compte</td></tr>';
+                    comparisonTable.innerHTML = '<tr><td colspan="4" style="text-align: center;">No hay datos para esta cuenta</td></tr>';
                 }
                 return;
             }

@@ -860,7 +860,7 @@ def inject_production_token(
             "tenant_id": tenant_id,
             "tenant_name": tenant.name,
             "user_id": str(user.id),
-            "message": "✅ Token Meta injecté avec succès. Le refresh peut maintenant fonctionner."
+            "message": "✅ Token de Meta insertado con éxito. El refresh ya puede ejecutarse."
         }
 
     except Exception as e:
@@ -967,7 +967,7 @@ async def refresh_all_production_accounts(
             "accounts_total": len(accounts),
             "accounts_refreshing": len(jobs_launched),
             "jobs": jobs_launched,
-            "message": f"🔄 Refresh lancé pour {len(jobs_launched)} comptes. Durée estimée: ~{len(jobs_launched) * 0.5:.0f} minutes"
+            "message": f"🔄 Refresh lanzado para {len(jobs_launched)} cuentas. Duración estimada: ~{len(jobs_launched) * 0.5:.0f} minutos"
         }
 
     finally:
