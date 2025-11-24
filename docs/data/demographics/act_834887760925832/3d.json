@@ -4,28 +4,28 @@
     "account_name": "SEPUA",
     "period": "3d",
     "date_range": "2025-11-21..2025-11-23",
-    "generated_at": "2025-11-24T09:29:19.284918Z",
+    "generated_at": "2025-11-24T15:28:17.924873Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 5334,
+      "impressions": 5335,
       "clicks": 107,
-      "spend": 510.48,
+      "spend": 510.84,
       "purchases": 1,
       "purchase_value": 1849.0,
       "ctr": 2.01,
-      "cpa": 510.48,
+      "cpa": 510.84,
       "roas": 3.62
     },
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 4132,
+      "impressions": 4134,
       "clicks": 83,
-      "spend": 501.61,
+      "spend": 502.14,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 2.01,
@@ -35,9 +35,9 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 2974,
+      "impressions": 2975,
       "clicks": 46,
-      "spend": 313.01,
+      "spend": 313.09,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.55,
@@ -59,13 +59,13 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 2192,
+      "impressions": 2193,
       "clicks": 36,
-      "spend": 223.85,
+      "spend": 223.93,
       "purchases": 1,
       "purchase_value": 1299.0,
       "ctr": 1.64,
-      "cpa": 223.85,
+      "cpa": 223.93,
       "roas": 5.8
     },
     {
@@ -107,9 +107,9 @@
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 284,
+      "impressions": 287,
       "clicks": 1,
-      "spend": 26.59,
+      "spend": 26.8,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 0.35,
@@ -214,11 +214,11 @@
     }
   ],
   "totals": {
-    "impressions": 18371,
+    "impressions": 18379,
     "clicks": 342,
-    "spend": 2133.45,
+    "spend": 2134.71,
     "purchases": 2,
     "purchase_value": 3148.0,
-    "roas": 1.48
+    "roas": 1.47
   }
 }
