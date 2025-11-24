@@ -4,16 +4,16 @@
     "account_name": "La horma mx",
     "period": "14d",
     "date_range": "2025-11-10..2025-11-23",
-    "generated_at": "2025-11-24T15:26:32.187325Z",
+    "generated_at": "2025-11-24T21:21:04.313100Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 261180,
+      "impressions": 261190,
       "clicks": 6694,
-      "spend": 20691.01,
+      "spend": 20691.33,
       "purchases": 74,
       "purchase_value": 79392.34,
       "ctr": 2.56,
@@ -23,25 +23,25 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 164034,
-      "clicks": 5240,
-      "spend": 16521.78,
+      "impressions": 164041,
+      "clicks": 5242,
+      "spend": 16521.94,
       "purchases": 79,
       "purchase_value": 85470.57,
-      "ctr": 3.19,
+      "ctr": 3.2,
       "cpa": 209.14,
       "roas": 5.17
     },
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 56562,
+      "impressions": 56567,
       "clicks": 2497,
-      "spend": 6330.59,
+      "spend": 6330.83,
       "purchases": 22,
       "purchase_value": 25157.05,
       "ctr": 4.41,
-      "cpa": 287.75,
+      "cpa": 287.76,
       "roas": 3.97
     },
     {
@@ -59,13 +59,13 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 18743,
+      "impressions": 18745,
       "clicks": 439,
-      "spend": 1034.86,
+      "spend": 1034.91,
       "purchases": 3,
       "purchase_value": 3408.2,
       "ctr": 2.34,
-      "cpa": 344.95,
+      "cpa": 344.97,
       "roas": 3.29
     },
     {
@@ -107,9 +107,9 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 1579,
+      "impressions": 1581,
       "clicks": 49,
-      "spend": 122.91,
+      "spend": 122.98,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 3.1,
@@ -250,9 +250,9 @@
     }
   ],
   "totals": {
-    "impressions": 551020,
-    "clicks": 17345,
-    "spend": 49994.29,
+    "impressions": 551046,
+    "clicks": 17347,
+    "spend": 49995.13,
     "purchases": 188,
     "purchase_value": 202168.56,
     "roas": 4.04
