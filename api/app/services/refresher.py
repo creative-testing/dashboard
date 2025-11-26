@@ -3,10 +3,14 @@ Service de refresh des données Meta Ads
 Orchestre: fetch API → transform → storage
 
 IMPORTANT: Produces columnar format matching production pipeline
+
+MODE BASELINE vs TAIL (parité avec fetch_with_smart_limits.py):
+- BASELINE: Premier run ou baseline trop vieux → fetch 90 jours complets
+- TAIL: Runs suivants → fetch seulement 3 derniers jours, upsert dans baseline
 """
 import json
 from datetime import datetime, timedelta, timezone
-from typing import Dict, Any
+from typing import Dict, Any, List, Optional, Tuple
 from uuid import UUID
 from sqlalchemy.orm import Session
 from sqlalchemy import select
@@ -21,10 +25,148 @@ from ..config import settings
 # Fernet pour déchiffrer les tokens
 fernet = Fernet(settings.TOKEN_ENCRYPTION_KEY.encode())
 
+# Configuration (parité avec production)
+BASELINE_DAYS = 90  # Historique complet
+TAIL_BACKFILL_DAYS = 3  # Jours à refetch en mode TAIL
+BASELINE_MAX_AGE_DAYS = 7  # Refaire baseline complet si plus vieux que ça
+
 
 class RefreshError(Exception):
     """Erreur lors du refresh des données"""
     pass
+
+
+def _load_existing_baseline(tenant_id: UUID, ad_account_id: str) -> Optional[Dict[str, Any]]:
+    """
+    Charge le baseline existant depuis R2 s'il existe.
+
+    Returns:
+        Le baseline dict ou None si inexistant/invalide
+    """
+    baseline_key = f"tenants/{tenant_id}/accounts/{ad_account_id}/data/baseline_daily.json"
+
+    try:
+        data = storage.get_object(baseline_key)
+        baseline = json.loads(data.decode('utf-8'))
+
+        # Valider la structure minimale
+        if 'daily_ads' not in baseline or 'metadata' not in baseline:
+            print(f"⚠️ Baseline invalide (structure), forcing BASELINE mode")
+            return None
+
+        return baseline
+    except storage.StorageError:
+        # Fichier n'existe pas - normal pour un premier run
+        return None
+    except json.JSONDecodeError as e:
+        print(f"⚠️ Baseline corrompu (JSON): {e}, forcing BASELINE mode")
+        return None
+    except Exception as e:
+        print(f"⚠️ Erreur chargement baseline: {e}, forcing BASELINE mode")
+        return None
+
+
+def _determine_refresh_mode(baseline: Optional[Dict[str, Any]], reference_date: str) -> Tuple[str, int]:
+    """
+    Détermine le mode de refresh (BASELINE ou TAIL).
+
+    Args:
+        baseline: Le baseline existant ou None
+        reference_date: Date de référence (YYYY-MM-DD)
+
+    Returns:
+        (mode, days_to_fetch) - ("BASELINE", 90) ou ("TAIL", 3)
+    """
+    if baseline is None:
+        print(f"📚 Mode BASELINE: Aucun baseline existant")
+        return ("BASELINE", BASELINE_DAYS)
+
+    # Vérifier l'âge du baseline
+    baseline_date = baseline.get('metadata', {}).get('reference_date')
+    if not baseline_date:
+        print(f"📚 Mode BASELINE: Baseline sans date de référence")
+        return ("BASELINE", BASELINE_DAYS)
+
+    try:
+        baseline_dt = datetime.strptime(baseline_date, '%Y-%m-%d')
+        reference_dt = datetime.strptime(reference_date, '%Y-%m-%d')
+        age_days = (reference_dt - baseline_dt).days
+
+        if age_days > BASELINE_MAX_AGE_DAYS:
+            print(f"📚 Mode BASELINE: Baseline trop vieux ({age_days} jours > {BASELINE_MAX_AGE_DAYS})")
+            return ("BASELINE", BASELINE_DAYS)
+
+        if age_days < 0:
+            print(f"📚 Mode BASELINE: Baseline dans le futur (?)")
+            return ("BASELINE", BASELINE_DAYS)
+
+        print(f"⚡ Mode TAIL: Baseline de {age_days} jour(s), fetch {TAIL_BACKFILL_DAYS} derniers jours")
+        return ("TAIL", TAIL_BACKFILL_DAYS)
+
+    except ValueError as e:
+        print(f"📚 Mode BASELINE: Erreur parsing date: {e}")
+        return ("BASELINE", BASELINE_DAYS)
+
+
+def _upsert_daily_ads(existing_ads: List[Dict], new_ads: List[Dict], reference_date: str) -> List[Dict]:
+    """
+    Upsert les nouvelles données dans le baseline existant.
+
+    - Clé unique: (ad_id, date)
+    - Les nouvelles données REMPLACENT les anciennes pour la même clé
+    - Supprime les données plus vieilles que BASELINE_DAYS
+
+    Args:
+        existing_ads: Liste des ads du baseline existant
+        new_ads: Liste des nouvelles ads fetchées
+        reference_date: Date de référence pour le nettoyage
+
+    Returns:
+        Liste mergée et nettoyée
+    """
+    # Créer un index par (ad_id, date)
+    ads_index = {}
+
+    # D'abord, indexer les données existantes
+    for ad in existing_ads:
+        ad_id = ad.get('ad_id')
+        ad_date = ad.get('date_start') or ad.get('date')
+        if ad_id and ad_date:
+            key = (ad_id, ad_date)
+            ads_index[key] = ad
+
+    existing_count = len(ads_index)
+
+    # Ensuite, upsert les nouvelles données (écrase si même clé)
+    updated_count = 0
+    added_count = 0
+
+    for ad in new_ads:
+        ad_id = ad.get('ad_id')
+        ad_date = ad.get('date_start') or ad.get('date')
+        if ad_id and ad_date:
+            key = (ad_id, ad_date)
+            if key in ads_index:
+                updated_count += 1
+            else:
+                added_count += 1
+            ads_index[key] = ad
+
+    # Nettoyer les données trop vieilles (> BASELINE_DAYS)
+    cutoff_date = (datetime.strptime(reference_date, '%Y-%m-%d') - timedelta(days=BASELINE_DAYS)).strftime('%Y-%m-%d')
+
+    cleaned_ads = []
+    removed_count = 0
+
+    for (ad_id, ad_date), ad in ads_index.items():
+        if ad_date >= cutoff_date:
+            cleaned_ads.append(ad)
+        else:
+            removed_count += 1
+
+    print(f"   📊 Upsert: {updated_count} mis à jour, {added_count} ajoutés, {removed_count} supprimés (>{BASELINE_DAYS}j)")
+
+    return cleaned_ads
 
 
 async def refresh_account_data(
@@ -37,6 +179,10 @@ async def refresh_account_data(
 
     IMPORTANT: Generates columnar format (meta_v1, agg_v1, summary_v1)
     matching production pipeline for dashboard compatibility
+
+    MODE BASELINE vs TAIL:
+    - BASELINE: Premier run → fetch 90 jours complets
+    - TAIL: Runs suivants → fetch 3 derniers jours, upsert dans baseline
 
     Args:
         ad_account_id: ID du compte (ex: "act_123456")
@@ -84,15 +230,19 @@ async def refresh_account_data(
     except Exception as e:
         raise RefreshError(f"Failed to decrypt access token: {e}")
 
-    # 4. Calculer la plage de dates
-    # Par défaut: 30 derniers jours, EXCLUDE TODAY (données partielles)
-    # TODO: Configurable par tenant (30d, 90d, etc.)
+    # 4. Calculer la date de référence (hier, pour exclure aujourd'hui)
     today = datetime.now(timezone.utc).date()
-    since_date = (today - timedelta(days=30)).isoformat()
-    until_date = (today - timedelta(days=1)).isoformat()  # Yesterday
-    reference_date = until_date  # Reference date = last day of data
+    reference_date = (today - timedelta(days=1)).isoformat()  # Yesterday
 
-    # 5. Fetch daily insights depuis Meta API
+    # 5. Charger le baseline existant et déterminer le mode
+    existing_baseline = _load_existing_baseline(tenant_id, ad_account_id)
+    refresh_mode, days_to_fetch = _determine_refresh_mode(existing_baseline, reference_date)
+
+    # 6. Calculer la plage de dates selon le mode
+    since_date = (today - timedelta(days=days_to_fetch)).isoformat()
+    until_date = reference_date
+
+    # 7. Fetch daily insights depuis Meta API
     try:
         daily_insights = await meta_client.get_insights_daily(
             ad_account_id=ad_account_id,
@@ -104,7 +254,7 @@ async def refresh_account_data(
     except MetaAPIError as e:
         raise RefreshError(f"Meta API error: {e}")
 
-    # 5b. Enrich with creatives (format, media_url, status)
+    # 8. Enrich with creatives (format, media_url, status)
     # CRITICAL: Parité avec ancien pipeline (fetch_with_smart_limits.py)
     try:
         print(f"🎨 Enriching {len(daily_insights)} insights with creatives...")
@@ -122,10 +272,24 @@ async def refresh_account_data(
         import traceback
         traceback.print_exc()
 
-    # 6. Transform en format columnar
+    # 9. Enrichir avec account_name et account_id
+    for ad in daily_insights:
+        ad['account_name'] = ad_account.name
+        ad['account_id'] = ad_account_id
+
+    # 10. Upsert ou remplacer selon le mode
+    if refresh_mode == "TAIL" and existing_baseline:
+        # Mode TAIL: upsert dans le baseline existant
+        existing_ads = existing_baseline.get('daily_ads', [])
+        all_daily_ads = _upsert_daily_ads(existing_ads, daily_insights, reference_date)
+    else:
+        # Mode BASELINE: remplacer tout
+        all_daily_ads = daily_insights
+
+    # 11. Transform en format columnar (sur le baseline COMPLET)
     try:
         meta_v1, agg_v1, summary_v1 = transform_to_columnar(
-            daily_ads=daily_insights,
+            daily_ads=all_daily_ads,
             reference_date=reference_date,
             ad_account_id=ad_account_id,
             account_name=ad_account.name  # Pass real account name from DB
@@ -133,21 +297,48 @@ async def refresh_account_data(
     except Exception as e:
         raise RefreshError(f"Transform error: {e}")
 
-    # 7. Valider le format
+    # 12. Valider le format
     validation_errors = validate_columnar_format(meta_v1, agg_v1, summary_v1)
     if validation_errors:
         raise RefreshError(f"Validation failed: {'; '.join(validation_errors)}")
 
-    # 8. Écrire dans le storage
+    # 13. Sauvegarder le baseline brut (pour les prochains upserts)
+    base_path = f"tenants/{tenant_id}/accounts/{ad_account_id}/data"
+
+    baseline_data = {
+        'metadata': {
+            'timestamp': datetime.now(timezone.utc).isoformat(),
+            'reference_date': reference_date,
+            'mode': refresh_mode,
+            'days_fetched': days_to_fetch,
+            'total_daily_rows': len(all_daily_ads),
+            'unique_ads': len(agg_v1.get('ads', [])),
+            'baseline_days': BASELINE_DAYS,
+            'tail_backfill_days': TAIL_BACKFILL_DAYS
+        },
+        'daily_ads': all_daily_ads
+    }
+
     files_written = []
-    base_path = f"tenants/{tenant_id}/accounts/{ad_account_id}/data/optimized"
+
+    try:
+        storage.put_object(
+            f"{base_path}/baseline_daily.json",
+            json.dumps(baseline_data, separators=(',', ':')).encode("utf-8")
+        )
+        files_written.append("baseline_daily.json")
+    except storage.StorageError as e:
+        raise RefreshError(f"Failed to write baseline_daily.json: {e}")
+
+    # 14. Écrire les fichiers columnar optimisés
+    optimized_path = f"{base_path}/optimized"
 
     for filename, data in [
         ("meta_v1.json", meta_v1),
         ("agg_v1.json", agg_v1),
         ("summary_v1.json", summary_v1),
     ]:
-        storage_key = f"{base_path}/{filename}"
+        storage_key = f"{optimized_path}/{filename}"
         try:
             # Use compact JSON (no indent) for production
             storage.put_object(storage_key, json.dumps(data, separators=(',', ':')).encode("utf-8"))
@@ -155,11 +346,13 @@ async def refresh_account_data(
         except storage.StorageError as e:
             raise RefreshError(f"Failed to write {filename}: {e}")
 
-    # 9. Écrire manifest.json
+    # 15. Écrire manifest.json
     manifest = {
         "version": datetime.now(timezone.utc).isoformat(),
         "ads_count": len(agg_v1.get('ads', [])),
         "periods": agg_v1.get('periods', []),
+        "refresh_mode": refresh_mode,
+        "baseline_days": BASELINE_DAYS,
         "shards": {
             "meta": {"path": "meta_v1.json"},
             "agg": {"path": "agg_v1.json"},
@@ -168,21 +361,24 @@ async def refresh_account_data(
     }
     try:
         storage.put_object(
-            f"{base_path}/manifest.json",
+            f"{optimized_path}/manifest.json",
             json.dumps(manifest, separators=(',', ':')).encode("utf-8")
         )
         files_written.append("manifest.json")
     except storage.StorageError as e:
         raise RefreshError(f"Failed to write manifest.json: {e}")
 
-    # 10. Mettre à jour last_refresh_at
+    # 16. Mettre à jour last_refresh_at
     ad_account.last_refresh_at = datetime.now(timezone.utc)
     db.commit()
 
     return {
         "status": "success",
         "ad_account_id": ad_account_id,
+        "refresh_mode": refresh_mode,
+        "days_fetched": days_to_fetch,
         "daily_rows_fetched": len(daily_insights),
+        "total_daily_rows": len(all_daily_ads),
         "unique_ads": len(agg_v1.get('ads', [])),
         "files_written": files_written,
         "refreshed_at": ad_account.last_refresh_at.isoformat(),
