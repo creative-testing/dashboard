@@ -2218,7 +2218,55 @@
             const stats = computeHookStats(ads);
             renderHookCharts(stats);
         }
-        
+
+        function showNoDataMessage(days) {
+            // Masquer KPIs (afficher 0)
+            const kpiCards = document.querySelectorAll('.kpi-content');
+            if (kpiCards.length >= 5) {
+                kpiCards[0].innerHTML = '<h3>0</h3><p>Anuncios con Inversión</p>';
+                kpiCards[1].innerHTML = '<h3>$0</h3><p>Inversión Total (MXN)</p>';
+                kpiCards[2].innerHTML = '<h3>—</h3><p>ROAS Promedio</p>';
+                kpiCards[3].innerHTML = '<h3>—</h3><p>Valor de Conversión</p>';
+                kpiCards[4].innerHTML = '<h3>—</h3><p>CPA Promedio</p>';
+            }
+
+            // Masquer/vider les graphiques principaux
+            const barChart = document.querySelector('.bar-chart');
+            if (barChart) {
+                barChart.innerHTML = '<div style="text-align:center;color:#86868b;padding:40px;">Sin datos para este período</div>';
+            }
+
+            // Vider le tableau principal
+            const tableBody = document.querySelector('#ads-table tbody');
+            if (tableBody) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="16" style="text-align:center;padding:40px;color:#86868b;">
+                            📊 Sin datos para ${currentAccountName} en los últimos ${days} días
+                        </td>
+                    </tr>
+                `;
+            }
+
+            // Vider le tableau de formats
+            const formatTable = document.getElementById('formato-table');
+            if (formatTable) formatTable.innerHTML = '';
+
+            // Vider la comparaison
+            const comparisonTable = document.getElementById('comparison-table');
+            if (comparisonTable) comparisonTable.innerHTML = '';
+
+            // Masquer les sections nomenclature/hooks/insights
+            const nomenclatureSection = document.getElementById('nomenclature-section');
+            if (nomenclatureSection) nomenclatureSection.style.display = 'none';
+
+            const hookSection = document.getElementById('hook-section');
+            if (hookSection) hookSection.style.display = 'none';
+
+            const insightsGrid = document.getElementById('insights-grid');
+            if (insightsGrid) insightsGrid.style.display = 'none';
+        }
+
         function updateDashboard(days) {
             // Load period data on demand if not already loaded
             let data = window.periodsData[days];
@@ -2242,9 +2290,17 @@
             
             // Maintenant viewAds = aggregatedAds (déjà filtrés)
             const viewAds = aggregatedAds;
-            const viewData = { 
-                ...data, 
-                ads: viewAds, 
+
+            // 🆕 FIX UX: Si aucun ad, afficher message "Sin datos" au lieu de spinner infini
+            if (viewAds.length === 0) {
+                console.warn(`⚠️ Sin datos para ${days} días (cuenta: ${currentAccountName})`);
+                showNoDataMessage(days);
+                return;
+            }
+
+            const viewData = {
+                ...data,
+                ads: viewAds,
                 format_distribution: computeFormatDistribution(viewAds),
                 originalAdsCount: originalCount  // Passer le nombre original
             };
@@ -3292,16 +3348,31 @@
             const menu = document.getElementById('account-dropdown-menu');
             if (!menu) return;
 
-            let names = [];
-            if (accountsIndex && Array.isArray(accountsIndex.accounts)) {
-                names = accountsIndex.accounts.map(a => a.name).filter(Boolean).sort();
-            } else {
-                const allNames = new Set();
-                [3,7,14,30,90].forEach(p => {
-                    const d = window.periodsData[p];
-                    if (d && d.ads) d.ads.forEach(a => { if (a.account_name) allNames.add(a.account_name); });
+            // Get accounts that have at least 1 ad in the last 90 days
+            const accountsWithData = new Set();
+            const data90 = window.periodsData[90];
+            if (data90 && data90.ads && data90.ads.length > 0) {
+                data90.ads.forEach(a => {
+                    if (a.account_name) accountsWithData.add(a.account_name);
                 });
-                names = Array.from(allNames).sort();
+            }
+
+            let names = [];
+            if (accountsWithData.size > 0) {
+                // Filter to only show accounts with data in the last 90 days
+                if (accountsIndex && Array.isArray(accountsIndex.accounts)) {
+                    names = accountsIndex.accounts
+                        .map(a => a.name)
+                        .filter(name => name && accountsWithData.has(name))
+                        .sort();
+                } else {
+                    names = Array.from(accountsWithData).sort();
+                }
+                console.log(`📋 Dropdown: ${names.length} cuentas con datos (de ${accountsIndex?.accounts?.length || '?'} totales)`);
+            } else if (accountsIndex && Array.isArray(accountsIndex.accounts)) {
+                // Fallback: data not loaded yet, show all accounts from index
+                names = accountsIndex.accounts.map(a => a.name).filter(Boolean).sort();
+                console.log(`📋 Dropdown: mostrando ${names.length} cuentas (datos aún no cargados)`);
             }
 
             let optionsHTML = `<div class="dropdown-option ${currentAccountName === 'Todos' ? 'active' : ''}" data-value="Todos">${t('dashboard.accounts.all')}</div>`;

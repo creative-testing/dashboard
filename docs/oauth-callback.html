@@ -264,8 +264,8 @@
                             account_id: account.fb_account_id,
                             account: account.name,
                             token,
-                            tenant_id: tenantId,
-                            locked: '1'
+                            tenant_id: tenantId
+                            // NOTE: PAS de locked=1 ! C'est un utilisateur normal, pas un client via URL partagée
                         });
                         if (lang) params.set('lang', lang); // Preserve language
                         setTimeout(() => {
@@ -300,8 +300,8 @@
                         account_id: account.fb_account_id,
                         account: account.name,
                         token,
-                        tenant_id: tenantId,
-                        locked: '1'
+                        tenant_id: tenantId
+                        // NOTE: PAS de locked=1 ! C'est un utilisateur normal, pas un client via URL partagée
                     });
                     if (lang) params.set('lang', lang); // Preserve language
                     setTimeout(() => {
@@ -309,9 +309,16 @@
                     }, 300);
                     return;
                 } else {
-                    // Multiple accounts → Show selection page
-                    console.log(`📋 Multiple accounts (${accounts.length}), showing selection...`);
-                    showAccountSelection(accounts, token, tenantId, lang);
+                    // Multiple accounts → Redirect directly to dashboard in aggregated mode
+                    // (No more intermediate selection screen - user can switch via dropdown)
+                    console.log(`🚀 Multiple accounts (${accounts.length}), redirecting to dashboard...`);
+                    const params = new URLSearchParams({
+                        account: 'Todas las cuentas',
+                        token,
+                        tenant_id: tenantId
+                    });
+                    if (lang) params.set('lang', lang);
+                    window.location.href = `index-saas.html?${params.toString()}`;
                 }
 
             } catch (error) {
@@ -319,65 +326,6 @@
                 showError(error.message || t('oauth.errors.generic'));
             }
         }
-
-        function showAccountSelection(accounts, token, tenantId, lang) {
-            // Transform spinner into account selector
-            const container = document.querySelector('.spinner-container');
-            container.innerHTML = `
-                <h1 style="margin-bottom: 24px;">${t('oauth.select_account')}</h1>
-                <div style="background: rgba(255, 255, 255, 0.95); border-radius: 16px; padding: 32px; max-width: 600px; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">
-                    <!-- Option: Todas las cuentas -->
-                    <div style="background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%); padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #1e40af; cursor: pointer; transition: transform 0.2s; color: white;"
-                         onclick="selectAllAccounts('${token}', '${tenantId}', '${lang || ''}')"
-                         onmouseover="this.style.transform='translateX(4px)'"
-                         onmouseout="this.style.transform='translateX(0)'">
-                        <h3 style="color: white; font-size: 18px; margin-bottom: 8px;">📊 ${t('oauth.all_accounts')}</h3>
-                        <p style="color: rgba(255,255,255,0.9); font-size: 14px; margin: 4px 0;">${t('oauth.aggregated_view', { count: accounts.length })}</p>
-                        <p style="color: rgba(255,255,255,0.8); font-size: 13px; margin-top: 8px;">${t('oauth.recommended')}</p>
-                    </div>
-
-                    <!-- Individual accounts -->
-                    <div style="border-top: 2px solid #e5e7eb; padding-top: 20px; margin-top: 20px;">
-                        <p style="color: #666; font-size: 14px; margin-bottom: 16px; text-align: center;">${t('oauth.or_individual')}</p>
-                        ${accounts.map(account => `
-                            <div style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); padding: 20px; border-radius: 12px; margin-bottom: 16px; border-left: 4px solid #2563eb; cursor: pointer; transition: transform 0.2s;"
-                                 onclick="selectAccount('${account.fb_account_id}', '${account.name}', '${token}', '${tenantId}', '${lang || ''}')"
-                                 onmouseover="this.style.transform='translateX(4px)'"
-                                 onmouseout="this.style.transform='translateX(0)'">
-                                <h3 style="color: #1a1a1a; font-size: 18px; margin-bottom: 8px;">${account.name}</h3>
-                                <p style="color: #555; font-size: 14px; margin: 4px 0;">${t('oauth.account_id')}: ${account.fb_account_id}</p>
-                                <p style="color: #555; font-size: 14px; margin: 4px 0;">${t('oauth.profile')}: ${account.profile.toUpperCase()}</p>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
-        }
-
-        window.selectAccount = function(accountId, accountName, token, tenantId, lang) {
-            // NOTE: PAS de locked=1 pour multi-comptes → l'utilisateur peut naviguer
-            const params = new URLSearchParams({
-                account_id: accountId,
-                account: accountName,
-                token,
-                tenant_id: tenantId
-                // locked: '1' - retiré intentionnellement pour permettre le switch de compte
-            });
-            if (lang) params.set('lang', lang); // Preserve language
-            window.location.href = `index-saas.html?${params.toString()}`;
-        };
-
-        window.selectAllAccounts = function(token, tenantId, lang) {
-            // Redirect to dashboard in aggregated mode (no account_id = all accounts)
-            const params = new URLSearchParams({
-                account: 'Todas las cuentas',  // Display name for UI
-                token,
-                tenant_id: tenantId
-                // NOTE: No account_id → triggers tenant-aggregated endpoint
-            });
-            if (lang) params.set('lang', lang); // Preserve language
-            window.location.href = `index-saas.html?${params.toString()}`;
-        };
 
         // Start callback handling
         handleOAuthCallback();
