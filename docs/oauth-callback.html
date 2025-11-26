@@ -355,12 +355,13 @@
         }
 
         window.selectAccount = function(accountId, accountName, token, tenantId, lang) {
+            // NOTE: PAS de locked=1 pour multi-comptes → l'utilisateur peut naviguer
             const params = new URLSearchParams({
                 account_id: accountId,
                 account: accountName,
                 token,
-                tenant_id: tenantId,
-                locked: '1'
+                tenant_id: tenantId
+                // locked: '1' - retiré intentionnellement pour permettre le switch de compte
             });
             if (lang) params.set('lang', lang); // Preserve language
             window.location.href = `index-saas.html?${params.toString()}`;
