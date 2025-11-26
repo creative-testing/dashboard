@@ -253,6 +253,100 @@ async def get_refresh_status(
     }
 
 
+@router.post("/refresh-tenant-accounts")
+async def refresh_tenant_accounts(
+    background_tasks: BackgroundTasks,
+    current_tenant_id: UUID = Depends(get_current_tenant_id),
+    db: Session = Depends(get_db)
+) -> Dict[str, Any]:
+    """
+    Déclenche le refresh de TOUS les ad accounts du tenant authentifié.
+
+    🔒 Protected - requires valid JWT
+    🏢 Tenant-isolated - only refreshes YOUR accounts
+    ⚡ Async - returns immediately, jobs run in background
+
+    Use case: Nouvel utilisateur qui vient de se connecter via OAuth
+    et ne veut pas attendre le cron (2h max).
+
+    Returns:
+        {
+            "status": "processing",
+            "accounts_total": 60,
+            "jobs_created": 60,
+            "estimated_time_minutes": 15
+        }
+    """
+    # 1. Récupérer tous les ad accounts du tenant
+    accounts = db.execute(
+        select(models.AdAccount).where(
+            models.AdAccount.tenant_id == current_tenant_id
+        )
+    ).scalars().all()
+
+    if not accounts:
+        return {
+            "status": "no_accounts",
+            "accounts_total": 0,
+            "jobs_created": 0,
+            "estimated_time_minutes": 0
+        }
+
+    # 2. Créer un job pour chaque compte (même logique que le cron)
+    jobs_created = []
+    for account in accounts:
+        # Check idempotence - skip if already running
+        existing = db.execute(
+            select(RefreshJob).where(
+                RefreshJob.tenant_id == current_tenant_id,
+                RefreshJob.ad_account_id == account.id,
+                RefreshJob.status.in_([JobStatus.QUEUED, JobStatus.RUNNING])
+            )
+        ).scalar_one_or_none()
+
+        if existing:
+            jobs_created.append({
+                "account_id": account.fb_account_id,
+                "job_id": str(existing.id),
+                "already_running": True
+            })
+            continue
+
+        # Create new job
+        job = RefreshJob(
+            tenant_id=current_tenant_id,
+            ad_account_id=account.id,
+            status=JobStatus.QUEUED
+        )
+        db.add(job)
+        db.commit()
+        db.refresh(job)
+
+        # Launch in background
+        background_tasks.add_task(
+            _run_refresh_job,
+            job.id,
+            account.fb_account_id,
+            current_tenant_id
+        )
+        jobs_created.append({
+            "account_id": account.fb_account_id,
+            "job_id": str(job.id),
+            "already_running": False
+        })
+
+    # Estimation: ~15s par compte, minimum 15 minutes
+    estimated_minutes = max(15, len(accounts) // 4)
+
+    return {
+        "status": "processing",
+        "accounts_total": len(accounts),
+        "jobs_created": len(jobs_created),
+        "estimated_time_minutes": estimated_minutes,
+        "jobs": jobs_created
+    }
+
+
 @router.post("/dev/test-refresh/{fb_account_id}")
 async def dev_test_refresh(fb_account_id: str) -> Dict[str, Any]:
     """

@@ -203,6 +203,56 @@
             }
         }
 
+        async function tenantDataExists(token) {
+            // Vérifie si les données agrégées du tenant existent
+            try {
+                const response = await fetch(`${API_URL}/api/data/tenant-aggregated`, {
+                    method: 'HEAD',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                return response.ok;
+            } catch (error) {
+                console.warn('Error checking tenant data:', error);
+                return false;
+            }
+        }
+
+        async function triggerTenantAccountsRefresh(token) {
+            // Déclenche le refresh de tous les ad accounts du tenant
+            try {
+                const response = await fetch(`${API_URL}/api/accounts/refresh-tenant-accounts`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log(`📋 Fetch lancé pour ${data.accounts_total} comptes (ETA: ${data.estimated_time_minutes} min)`);
+                    return data;
+                }
+            } catch (error) {
+                console.error('Error triggering refresh:', error);
+            }
+        }
+
+        function showFirstTimeMessage(accountCount) {
+            // Affiche le message de bienvenue pour les nouveaux utilisateurs
+            document.querySelector('.spinner').style.display = 'none';
+            document.querySelector('h1').textContent = '¡Bienvenido! 🎉';
+            document.querySelector('p').innerHTML = `
+                Estamos preparando los datos de tus <strong>${accountCount} cuentas</strong> publicitarias.<br><br>
+                <strong>Vuelve en aproximadamente 15 minutos.</strong><br>
+                <small style="opacity: 0.7;">Los datos estarán disponibles automáticamente.</small>
+            `;
+
+            // Ajouter bouton retour
+            const btn = document.createElement('button');
+            btn.className = 'btn';
+            btn.textContent = 'Volver al inicio';
+            btn.style.marginTop = '24px';
+            btn.onclick = () => window.location.href = 'index-landing.html';
+            document.querySelector('.spinner-container').appendChild(btn);
+        }
+
         async function handleOAuthCallback() {
             const urlParams = new URLSearchParams(window.location.search);
             const token = urlParams.get('token');
@@ -309,16 +359,27 @@
                     }, 300);
                     return;
                 } else {
-                    // Multiple accounts → Redirect directly to dashboard in aggregated mode
-                    // (No more intermediate selection screen - user can switch via dropdown)
-                    console.log(`🚀 Multiple accounts (${accounts.length}), redirecting to dashboard...`);
-                    const params = new URLSearchParams({
-                        account: 'Todas las cuentas',
-                        token,
-                        tenant_id: tenantId
-                    });
-                    if (lang) params.set('lang', lang);
-                    window.location.href = `index-saas.html?${params.toString()}`;
+                    // Multiple accounts → Check if data exists first
+                    console.log(`🚀 Multiple accounts (${accounts.length}), checking data...`);
+
+                    const hasData = await tenantDataExists(token);
+
+                    if (hasData) {
+                        // Données disponibles → redirect immédiat
+                        console.log('✅ Données disponibles, redirect vers dashboard');
+                        const params = new URLSearchParams({
+                            account: 'Todas las cuentas',
+                            token,
+                            tenant_id: tenantId
+                        });
+                        if (lang) params.set('lang', lang);
+                        window.location.href = `index-saas.html?${params.toString()}`;
+                    } else {
+                        // Première connexion → déclencher fetch + afficher message
+                        console.log('⏳ Première connexion, déclenchement du fetch...');
+                        await triggerTenantAccountsRefresh(token);
+                        showFirstTimeMessage(accounts.length);
+                    }
                 }
 
             } catch (error) {
