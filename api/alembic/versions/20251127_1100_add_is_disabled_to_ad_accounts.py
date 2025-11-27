@@ -1,7 +1,7 @@
 """Add is_disabled column to ad_accounts
 
-Revision ID: 20251127_1100
-Revises: 20251021_1450
+Revision ID: f1a2b3c4d5e6
+Revises: c8f9a2b3d4e5
 Create Date: 2025-11-27
 
 Allows auto-disabling accounts that repeatedly fail (403 errors)
@@ -11,8 +11,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers
-revision = '20251127_1100'
-down_revision = '20251021_1450'
+revision = 'f1a2b3c4d5e6'
+down_revision = 'c8f9a2b3d4e5'
 branch_labels = None
 depends_on = None
 
