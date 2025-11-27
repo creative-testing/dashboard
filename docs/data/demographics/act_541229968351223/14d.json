@@ -4,7 +4,7 @@
     "account_name": "Supralash",
     "period": "14d",
     "date_range": "2025-11-13..2025-11-26",
-    "generated_at": "2025-11-27T09:26:30.034751Z",
+    "generated_at": "2025-11-27T21:21:27.135456Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
@@ -23,9 +23,9 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 16987,
+      "impressions": 16989,
       "clicks": 206,
-      "spend": 1514.03,
+      "spend": 1514.08,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.21,
@@ -59,13 +59,13 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 2263,
-      "clicks": 112,
-      "spend": 754.14,
+      "impressions": 2265,
+      "clicks": 113,
+      "spend": 754.26,
       "purchases": 2,
       "purchase_value": 2506.0,
-      "ctr": 4.95,
-      "cpa": 377.07,
+      "ctr": 4.99,
+      "cpa": 377.13,
       "roas": 3.32
     },
     {
@@ -83,9 +83,9 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 3651,
+      "impressions": 3652,
       "clicks": 53,
-      "spend": 338.98,
+      "spend": 339.06,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.45,
@@ -95,9 +95,9 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 2246,
+      "impressions": 2247,
       "clicks": 35,
-      "spend": 235.96,
+      "spend": 236.08,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.56,
@@ -226,9 +226,9 @@
     }
   ],
   "totals": {
-    "impressions": 58803,
-    "clicks": 1045,
-    "spend": 7527.02,
+    "impressions": 58809,
+    "clicks": 1046,
+    "spend": 7527.39,
     "purchases": 4,
     "purchase_value": 5012.0,
     "roas": 0.67

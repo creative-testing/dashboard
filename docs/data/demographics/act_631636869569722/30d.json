@@ -4,16 +4,16 @@
     "account_name": "AHAL BIO ",
     "period": "30d",
     "date_range": "2025-10-28..2025-11-26",
-    "generated_at": "2025-11-27T15:26:06.985406Z",
+    "generated_at": "2025-11-27T21:22:39.273180Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 607391,
+      "impressions": 607398,
       "clicks": 9417,
-      "spend": 94717.56,
+      "spend": 94719.21,
       "purchases": 216,
       "purchase_value": 437756.14,
       "ctr": 1.55,
@@ -23,9 +23,9 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 261364,
+      "impressions": 261365,
       "clicks": 5284,
-      "spend": 50656.49,
+      "spend": 50656.54,
       "purchases": 116,
       "purchase_value": 237740.0,
       "ctr": 2.02,
@@ -35,13 +35,13 @@
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 410920,
+      "impressions": 410924,
       "clicks": 5460,
-      "spend": 38302.77,
+      "spend": 38303.96,
       "purchases": 63,
       "purchase_value": 127862.25,
       "ctr": 1.33,
-      "cpa": 607.98,
+      "cpa": 608.0,
       "roas": 3.34
     },
     {
@@ -59,21 +59,21 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 34097,
+      "impressions": 34098,
       "clicks": 796,
-      "spend": 6559.13,
+      "spend": 6559.2,
       "purchases": 5,
       "purchase_value": 8017.0,
       "ctr": 2.33,
-      "cpa": 1311.83,
+      "cpa": 1311.84,
       "roas": 1.22
     },
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 72976,
+      "impressions": 72977,
       "clicks": 1254,
-      "spend": 3826.66,
+      "spend": 3826.67,
       "purchases": 6,
       "purchase_value": 9840.25,
       "ctr": 1.72,
@@ -262,9 +262,9 @@
     }
   ],
   "totals": {
-    "impressions": 1618670,
+    "impressions": 1618684,
     "clicks": 25758,
-    "spend": 223468.59,
+    "spend": 223471.56,
     "purchases": 445,
     "purchase_value": 895704.85,
     "roas": 4.01
