@@ -1,5 +1,22 @@
 # Notes Pipeline Meta Ads - CLAUDE
 
+## ☁️ INFRA CLOUD (Ce projet spécifiquement)
+
+| Composant | Où | Accès |
+|-----------|-----|-------|
+| **API SaaS** | VPS (via GitHub Secrets `VPS_HOST`) | `https://creative-testing.theaipipe.com` |
+| **Database** | PostgreSQL sur le même VPS | `DATABASE_URL` env var |
+| **Storage** | Cloudflare R2 | `STORAGE_*` env vars |
+| **Frontend** | GitHub Pages | `https://creative-testing.github.io/dashboard/` |
+| **CI/CD** | GitHub Actions | `.github/workflows/deploy-vps.yml` |
+
+**⚠️ Ce n'est PAS le VPS Vultr 66.135.5.31** (celui-là c'est dental-portal/agente)
+**⚠️ Ce n'est PAS Supabase** (celui du MCP c'est agente-creativo-ia)
+
+**Logs cron** : GitHub Actions ou `docker logs creative-testing-cron` sur le VPS
+
+---
+
 ## ⛔ RÈGLE CRITIQUE: PROTECTION DE LA PRODUCTION
 
 **MASTER = PRODUCTION - NE JAMAIS TOUCHER SANS AUTORISATION EXPLICITE**
@@ -178,6 +195,8 @@ Le workflow Fast Deploy ne crashe jamais grâce à :
 - **JSON vides `{}` crashent le dashboard** - toujours des structures valides
 - **`concurrency: pages-deploy`** empêche les conflits entre workflows
 - **ChatGPT-5 est excellent** pour l'architecture de workflows
+
+## 🔌 MCP `meta-ads-local` disponible pour tester l'API Meta directement
 
 ## 🎯 Parser V2 avec Confiance (Sept 12, 2025)
 
