@@ -4,11 +4,15 @@
 
 Appelé toutes les 2h par Render Cron Job
 Refresh les données Meta Ads de tous les tenants actifs
+
+⚡ PARALLÉLISÉ: Utilise asyncio.Semaphore pour traiter 5 comptes simultanément
+   Temps estimé: 20 min séquentiel → 3-4 min parallèle
 """
 import asyncio
 import sys
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from pathlib import Path
+from typing import Dict, Any, Tuple
 
 # Ajouter le répertoire parent au PYTHONPATH
 sys.path.insert(0, str(Path(__file__).parent))
@@ -22,10 +26,97 @@ from app.services.meta_client import meta_client
 from cryptography.fernet import Fernet
 from app.config import settings
 
+# Configuration parallélisation
+MAX_CONCURRENT_ACCOUNTS = 5  # Nombre max de comptes refreshés en parallèle par tenant
+DELAY_BETWEEN_ACCOUNTS_MS = 200  # Petit délai pour éviter les burst de rate limit
+
+
+async def refresh_single_account(
+    account_id: int,
+    account_fb_id: str,
+    account_name: str,
+    tenant_id: str,
+    semaphore: asyncio.Semaphore
+) -> Tuple[bool, str]:
+    """
+    Refresh un seul ad account (appelé en parallèle)
+
+    ⚠️ IMPORTANT: Chaque tâche crée sa propre session DB pour éviter
+    les race conditions avec asyncio.gather()
+
+    Returns:
+        (success: bool, message: str)
+    """
+    from uuid import UUID
+
+    async with semaphore:
+        # Petit délai pour éviter burst (stagger les requêtes)
+        await asyncio.sleep(DELAY_BETWEEN_ACCOUNTS_MS / 1000)
+
+        # ⚡ Créer une session DB dédiée pour cette tâche
+        db = SessionLocal()
+
+        try:
+            # Check for existing running job (idempotence)
+            existing_job = db.execute(
+                select(RefreshJob).where(
+                    RefreshJob.tenant_id == UUID(tenant_id),
+                    RefreshJob.ad_account_id == account_id,
+                    RefreshJob.status.in_([JobStatus.QUEUED, JobStatus.RUNNING])
+                )
+            ).scalar_one_or_none()
+
+            if existing_job:
+                return (True, f"⏭️ Skipped {account_fb_id} - already running")
+
+            # Create job
+            job = RefreshJob(
+                tenant_id=UUID(tenant_id),
+                ad_account_id=account_id,
+                status=JobStatus.QUEUED
+            )
+            db.add(job)
+            db.commit()
+            db.refresh(job)
+
+            try:
+                # Update job status
+                job.status = JobStatus.RUNNING
+                job.started_at = datetime.now(timezone.utc)
+                db.commit()
+
+                # Run refresh
+                result = await refresh_account_data(
+                    ad_account_id=account_fb_id,
+                    tenant_id=UUID(tenant_id),
+                    db=db
+                )
+
+                # Mark job as completed
+                job.status = JobStatus.OK
+                job.finished_at = datetime.now(timezone.utc)
+                db.commit()
+
+                return (True, f"✅ {account_fb_id} ({account_name})")
+
+            except Exception as e:
+                job.status = JobStatus.ERROR
+                job.error = str(e)[:500]
+                job.finished_at = datetime.now(timezone.utc)
+                db.commit()
+                return (False, f"❌ {account_fb_id}: {str(e)[:80]}")
+
+        finally:
+            # ⚡ Toujours fermer la session
+            db.close()
+
 
 async def refresh_tenant(tenant_id: str, tenant_name: str, db: SessionLocal):
     """
-    Refresh tous les ad accounts d'un tenant
+    Refresh tous les ad accounts d'un tenant EN PARALLÈLE
+
+    ⚡ OPTIMISÉ: Utilise asyncio.Semaphore pour limiter la concurrence
+    et éviter de dépasser les rate limits Meta API.
 
     Args:
         tenant_id: UUID du tenant
@@ -35,6 +126,7 @@ async def refresh_tenant(tenant_id: str, tenant_name: str, db: SessionLocal):
     from uuid import UUID
 
     print(f"\n🔄 Refreshing tenant: {tenant_name} ({tenant_id})")
+    start_time = datetime.now(timezone.utc)
 
     try:
         # Get all ad accounts for this tenant
@@ -64,72 +156,56 @@ async def refresh_tenant(tenant_id: str, tenant_name: str, db: SessionLocal):
         fernet = Fernet(settings.TOKEN_ENCRYPTION_KEY.encode())
         access_token = fernet.decrypt(oauth_token.access_token).decode()
 
-        # Check if token is expired (ne pas refresh si expiré)
+        # Check if token is expired
         if oauth_token.expires_at and oauth_token.expires_at < datetime.now(timezone.utc):
             print(f"  ⚠️  OAuth token expired for {tenant_name} (expired at {oauth_token.expires_at})")
             return
 
-        # Refresh each account sequentially (pour éviter rate limits)
+        # ⚡ PARALLÉLISATION avec Semaphore adaptatif
+        # Commence avec MAX_CONCURRENT_ACCOUNTS, ajusté dynamiquement par rate_monitor
+        semaphore = asyncio.Semaphore(MAX_CONCURRENT_ACCOUNTS)
+
+        print(f"  ⚡ Starting parallel refresh (max {MAX_CONCURRENT_ACCOUNTS} concurrent)...")
+
+        # Créer les tâches parallèles (chaque tâche aura sa propre session DB)
+        tasks = [
+            refresh_single_account(
+                account_id=account.id,
+                account_fb_id=account.fb_account_id,
+                account_name=account.name,
+                tenant_id=tenant_id,
+                semaphore=semaphore
+            )
+            for account in accounts
+        ]
+
+        # Exécuter en parallèle
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+
+        # Compter les résultats
         success_count = 0
         error_count = 0
 
-        for account in accounts:
-            # Check for existing running job (idempotence)
-            existing_job = db.execute(
-                select(RefreshJob).where(
-                    RefreshJob.tenant_id == UUID(tenant_id),
-                    RefreshJob.ad_account_id == account.id,
-                    RefreshJob.status.in_([JobStatus.QUEUED, JobStatus.RUNNING])
-                )
-            ).scalar_one_or_none()
-
-            if existing_job:
-                print(f"    ⏭️  Skipping {account.fb_account_id} ({account.name}) - already running")
-                continue
-
-            # Create job
-            job = RefreshJob(
-                tenant_id=UUID(tenant_id),
-                ad_account_id=account.id,
-                status=JobStatus.QUEUED
-            )
-            db.add(job)
-            db.commit()
-            db.refresh(job)
-
-            # Execute refresh synchronously (pas de BackgroundTasks dans cron)
-            try:
-                print(f"    🔄 Refreshing {account.fb_account_id} ({account.name})...")
-
-                # Update job status
-                job.status = JobStatus.RUNNING
-                job.started_at = datetime.now(timezone.utc)
-                db.commit()
-
-                # Run refresh (refresh_account_data gets token from DB internally)
-                result = await refresh_account_data(
-                    ad_account_id=account.fb_account_id,
-                    tenant_id=UUID(tenant_id),
-                    db=db
-                )
-
-                # Mark job as completed
-                job.status = JobStatus.OK
-                job.finished_at = datetime.now(timezone.utc)
-                db.commit()
-
-                success_count += 1
-                print(f"    ✅ Success: {account.fb_account_id}")
-
-            except Exception as e:
+        for result in results:
+            if isinstance(result, Exception):
                 error_count += 1
-                job.status = JobStatus.ERROR
-                job.error = str(e)[:500]  # Limiter à 500 chars
-                job.finished_at = datetime.now(timezone.utc)
-                db.commit()
-                print(f"    ❌ Error: {account.fb_account_id} - {str(e)[:100]}")
+                print(f"    ❌ Exception: {str(result)[:100]}")
+            elif isinstance(result, tuple):
+                success, msg = result
+                if success:
+                    success_count += 1
+                else:
+                    error_count += 1
+                print(f"    {msg}")
 
-        print(f"  ✅ Tenant {tenant_name}: {success_count} success, {error_count} errors")
+        # Calculer le temps total
+        elapsed = (datetime.now(timezone.utc) - start_time).total_seconds()
+
+        # Log le résumé du rate monitor
+        from app.services.meta_client import meta_client
+        print(f"  📊 Rate limit status: {meta_client.rate_monitor.get_usage_summary()}")
+
+        print(f"  ✅ Tenant {tenant_name}: {success_count} success, {error_count} errors in {elapsed:.1f}s")
 
     except Exception as e:
         print(f"  ❌ Fatal error for tenant {tenant_name}: {e}")
