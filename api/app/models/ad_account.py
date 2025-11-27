@@ -1,7 +1,7 @@
 """
 Modèle AdAccount (comptes publicitaires Meta connectés)
 """
-from sqlalchemy import Column, String, DateTime, ForeignKey, Enum
+from sqlalchemy import Column, String, DateTime, ForeignKey, Enum, Boolean, Integer
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
@@ -34,6 +34,11 @@ class AdAccount(Base):
     last_refresh_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    # Auto-disable after repeated failures (403 errors)
+    is_disabled = Column(Boolean, nullable=False, default=False)
+    disabled_reason = Column(String(255), nullable=True)
+    consecutive_errors = Column(Integer, nullable=False, default=0)
 
     # Relations
     tenant = relationship("Tenant", back_populates="ad_accounts")

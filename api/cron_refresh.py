@@ -29,6 +29,7 @@ from app.config import settings
 # Configuration parallélisation
 MAX_CONCURRENT_ACCOUNTS = 5  # Nombre max de comptes refreshés en parallèle par tenant
 DELAY_BETWEEN_ACCOUNTS_MS = 200  # Petit délai pour éviter les burst de rate limit
+MAX_CONSECUTIVE_ERRORS = 3  # Auto-disable après X erreurs 403 consécutives
 
 
 async def refresh_single_account(
@@ -95,14 +96,37 @@ async def refresh_single_account(
                 # Mark job as completed
                 job.status = JobStatus.OK
                 job.finished_at = datetime.now(timezone.utc)
+
+                # ✅ Reset consecutive errors on success
+                account = db.execute(
+                    select(models.AdAccount).where(models.AdAccount.id == account_id)
+                ).scalar_one_or_none()
+                if account and account.consecutive_errors > 0:
+                    account.consecutive_errors = 0
+
                 db.commit()
 
                 return (True, f"✅ {account_fb_id} ({account_name})")
 
             except Exception as e:
+                error_msg = str(e)[:500]
                 job.status = JobStatus.ERROR
-                job.error = str(e)[:500]
+                job.error = error_msg
                 job.finished_at = datetime.now(timezone.utc)
+
+                # 🔴 Handle 403 errors: increment counter, auto-disable after MAX_CONSECUTIVE_ERRORS
+                account = db.execute(
+                    select(models.AdAccount).where(models.AdAccount.id == account_id)
+                ).scalar_one_or_none()
+
+                if account and "403" in error_msg:
+                    account.consecutive_errors += 1
+                    if account.consecutive_errors >= MAX_CONSECUTIVE_ERRORS:
+                        account.is_disabled = True
+                        account.disabled_reason = f"Auto-disabled: {MAX_CONSECUTIVE_ERRORS}+ consecutive 403 errors"
+                        db.commit()
+                        return (False, f"🚫 {account_fb_id}: DISABLED (403 x{account.consecutive_errors})")
+
                 db.commit()
                 return (False, f"❌ {account_fb_id}: {str(e)[:80]}")
 
@@ -129,16 +153,28 @@ async def refresh_tenant(tenant_id: str, tenant_name: str, db: SessionLocal):
     start_time = datetime.now(timezone.utc)
 
     try:
-        # Get all ad accounts for this tenant
+        # Get all ACTIVE ad accounts for this tenant (skip disabled)
         accounts = db.execute(
-            select(models.AdAccount).where(models.AdAccount.tenant_id == UUID(tenant_id))
+            select(models.AdAccount).where(
+                models.AdAccount.tenant_id == UUID(tenant_id),
+                models.AdAccount.is_disabled == False
+            )
+        ).scalars().all()
+
+        # Count disabled for logging
+        disabled_count = db.execute(
+            select(models.AdAccount).where(
+                models.AdAccount.tenant_id == UUID(tenant_id),
+                models.AdAccount.is_disabled == True
+            )
         ).scalars().all()
 
         if not accounts:
-            print(f"  ⚠️  No ad accounts found for {tenant_name}")
+            print(f"  ⚠️  No active ad accounts found for {tenant_name}")
             return
 
-        print(f"  📊 Found {len(accounts)} ad accounts")
+        disabled_msg = f" ({len(disabled_count)} disabled)" if disabled_count else ""
+        print(f"  📊 Found {len(accounts)} active ad accounts{disabled_msg}")
 
         # Get OAuth token for this tenant
         oauth_token = db.execute(
