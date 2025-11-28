@@ -157,9 +157,10 @@
 
         async function dataExists(accountId, token) {
             // Vérifier si les données existent via endpoint /api/data/files
+            // Note: On utilise GET car HEAD n'est pas supporté par l'API
             try {
                 const response = await fetch(`${API_URL}/api/data/files/${accountId}/meta_v1.json`, {
-                    method: 'HEAD',
+                    method: 'GET',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 return response.ok;
@@ -205,9 +206,10 @@
 
         async function tenantDataExists(token) {
             // Vérifie si les données agrégées du tenant existent
+            // Note: On utilise GET car HEAD n'est pas supporté par l'API
             try {
                 const response = await fetch(`${API_URL}/api/data/tenant-aggregated`, {
-                    method: 'HEAD',
+                    method: 'GET',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 return response.ok;
