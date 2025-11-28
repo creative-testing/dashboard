@@ -4,26 +4,26 @@
     "account_name": "18856533",
     "period": "30d",
     "date_range": "2025-10-29..2025-11-27",
-    "generated_at": "2025-11-28T15:20:43.014678Z",
+    "generated_at": "2025-11-28T21:17:39.260573Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 151135,
+      "impressions": 151138,
       "clicks": 5939,
-      "spend": 8618.7,
+      "spend": 8618.76,
       "purchases": 24,
       "purchase_value": 19352.8,
       "ctr": 3.93,
-      "cpa": 359.11,
+      "cpa": 359.12,
       "roas": 2.25
     },
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 110865,
+      "impressions": 110867,
       "clicks": 2558,
       "spend": 4750.27,
       "purchases": 9,
@@ -48,7 +48,7 @@
       "age": "25-34",
       "gender": "female",
       "impressions": 112058,
-      "clicks": 3056,
+      "clicks": 3057,
       "spend": 4156.78,
       "purchases": 8,
       "purchase_value": 7444.8,
@@ -59,19 +59,19 @@
     {
       "age": "25-34",
       "gender": "male",
-      "impressions": 112655,
+      "impressions": 112657,
       "clicks": 2153,
-      "spend": 3748.25,
+      "spend": 3748.35,
       "purchases": 10,
       "purchase_value": 7002.0,
       "ctr": 1.91,
-      "cpa": 374.82,
+      "cpa": 374.83,
       "roas": 1.87
     },
     {
       "age": "45-54",
       "gender": "male",
-      "impressions": 36482,
+      "impressions": 36483,
       "clicks": 1139,
       "spend": 2198.56,
       "purchases": 6,
@@ -83,7 +83,7 @@
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 23956,
+      "impressions": 23957,
       "clicks": 1574,
       "spend": 2170.7,
       "purchases": 13,
@@ -238,9 +238,9 @@
     }
   ],
   "totals": {
-    "impressions": 667124,
-    "clicks": 21971,
-    "spend": 33543.15,
+    "impressions": 667133,
+    "clicks": 21972,
+    "spend": 33543.31,
     "purchases": 87,
     "purchase_value": 69648.2,
     "roas": 2.08
