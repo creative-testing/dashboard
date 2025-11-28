@@ -4,16 +4,16 @@
     "account_name": "Kocare Beauty",
     "period": "90d",
     "date_range": "2025-08-30..2025-11-27",
-    "generated_at": "2025-11-28T09:22:13.993791Z",
+    "generated_at": "2025-11-28T15:21:38.288309Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 4016968,
+      "impressions": 4016990,
       "clicks": 76526,
-      "spend": 216862.46,
+      "spend": 216864.18,
       "purchases": 461,
       "purchase_value": 954986.89,
       "ctr": 1.91,
@@ -23,9 +23,9 @@
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 1948037,
-      "clicks": 51883,
-      "spend": 174633.22,
+      "impressions": 1948054,
+      "clicks": 51884,
+      "spend": 174633.64,
       "purchases": 314,
       "purchase_value": 741304.16,
       "ctr": 2.66,
@@ -35,9 +35,9 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 566781,
+      "impressions": 566787,
       "clicks": 22560,
-      "spend": 65813.4,
+      "spend": 65813.68,
       "purchases": 79,
       "purchase_value": 178273.49,
       "ctr": 3.98,
@@ -47,9 +47,9 @@
     {
       "age": "18-24",
       "gender": "female",
-      "impressions": 1306326,
+      "impressions": 1306331,
       "clicks": 22996,
-      "spend": 46066.8,
+      "spend": 46066.89,
       "purchases": 101,
       "purchase_value": 201344.6,
       "ctr": 1.76,
@@ -262,9 +262,9 @@
     }
   ],
   "totals": {
-    "impressions": 8765342,
-    "clicks": 200829,
-    "spend": 559855.03,
+    "impressions": 8765392,
+    "clicks": 200830,
+    "spend": 559857.54,
     "purchases": 1053,
     "purchase_value": 2277390.87,
     "roas": 4.07
