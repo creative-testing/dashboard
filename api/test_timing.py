@@ -21,12 +21,12 @@ async def test():
 
     since_3d = (datetime.now() - timedelta(days=3)).strftime("%Y-%m-%d")
     t0 = time.time()
-    d3 = await meta_client.get_insights(account.fb_account_id, token, since_3d, until)
+    d3 = await meta_client.get_insights_daily(account.fb_account_id, token, since_3d, until)
     t3 = time.time() - t0
 
     since_90d = (datetime.now() - timedelta(days=90)).strftime("%Y-%m-%d")
     t0 = time.time()
-    d90 = await meta_client.get_insights(account.fb_account_id, token, since_90d, until)
+    d90 = await meta_client.get_insights_daily(account.fb_account_id, token, since_90d, until)
     t90 = time.time() - t0
 
     print(f"3 jours:  {t3:.2f}s - {len(d3)} rows")
