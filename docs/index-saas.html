@@ -1550,10 +1550,10 @@
                 return;
             }
 
-            // Start polling every 15 seconds
+            // Start polling every 5 seconds (fast UX, negligible load with few users)
             let pollCount = 0;
-            const maxPolls = 40; // 40 * 15s = 10 minutes max
-            const pollInterval = 15000; // 15 seconds
+            const maxPolls = 120; // 120 * 5s = 10 minutes max
+            const pollInterval = 5000; // 5 seconds
 
             const pollTimer = setInterval(async () => {
                 pollCount++;
