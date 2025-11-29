@@ -1,15 +1,22 @@
 /**
- * SaaS Data Loader - Charge depuis API Render avec JWT auth
+ * SaaS Data Loader - Charge depuis API avec JWT auth
  * Version adaptée de data_adapter.js pour mode SaaS multi-tenant
+ *
+ * Retourne: { success: boolean, noData: boolean, error?: string }
+ * - success=true, noData=false → données chargées OK
+ * - success=false, noData=true → 404, données pas encore générées
+ * - success=false, noData=false → autre erreur (réseau, auth, etc.)
  */
 
 // Import DataAdapter class from data_adapter.js (will be loaded separately)
 // This file only overrides the loadOptimizedData function
 
-// Global function to load optimized data from Render API
+const API_URL = 'https://creative-testing.theaipipe.com';
+
+// Global function to load optimized data from API
 async function loadOptimizedData() {
     try {
-        console.log('📦 Loading optimized data from Render API...');
+        console.log('📦 Loading optimized data from API...');
 
         // Get auth params from URL
         const urlParams = new URLSearchParams(window.location.search);
@@ -18,51 +25,66 @@ async function loadOptimizedData() {
 
         if (!token) {
             console.error('Missing token in URL');
-            return false;
+            return { success: false, noData: false, error: 'Missing authentication token' };
         }
 
-        const API_URL = 'https://creative-testing.theaipipe.com';
         const headers = { 'Authorization': `Bearer ${token}` };
         const timestamp = Date.now();
 
         let meta, agg, summary;
+        let is404 = false;
 
         // MODE 1: Aggregated tenant-wide (all accounts)
         if (!accountId || accountId === 'all') {
             console.log('📊 Loading aggregated data for ALL accounts (tenant-wide)...');
 
             const response = await fetch(`${API_URL}/api/data/tenant-aggregated?t=${timestamp}`, { headers });
-            if (!response.ok) {
+
+            if (response.status === 404) {
+                console.warn('⚠️ No data available yet (404) - first time user?');
+                is404 = true;
+            } else if (!response.ok) {
                 throw new Error(`Failed to load aggregated data: ${response.status} ${response.statusText}`);
-            }
+            } else {
+                const aggregatedData = await response.json();
+                meta = aggregatedData.meta_v1;
+                agg = aggregatedData.agg_v1;
+                summary = aggregatedData.summary_v1;
 
-            const aggregatedData = await response.json();
-            meta = aggregatedData.meta_v1;
-            agg = aggregatedData.agg_v1;
-            summary = aggregatedData.summary_v1;
-
-            console.log(`✅ Loaded aggregated data: ${aggregatedData.metadata.accounts_loaded} accounts, ${agg.ads.length} total ads`);
-            if (aggregatedData.metadata.accounts_failed > 0) {
-                console.warn(`⚠️ ${aggregatedData.metadata.accounts_failed} accounts failed to load:`, aggregatedData.metadata.failed_accounts);
+                console.log(`✅ Loaded aggregated data: ${aggregatedData.metadata.accounts_loaded} accounts, ${agg.ads.length} total ads`);
+                if (aggregatedData.metadata.accounts_failed > 0) {
+                    console.warn(`⚠️ ${aggregatedData.metadata.accounts_failed} accounts failed to load:`, aggregatedData.metadata.failed_accounts);
+                }
             }
         }
         // MODE 2: Single account
         else {
             console.log(`📊 Loading data for single account: ${accountId}...`);
 
-            if (!accountId) {
-                console.error('Missing account_id in URL for single-account mode');
-                return false;
+            // Try to load meta first to check if data exists
+            const metaResponse = await fetch(`${API_URL}/api/data/files/${accountId}/meta_v1.json?t=${timestamp}`, { headers });
+
+            if (metaResponse.status === 404) {
+                console.warn(`⚠️ No data for account ${accountId} (404) - needs refresh`);
+                is404 = true;
+            } else if (!metaResponse.ok) {
+                throw new Error(`Failed to load meta: ${metaResponse.status}`);
+            } else {
+                meta = await metaResponse.json();
+
+                // Load the rest
+                [agg, summary] = await Promise.all([
+                    fetch(`${API_URL}/api/data/files/${accountId}/agg_v1.json?t=${timestamp}`, { headers }).then(r => r.json()),
+                    fetch(`${API_URL}/api/data/files/${accountId}/summary_v1.json?t=${timestamp}`, { headers }).then(r => r.json())
+                ]);
+
+                console.log(`✅ Loaded ${agg.ads.length} ads from account ${accountId}`);
             }
+        }
 
-            // Load all optimized files from API
-            [meta, agg, summary] = await Promise.all([
-                fetch(`${API_URL}/api/data/files/${accountId}/meta_v1.json?t=${timestamp}`, { headers }).then(r => r.json()),
-                fetch(`${API_URL}/api/data/files/${accountId}/agg_v1.json?t=${timestamp}`, { headers }).then(r => r.json()),
-                fetch(`${API_URL}/api/data/files/${accountId}/summary_v1.json?t=${timestamp}`, { headers }).then(r => r.json())
-            ]);
-
-            console.log(`✅ Loaded ${agg.ads.length} ads from account ${accountId}`);
+        // Handle 404 case - data not ready yet
+        if (is404) {
+            return { success: false, noData: true, error: 'Data not available yet' };
         }
 
         console.log(`✅ Total ads loaded: ${agg.ads.length}`);
@@ -226,9 +248,67 @@ async function loadOptimizedData() {
         // Store raw optimized data for direct access if needed
         window.optimizedData = { meta, agg, summary, adapter };
 
-        return true;
+        return { success: true, noData: false };
     } catch (error) {
-        console.error('❌ Error loading optimized data from Render API:', error);
+        console.error('❌ Error loading optimized data:', error);
+        return { success: false, noData: false, error: error.message };
+    }
+}
+
+/**
+ * Trigger refresh for all accounts of the current tenant
+ * Uses /api/accounts/refresh-tenant-accounts endpoint
+ */
+async function triggerRefreshAll() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+
+    if (!token) {
+        return { success: false, error: 'Missing token' };
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/api/accounts/refresh-tenant-accounts`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('❌ Refresh API error:', response.status, errorText);
+            return { success: false, error: `${response.status}: ${errorText}` };
+        }
+
+        const data = await response.json();
+        console.log('🔄 Refresh triggered:', data);
+        return { success: true, ...data };
+    } catch (error) {
+        console.error('❌ Failed to trigger refresh:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+/**
+ * Check if data is ready (for polling)
+ */
+async function checkDataReady() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    const accountId = urlParams.get('account_id');
+
+    if (!token) return false;
+
+    try {
+        const endpoint = (!accountId || accountId === 'all')
+            ? `${API_URL}/api/data/tenant-aggregated?t=${Date.now()}`
+            : `${API_URL}/api/data/files/${accountId}/meta_v1.json?t=${Date.now()}`;
+
+        const response = await fetch(endpoint, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        return response.ok;
+    } catch {
         return false;
     }
 }
