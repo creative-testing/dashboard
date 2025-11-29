@@ -61,10 +61,10 @@ git push origin saas-mvp
 
 ### **ÉTAPE 2 : Validation en Production**
 
-Une fois déployé sur Render (auto-deploy), appeler :
+Une fois déployé sur le VPS (via CI/CD GitHub Actions), appeler :
 
 ```bash
-curl https://creative-testing-api.onrender.com/api/accounts/dev/count-meta-accounts
+curl https://creative-testing.theaipipe.com/api/accounts/dev/count-meta-accounts
 ```
 
 **Réponse attendue :**
@@ -96,7 +96,7 @@ Deux options :
 
 #### Option B : Endpoint seed-production (si Option A ne marche pas)
 ```bash
-curl -X POST https://creative-testing-api.onrender.com/api/accounts/dev/seed-production
+curl -X POST https://creative-testing.theaipipe.com/api/accounts/dev/seed-production
 ```
 
 ---
@@ -161,7 +161,7 @@ git push origin saas-mvp
 ## 📝 CHECKLIST DÉPLOIEMENT
 
 - [ ] Commit + push vers `saas-mvp`
-- [ ] Render auto-deploy terminé
+- [ ] VPS deploy terminé (GitHub Actions)
 - [ ] Appeler `/dev/count-meta-accounts` → vérifier `meta_api_count: 70`
 - [ ] Pablo se reconnecte via OAuth
 - [ ] Pablo voit 70 comptes dans le dashboard
@@ -202,4 +202,4 @@ git revert HEAD
 git push origin saas-mvp --force
 ```
 
-Render redesplegará la versión anterior automáticamente.
+Le VPS redéploiera la version précédente automatiquement via GitHub Actions.

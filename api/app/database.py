@@ -6,14 +6,14 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from .config import settings
 
-# Fix Render's postgres:// URL format for SQLAlchemy 1.4+ with psycopg driver
-# Render provides DATABASE_URL as postgres:// (Heroku legacy format)
+# Fix postgres:// URL format for SQLAlchemy 1.4+ with psycopg driver
+# Some providers use postgres:// (Heroku legacy format)
 # but SQLAlchemy 1.4+ requires postgresql+psycopg:// (for psycopg v3 driver)
 database_url = settings.DATABASE_URL
 if database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql+psycopg://", 1)
 
-# Ensure SSL is enabled for Render Postgres (required for all connections)
+# Ensure SSL is enabled for external Postgres connections
 if "sslmode=" not in database_url:
     # Add sslmode=require if not already present
     separator = "&" if "?" in database_url else "?"

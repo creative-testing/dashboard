@@ -1,31 +1,32 @@
-# README_DEPLOY — SaaS MVP (Render + Cloudflare R2)
+# README_DEPLOY — SaaS MVP (Vultr VPS + Cloudflare R2)
 
 ## Objectif
-Déployer l'API FastAPI en HTTPS sur Render, avec OAuth Facebook et stockage R2. **Aucun impact** sur le dashboard prod des patrons (docs/index.html).
+Déployer l'API FastAPI en HTTPS sur Vultr VPS, avec OAuth Facebook et stockage R2. **Aucun impact** sur le dashboard prod des patrons (docs/index.html).
 
 ---
 
 ## 0) Prérequis rapides
-- Compte **Render** (Web Service + PostgreSQL).
+- **VPS Vultr** (Ubuntu 22.04, Docker installé).
 - Compte **Cloudflare R2** (ou S3 équivalent).
 - App **Facebook** (mode Dév ok pour tests).
 
 ---
 
-## 1) Render — Web Service API
+## 1) Architecture actuelle
 
-**Service**
-- Root dir: `api`
-- Build: `pip install -r requirements-api.txt`
-- Start: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+**URL de production** : `https://creative-testing.theaipipe.com`
 
-**Requirements**
-Ajoutez `boto3` si absent dans `requirements-api.txt`:
-```
-boto3>=1.34
-```
+**VPS Vultr** :
+- SSH: `ssh root@66.135.5.31`
+- Chemin: `/root/creative-testing-backend/`
+- Docker containers: `creative-testing-api`, `creative-testing-cron`
+- Reverse proxy: nginx sur ports 80/443
 
-**Env Vars (minimum)**
+**CI/CD** :
+- Push sur `master` → GitHub Actions déploie automatiquement sur le VPS
+- Workflow: `.github/workflows/deploy-vps.yml`
+
+**Env Vars (dans docker-compose ou .env sur le VPS)**
 ```
 ENVIRONMENT=production
 DEBUG=false
@@ -37,31 +38,28 @@ SESSION_SECRET=<32+ chars>
 TOKEN_ENCRYPTION_KEY=<Fernet key base64>
 JWT_ISSUER=creative-testing-api
 
-# DB (Render Postgres)
-DATABASE_URL=<render-postgres-url>
+# DB (PostgreSQL sur le VPS)
+DATABASE_URL=postgresql://...
 
-# OAuth Facebook (app de test ou de prod)
+# OAuth Facebook
 META_APP_ID=<facebook-app-id>
 META_APP_SECRET=<facebook-app-secret>
 META_API_VERSION=v23.0
-META_REDIRECT_URI=https://creative-testing-api.onrender.com/auth/facebook/callback
+META_REDIRECT_URI=https://creative-testing.theaipipe.com/auth/facebook/callback
 
 # CORS & Cookies
-ALLOWED_ORIGINS=https://creative-testing.github.io,https://creative-testing-api.onrender.com
+ALLOWED_ORIGINS=https://creative-testing.theaipipe.com,http://localhost:8080
 COOKIE_SAMESITE=none
 COOKIE_DOMAIN=
 
-# Dashboard URL (pour la redirection post-callback)
-DASHBOARD_URL=https://creative-testing.github.io/dashboard/oauth-callback.html
+# Dashboard URL (post-OAuth redirect)
+DASHBOARD_URL=https://creative-testing.theaipipe.com/oauth-callback.html
 
-# Storage: d'abord local, puis R2
-STORAGE_MODE=local
-LOCAL_DATA_ROOT=/tmp/data
-
-# R2 (remplir quand on bascule)
-STORAGE_ENDPOINT=
-STORAGE_ACCESS_KEY=
-STORAGE_SECRET_KEY=
+# Storage R2
+STORAGE_MODE=r2
+STORAGE_ENDPOINT=https://<account>.r2.cloudflarestorage.com
+STORAGE_ACCESS_KEY=<...>
+STORAGE_SECRET_KEY=<...>
 STORAGE_BUCKET=creative-testing-data
 STORAGE_REGION=auto
 
@@ -70,9 +68,9 @@ RATE_LIMIT_PER_MINUTE=60
 SENTRY_DSN=
 ```
 
-Déployez. Vérifiez l'homepage:
+Vérifiez l'API:
 ```
-curl -s https://creative-testing-api.onrender.com/  # 200 + JSON de service
+curl -s https://creative-testing.theaipipe.com/  # 200 + JSON
 ```
 
 ---
@@ -81,10 +79,10 @@ curl -s https://creative-testing-api.onrender.com/  # 200 + JSON de service
 
 Dans **Facebook Login → Settings**:
 - **Valid OAuth Redirect URIs**:
-  `https://creative-testing-api.onrender.com/auth/facebook/callback`
+  `https://creative-testing.theaipipe.com/auth/facebook/callback`
 - (Optionnel pour Live) Privacy Policy URL + Terms of Service.
 
-> **Switch d'app plus tard** (ex: "Ads‑Alchemy opt"): changez **uniquement** `META_APP_ID` et `META_APP_SECRET` sur Render. Pas de migration nécessaire.
+> **Switch d'app plus tard** (ex: "Ads‑Alchemy opt"): changez **uniquement** `META_APP_ID` et `META_APP_SECRET` dans les env vars du VPS. Pas de migration nécessaire.
 
 ---
 
@@ -92,7 +90,7 @@ Dans **Facebook Login → Settings**:
 
 1. Créez un **bucket** (ex: `creative-testing-data`).
 2. Générez des **API tokens** (Read/Write).
-3. Renseignez dans Render:
+3. Renseignez dans les env vars du VPS:
 ```
 STORAGE_MODE=r2
 STORAGE_ENDPOINT=https://<account>.r2.cloudflarestorage.com
@@ -114,7 +112,7 @@ aws s3 ls --endpoint-url=$STORAGE_ENDPOINT s3://creative-testing-data/
 ## 4) Tests E2E (prod‑like)
 
 1. **Login OAuth**
-   - Ouvrir `https://creative-testing-api.onrender.com/auth/facebook/login`
+   - Ouvrir `https://creative-testing.theaipipe.com/auth/facebook/login`
    - Consent
    - Redirection vers : `DASHBOARD_URL?token=&tenant_id=...`
    - UI: "Estado: Conectado"
@@ -144,7 +142,7 @@ aws s3 ls --endpoint-url=$STORAGE_ENDPOINT s3://creative-testing-data/
 
 - Tokens OAuth chiffrés (Fernet).
 - JWT `iss/aud` vérifiés.
-- CORS réduit à GH Pages + Render.
+- CORS réduit à theaipipe.com + localhost.
 - Clé R2 avec droits minimes (bucket scope).
 - Pas de secrets commités (variables d'environnement uniquement).
 
@@ -171,7 +169,7 @@ GET /api/data/files/{act_id}/{filename}
 ## 8) Checklist Go‑Live (5 minutes)
 
 - [ ] Homepage API 200
-- [ ] OAuth OK (redirection vers GH Pages)
+- [ ] OAuth OK (redirection vers dashboard SaaS)
 - [ ] Refresh OK (agg/meta/summary/manifest)
 - [ ] R2 activé (optionnel) et listé
 - [ ] Patrons: `docs/index.html` inchangé
@@ -182,7 +180,7 @@ GET /api/data/files/{act_id}/{filename}
 
 Quand tes patrons veulent passer sur **leur** app:
 
-1. Dans Render, remplace **uniquement**:
+1. Dans les env vars du VPS, remplace **uniquement**:
 ```
 META_APP_ID=1496103148207058
 META_APP_SECRET=<secret de Ads-Alchemy opt>
@@ -190,7 +188,7 @@ META_APP_SECRET=<secret de Ads-Alchemy opt>
 
 2. Vérifie que `Valid OAuth Redirect URIs` contient bien:
 ```
-https://creative-testing-api.onrender.com/auth/facebook/callback
+https://creative-testing.theaipipe.com/auth/facebook/callback
 ```
 
 > Aucune migration à faire. Les tenants restent isolés par `tenant_id`, le user est identifié par Meta, et le pipeline reste identique.

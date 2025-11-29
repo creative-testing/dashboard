@@ -196,12 +196,12 @@ pytest --cov=app tests/
 
 ## 🚀 Déploiement
 
-Options recommandées:
-- **Railway** (simple, $5-20/mois)
-- **Render** (free tier disponible)
-- **Fly.io** (bon pour Postgres)
+**Production actuelle : Vultr VPS** (66.135.5.31)
+- Déploiement automatique via GitHub Actions (`.github/workflows/deploy-vps.yml`)
+- Push sur `master` → rebuild Docker + copie frontend
+- URL : `https://creative-testing.theaipipe.com`
 
-Voir le guide de déploiement complet dans `../DEPLOY.md`.
+Voir le guide de déploiement complet dans `../README_DEPLOY.md`.
 
 ## 📚 Docs
 

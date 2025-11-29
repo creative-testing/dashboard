@@ -292,7 +292,7 @@ DATABASE_URL=postgresql://...
 ```
 
 ### ⏭️ Prochaines étapes suggérées
-1. **Déploiement Railway/Fly.io/Render** (1-2h)
+1. ~~**Déploiement**~~ ✅ **FAIT** - Vultr VPS (`creative-testing.theaipipe.com`)
 2. **Configuration Stripe Production** (30 min)
 3. **Tests E2E avec vraies données** (1h)
 4. **Documentation API** (Swagger/OpenAPI auto-généré)

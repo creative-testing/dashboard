@@ -2,7 +2,7 @@
 """
 🕐 Cron script pour refresh automatique de tous les tenants
 
-Appelé toutes les 2h par Render Cron Job
+Appelé toutes les 2h par le cron Docker sur VPS Vultr
 Refresh les données Meta Ads de tous les tenants actifs
 
 ⚡ PARALLÉLISÉ: Utilise asyncio.Semaphore pour traiter 5 comptes simultanément
