@@ -1506,7 +1506,7 @@
         // Show waiting UI for first-time users (data not yet generated)
         async function showDataPendingUI() {
             // Hide normal dashboard content
-            const mainContent = document.querySelector('.dashboard-grid');
+            const mainContent = document.querySelector('.container');
             if (mainContent) {
                 mainContent.innerHTML = `
                     <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
