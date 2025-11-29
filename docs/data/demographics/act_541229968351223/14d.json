@@ -4,28 +4,28 @@
     "account_name": "Supralash",
     "period": "14d",
     "date_range": "2025-11-15..2025-11-28",
-    "generated_at": "2025-11-29T09:23:39.449944Z",
+    "generated_at": "2025-11-29T15:22:28.021680Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "25-34",
       "gender": "female",
-      "impressions": 14773,
-      "clicks": 133,
-      "spend": 1259.31,
+      "impressions": 14782,
+      "clicks": 134,
+      "spend": 1260.42,
       "purchases": 0,
       "purchase_value": 0.0,
-      "ctr": 0.9,
+      "ctr": 0.91,
       "cpa": 0,
       "roas": 0.0
     },
     {
       "age": "35-44",
       "gender": "female",
-      "impressions": 10708,
+      "impressions": 10713,
       "clicks": 115,
-      "spend": 1220.83,
+      "spend": 1220.98,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 1.07,
@@ -35,9 +35,9 @@
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 4815,
+      "impressions": 4820,
       "clicks": 109,
-      "spend": 874.65,
+      "spend": 875.37,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 2.26,
@@ -47,26 +47,26 @@
     {
       "age": "65+",
       "gender": "female",
-      "impressions": 2175,
-      "clicks": 106,
-      "spend": 642.52,
+      "impressions": 2180,
+      "clicks": 107,
+      "spend": 643.06,
       "purchases": 2,
       "purchase_value": 2506.0,
-      "ctr": 4.87,
-      "cpa": 321.26,
+      "ctr": 4.91,
+      "cpa": 321.53,
       "roas": 3.9
     },
     {
       "age": "55-64",
       "gender": "female",
-      "impressions": 2942,
+      "impressions": 2951,
       "clicks": 107,
-      "spend": 633.07,
+      "spend": 634.1,
       "purchases": 2,
       "purchase_value": 2506.0,
-      "ctr": 3.64,
-      "cpa": 316.53,
-      "roas": 3.96
+      "ctr": 3.63,
+      "cpa": 317.05,
+      "roas": 3.95
     },
     {
       "age": "18-24",
@@ -95,7 +95,7 @@
     {
       "age": "35-44",
       "gender": "male",
-      "impressions": 1984,
+      "impressions": 1985,
       "clicks": 37,
       "spend": 250.39,
       "purchases": 0,
@@ -131,9 +131,9 @@
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 686,
+      "impressions": 687,
       "clicks": 30,
-      "spend": 108.76,
+      "spend": 108.78,
       "purchases": 0,
       "purchase_value": 0.0,
       "ctr": 4.37,
@@ -226,9 +226,9 @@
     }
   ],
   "totals": {
-    "impressions": 49812,
-    "clicks": 794,
-    "spend": 6095.74,
+    "impressions": 49847,
+    "clicks": 796,
+    "spend": 6099.31,
     "purchases": 4,
     "purchase_value": 5012.0,
     "roas": 0.82
