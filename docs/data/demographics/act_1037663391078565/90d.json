@@ -4,16 +4,16 @@
     "account_name": "Botanical Doctor",
     "period": "90d",
     "date_range": "2025-08-31..2025-11-28",
-    "generated_at": "2025-11-29T15:22:39.341117Z",
+    "generated_at": "2025-11-29T21:21:15.065765Z",
     "source": "insights(level=account, breakdowns=[age,gender])"
   },
   "segments": [
     {
       "age": "45-54",
       "gender": "female",
-      "impressions": 99703,
+      "impressions": 99705,
       "clicks": 4329,
-      "spend": 30319.31,
+      "spend": 30319.5,
       "purchases": 107,
       "purchase_value": 68711.85,
       "ctr": 4.34,
@@ -107,9 +107,9 @@
     {
       "age": "55-64",
       "gender": "male",
-      "impressions": 17914,
+      "impressions": 17915,
       "clicks": 620,
-      "spend": 6108.22,
+      "spend": 6108.29,
       "purchases": 19,
       "purchase_value": 11903.45,
       "ctr": 3.46,
@@ -262,9 +262,9 @@
     }
   ],
   "totals": {
-    "impressions": 569861,
+    "impressions": 569864,
     "clicks": 19691,
-    "spend": 128776.49,
+    "spend": 128776.75,
     "purchases": 434,
     "purchase_value": 280858.95,
     "roas": 2.18
