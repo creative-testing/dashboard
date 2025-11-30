@@ -1,12 +1,12 @@
 """
-Service de refresh des données Meta Ads
+Service de synchronisation des données Meta Ads
 Orchestre: fetch API → transform → storage
 
 IMPORTANT: Produces columnar format matching production pipeline
 
 MODE BASELINE vs TAIL (parité avec fetch_with_smart_limits.py):
-- BASELINE: Premier run ou baseline trop vieux → fetch 90 jours complets
-- TAIL: Runs suivants → fetch seulement 3 derniers jours, upsert dans baseline
+- BASELINE (📥 INITIAL SYNC): Premier run → fetch 90 jours complets
+- TAIL (🔄 TAIL REFRESH): Runs suivants → fetch 3 derniers jours, upsert dans baseline
 """
 import json
 from datetime import datetime, timedelta, timezone
@@ -80,13 +80,13 @@ def _determine_refresh_mode(baseline: Optional[Dict[str, Any]], reference_date: 
         (mode, days_to_fetch) - ("BASELINE", 90) ou ("TAIL", 3)
     """
     if baseline is None:
-        print(f"📚 Mode BASELINE: Aucun baseline existant")
+        print(f"📥 INITIAL SYNC: No existing data - will fetch {BASELINE_DAYS} days")
         return ("BASELINE", BASELINE_DAYS)
 
     # Vérifier que le baseline a une structure valide
     baseline_date = baseline.get('metadata', {}).get('reference_date')
     if not baseline_date:
-        print(f"📚 Mode BASELINE: Baseline sans date de référence")
+        print(f"📥 INITIAL SYNC: Baseline missing reference date - will fetch {BASELINE_DAYS} days")
         return ("BASELINE", BASELINE_DAYS)
 
     try:
@@ -95,14 +95,14 @@ def _determine_refresh_mode(baseline: Optional[Dict[str, Any]], reference_date: 
         age_days = (reference_dt - baseline_dt).days
 
         if age_days < 0:
-            print(f"📚 Mode BASELINE: Baseline dans le futur (?)")
+            print(f"📥 INITIAL SYNC: Baseline in future (?) - will fetch {BASELINE_DAYS} days")
             return ("BASELINE", BASELINE_DAYS)
 
-        print(f"⚡ Mode TAIL: Baseline de {age_days} jour(s), fetch {TAIL_BACKFILL_DAYS} derniers jours")
+        print(f"🔄 TAIL REFRESH: Updating last {TAIL_BACKFILL_DAYS} days (baseline: {age_days}d old)")
         return ("TAIL", TAIL_BACKFILL_DAYS)
 
     except ValueError as e:
-        print(f"📚 Mode BASELINE: Erreur parsing date: {e}")
+        print(f"📥 INITIAL SYNC: Date parsing error: {e} - will fetch {BASELINE_DAYS} days")
         return ("BASELINE", BASELINE_DAYS)
 
 
@@ -167,20 +167,20 @@ def _upsert_daily_ads(existing_ads: List[Dict], new_ads: List[Dict], reference_d
     return cleaned_ads
 
 
-async def refresh_account_data(
+async def sync_account_data(
     ad_account_id: str,
     tenant_id: UUID,
     db: Session
 ) -> Dict[str, Any]:
     """
-    Refresh les données d'un ad account et génère les fichiers optimisés
+    Synchronise les données d'un ad account et génère les fichiers optimisés
 
     IMPORTANT: Generates columnar format (meta_v1, agg_v1, summary_v1)
     matching production pipeline for dashboard compatibility
 
     MODE BASELINE vs TAIL:
-    - BASELINE: Premier run → fetch 90 jours complets
-    - TAIL: Runs suivants → fetch 3 derniers jours, upsert dans baseline
+    - BASELINE (📥 INITIAL SYNC): Premier run → fetch 90 jours complets
+    - TAIL (🔄 TAIL REFRESH): Runs suivants → fetch 3 derniers jours, upsert dans baseline
 
     Args:
         ad_account_id: ID du compte (ex: "act_123456")
@@ -235,6 +235,10 @@ async def refresh_account_data(
     # 5. Charger le baseline existant et déterminer le mode
     existing_baseline = _load_existing_baseline(tenant_id, ad_account_id)
     refresh_mode, days_to_fetch = _determine_refresh_mode(existing_baseline, reference_date)
+
+    # Log clair du mode de sync
+    mode_emoji = "📥 INITIAL SYNC" if refresh_mode == "BASELINE" else "🔄 TAIL REFRESH"
+    print(f"{mode_emoji}: {ad_account_id} ({ad_account.name}) - {days_to_fetch} days")
 
     # 6. Calculer la plage de dates selon le mode
     since_date = (today - timedelta(days=days_to_fetch)).isoformat()

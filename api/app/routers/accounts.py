@@ -13,7 +13,7 @@ from ..database import get_db, SessionLocal
 from ..dependencies.auth import get_current_tenant_id, get_current_user_id
 from .. import models
 from ..models.refresh_job import RefreshJob, JobStatus
-from ..services.refresher import refresh_account_data, RefreshError
+from ..services.refresher import sync_account_data, RefreshError
 from ..config import settings
 from ..utils.jwt import create_access_token
 
@@ -45,8 +45,8 @@ async def _run_refresh_job(job_id: UUID, fb_account_id: str, tenant_id: UUID):
         job.started_at = _utcnow()
         db.commit()
 
-        # 2. Exécuter le refresh (30s-15min selon la taille du compte)
-        await refresh_account_data(
+        # 2. Exécuter la sync (30s-15min selon la taille du compte)
+        await sync_account_data(
             ad_account_id=fb_account_id,
             tenant_id=tenant_id,
             db=db
@@ -108,8 +108,8 @@ async def _run_parallel_refresh(
                 db.commit()
                 db.refresh(job)
 
-                # Refresh
-                await refresh_account_data(
+                # Sync
+                await sync_account_data(
                     ad_account_id=account.fb_account_id,
                     tenant_id=tenant_id,
                     db=db
@@ -465,9 +465,9 @@ async def dev_test_refresh(fb_account_id: str) -> Dict[str, Any]:
 
         tenant_id = ad_account.tenant_id
 
-        # Lancer le refresh de manière synchrone
+        # Lancer la sync de manière synchrone
         try:
-            result = await refresh_account_data(
+            result = await sync_account_data(
                 ad_account_id=fb_account_id,
                 tenant_id=tenant_id,
                 db=db

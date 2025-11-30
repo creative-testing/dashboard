@@ -21,7 +21,7 @@ from sqlalchemy import select
 from app.database import SessionLocal
 from app import models
 from app.models import JobStatus, RefreshJob
-from app.services.refresher import refresh_account_data, RefreshError
+from app.services.refresher import sync_account_data, RefreshError
 from app.services.demographics_fetcher import refresh_demographics_for_account, DemographicsError
 from app.services.meta_client import meta_client
 from cryptography.fernet import Fernet
@@ -87,8 +87,8 @@ async def refresh_single_account(
                 job.started_at = datetime.now(timezone.utc)
                 db.commit()
 
-                # Run refresh (insights data)
-                result = await refresh_account_data(
+                # Run sync (insights data)
+                result = await sync_account_data(
                     ad_account_id=account_fb_id,
                     tenant_id=UUID(tenant_id),
                     db=db
