@@ -877,6 +877,66 @@
           margin-top: 10px; font-weight: 600; opacity: 0.9;
           background: rgba(0,0,0,0.12); display: inline-block; padding: 6px 10px; border-radius: 10px;
         }
+
+        /* ⏳ Loading Overlay - UX améliorée pour chargement initial */
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 50%, #1e40af 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        #loading-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .loading-text {
+            color: white;
+            font-size: 20px;
+            margin-top: 25px;
+            font-weight: 600;
+            text-align: center;
+        }
+        .loading-subtext {
+            color: rgba(255,255,255,0.8);
+            font-size: 14px;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .loading-progress {
+            width: 200px;
+            height: 4px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+        .loading-progress-bar {
+            height: 100%;
+            background: white;
+            border-radius: 2px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
     </style>
     <!-- Data adapter and SaaS loader -->
     <script src="data_adapter.js"></script>
@@ -885,6 +945,16 @@
     <script src="i18n/i18n.js"></script>
 </head>
 <body>
+    <!-- ⏳ Loading Overlay -->
+    <div id="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text" id="loading-text">Conectando con tus datos...</div>
+        <div class="loading-subtext" id="loading-subtext">Esto puede tomar unos segundos</div>
+        <div class="loading-progress">
+            <div class="loading-progress-bar" id="loading-progress-bar"></div>
+        </div>
+    </div>
+
     <div class="header">
         <h1 data-i18n="dashboard.header_title">🚀 Creative Testing Dashboard</h1>
         <p><span data-i18n="dashboard.header_subtitle">Análisis de rendimiento creativo • Última actualización:</span> <span id="data-date" data-i18n="dashboard.loading">Cargando...</span></p>
@@ -1448,8 +1518,62 @@
         
         // Removed unused petcareData variable
         let accountsIndex = null; // Index complet des comptes si disponible
-        
+
+        // ⏳ Loading Overlay Controller
+        const loadingOverlay = {
+            messages: [
+                { text: 'Conectando con tus datos...', sub: 'Esto puede tomar unos segundos', progress: 10 },
+                { text: 'Cargando cuentas publicitarias...', sub: 'Recuperando información de Meta Ads', progress: 30 },
+                { text: 'Procesando métricas...', sub: 'Calculando ROAS, CPA y más', progress: 60 },
+                { text: 'Preparando visualización...', sub: 'Ya casi está listo', progress: 85 },
+            ],
+            currentIndex: 0,
+            interval: null,
+            startTime: null,
+
+            start() {
+                this.startTime = Date.now();
+                this.currentIndex = 0;
+                this.update();
+                // Cambiar message toutes les 3 secondes
+                this.interval = setInterval(() => {
+                    if (this.currentIndex < this.messages.length - 1) {
+                        this.currentIndex++;
+                        this.update();
+                    }
+                }, 3000);
+            },
+
+            update() {
+                const msg = this.messages[this.currentIndex];
+                const textEl = document.getElementById('loading-text');
+                const subEl = document.getElementById('loading-subtext');
+                const progressEl = document.getElementById('loading-progress-bar');
+                if (textEl) textEl.textContent = msg.text;
+                if (subEl) subEl.textContent = msg.sub;
+                if (progressEl) progressEl.style.width = msg.progress + '%';
+            },
+
+            hide() {
+                if (this.interval) clearInterval(this.interval);
+                const elapsed = ((Date.now() - this.startTime) / 1000).toFixed(1);
+                console.log(`⏱️ Tiempo de carga total: ${elapsed}s`);
+
+                // Animation finale
+                const progressEl = document.getElementById('loading-progress-bar');
+                if (progressEl) progressEl.style.width = '100%';
+
+                setTimeout(() => {
+                    const overlay = document.getElementById('loading-overlay');
+                    if (overlay) overlay.classList.add('hidden');
+                }, 300);
+            }
+        };
+
         async function loadAllData() {
+            // ⏳ Démarrer l'overlay de chargement
+            loadingOverlay.start();
+
             try {
                 // Load optimized data
                 console.log('📦 Loading optimized data...');
@@ -1460,6 +1584,7 @@
                     if (result.noData) {
                         // First-time user: no data yet, show waiting UI + auto-refresh
                         console.log('🆕 First-time user detected: no data available yet');
+                        loadingOverlay.hide(); // Cacher l'overlay avant d'afficher l'UI nouvel utilisateur
                         showDataPendingUI();
                         return;
                     } else {
@@ -1497,8 +1622,12 @@
 
                 console.log('📊 Datos cargados:', Object.keys(periodsData), 'prev_week');
 
+                // ⏳ Cacher l'overlay - données chargées !
+                loadingOverlay.hide();
+
             } catch (error) {
                 console.error('❌ Error al cargar datos:', error);
+                loadingOverlay.hide(); // Cacher même en cas d'erreur
                 showErrorUI(error.message);
             }
         }
