@@ -937,6 +937,72 @@
             width: 0%;
             transition: width 0.3s ease;
         }
+
+        /* 🆕 First-time User Overlay - Premium UX pour BASELINE (longue attente) */
+        #firstload-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+        #firstload-overlay.visible {
+            display: flex;
+        }
+        .firstload-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        .firstload-title {
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        .firstload-text {
+            color: rgba(255,255,255,0.9);
+            font-size: 16px;
+            margin-top: 20px;
+            font-weight: 500;
+            text-align: center;
+        }
+        .firstload-subtext {
+            color: rgba(255,255,255,0.7);
+            font-size: 14px;
+            margin-top: 8px;
+            text-align: center;
+            max-width: 400px;
+            line-height: 1.5;
+        }
+        .firstload-progress {
+            width: 280px;
+            height: 6px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 3px;
+            margin-top: 30px;
+            overflow: hidden;
+        }
+        .firstload-progress-bar {
+            height: 100%;
+            background: white;
+            border-radius: 3px;
+            width: 0%;
+            transition: width 1s ease;
+        }
+        .firstload-tip {
+            color: rgba(255,255,255,0.6);
+            font-size: 12px;
+            margin-top: 25px;
+            text-align: center;
+            font-style: italic;
+        }
     </style>
     <!-- Data adapter and SaaS loader -->
     <script src="data_adapter.js"></script>
@@ -952,6 +1018,22 @@
         <div class="loading-subtext" id="loading-subtext">Esto puede tomar unos segundos</div>
         <div class="loading-progress">
             <div class="loading-progress-bar" id="loading-progress-bar"></div>
+        </div>
+    </div>
+
+    <!-- 🆕 First-time User Overlay (BASELINE = longue attente) -->
+    <div id="firstload-overlay">
+        <div class="loading-spinner"></div>
+        <div class="firstload-title" id="firstload-title">¡Bienvenido! 🎉</div>
+        <div class="firstload-text" id="firstload-text">Conectando con Meta Ads...</div>
+        <div class="firstload-subtext" id="firstload-subtext">
+            Primera vez aquí: estamos descargando 90 días de datos publicitarios.
+        </div>
+        <div class="firstload-progress">
+            <div class="firstload-progress-bar" id="firstload-progress-bar"></div>
+        </div>
+        <div class="firstload-tip" id="firstload-tip">
+            💡 Tip: Este proceso solo ocurre la primera vez
         </div>
     </div>
 
@@ -1632,102 +1714,136 @@
             }
         }
 
-        // Show waiting UI for first-time users (data not yet generated)
+        // 🆕 Premium UI for first-time users (BASELINE = long wait)
         async function showDataPendingUI() {
-            // Hide normal dashboard content
-            const mainContent = document.querySelector('.container');
-            if (mainContent) {
-                mainContent.innerHTML = `
-                    <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
-                        <div style="font-size: 64px; margin-bottom: 20px;">⏳</div>
-                        <h2 style="color: #1d1d1f; margin-bottom: 16px;">Preparando tus datos...</h2>
-                        <p style="color: #86868b; margin-bottom: 24px; max-width: 500px; margin-left: auto; margin-right: auto;">
-                            Es la primera vez que accedes con esta cuenta. Estamos descargando tus datos publicitarios de Meta Ads.
-                            Esto puede tomar unos minutos.
-                        </p>
-                        <div id="refresh-status" style="margin-bottom: 24px;">
-                            <div class="spinner" style="display: inline-block; width: 24px; height: 24px; border: 3px solid #e5e5e7; border-top-color: #007AFF; border-radius: 50%; animation: spin 1s linear infinite;"></div>
-                            <span id="status-text" style="margin-left: 12px; color: #86868b;">Iniciando actualización...</span>
-                        </div>
-                        <p id="poll-counter" style="color: #86868b; font-size: 12px;"></p>
-                    </div>
-                    <style>
-                        @keyframes spin {
-                            to { transform: rotate(360deg); }
-                        }
-                    </style>
-                `;
-            }
+            console.log('🆕 First-time user: showing premium waiting UI');
+
+            // Show the overlay
+            const overlay = document.getElementById('firstload-overlay');
+            if (overlay) overlay.classList.add('visible');
+
+            // UI elements
+            const titleEl = document.getElementById('firstload-title');
+            const textEl = document.getElementById('firstload-text');
+            const subtextEl = document.getElementById('firstload-subtext');
+            const progressBar = document.getElementById('firstload-progress-bar');
+            const tipEl = document.getElementById('firstload-tip');
+
+            // Messages progressifs (rassurants, variés)
+            const messages = [
+                { text: 'Conectando con Meta Ads...', sub: 'Estableciendo conexión segura con tu cuenta', progress: 5 },
+                { text: 'Descargando campañas...', sub: 'Recuperando información de tus campañas activas', progress: 15 },
+                { text: 'Analizando anuncios...', sub: 'Procesando creativos y configuraciones', progress: 25 },
+                { text: 'Calculando métricas...', sub: 'ROAS, CPA, CTR y más indicadores', progress: 35 },
+                { text: 'Procesando datos históricos...', sub: '90 días de rendimiento publicitario', progress: 45 },
+                { text: 'Organizando información...', sub: 'Preparando visualizaciones del dashboard', progress: 55 },
+                { text: 'Optimizando datos...', sub: 'Calculando tendencias y comparativas', progress: 65 },
+                { text: 'Finalizando análisis...', sub: 'Últimos ajustes antes de mostrar resultados', progress: 75 },
+                { text: 'Casi listo...', sub: 'Tu dashboard estará disponible en un momento', progress: 85 },
+                { text: 'Últimos detalles...', sub: 'Verificando que todo esté perfecto', progress: 90 },
+            ];
+
+            // Tips variés (changent toutes les 20s)
+            const tips = [
+                '💡 Tip: Este proceso solo ocurre la primera vez',
+                '📊 Tip: Podrás ver 90 días de datos históricos',
+                '🚀 Tip: Las próximas visitas cargarán en segundos',
+                '🎯 Tip: Analiza qué creativos funcionan mejor',
+                '📈 Tip: Compara rendimiento por período',
+                '⚡ Tip: Los datos se actualizan automáticamente',
+            ];
+
+            let messageIndex = 0;
+            let tipIndex = 0;
+            const startTime = Date.now();
+
+            // Update messages every 8 seconds
+            const messageInterval = setInterval(() => {
+                messageIndex = Math.min(messageIndex + 1, messages.length - 1);
+                const msg = messages[messageIndex];
+                if (textEl) textEl.textContent = msg.text;
+                if (subtextEl) subtextEl.textContent = msg.sub;
+                if (progressBar) progressBar.style.width = msg.progress + '%';
+            }, 8000);
+
+            // Update tips every 20 seconds
+            const tipInterval = setInterval(() => {
+                tipIndex = (tipIndex + 1) % tips.length;
+                if (tipEl) tipEl.textContent = tips[tipIndex];
+            }, 20000);
 
             // Trigger refresh for all accounts
-            console.log('🔄 Triggering refresh for all accounts...');
-            const statusText = document.getElementById('status-text');
+            console.log('🔄 Triggering BASELINE refresh for all accounts...');
 
             try {
                 const refreshResult = await triggerRefreshAll();
                 if (refreshResult.success) {
-                    console.log('✅ Refresh triggered:', refreshResult);
-                    if (statusText) statusText.textContent = 'Descargando datos de Meta Ads...';
+                    console.log('✅ BASELINE refresh triggered:', refreshResult);
                 } else {
                     console.error('❌ Failed to trigger refresh:', refreshResult.error);
-                    if (statusText) statusText.textContent = 'Error al iniciar: ' + (refreshResult.error || 'desconocido');
+                    clearInterval(messageInterval);
+                    clearInterval(tipInterval);
+                    if (textEl) textEl.textContent = 'Error al iniciar';
+                    if (subtextEl) subtextEl.textContent = refreshResult.error || 'Por favor, recarga la página';
                     return;
                 }
             } catch (error) {
                 console.error('❌ Refresh error:', error);
-                if (statusText) statusText.textContent = 'Error de conexión';
+                clearInterval(messageInterval);
+                clearInterval(tipInterval);
+                if (textEl) textEl.textContent = 'Error de conexión';
+                if (subtextEl) subtextEl.textContent = 'Verifica tu conexión e intenta de nuevo';
                 return;
             }
 
-            // Start polling every 5 seconds (fast UX, negligible load with few users)
+            // Start polling every 5 seconds
             let pollCount = 0;
             const maxPolls = 120; // 120 * 5s = 10 minutes max
-            const pollInterval = 5000; // 5 seconds
+            const pollInterval = 5000;
 
             const pollTimer = setInterval(async () => {
                 pollCount++;
-                const pollCounter = document.getElementById('poll-counter');
-                if (pollCounter) pollCounter.textContent = `Verificación ${pollCount}/${maxPolls}...`;
-
-                console.log(`🔍 Polling for data... (${pollCount}/${maxPolls})`);
+                const elapsed = Math.round((Date.now() - startTime) / 1000);
+                console.log(`🔍 Polling for data... (${pollCount}/${maxPolls}, ${elapsed}s elapsed)`);
 
                 try {
                     const ready = await checkDataReady();
                     if (ready) {
-                        console.log('✅ Data is ready! Reloading...');
+                        console.log(`✅ Data ready after ${elapsed}s! Reloading...`);
                         clearInterval(pollTimer);
-                        if (statusText) statusText.textContent = '¡Datos listos! Recargando...';
-                        setTimeout(() => window.location.reload(), 1000);
+                        clearInterval(messageInterval);
+                        clearInterval(tipInterval);
+
+                        // Success animation
+                        if (titleEl) titleEl.textContent = '¡Listo! 🎉';
+                        if (textEl) textEl.textContent = '¡Tus datos están listos!';
+                        if (subtextEl) subtextEl.textContent = 'Cargando tu dashboard...';
+                        if (progressBar) progressBar.style.width = '100%';
+                        if (tipEl) tipEl.textContent = `⏱️ Completado en ${elapsed} segundos`;
+
+                        setTimeout(() => window.location.reload(), 1500);
                         return;
                     }
                 } catch (error) {
                     console.warn('⚠️ Poll check failed:', error);
                 }
 
-                // Update status message
-                if (statusText) {
-                    const messages = [
-                        'Descargando datos de Meta Ads...',
-                        'Procesando campañas...',
-                        'Calculando métricas...',
-                        'Casi listo...'
-                    ];
-                    statusText.textContent = messages[Math.min(pollCount - 1, messages.length - 1)];
-                }
-
                 // Timeout after max polls
                 if (pollCount >= maxPolls) {
                     clearInterval(pollTimer);
+                    clearInterval(messageInterval);
+                    clearInterval(tipInterval);
                     console.warn('⏱️ Polling timeout reached');
-                    if (statusText) {
-                        statusText.textContent = 'Tomando más tiempo de lo esperado...';
-                    }
-                    if (pollCounter) {
-                        pollCounter.innerHTML = `
+
+                    if (titleEl) titleEl.textContent = 'Tomando más tiempo...';
+                    if (textEl) textEl.textContent = 'El proceso sigue en curso';
+                    if (subtextEl) {
+                        subtextEl.innerHTML = `
+                            Puedes esperar o volver en unos minutos.<br><br>
                             <button onclick="window.location.reload()" style="
-                                background: #007AFF; color: white; border: none; padding: 12px 24px;
-                                border-radius: 8px; cursor: pointer; font-size: 14px; margin-top: 12px;
-                            ">Reintentar</button>
+                                background: white; color: #059669; border: none; padding: 12px 24px;
+                                border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;
+                            ">Verificar de nuevo</button>
                         `;
                     }
                 }
