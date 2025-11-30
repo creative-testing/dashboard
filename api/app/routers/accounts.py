@@ -1,5 +1,9 @@
 """
 Router pour la gestion des comptes publicitaires et informations utilisateur
+
+🔒 LIMITES GLOBALES: L'API a la priorité sur le CRON
+- API peut utiliser jusqu'à 10 workers (nouvel user qui attend)
+- Le CRON s'efface automatiquement si l'API est occupée
 """
 from uuid import UUID
 from datetime import datetime, timezone, timedelta
@@ -16,6 +20,7 @@ from ..models.refresh_job import RefreshJob, JobStatus
 from ..services.refresher import sync_account_data, RefreshError
 from ..config import settings
 from ..utils.jwt import create_access_token
+from ..utils.job_limiter import can_api_proceed, MAX_API_WORKERS
 
 router = APIRouter()
 
@@ -266,6 +271,7 @@ async def refresh_tenant_accounts(
     🔒 Protected - requires valid JWT
     🏢 Tenant-isolated - only refreshes YOUR accounts
     ⚡ Async - returns immediately, jobs run in background
+    🔴 PRIORITÉ HAUTE - L'API a la priorité sur le CRON
 
     Use case: Nouvel utilisateur qui vient de se connecter via OAuth
     et ne veut pas attendre le cron (2h max).
@@ -274,11 +280,23 @@ async def refresh_tenant_accounts(
         {
             "status": "processing",
             "accounts_total": 60,
-            "jobs_created": 60,
+            "jobs_launched": 10,
+            "jobs_queued_for_later": 50,
             "estimated_time_minutes": 15
         }
     """
-    # 1. Récupérer tous les ad accounts du tenant
+    # 1. Vérifier les slots disponibles (nettoie aussi les zombies)
+    can_proceed, available_slots, message = can_api_proceed(db)
+
+    if not can_proceed:
+        # Système saturé - rare, mais possible
+        return {
+            "status": "system_busy",
+            "message": message,
+            "retry_in_minutes": 5
+        }
+
+    # 2. Récupérer tous les ad accounts du tenant
     accounts = db.execute(
         select(models.AdAccount).where(
             models.AdAccount.tenant_id == current_tenant_id
@@ -289,12 +307,15 @@ async def refresh_tenant_accounts(
         return {
             "status": "no_accounts",
             "accounts_total": 0,
-            "jobs_created": 0,
+            "jobs_launched": 0,
             "estimated_time_minutes": 0
         }
 
-    # 2. Créer un job pour chaque compte (même logique que le cron)
-    jobs_created = []
+    # 3. Créer et lancer les jobs (limité par available_slots)
+    jobs_launched = []
+    jobs_already_running = []
+    slots_used = 0
+
     for account in accounts:
         # Check idempotence - skip if already running
         existing = db.execute(
@@ -306,12 +327,16 @@ async def refresh_tenant_accounts(
         ).scalar_one_or_none()
 
         if existing:
-            jobs_created.append({
+            jobs_already_running.append({
                 "account_id": account.fb_account_id,
-                "job_id": str(existing.id),
-                "already_running": True
+                "job_id": str(existing.id)
             })
             continue
+
+        # Vérifier si on a encore des slots
+        if slots_used >= available_slots:
+            # Plus de slots - les comptes restants seront traités par le cron
+            break
 
         # Create new job
         job = RefreshJob(
@@ -330,21 +355,29 @@ async def refresh_tenant_accounts(
             account.fb_account_id,
             current_tenant_id
         )
-        jobs_created.append({
+        jobs_launched.append({
             "account_id": account.fb_account_id,
-            "job_id": str(job.id),
-            "already_running": False
+            "job_id": str(job.id)
         })
+        slots_used += 1
 
-    # Estimation: ~15s par compte, minimum 15 minutes
-    estimated_minutes = max(15, len(accounts) // 4)
+    # Comptes non traités (seront pris par le cron)
+    accounts_remaining = len(accounts) - len(jobs_launched) - len(jobs_already_running)
+
+    # Estimation: ~30s par compte avec 10 workers parallèles
+    estimated_minutes = max(5, (len(jobs_launched) * 30) // 60)
 
     return {
         "status": "processing",
         "accounts_total": len(accounts),
-        "jobs_created": len(jobs_created),
+        "jobs_launched": len(jobs_launched),
+        "jobs_already_running": len(jobs_already_running),
+        "accounts_queued_for_cron": accounts_remaining,
+        "available_slots": available_slots,
         "estimated_time_minutes": estimated_minutes,
-        "jobs": jobs_created
+        "message": f"{len(jobs_launched)} comptes en cours de traitement" + (
+            f", {accounts_remaining} seront traités par le cron" if accounts_remaining > 0 else ""
+        )
     }
 
 

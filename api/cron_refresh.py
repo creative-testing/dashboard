@@ -5,11 +5,19 @@
 Appelé toutes les 2h par le cron Docker sur VPS Vultr
 Refresh les données Meta Ads de tous les tenants actifs
 
-⚡ PARALLÉLISÉ: Utilise asyncio.Semaphore pour traiter 5 comptes simultanément
-   Temps estimé: 20 min séquentiel → 3-4 min parallèle
+⚡ PARALLÉLISÉ: Utilise asyncio.Semaphore pour limiter la concurrence
+🔒 FILE LOCK: Empêche deux crons de tourner en parallèle
+🧟 ZOMBIE CLEANUP: Nettoie les jobs bloqués > 45min
+
+Architecture des limites (partagée avec l'API via PostgreSQL):
+- CRON: max 8 workers (laisse 2 slots pour l'API)
+- API: peut utiliser jusqu'à 10 total
+- Évite les crashs RAM si CRON + API tournent en même temps
 """
 import asyncio
+import fcntl
 import gc
+import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -25,13 +33,56 @@ from app.models import JobStatus, RefreshJob
 from app.services.refresher import sync_account_data, RefreshError
 from app.services.demographics_fetcher import refresh_demographics_for_account, DemographicsError
 from app.services.meta_client import meta_client
+from app.utils.job_limiter import (
+    MAX_CRON_WORKERS,
+    CRON_SKIP_THRESHOLD,
+    cleanup_zombie_jobs,
+    can_cron_proceed,
+    get_running_job_count
+)
 from cryptography.fernet import Fernet
 from app.config import settings
 
-# Configuration parallélisation
-MAX_CONCURRENT_ACCOUNTS = 6  # Augmenté: VPS upgradé 4GB→8GB RAM (Nov 2024)
+# Configuration
+LOCK_FILE = "/tmp/cron_refresh.lock"
 DELAY_BETWEEN_ACCOUNTS_MS = 200  # Petit délai pour éviter les burst de rate limit
 MAX_CONSECUTIVE_ERRORS = 3  # Auto-disable après X erreurs 403 consécutives
+
+
+# ============================================================
+# 🔒 FILE LOCK - Empêche deux crons de tourner en parallèle
+# ============================================================
+
+def acquire_lock():
+    """
+    Acquiert un lock exclusif via fcntl.
+
+    Avantages de fcntl vs PID check manuel:
+    - Lock automatiquement libéré si le process crash
+    - Pas de race condition
+    - Méthode Unix standard
+
+    Returns:
+        File descriptor si lock acquis, None sinon
+    """
+    try:
+        lock_fd = open(LOCK_FILE, 'w')
+        fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        lock_fd.write(str(os.getpid()))
+        lock_fd.flush()
+        return lock_fd
+    except (IOError, OSError):
+        return None
+
+
+def release_lock(lock_fd):
+    """Libère le lock fichier."""
+    if lock_fd:
+        try:
+            fcntl.flock(lock_fd, fcntl.LOCK_UN)
+            lock_fd.close()
+        except Exception:
+            pass
 
 
 async def refresh_single_account(
@@ -218,11 +269,11 @@ async def refresh_tenant(tenant_id: str, tenant_name: str, db: SessionLocal):
             print(f"  ⚠️  OAuth token expired for {tenant_name} (expired at {oauth_token.expires_at})")
             return
 
-        # ⚡ PARALLÉLISATION avec Semaphore adaptatif
-        # Commence avec MAX_CONCURRENT_ACCOUNTS, ajusté dynamiquement par rate_monitor
-        semaphore = asyncio.Semaphore(MAX_CONCURRENT_ACCOUNTS)
+        # ⚡ PARALLÉLISATION avec Semaphore
+        # Limité à MAX_CRON_WORKERS (8) pour laisser 2 slots à l'API
+        semaphore = asyncio.Semaphore(MAX_CRON_WORKERS)
 
-        print(f"  ⚡ Starting parallel refresh (max {MAX_CONCURRENT_ACCOUNTS} concurrent)...")
+        print(f"  ⚡ Starting parallel refresh (max {MAX_CRON_WORKERS} concurrent)...")
 
         # Créer les tâches parallèles (chaque tâche aura sa propre session DB)
         tasks = [
@@ -272,22 +323,40 @@ async def main():
     """
     Main cron entry point
     Refresh tous les tenants actifs
+
+    🔒 FILE LOCK: Empêche deux crons simultanés
+    🧟 ZOMBIE CLEANUP: Nettoie les jobs bloqués
+    ⏭️ SKIP SI OCCUPÉ: Laisse la priorité à l'API (nouveaux users)
     """
     print(f"🕐 Cron Refresh Started at {datetime.now(timezone.utc).isoformat()}")
+
+    # 1. Acquérir le lock fichier (empêche 2 crons simultanés)
+    lock = acquire_lock()
+    if not lock:
+        print("⚠️ Un autre cron est déjà en cours, skip...")
+        return
 
     db = SessionLocal()
 
     try:
-        # Get all tenants
+        # 2. Vérifier si le système est déjà occupé (priorité à l'API)
+        can_proceed, available_slots, message = can_cron_proceed(db)
+        print(f"📊 {message}")
+
+        if not can_proceed:
+            print("⏭️ CRON skip ce cycle, réessai dans 2h")
+            return
+
+        # 3. Get all tenants
         tenants = db.execute(select(models.Tenant)).scalars().all()
 
         if not tenants:
             print("⚠️  No tenants found")
             return
 
-        print(f"📊 Found {len(tenants)} tenants to refresh")
+        print(f"📊 Found {len(tenants)} tenants to refresh (max {MAX_CRON_WORKERS} workers)")
 
-        # Refresh each tenant sequentially
+        # 4. Refresh each tenant sequentially
         for tenant in tenants:
             await refresh_tenant(str(tenant.id), tenant.name, db)
 
@@ -295,9 +364,12 @@ async def main():
 
     except Exception as e:
         print(f"❌ Fatal error in cron: {e}")
+        import traceback
+        traceback.print_exc()
         sys.exit(1)
     finally:
         db.close()
+        release_lock(lock)
 
 
 if __name__ == "__main__":
