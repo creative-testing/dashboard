@@ -48,9 +48,9 @@ LOCK_FILE = "/tmp/cron_refresh.lock"
 DELAY_BETWEEN_ACCOUNTS_MS = 200  # Petit délai pour éviter les burst de rate limit
 MAX_CONSECUTIVE_ERRORS = 3  # Auto-disable après X erreurs 403 consécutives
 
-# Feature flag: Skip demographics pour accélérer les BASELINE (5 appels API en moins par compte)
-# Usage: SKIP_DEMOGRAPHICS=true pour désactiver temporairement
-SKIP_DEMOGRAPHICS = os.getenv("SKIP_DEMOGRAPHICS", "false").lower() == "true"
+# NOTE: Demographics sont auto-skip en mode BASELINE (nouvel user = urgent)
+# En mode TAIL (refresh régulier), demographics sont fetchés normalement
+# Voir refresh_single_account() pour la logique
 
 
 # ============================================================
@@ -151,9 +151,16 @@ async def refresh_single_account(
                 )
 
                 # 📊 Run demographics refresh (age/gender breakdowns)
-                # Contrôlé par SKIP_DEMOGRAPHICS env var pour accélérer les BASELINE
+                # AUTO-SKIP en mode BASELINE (nouvel user = urgent, veut voir ses données vite)
+                # En mode TAIL (refresh régulier), on fetch les demographics normalement
                 demo_periods = 0
-                if not SKIP_DEMOGRAPHICS:
+                refresh_mode = result.get('refresh_mode', 'TAIL')
+
+                if refresh_mode == 'BASELINE':
+                    # Skip demographics pour BASELINE - sera fetché au prochain CRON en mode TAIL
+                    pass
+                else:
+                    # Mode TAIL: fetch demographics (pas urgent)
                     try:
                         demo_result = await refresh_demographics_for_account(
                             ad_account_id=account_fb_id,
@@ -334,8 +341,7 @@ async def main():
     ⏭️ SKIP SI OCCUPÉ: Laisse la priorité à l'API (nouveaux users)
     """
     print(f"🕐 Cron Refresh Started at {datetime.now(timezone.utc).isoformat()}")
-    if SKIP_DEMOGRAPHICS:
-        print("⏭️ SKIP_DEMOGRAPHICS=true → Demographics désactivé (mode rapide)")
+    print("📊 Mode: BASELINE=skip demographics (rapide) | TAIL=avec demographics")
 
     # 1. Acquérir le lock fichier (empêche 2 crons simultanés)
     lock = acquire_lock()
