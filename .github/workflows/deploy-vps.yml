@@ -70,8 +70,8 @@ jobs:
               exit 1
             fi
 
-            # Test 2: Landing page loads
-            if curl -f -s --max-time 10 http://localhost/ | grep -q "Creative Testing"; then
+            # Test 2: Landing page loads (via HTTPS, -k to ignore cert)
+            if curl -f -s -k --max-time 10 https://localhost/ | grep -q "Creative Testing"; then
               echo "  ✅ Landing page loads correctly"
             else
               echo "  ❌ Landing page failed to load"
