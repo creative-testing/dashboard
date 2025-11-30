@@ -55,3 +55,27 @@ jobs:
             echo "✅ Deployment complete!"
             echo "🔍 Container status:"
             docker ps --filter "name=creative-testing" --format "table {{.Names}}\t{{.Status}}"
+
+            echo ""
+            echo "🧪 Running smoke tests..."
+
+            # Wait a bit more for API to be fully ready
+            sleep 5
+
+            # Test 1: Health endpoint (via nginx reverse proxy)
+            if curl -f -s --max-time 10 http://localhost/api/health > /dev/null 2>&1; then
+              echo "  ✅ API health check passed"
+            else
+              echo "  ❌ API health check failed"
+              exit 1
+            fi
+
+            # Test 2: Landing page loads
+            if curl -f -s --max-time 10 http://localhost/ | grep -q "Creative Testing"; then
+              echo "  ✅ Landing page loads correctly"
+            else
+              echo "  ❌ Landing page failed to load"
+              exit 1
+            fi
+
+            echo "✅ All smoke tests passed!"

@@ -28,7 +28,6 @@ fernet = Fernet(settings.TOKEN_ENCRYPTION_KEY.encode())
 # Configuration (parité avec production)
 BASELINE_DAYS = 90  # Historique complet
 TAIL_BACKFILL_DAYS = 3  # Jours à refetch en mode TAIL
-BASELINE_MAX_AGE_DAYS = 7  # Refaire baseline complet si plus vieux que ça
 
 
 class RefreshError(Exception):
@@ -70,6 +69,9 @@ def _determine_refresh_mode(baseline: Optional[Dict[str, Any]], reference_date: 
     """
     Détermine le mode de refresh (BASELINE ou TAIL).
 
+    - BASELINE (90j) : Première fois, pas de données existantes
+    - TAIL (3j) : Refresh incrémental, upsert dans le baseline existant
+
     Args:
         baseline: Le baseline existant ou None
         reference_date: Date de référence (YYYY-MM-DD)
@@ -81,7 +83,7 @@ def _determine_refresh_mode(baseline: Optional[Dict[str, Any]], reference_date: 
         print(f"📚 Mode BASELINE: Aucun baseline existant")
         return ("BASELINE", BASELINE_DAYS)
 
-    # Vérifier l'âge du baseline
+    # Vérifier que le baseline a une structure valide
     baseline_date = baseline.get('metadata', {}).get('reference_date')
     if not baseline_date:
         print(f"📚 Mode BASELINE: Baseline sans date de référence")
@@ -91,10 +93,6 @@ def _determine_refresh_mode(baseline: Optional[Dict[str, Any]], reference_date: 
         baseline_dt = datetime.strptime(baseline_date, '%Y-%m-%d')
         reference_dt = datetime.strptime(reference_date, '%Y-%m-%d')
         age_days = (reference_dt - baseline_dt).days
-
-        if age_days > BASELINE_MAX_AGE_DAYS:
-            print(f"📚 Mode BASELINE: Baseline trop vieux ({age_days} jours > {BASELINE_MAX_AGE_DAYS})")
-            return ("BASELINE", BASELINE_DAYS)
 
         if age_days < 0:
             print(f"📚 Mode BASELINE: Baseline dans le futur (?)")

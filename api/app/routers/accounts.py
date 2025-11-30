@@ -6,7 +6,8 @@ from datetime import datetime, timezone, timedelta
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.orm import Session
 from sqlalchemy import select
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
+import asyncio
 
 from ..database import get_db, SessionLocal
 from ..dependencies.auth import get_current_tenant_id, get_current_user_id
@@ -17,6 +18,9 @@ from ..config import settings
 from ..utils.jwt import create_access_token
 
 router = APIRouter()
+
+# Parallélisation pour le refresh initial (nouveau venu)
+PARALLEL_REFRESH_LIMIT = 5  # 5 comptes en parallèle max
 
 
 def _utcnow():
@@ -65,6 +69,74 @@ async def _run_refresh_job(job_id: UUID, fb_account_id: str, tenant_id: UUID):
             db.commit()
     finally:
         db.close()
+
+
+async def _run_parallel_refresh(
+    accounts: List[models.AdAccount],
+    tenant_id: UUID,
+    semaphore_limit: int = PARALLEL_REFRESH_LIMIT
+) -> Dict[str, Any]:
+    """
+    Exécute le refresh de plusieurs comptes EN PARALLÈLE avec sémaphore.
+
+    Args:
+        accounts: Liste des AdAccount à refresh
+        tenant_id: UUID du tenant
+        semaphore_limit: Nombre max de refreshs simultanés
+
+    Returns:
+        {"ok": int, "errors": int, "total_time_seconds": float}
+    """
+    import time
+
+    semaphore = asyncio.Semaphore(semaphore_limit)
+    results = {"ok": 0, "errors": 0}
+    start_time = time.time()
+
+    async def refresh_one(account: models.AdAccount):
+        async with semaphore:
+            db = SessionLocal()
+            try:
+                # Créer job
+                job = RefreshJob(
+                    tenant_id=tenant_id,
+                    ad_account_id=account.id,
+                    status=JobStatus.RUNNING,
+                    started_at=_utcnow()
+                )
+                db.add(job)
+                db.commit()
+                db.refresh(job)
+
+                # Refresh
+                await refresh_account_data(
+                    ad_account_id=account.fb_account_id,
+                    tenant_id=tenant_id,
+                    db=db
+                )
+
+                # Marquer OK
+                job.status = JobStatus.OK
+                job.finished_at = _utcnow()
+                db.commit()
+                results["ok"] += 1
+
+            except Exception as e:
+                # Marquer ERROR
+                if job:
+                    job.status = JobStatus.ERROR
+                    job.error = str(e)[:500]
+                    job.finished_at = _utcnow()
+                    db.commit()
+                results["errors"] += 1
+            finally:
+                db.close()
+
+    # Lancer tous les refreshs en parallèle (limités par sémaphore)
+    await asyncio.gather(*[refresh_one(acc) for acc in accounts])
+
+    results["total_time_seconds"] = time.time() - start_time
+    return results
 
 
 @router.get("/me")

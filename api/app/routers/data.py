@@ -16,6 +16,12 @@ from ..config import settings
 from ..services.meta_client import meta_client, MetaAPIError
 from ..services import storage
 from ..services.columnar_aggregator import aggregate_columnar_data
+from ..services.demographics_fetcher import (
+    refresh_demographics_for_account,
+    get_demographics_data,
+    DemographicsError,
+    DEMOGRAPHICS_PERIODS
+)
 from ..dependencies.auth import get_current_tenant_id
 from .. import models
 
@@ -310,5 +316,193 @@ async def get_tenant_aggregated(
             "Cache-Control": "private, max-age=300",  # 5 min cache
             "X-Tenant-Id": str(current_tenant_id),
             "X-Accounts-Count": str(successful_loads)
+        }
+    )
+
+
+@router.get("/demographics/{act_id}/{period}")
+async def get_demographics(
+    act_id: str,
+    period: int,
+    current_tenant_id: UUID = Depends(get_current_tenant_id),
+    db: Session = Depends(get_db)
+) -> JSONResponse:
+    """
+    Récupère les données démographiques (age/gender breakdowns) d'un ad account
+
+    🔒 Protected endpoint - requires valid JWT
+    🏢 Tenant-isolated - only serves data for authenticated tenant's accounts
+    📊 Returns: Segments avec impressions, clicks, spend, purchases, CTR, CPA, ROAS
+
+    Args:
+        act_id: Ad account ID (e.g., "act_123456")
+        period: Période en jours (3, 7, 14, 30, 90)
+
+    Returns:
+        JSONResponse with demographics data or 404 if not found
+    """
+    # 1. Valider la période
+    if period not in DEMOGRAPHICS_PERIODS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid period. Allowed: {DEMOGRAPHICS_PERIODS}"
+        )
+
+    # 2. Vérifier que l'ad account appartient au tenant
+    ad_account = db.execute(
+        select(models.AdAccount).where(
+            models.AdAccount.fb_account_id == act_id,
+            models.AdAccount.tenant_id == current_tenant_id
+        )
+    ).scalar_one_or_none()
+
+    if not ad_account:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Ad account {act_id} not found for your workspace"
+        )
+
+    # 3. Récupérer les données depuis R2
+    data = await get_demographics_data(act_id, current_tenant_id, period)
+
+    if not data:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No demographics data for {act_id} ({period}d). Please trigger a refresh."
+        )
+
+    # 4. Retourner avec headers de cache
+    return JSONResponse(
+        content=data,
+        headers={
+            "Cache-Control": "private, max-age=300",  # 5 min cache
+            "X-Tenant-Id": str(current_tenant_id),
+            "X-Account-Id": act_id,
+            "X-Period": f"{period}d"
+        }
+    )
+
+
+@router.post("/demographics/refresh/{act_id}")
+async def refresh_demographics(
+    act_id: str,
+    current_tenant_id: UUID = Depends(get_current_tenant_id),
+    db: Session = Depends(get_db)
+) -> Dict[str, Any]:
+    """
+    Déclenche un refresh des données démographiques pour un ad account
+
+    🔒 Protected endpoint - requires valid JWT
+    🏢 Tenant-isolated - only refreshes authenticated tenant's accounts
+    ⏱️ Fetches demographics for all periods (3, 7, 14, 30, 90 days)
+
+    Args:
+        act_id: Ad account ID (e.g., "act_123456")
+
+    Returns:
+        {
+            "status": "success",
+            "ad_account_id": str,
+            "periods_fetched": [3, 7, 14, 30, 90],
+            "files_written": ["3d.json", "7d.json", ...],
+            "refreshed_at": str (ISO)
+        }
+    """
+    try:
+        result = await refresh_demographics_for_account(
+            ad_account_id=act_id,
+            tenant_id=current_tenant_id,
+            db=db
+        )
+        return result
+
+    except DemographicsError as e:
+        # Erreurs métier (account not found, token invalid, etc.)
+        raise HTTPException(
+            status_code=400,
+            detail=str(e)
+        )
+    except Exception as e:
+        # Erreurs inattendues
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to refresh demographics: {str(e)}"
+        )
+
+
+@router.get("/demographics/all-periods/{act_id}")
+async def get_all_demographics(
+    act_id: str,
+    current_tenant_id: UUID = Depends(get_current_tenant_id),
+    db: Session = Depends(get_db)
+) -> JSONResponse:
+    """
+    Récupère les données démographiques de TOUTES les périodes d'un ad account
+
+    🔒 Protected endpoint - requires valid JWT
+    🏢 Tenant-isolated - only serves data for authenticated tenant's accounts
+    📊 Returns: Dict avec toutes les périodes disponibles
+
+    Utile pour le frontend qui affiche un sélecteur de période
+
+    Args:
+        act_id: Ad account ID (e.g., "act_123456")
+
+    Returns:
+        {
+            "ad_account_id": str,
+            "periods": {
+                "3d": {...} or null,
+                "7d": {...} or null,
+                "14d": {...} or null,
+                "30d": {...} or null,
+                "90d": {...} or null
+            },
+            "available_periods": [3, 7, 14, 30, 90]  // ceux qui ont des données
+        }
+    """
+    # 1. Vérifier que l'ad account appartient au tenant
+    ad_account = db.execute(
+        select(models.AdAccount).where(
+            models.AdAccount.fb_account_id == act_id,
+            models.AdAccount.tenant_id == current_tenant_id
+        )
+    ).scalar_one_or_none()
+
+    if not ad_account:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Ad account {act_id} not found for your workspace"
+        )
+
+    # 2. Charger toutes les périodes
+    periods_data = {}
+    available_periods = []
+
+    for period in DEMOGRAPHICS_PERIODS:
+        data = await get_demographics_data(act_id, current_tenant_id, period)
+        periods_data[f"{period}d"] = data
+        if data:
+            available_periods.append(period)
+
+    # 3. Si aucune donnée, suggérer un refresh
+    if not available_periods:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No demographics data available for {act_id}. Please trigger a refresh via POST /demographics/refresh/{act_id}"
+        )
+
+    # 4. Retourner
+    return JSONResponse(
+        content={
+            "ad_account_id": act_id,
+            "account_name": ad_account.name,
+            "periods": periods_data,
+            "available_periods": available_periods
+        },
+        headers={
+            "Cache-Control": "private, max-age=300",
+            "X-Tenant-Id": str(current_tenant_id),
+            "X-Account-Id": act_id
         }
     )

@@ -289,6 +289,77 @@ async function triggerRefreshAll() {
 }
 
 /**
+ * Load demographics data from SaaS API
+ * Called by loadDemographics() in index-saas.html
+ *
+ * @param {string} accountId - Ad account ID (e.g., "act_123456")
+ * @param {number} period - Period in days (3, 7, 14, 30, 90)
+ * @returns {object|null} Demographics data or null if not available
+ */
+async function loadDemographicsFromAPI(accountId, period) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+
+    if (!token) {
+        console.error('Missing token for demographics');
+        return null;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/api/data/demographics/${accountId}/${period}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (response.status === 404) {
+            console.warn(`No demographics data for ${accountId} (${period}d)`);
+            return null;
+        }
+
+        if (!response.ok) {
+            throw new Error(`Failed to load demographics: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log(`✅ Loaded demographics for ${accountId} (${period}d): ${data.segments?.length || 0} segments`);
+        return data;
+    } catch (error) {
+        console.error('Error loading demographics:', error);
+        return null;
+    }
+}
+
+/**
+ * Load all demographics periods for an account
+ * Useful for frontend period selector
+ *
+ * @param {string} accountId - Ad account ID
+ * @returns {object|null} All periods data
+ */
+async function loadAllDemographicsPeriods(accountId) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+
+    if (!token) {
+        return null;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/api/data/demographics/all-periods/${accountId}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!response.ok) {
+            return null;
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Error loading all demographics periods:', error);
+        return null;
+    }
+}
+
+/**
  * Check if data is ready (for polling)
  */
 async function checkDataReady() {

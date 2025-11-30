@@ -159,22 +159,12 @@ alembic downgrade -1
 
 ### Data
 - `GET /api/data/{account_id}/{period}` - Données optimisées
+- `GET /api/data/demographics/{act_id}/{period}` - Données démographiques
+- `GET /api/data/tenant-aggregated` - Données agrégées tous comptes
 
 ### Billing
 - `POST /billing/create-checkout-session` - Stripe Checkout
 - `POST /billing/webhook` - Stripe webhooks
-
-## 🔗 Intégration avec le code existant
-
-Le backend réutilise directement les scripts Python du repo:
-
-```python
-# api/app/services/fetch.py
-from scripts.production.fetch_with_smart_limits import SmartMetaFetcher
-from scripts.transform_to_columnar import transform_data
-```
-
-Pas de duplication de code! Monorepo architecture.
 
 ## 🧪 Tests
 

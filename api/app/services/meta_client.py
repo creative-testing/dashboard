@@ -602,6 +602,64 @@ class MetaClient:
         except Exception:
             return {}
 
+    async def get_demographics(
+        self,
+        ad_account_id: str,
+        access_token: str,
+        since_date: str,
+        until_date: str,
+    ) -> list[Dict[str, Any]]:
+        """
+        Récupère les insights avec breakdowns age/gender pour un ad account
+
+        Args:
+            ad_account_id: ID du compte (ex: "act_123456")
+            access_token: Token de l'utilisateur
+            since_date: Date de début (YYYY-MM-DD)
+            until_date: Date de fin (YYYY-MM-DD)
+
+        Returns:
+            List of insights with age/gender breakdowns:
+            - age, gender
+            - impressions, clicks, spend
+            - actions, action_values (pour purchases)
+        """
+        insights_url = f"{self.base_url}/{ad_account_id}/insights"
+
+        params = {
+            "access_token": access_token,
+            "level": "account",  # Agrégé au niveau account (plus rapide)
+            "time_range": json.dumps({"since": since_date, "until": until_date}),
+            "breakdowns": "age,gender",  # Le point clé !
+            "fields": "impressions,spend,clicks,actions,action_values",
+            "limit": 500,
+            "action_report_time": "conversion",
+            "use_unified_attribution_setting": "true"
+        }
+
+        all_results = []
+        next_url = insights_url
+        page_count = 0
+        max_pages = 50  # Safety limit
+
+        while next_url and page_count < max_pages:
+            response = await self._request_with_retry(
+                "GET", next_url, params=params, account_id=ad_account_id
+            )
+
+            if "data" in response:
+                all_results.extend(response["data"])
+
+            # Check for next page
+            if "paging" in response and "next" in response["paging"]:
+                next_url = response["paging"]["next"]
+                params = {}  # Next URL contains all params
+                page_count += 1
+            else:
+                break
+
+        return all_results
+
     async def enrich_ads_with_creatives(
         self,
         ads: list[Dict[str, Any]],

@@ -4121,23 +4121,26 @@
                 
                 // Use exact period - we now fetch all 5 periods: 3, 7, 14, 30, 90
                 const period = currentPeriod || 7;
-                
-                // Charger le JSON pré-calculé
+
                 console.log(`Loading demographics for ${accountDir} (${period}d)...`);
-                
-                // Construire le chemin vers le fichier JSON
-                const jsonPath = `./data/demographics/${accountDir}/${period}d.json`;
-                
-                console.log(`Fetching: ${jsonPath}`);
-                
-                // Charger le fichier JSON avec no-cache
-                const response = await fetch(jsonPath, { cache: 'no-store' });
-                
-                if (!response.ok) {
+
+                // 🔄 SaaS mode: Load from API (if loadDemographicsFromAPI exists from data_loader_saas.js)
+                let data = null;
+                if (typeof loadDemographicsFromAPI === 'function') {
+                    data = await loadDemographicsFromAPI(accountDir, period);
+                } else {
+                    // Fallback: Load from static files (legacy Patrons mode)
+                    const jsonPath = `./data/demographics/${accountDir}/${period}d.json`;
+                    console.log(`Fetching static: ${jsonPath}`);
+                    const response = await fetch(jsonPath, { cache: 'no-store' });
+                    if (response.ok) {
+                        data = await response.json();
+                    }
+                }
+
+                if (!data) {
                     throw new Error('Demographics data not available');
                 }
-                
-                const data = await response.json();
                 
                 // Afficher les données réelles
                 displayDemographicsData(data);

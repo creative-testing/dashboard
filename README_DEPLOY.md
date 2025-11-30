@@ -1,7 +1,7 @@
 # README_DEPLOY — SaaS MVP (Vultr VPS + Cloudflare R2)
 
 ## Objectif
-Déployer l'API FastAPI en HTTPS sur Vultr VPS, avec OAuth Facebook et stockage R2. **Aucun impact** sur le dashboard prod des patrons (docs/index.html).
+Déployer l'API FastAPI SaaS en HTTPS sur Vultr VPS, avec OAuth Facebook et stockage R2.
 
 ---
 
@@ -134,7 +134,6 @@ aws s3 ls --endpoint-url=$STORAGE_ENDPOINT s3://creative-testing-data/
 
 - Problème R2 → `STORAGE_MODE=local` puis redeploy.
 - Redirection → changer `DASHBOARD_URL`.
-- **Aucun** effet sur `docs/index.html` (prod patrons).
 
 ---
 
@@ -171,8 +170,7 @@ GET /api/data/files/{act_id}/{filename}
 - [ ] Homepage API 200
 - [ ] OAuth OK (redirection vers dashboard SaaS)
 - [ ] Refresh OK (agg/meta/summary/manifest)
-- [ ] R2 activé (optionnel) et listé
-- [ ] Patrons: `docs/index.html` inchangé
+- [ ] R2 activé et listé
 
 ---
 

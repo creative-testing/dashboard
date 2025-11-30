@@ -22,6 +22,7 @@ from app.database import SessionLocal
 from app import models
 from app.models import JobStatus, RefreshJob
 from app.services.refresher import refresh_account_data, RefreshError
+from app.services.demographics_fetcher import refresh_demographics_for_account, DemographicsError
 from app.services.meta_client import meta_client
 from cryptography.fernet import Fernet
 from app.config import settings
@@ -86,12 +87,28 @@ async def refresh_single_account(
                 job.started_at = datetime.now(timezone.utc)
                 db.commit()
 
-                # Run refresh
+                # Run refresh (insights data)
                 result = await refresh_account_data(
                     ad_account_id=account_fb_id,
                     tenant_id=UUID(tenant_id),
                     db=db
                 )
+
+                # 📊 Run demographics refresh (age/gender breakdowns)
+                try:
+                    demo_result = await refresh_demographics_for_account(
+                        ad_account_id=account_fb_id,
+                        tenant_id=UUID(tenant_id),
+                        db=db
+                    )
+                    demo_periods = len(demo_result.get('periods_fetched', []))
+                except DemographicsError as e:
+                    # Demographics failure is non-fatal, log and continue
+                    print(f"    ⚠️ Demographics failed for {account_fb_id}: {str(e)[:50]}")
+                    demo_periods = 0
+                except Exception as e:
+                    print(f"    ⚠️ Demographics error for {account_fb_id}: {str(e)[:50]}")
+                    demo_periods = 0
 
                 # Mark job as completed
                 job.status = JobStatus.OK
@@ -106,7 +123,8 @@ async def refresh_single_account(
 
                 db.commit()
 
-                return (True, f"✅ {account_fb_id} ({account_name})")
+                demo_info = f" +{demo_periods}d" if demo_periods > 0 else ""
+                return (True, f"✅ {account_fb_id} ({account_name}){demo_info}")
 
             except Exception as e:
                 error_msg = str(e)[:500]
