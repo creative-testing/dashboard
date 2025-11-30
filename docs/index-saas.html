@@ -4278,7 +4278,21 @@
             });
         });
 
+        // Session validation - redirect to landing if no auth token
+        function validateSession() {
+            const token = localStorage.getItem('auth_token');
+            if (!token) {
+                console.warn('🔒 No auth token found, redirecting to login...');
+                window.location.href = 'index-landing.html';
+                return false;
+            }
+            return true;
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
+            // Validate session before anything else
+            if (!validateSession()) return;
+
             // Charger la configuration des profils
             await loadAccountProfiles();
 

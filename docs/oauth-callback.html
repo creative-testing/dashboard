@@ -312,14 +312,12 @@
                     // Vérifier si les données existent déjà
                     if (await dataExists(account.fb_account_id, token)) {
                         console.log('✅ Datos ya disponibles, redirigiendo inmediatamente...');
+                        // Token already in localStorage, don't include in URL
                         const params = new URLSearchParams({
                             account_id: account.fb_account_id,
-                            account: account.name,
-                            token,
-                            tenant_id: tenantId
-                            // NOTE: PAS de locked=1 ! C'est un utilisateur normal, pas un client via URL partagée
+                            account: account.name
                         });
-                        if (lang) params.set('lang', lang); // Preserve language
+                        if (lang) params.set('lang', lang);
                         setTimeout(() => {
                             window.location.href = `index-saas.html?${params.toString()}`;
                         }, 500);
@@ -348,14 +346,12 @@
 
                     // Données prêtes → redirect
                     console.log('✅ Datos listos, redirigiendo al dashboard...');
+                    // Token already in localStorage, don't include in URL
                     const params = new URLSearchParams({
                         account_id: account.fb_account_id,
-                        account: account.name,
-                        token,
-                        tenant_id: tenantId
-                        // NOTE: PAS de locked=1 ! C'est un utilisateur normal, pas un client via URL partagée
+                        account: account.name
                     });
-                    if (lang) params.set('lang', lang); // Preserve language
+                    if (lang) params.set('lang', lang);
                     setTimeout(() => {
                         window.location.href = `index-saas.html?${params.toString()}`;
                     }, 300);
@@ -368,11 +364,10 @@
 
                     if (hasData) {
                         // Données disponibles → redirect immédiat
+                        // Token already in localStorage, don't include in URL
                         console.log('✅ Données disponibles, redirect vers dashboard');
                         const params = new URLSearchParams({
-                            account: 'Todas las cuentas',
-                            token,
-                            tenant_id: tenantId
+                            account: 'Todas las cuentas'
                         });
                         if (lang) params.set('lang', lang);
                         window.location.href = `index-saas.html?${params.toString()}`;

@@ -14,18 +14,61 @@
 
 const API_URL = 'https://creative-testing.theaipipe.com';
 
+/**
+ * Get auth token from localStorage (source of truth)
+ * Falls back to URL param for backward compatibility, then migrates to localStorage
+ * Also cleans token from URL if found there
+ */
+function getAuthToken() {
+    // Priority 1: localStorage (source of truth)
+    let token = localStorage.getItem('auth_token');
+    if (token) return token;
+
+    // Priority 2: URL param (backward compat during transition)
+    const urlParams = new URLSearchParams(window.location.search);
+    token = urlParams.get('token');
+    if (token) {
+        // Migrate to localStorage
+        localStorage.setItem('auth_token', token);
+        const tenantId = urlParams.get('tenant_id');
+        if (tenantId) localStorage.setItem('tenant_id', tenantId);
+
+        // Clean sensitive params from URL
+        urlParams.delete('token');
+        urlParams.delete('tenant_id');
+        const newUrl = urlParams.toString()
+            ? `${window.location.pathname}?${urlParams.toString()}`
+            : window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+        console.log('🔐 Token migrated to localStorage, URL cleaned');
+    }
+
+    return token;
+}
+
+/**
+ * Handle session expiration - clear storage and redirect to landing
+ */
+function handleSessionExpired() {
+    console.warn('🔒 Session expired, redirecting to login...');
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('tenant_id');
+    window.location.href = 'index-landing.html';
+}
+
 // Global function to load optimized data from API
 async function loadOptimizedData() {
     try {
         console.log('📦 Loading optimized data from API...');
 
-        // Get auth params from URL
+        // Get auth token from localStorage (or URL fallback)
+        const token = getAuthToken();
         const urlParams = new URLSearchParams(window.location.search);
         const accountId = urlParams.get('account_id');
-        const token = urlParams.get('token');
 
         if (!token) {
-            console.error('Missing token in URL');
+            console.error('Missing authentication token');
+            handleSessionExpired();
             return { success: false, noData: false, error: 'Missing authentication token' };
         }
 
@@ -41,7 +84,10 @@ async function loadOptimizedData() {
 
             const response = await fetch(`${API_URL}/api/data/tenant-aggregated?t=${timestamp}`, { headers });
 
-            if (response.status === 404) {
+            if (response.status === 401) {
+                handleSessionExpired();
+                return { success: false, noData: false, error: 'Session expired' };
+            } else if (response.status === 404) {
                 console.warn('⚠️ No data available yet (404) - first time user?');
                 is404 = true;
             } else if (!response.ok) {
@@ -65,7 +111,10 @@ async function loadOptimizedData() {
             // Try to load meta first to check if data exists
             const metaResponse = await fetch(`${API_URL}/api/data/files/${accountId}/meta_v1.json?t=${timestamp}`, { headers });
 
-            if (metaResponse.status === 404) {
+            if (metaResponse.status === 401) {
+                handleSessionExpired();
+                return { success: false, noData: false, error: 'Session expired' };
+            } else if (metaResponse.status === 404) {
                 console.warn(`⚠️ No data for account ${accountId} (404) - needs refresh`);
                 is404 = true;
             } else if (!metaResponse.ok) {
@@ -261,10 +310,10 @@ async function loadOptimizedData() {
  * Uses /api/accounts/refresh-tenant-accounts endpoint
  */
 async function triggerRefreshAll() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
+    const token = getAuthToken();
 
     if (!token) {
+        handleSessionExpired();
         return { success: false, error: 'Missing token' };
     }
 
@@ -273,6 +322,11 @@ async function triggerRefreshAll() {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}` }
         });
+
+        if (response.status === 401) {
+            handleSessionExpired();
+            return { success: false, error: 'Session expired' };
+        }
 
         if (!response.ok) {
             const errorText = await response.text();
@@ -298,8 +352,7 @@ async function triggerRefreshAll() {
  * @returns {object|null} Demographics data or null if not available
  */
 async function loadDemographicsFromAPI(accountId, period) {
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
+    const token = getAuthToken();
 
     if (!token) {
         console.error('Missing token for demographics');
@@ -337,8 +390,7 @@ async function loadDemographicsFromAPI(accountId, period) {
  * @returns {object|null} All periods data
  */
 async function loadAllDemographicsPeriods(accountId) {
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
+    const token = getAuthToken();
 
     if (!token) {
         return null;
@@ -364,8 +416,8 @@ async function loadAllDemographicsPeriods(accountId) {
  * Check if data is ready (for polling)
  */
 async function checkDataReady() {
+    const token = getAuthToken();
     const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
     const accountId = urlParams.get('account_id');
 
     if (!token) return false;

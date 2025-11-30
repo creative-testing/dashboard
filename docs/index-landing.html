@@ -489,12 +489,11 @@
 
                     if (accounts.length > 0) {
                         // Redirect to dashboard with first account
+                        // Token already in localStorage, don't include in URL
                         const account = accounts[0];
                         const params = new URLSearchParams({
                             account_id: account.fb_account_id,
                             account: account.name,
-                            token,
-                            tenant_id: tenantId,
                             locked: '1'
                         });
                         window.location.href = `index-saas.html?${params.toString()}`;
