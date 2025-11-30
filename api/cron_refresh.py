@@ -29,7 +29,7 @@ from cryptography.fernet import Fernet
 from app.config import settings
 
 # Configuration parallélisation
-MAX_CONCURRENT_ACCOUNTS = 2  # Réduit de 5→2 pour éviter OOM sur VPS 4GB
+MAX_CONCURRENT_ACCOUNTS = 6  # Augmenté: VPS upgradé 4GB→8GB RAM (Nov 2024)
 DELAY_BETWEEN_ACCOUNTS_MS = 200  # Petit délai pour éviter les burst de rate limit
 MAX_CONSECUTIVE_ERRORS = 3  # Auto-disable après X erreurs 403 consécutives
 
