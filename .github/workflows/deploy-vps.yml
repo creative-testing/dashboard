@@ -63,7 +63,7 @@ jobs:
             sleep 5
 
             # Test 1: Health endpoint (via nginx reverse proxy)
-            if curl -f -s --max-time 10 http://localhost/api/health > /dev/null 2>&1; then
+            if curl -f -s --max-time 10 http://localhost/health > /dev/null 2>&1; then
               echo "  ✅ API health check passed"
             else
               echo "  ❌ API health check failed"
