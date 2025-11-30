@@ -11,6 +11,7 @@ on:
       - 'docs/data_loader_saas.js'
       - 'docs/data_adapter.js'
       - 'docs/i18n/**'
+      - '.github/workflows/deploy-vps.yml'
   workflow_dispatch:
 
 jobs:
