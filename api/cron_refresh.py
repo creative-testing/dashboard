@@ -9,6 +9,7 @@ Refresh les données Meta Ads de tous les tenants actifs
    Temps estimé: 20 min séquentiel → 3-4 min parallèle
 """
 import asyncio
+import gc
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -28,7 +29,7 @@ from cryptography.fernet import Fernet
 from app.config import settings
 
 # Configuration parallélisation
-MAX_CONCURRENT_ACCOUNTS = 5  # Nombre max de comptes refreshés en parallèle par tenant
+MAX_CONCURRENT_ACCOUNTS = 2  # Réduit de 5→2 pour éviter OOM sur VPS 4GB
 DELAY_BETWEEN_ACCOUNTS_MS = 200  # Petit délai pour éviter les burst de rate limit
 MAX_CONSECUTIVE_ERRORS = 3  # Auto-disable après X erreurs 403 consécutives
 
@@ -151,6 +152,8 @@ async def refresh_single_account(
         finally:
             # ⚡ Toujours fermer la session
             db.close()
+            # 🧹 Force garbage collection pour libérer RAM entre chaque compte
+            gc.collect()
 
 
 async def refresh_tenant(tenant_id: str, tenant_name: str, db: SessionLocal):

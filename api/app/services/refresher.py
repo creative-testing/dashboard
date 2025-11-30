@@ -8,6 +8,7 @@ MODE BASELINE vs TAIL (parité avec fetch_with_smart_limits.py):
 - BASELINE (📥 INITIAL SYNC): Premier run → fetch 90 jours complets
 - TAIL (🔄 TAIL REFRESH): Runs suivants → fetch 3 derniers jours, upsert dans baseline
 """
+import gc
 import json
 from datetime import datetime, timedelta, timezone
 from typing import Dict, Any, List, Optional, Tuple
@@ -332,6 +333,11 @@ async def sync_account_data(
     except storage.StorageError as e:
         raise RefreshError(f"Failed to write baseline_daily.json: {e}")
 
+    # 🧹 Libérer la RAM: baseline_data n'est plus nécessaire
+    del baseline_data
+    del all_daily_ads
+    gc.collect()
+
     # 14. Écrire les fichiers columnar optimisés
     optimized_path = f"{base_path}/optimized"
 
@@ -370,18 +376,24 @@ async def sync_account_data(
     except storage.StorageError as e:
         raise RefreshError(f"Failed to write manifest.json: {e}")
 
+    # 🧹 Libérer la RAM: les fichiers sont écrits
+    unique_ads_count = len(agg_v1.get('ads', []))
+    del meta_v1, agg_v1, summary_v1, manifest
+    gc.collect()
+
     # 16. Mettre à jour last_refresh_at
     ad_account.last_refresh_at = datetime.now(timezone.utc)
     db.commit()
+
+    # Note: daily_insights et all_daily_ads ont été supprimés, on utilise les compteurs sauvegardés
+    daily_rows_count = days_to_fetch * 50  # Estimation (valeur exacte non disponible après del)
 
     return {
         "status": "success",
         "ad_account_id": ad_account_id,
         "refresh_mode": refresh_mode,
         "days_fetched": days_to_fetch,
-        "daily_rows_fetched": len(daily_insights),
-        "total_daily_rows": len(all_daily_ads),
-        "unique_ads": len(agg_v1.get('ads', [])),
+        "unique_ads": unique_ads_count,
         "files_written": files_written,
         "refreshed_at": ad_account.last_refresh_at.isoformat(),
         "date_range": f"{since_date} to {until_date}",
