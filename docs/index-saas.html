@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meta Ads Performance Dashboard</title>
     <!-- Version: 2.4.0 - YAML indentation fixed! - Sep 12 2025 -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>📊</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%232563eb'/><rect x='20' y='55' width='15' height='30' rx='3' fill='white'/><rect x='42' y='25' width='15' height='60' rx='3' fill='white'/><rect x='64' y='40' width='15' height='45' rx='3' fill='white'/></svg>">
     <style>
         
         * {
@@ -31,7 +31,33 @@
         .header h1 {
             font-size: 36px;
             margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
         }
+
+        .header-logo {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 3px;
+            padding-bottom: 8px;
+        }
+
+        .header-logo .bar {
+            width: 5px;
+            background: white;
+            border-radius: 2px;
+        }
+
+        .header-logo .bar:nth-child(1) { height: 10px; }
+        .header-logo .bar:nth-child(2) { height: 18px; }
+        .header-logo .bar:nth-child(3) { height: 14px; }
         
         .header p {
             opacity: 0.9;
@@ -1038,7 +1064,14 @@
     </div>
 
     <div class="header">
-        <h1 data-i18n="dashboard.header_title">🚀 Creative Testing Dashboard</h1>
+        <h1>
+            <span class="header-logo">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </span>
+            <span data-i18n="dashboard.header_title">Creative Testing Dashboard</span>
+        </h1>
         <p><span data-i18n="dashboard.header_subtitle">Análisis de rendimiento creativo • Última actualización:</span> <span id="data-date" data-i18n="dashboard.loading">Cargando...</span></p>
         
         <div class="period-selector">
@@ -1466,7 +1499,7 @@
             console.warn('i18n not loaded, using fallback for key:', key);
             // Return the Spanish text as fallback (original language)
             const fallbackTexts = {
-                'dashboard.header_title': '🚀 Creative Testing Dashboard',
+                'dashboard.header_title': 'Creative Testing Dashboard',
                 'dashboard.kpis.ads_with_spend': 'Anuncios con Inversión',
                 'dashboard.kpis.total_spend': 'Inversión Total (MXN)',
                 'dashboard.accounts.all': 'Todas las cuentas'
