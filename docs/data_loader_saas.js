@@ -1,6 +1,7 @@
 /**
  * SaaS Data Loader - Charge depuis API avec JWT auth
  * Version adaptée de data_adapter.js pour mode SaaS multi-tenant
+ * @version 2.0.0 - Nov 2025 (SaaS unifié)
  *
  * Retourne: { success: boolean, noData: boolean, error?: string }
  * - success=true, noData=false → données chargées OK
