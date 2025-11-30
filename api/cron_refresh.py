@@ -48,6 +48,10 @@ LOCK_FILE = "/tmp/cron_refresh.lock"
 DELAY_BETWEEN_ACCOUNTS_MS = 200  # Petit délai pour éviter les burst de rate limit
 MAX_CONSECUTIVE_ERRORS = 3  # Auto-disable après X erreurs 403 consécutives
 
+# Feature flag: Skip demographics pour accélérer les BASELINE (5 appels API en moins par compte)
+# Usage: SKIP_DEMOGRAPHICS=true pour désactiver temporairement
+SKIP_DEMOGRAPHICS = os.getenv("SKIP_DEMOGRAPHICS", "false").lower() == "true"
+
 
 # ============================================================
 # 🔒 FILE LOCK - Empêche deux crons de tourner en parallèle
@@ -147,20 +151,21 @@ async def refresh_single_account(
                 )
 
                 # 📊 Run demographics refresh (age/gender breakdowns)
-                try:
-                    demo_result = await refresh_demographics_for_account(
-                        ad_account_id=account_fb_id,
-                        tenant_id=UUID(tenant_id),
-                        db=db
-                    )
-                    demo_periods = len(demo_result.get('periods_fetched', []))
-                except DemographicsError as e:
-                    # Demographics failure is non-fatal, log and continue
-                    print(f"    ⚠️ Demographics failed for {account_fb_id}: {str(e)[:50]}")
-                    demo_periods = 0
-                except Exception as e:
-                    print(f"    ⚠️ Demographics error for {account_fb_id}: {str(e)[:50]}")
-                    demo_periods = 0
+                # Contrôlé par SKIP_DEMOGRAPHICS env var pour accélérer les BASELINE
+                demo_periods = 0
+                if not SKIP_DEMOGRAPHICS:
+                    try:
+                        demo_result = await refresh_demographics_for_account(
+                            ad_account_id=account_fb_id,
+                            tenant_id=UUID(tenant_id),
+                            db=db
+                        )
+                        demo_periods = len(demo_result.get('periods_fetched', []))
+                    except DemographicsError as e:
+                        # Demographics failure is non-fatal, log and continue
+                        print(f"    ⚠️ Demographics failed for {account_fb_id}: {str(e)[:50]}")
+                    except Exception as e:
+                        print(f"    ⚠️ Demographics error for {account_fb_id}: {str(e)[:50]}")
 
                 # Mark job as completed
                 job.status = JobStatus.OK
@@ -329,6 +334,8 @@ async def main():
     ⏭️ SKIP SI OCCUPÉ: Laisse la priorité à l'API (nouveaux users)
     """
     print(f"🕐 Cron Refresh Started at {datetime.now(timezone.utc).isoformat()}")
+    if SKIP_DEMOGRAPHICS:
+        print("⏭️ SKIP_DEMOGRAPHICS=true → Demographics désactivé (mode rapide)")
 
     # 1. Acquérir le lock fichier (empêche 2 crons simultanés)
     lock = acquire_lock()

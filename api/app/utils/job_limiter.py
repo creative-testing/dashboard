@@ -16,10 +16,10 @@ from sqlalchemy.orm import Session
 from ..models.refresh_job import RefreshJob, JobStatus
 
 # Limites globales
-# PRIORITÉ: API (nouvel user) > CRON (background)
+# Tous les workers partagent le même pool de 10 slots max
 MAX_API_WORKERS = 10      # API a la priorité, user attend devant l'écran
-MAX_CRON_WORKERS = 6      # CRON est moins urgent, peut être lent
-CRON_SKIP_THRESHOLD = 5   # Si > 5 jobs running, CRON skip ce cycle
+MAX_CRON_WORKERS = 10     # CRON utilise aussi 10 workers (rate monitor protège)
+CRON_SKIP_THRESHOLD = 8   # Si >= 8 jobs running, CRON skip ce cycle
 MAX_GLOBAL_WORKERS = 10   # Limite absolue système
 ZOMBIE_TIMEOUT_MINUTES = 45  # Jobs RUNNING > 45min = morts
 
