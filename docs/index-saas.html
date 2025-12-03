@@ -37,28 +37,6 @@
             gap: 12px;
         }
 
-        .header-logo {
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            gap: 3px;
-            padding-bottom: 8px;
-        }
-
-        .header-logo .bar {
-            width: 5px;
-            background: white;
-            border-radius: 2px;
-        }
-
-        .header-logo .bar:nth-child(1) { height: 10px; }
-        .header-logo .bar:nth-child(2) { height: 18px; }
-        .header-logo .bar:nth-child(3) { height: 14px; }
-        
         .header p {
             opacity: 0.9;
             font-size: 18px;
@@ -1064,14 +1042,7 @@
     </div>
 
     <div class="header">
-        <h1>
-            <span class="header-logo">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-            </span>
-            <span data-i18n="dashboard.header_title">Creative Testing Dashboard</span>
-        </h1>
+        <h1 data-i18n="dashboard.header_title">Creative Testing Dashboard</h1>
         <p><span data-i18n="dashboard.header_subtitle">Análisis de rendimiento creativo • Última actualización:</span> <span id="data-date" data-i18n="dashboard.loading">Cargando...</span></p>
         
         <div class="period-selector">
