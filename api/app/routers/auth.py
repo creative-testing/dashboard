@@ -129,6 +129,10 @@ async def facebook_callback(
         # Normaliser email en minuscules + trim (pour l'index case-insensitive + CHECK constraint)
         if user_email:
             user_email = user_email.strip().lower()
+        else:
+            # Fallback: certains comptes Facebook n'ont pas d'email attaché
+            # On génère un email fictif basé sur le meta_user_id pour satisfaire la contrainte NOT NULL
+            user_email = f"{meta_user_id}@noemail.facebook"
 
         # 4. Récupérer ad accounts
         ad_accounts = await meta_client.get_ad_accounts(
