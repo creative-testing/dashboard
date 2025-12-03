@@ -103,10 +103,6 @@
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
         }
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
     </style>
     <!-- Data adapter and SaaS loader -->
     <script src="data_adapter.js"></script>
@@ -241,45 +237,6 @@
             }
         }
 
-        function showFirstTimeMessage(accountCount) {
-            // Affiche le message de bienvenue pour les nouveaux utilisateurs
-            document.querySelector('.spinner').style.display = 'none';
-            document.querySelector('h1').textContent = '¡Bienvenido! 🎉';
-            document.querySelector('p').innerHTML = `
-                Estamos preparando los datos de tus <strong>${accountCount} cuentas</strong> publicitarias.<br><br>
-                <strong>Vuelve en aproximadamente 15 minutos.</strong><br>
-                <small style="opacity: 0.7;">Los datos estarán disponibles automáticamente.</small>
-            `;
-
-            // Bouton principal - Ir al Dashboard
-            const btn = document.createElement('button');
-            btn.className = 'btn';
-            btn.id = 'goto-dashboard-btn';
-            btn.textContent = 'Ir al Dashboard';
-            btn.style.marginTop = '24px';
-            btn.onclick = () => window.location.href = 'index-saas.html';
-            document.querySelector('.spinner-container').appendChild(btn);
-
-            // Auto-check every 30s if data is ready
-            const token = localStorage.getItem('auth_token');
-            if (token) {
-                const checkInterval = setInterval(async () => {
-                    const ready = await tenantDataExists(token);
-                    if (ready) {
-                        clearInterval(checkInterval);
-                        // Update UI to indicate data is ready
-                        document.querySelector('h1').textContent = '¡Datos listos! ✅';
-                        document.querySelector('p').innerHTML = `
-                            Tus <strong>${accountCount} cuentas</strong> están listas.<br><br>
-                            <strong>Ya puedes acceder al dashboard.</strong>
-                        `;
-                        btn.textContent = '🚀 Entrar al Dashboard';
-                        btn.style.animation = 'pulse 1s infinite';
-                    }
-                }, 30000); // Check every 30 seconds
-            }
-        }
-
         async function handleOAuthCallback() {
             const urlParams = new URLSearchParams(window.location.search);
             const token = urlParams.get('token');
@@ -387,17 +344,19 @@
 
                     const hasData = await tenantDataExists(token);
 
-                    if (hasData) {
-                        // Données disponibles → redirect immédiat vers vue agrégée
-                        console.log('✅ Données disponibles, redirect vers dashboard (all accounts)');
-                        const url = lang ? `index-saas.html?lang=${lang}` : 'index-saas.html';
-                        window.location.href = url;
-                    } else {
-                        // Première connexion → déclencher fetch + afficher message
+                    // Déclencher le fetch si données pas encore prêtes
+                    if (!hasData) {
                         console.log('⏳ Première connexion, déclenchement du fetch...');
                         await triggerTenantAccountsRefresh(token);
-                        showFirstTimeMessage(accounts.length);
+                    } else {
+                        console.log('✅ Données disponibles');
                     }
+
+                    // Toujours rediriger vers le dashboard
+                    // Le dashboard affichera l'overlay vert si les données ne sont pas encore prêtes
+                    console.log('🚀 Redirect vers dashboard (all accounts)');
+                    const url = lang ? `index-saas.html?lang=${lang}` : 'index-saas.html';
+                    window.location.href = url;
                 }
 
             } catch (error) {
