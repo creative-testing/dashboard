@@ -363,14 +363,10 @@
                     const hasData = await tenantDataExists(token);
 
                     if (hasData) {
-                        // Données disponibles → redirect immédiat
-                        // Token already in localStorage, don't include in URL
-                        console.log('✅ Données disponibles, redirect vers dashboard');
-                        const params = new URLSearchParams({
-                            account: 'Todas las cuentas'
-                        });
-                        if (lang) params.set('lang', lang);
-                        window.location.href = `index-saas.html?${params.toString()}`;
+                        // Données disponibles → redirect immédiat vers vue agrégée
+                        console.log('✅ Données disponibles, redirect vers dashboard (all accounts)');
+                        const url = lang ? `index-saas.html?lang=${lang}` : 'index-saas.html';
+                        window.location.href = url;
                     } else {
                         // Première connexion → déclencher fetch + afficher message
                         console.log('⏳ Première connexion, déclenchement du fetch...');

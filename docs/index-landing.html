@@ -1185,26 +1185,26 @@
                 });
 
                 if (response.ok) {
-                    // Valid token → Get first account and redirect
+                    // Valid token → Get accounts and redirect to dashboard
                     const accountsResponse = await fetch(`${API_URL}/api/accounts/`, {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     const data = await accountsResponse.json();
                     const accounts = data.accounts || [];
 
-                    if (accounts.length > 0) {
-                        // Redirect to dashboard with first account
-                        // Token already in localStorage, don't include in URL
+                    if (accounts.length === 0) {
+                        // No accounts → Redirect to OAuth to link accounts
+                        window.location.href = `${API_URL}/auth/facebook/login`;
+                    } else if (accounts.length === 1) {
+                        // Single account → Redirect to that account (NO locked mode!)
                         const account = accounts[0];
                         const params = new URLSearchParams({
-                            account_id: account.fb_account_id,
-                            account: account.name,
-                            locked: '1'
+                            account_id: account.fb_account_id
                         });
                         window.location.href = `index-saas.html?${params.toString()}`;
                     } else {
-                        // No accounts → Redirect to OAuth to link accounts
-                        window.location.href = `${API_URL}/auth/facebook/login`;
+                        // Multiple accounts → Redirect to aggregated view (all accounts)
+                        window.location.href = 'index-saas.html';
                     }
                 } else {
                     // Invalid token → Clear and redirect to OAuth
