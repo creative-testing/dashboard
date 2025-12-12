@@ -12,7 +12,7 @@
 | **Frontend** | VPS (même que API) | `https://creative-testing.theaipipe.com` |
 | **CI/CD** | GitHub Actions | `.github/workflows/deploy-vps.yml` |
 
-**⚠️ Ce n'est PAS le VPS Vultr 66.135.5.31** (celui-là c'est dental-portal/agente)
+**✅ VPS Vultr 66.135.5.31** - Même serveur que dental-portal/agente (SSH: `root@66.135.5.31`)
 **⚠️ Ce n'est PAS Supabase** (celui du MCP c'est agente-creativo-ia)
 
 **Logs cron** : `docker logs creative-testing-cron` sur le VPS

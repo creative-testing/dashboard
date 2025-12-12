@@ -47,6 +47,8 @@ from app.config import settings
 LOCK_FILE = "/tmp/cron_refresh.lock"
 DELAY_BETWEEN_ACCOUNTS_MS = 200  # Petit délai pour éviter les burst de rate limit
 MAX_CONSECUTIVE_ERRORS = 3  # Auto-disable après X erreurs 403 consécutives
+MAX_RETRY_ATTEMPTS = 3  # Nombre de tentatives avant d'abandonner
+RETRY_DELAY_SECONDS = 5  # Délai entre les tentatives
 
 # NOTE: Demographics sont auto-skip en mode BASELINE (nouvel user = urgent)
 # En mode TAIL (refresh régulier), demographics sont fetchés normalement
@@ -143,12 +145,25 @@ async def refresh_single_account(
                 job.started_at = datetime.now(timezone.utc)
                 db.commit()
 
-                # Run sync (insights data)
-                result = await sync_account_data(
-                    ad_account_id=account_fb_id,
-                    tenant_id=UUID(tenant_id),
-                    db=db
-                )
+                # Run sync (insights data) avec RETRY pour erreurs transitoires
+                result = None
+                last_error = None
+                for attempt in range(1, MAX_RETRY_ATTEMPTS + 1):
+                    try:
+                        result = await sync_account_data(
+                            ad_account_id=account_fb_id,
+                            tenant_id=UUID(tenant_id),
+                            db=db
+                        )
+                        break  # Succès, sortir de la boucle
+                    except Exception as retry_error:
+                        last_error = retry_error
+                        if attempt < MAX_RETRY_ATTEMPTS:
+                            print(f"    ⚠️ {account_fb_id}: Attempt {attempt}/{MAX_RETRY_ATTEMPTS} failed ({type(retry_error).__name__}), retrying in {RETRY_DELAY_SECONDS}s...")
+                            await asyncio.sleep(RETRY_DELAY_SECONDS)
+                        else:
+                            # Dernière tentative échouée, propager l'erreur
+                            raise last_error
 
                 # 📊 Run demographics refresh (age/gender breakdowns)
                 # AUTO-SKIP en mode BASELINE (nouvel user = urgent, veut voir ses données vite)
@@ -210,7 +225,7 @@ async def refresh_single_account(
                         return (False, f"🚫 {account_fb_id}: DISABLED (403 x{account.consecutive_errors})")
 
                 db.commit()
-                return (False, f"❌ {account_fb_id}: {str(e)[:80]}")
+                return (False, f"❌ {account_fb_id}: {type(e).__name__}: {str(e)[:80]}")
 
         finally:
             # ⚡ Toujours fermer la session
