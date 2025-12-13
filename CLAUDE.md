@@ -114,3 +114,18 @@ Ex: Prospecting / Picazon / UGC_Maria / 35+ / H1
 - Creador (avec détection dynamique)
 - Hook (avec expansion)
 - Conf. (score global)
+
+---
+
+## 🤖 Revue par Gemini
+
+Pour obtenir une seconde opinion de Gemini sur le travail en cours, exécuter :
+
+```bash
+python3 ~/Documents/ProjetsDev/gemini-reviewer/gemini_sync.py --send --url 7a9f9729fd7299de
+```
+
+Utile pour :
+- Valider une architecture ou approche technique
+- Avoir un regard critique sur du code avant déploiement
+- Identifier des angles morts ou améliorations potentielles

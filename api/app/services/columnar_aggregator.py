@@ -1,6 +1,13 @@
 """
 Service d'agrégation de données columnar multi-compte
 Merge meta_v1, agg_v1, summary_v1 de plusieurs comptes en un seul dataset
+
+⚠️ TODO: Multi-currency aggregation bug (Dec 2025)
+   - Currently sums spend_cents/purchase_value_cents across different currencies
+   - MXN + USD + EUR = WRONG total (no conversion)
+   - Impact: Only affects "Todas las cuentas" view for multi-currency users
+   - Fix options: A) Group by currency, B) Convert to USD, C) Disable monetary totals
+   - Low priority: Most users are mono-currency, per-account view works correctly
 """
 from typing import List, Dict, Any
 from datetime import datetime
