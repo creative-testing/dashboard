@@ -30,6 +30,9 @@ class AdAccount(Base):
     # Profile type (pour adapter les KPIs)
     profile = Column(Enum(AccountProfile), nullable=False, default=AccountProfile.ECOM)
 
+    # Currency (USD, MXN, EUR, etc.) - from Meta API
+    currency = Column(String(10), nullable=True)
+
     # Metadata
     last_refresh_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

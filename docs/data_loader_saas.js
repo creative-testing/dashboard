@@ -413,6 +413,50 @@ async function loadAllDemographicsPeriods(accountId) {
 }
 
 /**
+ * Load accounts with currency information from API
+ * Stores account_name → currency mapping in window.accountsCurrency
+ * @returns {object} Map of account_name → currency code
+ */
+async function loadAccountsCurrency() {
+    const token = getAuthToken();
+    if (!token) {
+        console.warn('No token for loadAccountsCurrency');
+        return {};
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/api/accounts/`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!response.ok) {
+            console.error('Failed to load accounts:', response.status);
+            return {};
+        }
+
+        const data = await response.json();
+        const accounts = data.accounts || [];
+
+        // Build mapping: account_name → currency
+        const currencyMap = {};
+        accounts.forEach(acc => {
+            if (acc.name && acc.currency) {
+                currencyMap[acc.name] = acc.currency;
+            }
+        });
+
+        // Store globally
+        window.accountsCurrency = currencyMap;
+        console.log(`✅ Loaded currency info for ${Object.keys(currencyMap).length} accounts:`, currencyMap);
+
+        return currencyMap;
+    } catch (error) {
+        console.error('Error loading accounts currency:', error);
+        return {};
+    }
+}
+
+/**
  * Check if data is ready (for polling)
  */
 async function checkDataReady() {

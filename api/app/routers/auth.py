@@ -214,15 +214,17 @@ async def facebook_callback(
             for account in ad_accounts:
                 fb_account_id = account["id"]
                 account_name = account.get("name", "Unknown")
+                account_currency = account.get("currency")  # USD, MXN, EUR, etc.
 
                 stmt = insert(models.AdAccount).values(
                     tenant_id=tenant.id,
                     fb_account_id=fb_account_id,
                     name=account_name,
+                    currency=account_currency,
                 )
                 stmt = stmt.on_conflict_do_update(
                     index_elements=["tenant_id", "fb_account_id"],
-                    set_={"name": stmt.excluded.name},
+                    set_={"name": stmt.excluded.name, "currency": stmt.excluded.currency},
                 )
                 db.execute(stmt)
 

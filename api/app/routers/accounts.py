@@ -134,6 +134,7 @@ async def list_accounts(
                 "fb_account_id": acc.fb_account_id,
                 "name": acc.name,
                 "profile": acc.profile,
+                "currency": acc.currency,  # USD, MXN, EUR, etc.
                 "last_refresh_at": acc.last_refresh_at.isoformat() if acc.last_refresh_at else None,
             }
             for acc in accounts
