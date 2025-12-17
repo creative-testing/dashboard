@@ -763,6 +763,9 @@
                 // ⏳ Cacher l'overlay - données chargées !
                 loadingOverlay.hide();
 
+                // 🎓 Initialize onboarding (welcome modal for first-time users)
+                initOnboarding();
+
             } catch (error) {
                 console.error('❌ Error al cargar datos:', error);
                 loadingOverlay.hide(); // Cacher même en cas d'erreur
@@ -3127,6 +3130,111 @@
             }
         }
 
+        // ======================================================================
+        // ONBOARDING SYSTEM
+        // ======================================================================
+        const ONBOARDING_KEYS = {
+            welcomeSeen: 'saas_welcome_seen_v1',
+            tutorialClicked: 'saas_tutorial_clicked'
+        };
+
+        function initOnboarding() {
+            // Check if this is a first-time user (never saw welcome modal)
+            const welcomeSeen = localStorage.getItem(ONBOARDING_KEYS.welcomeSeen);
+
+            if (!welcomeSeen) {
+                // First visit: show welcome modal after a short delay
+                setTimeout(() => {
+                    showWelcomeModal();
+                }, 1500);
+            }
+
+            // Check if tutorial button should have pulsing badge
+            updateTutorialBadge();
+        }
+
+        function showWelcomeModal() {
+            const modal = document.getElementById('welcome-modal');
+            if (modal) {
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeWelcomeModal() {
+            const modal = document.getElementById('welcome-modal');
+            if (modal) {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+            // Mark welcome as seen
+            localStorage.setItem(ONBOARDING_KEYS.welcomeSeen, Date.now().toString());
+        }
+
+        function watchWelcomeTutorial() {
+            closeWelcomeModal();
+            // Mark tutorial as clicked (removes pulsing badge)
+            localStorage.setItem(ONBOARDING_KEYS.tutorialClicked, Date.now().toString());
+            updateTutorialBadge();
+            // Open the intro tutorial
+            openTutorialModal('intro');
+        }
+
+        function updateTutorialBadge() {
+            const btn = document.getElementById('tutorial-header-btn');
+            if (!btn) return;
+
+            const tutorialClicked = localStorage.getItem(ONBOARDING_KEYS.tutorialClicked);
+
+            if (!tutorialClicked) {
+                // User hasn't clicked tutorial yet - show pulsing badge
+                btn.classList.add('unread');
+            } else {
+                btn.classList.remove('unread');
+            }
+        }
+
+        // Override openTutorialModal to track when user clicks tutorial
+        const _originalOpenTutorialModal = typeof openTutorialModal === 'function' ? openTutorialModal : null;
+
+        function openTutorialModalWithTracking(type) {
+            // Mark tutorial as clicked
+            localStorage.setItem(ONBOARDING_KEYS.tutorialClicked, Date.now().toString());
+            updateTutorialBadge();
+
+            // Call original function
+            if (_originalOpenTutorialModal) {
+                _originalOpenTutorialModal(type);
+            } else {
+                // Fallback: original implementation
+                const modal = document.getElementById('tutorial-modal');
+                const titleEl = document.getElementById('tutorial-modal-title');
+                const iframeEl = document.getElementById('tutorial-modal-iframe');
+
+                if (!modal || !iframeEl) return;
+
+                const tutorials = {
+                    intro: {
+                        title: 'Tutorial: Cómo usar el Dashboard',
+                        url: 'https://www.loom.com/embed/88a9ee75f47145dd9f79ff74ffc1b2f4?autoplay=1'
+                    },
+                    nomenclature: {
+                        title: 'Tutorial: Cómo nomenclaturar tus ads',
+                        url: 'https://www.loom.com/embed/50e1a7d7a4b743f3b0a1ad34f15dbdd8?autoplay=1'
+                    }
+                };
+
+                const tut = tutorials[type] || tutorials.intro;
+                if (titleEl) titleEl.textContent = tut.title;
+                iframeEl.src = tut.url;
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+        // ======================================================================
+        // END ONBOARDING SYSTEM
+        // ======================================================================
+
         function addTutorialButton() {
             const container = document.querySelector('.account-selector');
             if (!container || document.getElementById('tutorial-header-btn')) return;
@@ -3141,8 +3249,16 @@
                 </svg>
                 <span>Tutorial</span>
             `;
-            btn.onclick = () => openTutorialModal('intro');
+            btn.onclick = () => {
+                // Track tutorial click (removes pulsing badge)
+                localStorage.setItem(ONBOARDING_KEYS.tutorialClicked, Date.now().toString());
+                updateTutorialBadge();
+                openTutorialModal('intro');
+            };
             container.appendChild(btn);
+
+            // Apply pulsing badge if user hasn't watched tutorial yet
+            updateTutorialBadge();
         }
 
         function addNomenclatureLink() {
@@ -3722,6 +3838,48 @@
             }
         });
     </script>
+
+    <!-- Welcome Modal (First-time onboarding) -->
+    <div id="welcome-modal" class="welcome-modal-overlay">
+        <div class="welcome-modal">
+            <button class="welcome-modal-close" onclick="closeWelcomeModal()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            <div class="welcome-modal-icon">🎉</div>
+            <h2>¡Bienvenido a Creative Testing!</h2>
+            <p>Este dashboard te ayuda a analizar el rendimiento de tus creativos publicitarios en Meta Ads.</p>
+            <div class="welcome-modal-features">
+                <div class="welcome-feature">
+                    <span class="welcome-feature-icon">📊</span>
+                    <span>Métricas de ROAS, CPA y conversiones</span>
+                </div>
+                <div class="welcome-feature">
+                    <span class="welcome-feature-icon">🎯</span>
+                    <span>Análisis por ángulo y creador</span>
+                </div>
+                <div class="welcome-feature">
+                    <span class="welcome-feature-icon">📈</span>
+                    <span>Comparación semana a semana</span>
+                </div>
+            </div>
+            <p class="welcome-modal-cta">¿Quieres ver un tutorial de 19 minutos?</p>
+            <div class="welcome-modal-buttons">
+                <button class="welcome-btn-primary" onclick="watchWelcomeTutorial()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"></polygon>
+                    </svg>
+                    Ver Tutorial
+                </button>
+                <button class="welcome-btn-secondary" onclick="closeWelcomeModal()">
+                    Explorar primero
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Tutorial Modal -->
     <div id="tutorial-modal" class="tutorial-modal-overlay" onclick="if(event.target === this) closeTutorialModal()">

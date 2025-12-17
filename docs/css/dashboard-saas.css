@@ -1161,31 +1161,86 @@ thead th .sort-ind { font-size: 12px; opacity: 0.75; margin-left: 6px; }
 }
 .welcome-modal {
     background: white;
-    border-radius: 16px;
+    border-radius: 20px;
     width: 90%;
-    max-width: 500px;
-    padding: 30px;
+    max-width: 440px;
+    padding: 35px 30px;
     box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
     animation: slideUp 0.3s ease;
     text-align: center;
+    position: relative;
+}
+.welcome-modal-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #f5f5f7;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.welcome-modal-close:hover {
+    background: #e0e0e2;
+    transform: scale(1.1);
+}
+.welcome-modal-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
 }
 .welcome-modal h2 {
-    font-size: 24px;
-    margin-bottom: 12px;
+    font-size: 22px;
+    margin-bottom: 10px;
     color: #1d1d1f;
+    font-weight: 700;
 }
 .welcome-modal p {
     color: #6c757d;
-    font-size: 15px;
+    font-size: 14px;
     line-height: 1.6;
     margin-bottom: 20px;
 }
-.welcome-modal-actions {
+.welcome-modal-features {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+    text-align: left;
+}
+.welcome-feature {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    font-size: 13px;
+    color: #1d1d1f;
+}
+.welcome-feature:not(:last-child) {
+    border-bottom: 1px solid #e5e7eb;
+}
+.welcome-feature-icon {
+    font-size: 16px;
+}
+.welcome-modal-cta {
+    font-weight: 600;
+    color: #1d1d1f !important;
+    margin-bottom: 15px !important;
+}
+.welcome-modal-buttons {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
 }
-.welcome-modal-btn {
+.welcome-btn-primary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     padding: 14px 24px;
     border-radius: 10px;
     font-size: 15px;
@@ -1193,21 +1248,27 @@ thead th .sort-ind { font-size: 12px; opacity: 0.75; margin-left: 6px; }
     cursor: pointer;
     transition: all 0.2s;
     border: none;
-}
-.welcome-modal-btn.primary {
     background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
     color: white;
 }
-.welcome-modal-btn.primary:hover {
+.welcome-btn-primary:hover {
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(37, 99, 235, 0.4);
 }
-.welcome-modal-btn.secondary {
-    background: #f5f5f7;
+.welcome-btn-secondary {
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    background: transparent;
     color: #6c757d;
 }
-.welcome-modal-btn.secondary:hover {
-    background: #e0e0e2;
+.welcome-btn-secondary:hover {
+    background: #f5f5f7;
+    color: #1d1d1f;
 }
 
 /* 🆕 Alerte contextuelle nomenclature */
