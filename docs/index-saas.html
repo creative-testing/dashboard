@@ -4259,15 +4259,20 @@
         }
 
         function addNomenclatureLink() {
-            const tableHeader = document.querySelector('.main-table-card > div:first-child');
-            if (!tableHeader || document.getElementById('nomenclature-help-link')) return;
+            // Target the main table using the title ID
+            const tableTitle = document.getElementById('table-title');
+            if (!tableTitle || document.getElementById('nomenclature-help-link')) return;
 
-            // Create the link
+            const titleContainer = tableTitle.parentElement;
+            const subtitle = titleContainer.querySelector('p');
+            if (!subtitle) return;
+
+            // Create the link with separator included
             const link = document.createElement('span');
             link.id = 'nomenclature-help-link';
             link.className = 'nomenclature-help-link';
             link.innerHTML = `
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                · <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="10"></circle>
                     <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
                     <line x1="12" y1="17" x2="12.01" y2="17"></line>
@@ -4276,13 +4281,9 @@
             `;
             link.onclick = () => openTutorialModal('nomenclature');
 
-            // Insert after the subtitle paragraph
-            const subtitle = tableHeader.querySelector('p');
-            if (subtitle) {
-                subtitle.style.display = 'inline';
-                subtitle.insertAdjacentElement('afterend', document.createTextNode(' · '));
-                subtitle.parentElement.appendChild(link);
-            }
+            // Make subtitle inline and append link after it
+            subtitle.style.display = 'inline';
+            subtitle.after(link);
         }
 
         // Event listeners pour le dropdown custom
