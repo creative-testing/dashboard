@@ -10,6 +10,7 @@ on:
       - 'docs/index-saas.html'
       - 'docs/data_loader_saas.js'
       - 'docs/data_adapter.js'
+      - 'docs/css/**'
       - 'docs/i18n/**'
       - '.github/workflows/deploy-vps.yml'
   workflow_dispatch:
@@ -45,6 +46,10 @@ jobs:
             cp ../docs/index-saas.html /var/www/creative-testing/
             cp ../docs/data_loader_saas.js /var/www/creative-testing/
             cp ../docs/data_adapter.js /var/www/creative-testing/
+
+            echo "🎨 Deploying CSS files..."
+            mkdir -p /var/www/creative-testing/css
+            cp -r ../docs/css/* /var/www/creative-testing/css/
 
             echo "🌍 Deploying i18n files..."
             mkdir -p /var/www/creative-testing/i18n
