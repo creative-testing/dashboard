@@ -1105,19 +1105,26 @@
             border-color: rgba(255,255,255,0.4);
             transform: translateY(-2px);
         }
-        /* Nomenclature help link */
+        /* Nomenclature help link - Badge style for visibility */
         .nomenclature-help-link {
-            color: #2563eb;
-            font-size: 13px;
+            color: #b45309;
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            font-size: 12px;
+            font-weight: 600;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 4px;
+            gap: 5px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid #fcd34d;
+            margin-left: 10px;
             transition: all 0.2s;
         }
         .nomenclature-help-link:hover {
-            color: #1e40af;
-            text-decoration: underline;
+            background: linear-gradient(135deg, #fde68a, #fcd34d);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
         }
     </style>
     <!-- Data adapter and SaaS loader -->
@@ -4272,10 +4279,9 @@
             link.id = 'nomenclature-help-link';
             link.className = 'nomenclature-help-link';
             link.innerHTML = `
-                · <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="12" cy="12" r="10"></circle>
-                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    <polygon points="10 8 16 12 10 16 10 8"></polygon>
                 </svg>
                 ¿Cómo nomenclaturar?
             `;
