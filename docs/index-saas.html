@@ -1007,6 +1007,118 @@
             text-align: center;
             font-style: italic;
         }
+
+        /* Tutorial Modal Styles */
+        .tutorial-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+        .tutorial-modal-overlay.active {
+            display: flex;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .tutorial-modal {
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .tutorial-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 1px solid #e0e0e2;
+        }
+        .tutorial-modal-header h3 {
+            font-size: 18px;
+            color: #1d1d1f;
+            margin: 0;
+        }
+        .tutorial-modal-close {
+            background: #f5f5f7;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .tutorial-modal-close:hover {
+            background: #e0e0e2;
+        }
+        .tutorial-modal-body {
+            padding: 0;
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+        }
+        .tutorial-modal-body iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        /* Tutorial button in header */
+        .tutorial-header-btn {
+            background: rgba(255,255,255,0.15);
+            border: 2px solid rgba(255,255,255,0.25);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 8px;
+        }
+        .tutorial-header-btn:hover {
+            background: rgba(255,255,255,0.25);
+            border-color: rgba(255,255,255,0.4);
+            transform: translateY(-2px);
+        }
+        /* Nomenclature help link */
+        .nomenclature-help-link {
+            color: #2563eb;
+            font-size: 13px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s;
+        }
+        .nomenclature-help-link:hover {
+            color: #1e40af;
+            text-decoration: underline;
+        }
     </style>
     <!-- Data adapter and SaaS loader -->
     <script src="data_adapter.js"></script>
@@ -4087,6 +4199,92 @@
             hdr.appendChild(badge);
         }
 
+        // Tutorial Modal Functions
+        const TUTORIAL_VIDEOS = {
+            intro: {
+                id: '4ecbc5cb11144dec931d5285a6e70cb7',
+                title: '📚 Tutorial del Dashboard'
+            },
+            nomenclature: {
+                id: 'c368e56148ce49b3b3735f7617d6c883',
+                title: '📝 Cómo Nomenclaturar tus Anuncios'
+            }
+        };
+
+        function openTutorialModal(videoKey) {
+            const video = TUTORIAL_VIDEOS[videoKey];
+            if (!video) return;
+
+            const modal = document.getElementById('tutorial-modal');
+            const titleEl = document.getElementById('tutorial-modal-title');
+            const iframeEl = document.getElementById('tutorial-modal-iframe');
+
+            if (modal && titleEl && iframeEl) {
+                titleEl.textContent = video.title;
+                iframeEl.src = `https://www.loom.com/embed/${video.id}?autoplay=1`;
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeTutorialModal() {
+            const modal = document.getElementById('tutorial-modal');
+            const iframeEl = document.getElementById('tutorial-modal-iframe');
+
+            if (modal) {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+            if (iframeEl) {
+                iframeEl.src = ''; // Stop video
+            }
+        }
+
+        function addTutorialButton() {
+            const container = document.querySelector('.account-selector');
+            if (!container || document.getElementById('tutorial-header-btn')) return;
+
+            const btn = document.createElement('button');
+            btn.id = 'tutorial-header-btn';
+            btn.className = 'tutorial-header-btn';
+            btn.innerHTML = `
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polygon points="10 8 16 12 10 16 10 8"></polygon>
+                </svg>
+                <span>Tutorial</span>
+            `;
+            btn.onclick = () => openTutorialModal('intro');
+            container.appendChild(btn);
+        }
+
+        function addNomenclatureLink() {
+            const tableHeader = document.querySelector('.main-table-card > div:first-child');
+            if (!tableHeader || document.getElementById('nomenclature-help-link')) return;
+
+            // Create the link
+            const link = document.createElement('span');
+            link.id = 'nomenclature-help-link';
+            link.className = 'nomenclature-help-link';
+            link.innerHTML = `
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+                ¿Cómo nomenclaturar?
+            `;
+            link.onclick = () => openTutorialModal('nomenclature');
+
+            // Insert after the subtitle paragraph
+            const subtitle = tableHeader.querySelector('p');
+            if (subtitle) {
+                subtitle.style.display = 'inline';
+                subtitle.insertAdjacentElement('afterend', document.createTextNode(' · '));
+                subtitle.parentElement.appendChild(link);
+            }
+        }
+
         // Event listeners pour le dropdown custom
         document.addEventListener('DOMContentLoaded', () => {
             const btn = document.getElementById('account-dropdown-btn');
@@ -4620,6 +4818,10 @@
 
             buildAccountOptions();
 
+            // Tutorial buttons (always visible)
+            addTutorialButton();
+            addNomenclatureLink();
+
             // Si locked=1, masquer le dropdown et afficher le badge
             if (qp.locked) {
                 const dropdown = document.querySelector('.custom-dropdown');
@@ -4633,6 +4835,24 @@
             }
         });
     </script>
+
+    <!-- Tutorial Modal -->
+    <div id="tutorial-modal" class="tutorial-modal-overlay" onclick="if(event.target === this) closeTutorialModal()">
+        <div class="tutorial-modal">
+            <div class="tutorial-modal-header">
+                <h3 id="tutorial-modal-title">Tutorial</h3>
+                <button class="tutorial-modal-close" onclick="closeTutorialModal()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="tutorial-modal-body">
+                <iframe id="tutorial-modal-iframe" allow="autoplay; fullscreen" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
 <!-- Force cache refresh: 1756737899 -->
