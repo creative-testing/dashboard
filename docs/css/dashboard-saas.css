@@ -1275,32 +1275,67 @@ thead th .sort-ind { font-size: 12px; opacity: 0.75; margin-left: 6px; }
 .nomenclature-alert {
     background: linear-gradient(135deg, #fef3c7, #fde68a);
     border: 1px solid #fcd34d;
-    border-radius: 12px;
-    padding: 20px;
+    border-radius: 16px;
+    padding: 30px 25px;
     text-align: center;
     margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
+}
+.nomenclature-alert-icon {
+    font-size: 40px;
+    margin-bottom: 12px;
 }
 .nomenclature-alert h4 {
     color: #b45309;
-    font-size: 16px;
-    margin-bottom: 8px;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 10px;
 }
 .nomenclature-alert p {
     color: #92400e;
     font-size: 14px;
-    margin-bottom: 12px;
+    line-height: 1.5;
+    margin-bottom: 16px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.nomenclature-alert-format {
+    background: rgba(255,255,255,0.6);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 18px;
+    display: inline-block;
+}
+.nomenclature-alert-format code {
+    font-family: 'SF Mono', Monaco, monospace;
+    font-size: 13px;
+    color: #1d1d1f;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 4px;
+}
+.nomenclature-alert-example {
+    font-size: 11px;
+    color: #6b7280;
+    font-style: italic;
 }
 .nomenclature-alert-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     background: #f59e0b;
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 14px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
 }
 .nomenclature-alert-btn:hover {
     background: #d97706;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
 }

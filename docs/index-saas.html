@@ -1287,10 +1287,8 @@
 
             if (score < 40) {
                 section.style.display = 'block';
-                renderAngles(new Map(), section.querySelector('#angles-container'));
-                renderCreators(new Map(), section.querySelector('#creators-container'));
-                noteAngles.innerHTML = `⚠️ Nomenclatura insuficiente (coverage ${coverage.toFixed(0)}%)`;
-                noteCreators.innerHTML = `La mayoría de los anuncios no siguen el formato: Nuevo / Ángulo / Creador / Edad / Hook`;
+                // Show contextual alert instead of empty charts
+                showNomenclatureAlert(section, coverage);
                 return;
             }
 
@@ -3230,6 +3228,31 @@
                 modal.classList.add('active');
                 document.body.style.overflow = 'hidden';
             }
+        }
+        // Show contextual alert when nomenclature coverage is too low
+        function showNomenclatureAlert(section, coverage) {
+            // Replace the section content with a helpful alert
+            section.innerHTML = `
+                <div class="nomenclature-alert">
+                    <div class="nomenclature-alert-icon">📋</div>
+                    <h4>¡Desbloquea insights más potentes!</h4>
+                    <p>
+                        Solo el <strong>${coverage.toFixed(0)}%</strong> de tus anuncios siguen la nomenclatura.
+                        Con una buena nomenclatura podrás ver análisis por ángulo, creador y hook.
+                    </p>
+                    <div class="nomenclature-alert-format">
+                        <code>Tipo / Ángulo / Creador / Edad / Hook</code>
+                        <span class="nomenclature-alert-example">Ej: Nuevo / Picazon / Maria / 35+ / H1</span>
+                    </div>
+                    <button class="nomenclature-alert-btn" onclick="openTutorialModal('nomenclature'); localStorage.setItem(ONBOARDING_KEYS.tutorialClicked, Date.now().toString()); updateTutorialBadge();">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"></polygon>
+                        </svg>
+                        Ver Tutorial (9 min)
+                    </button>
+                </div>
+            `;
         }
         // ======================================================================
         // END ONBOARDING SYSTEM
