@@ -11,6 +11,7 @@ on:
       - 'docs/data_loader_saas.js'
       - 'docs/data_adapter.js'
       - 'docs/css/**'
+      - 'docs/js/**'
       - 'docs/i18n/**'
       - '.github/workflows/deploy-vps.yml'
   workflow_dispatch:
@@ -50,6 +51,10 @@ jobs:
             echo "🎨 Deploying CSS files..."
             mkdir -p /var/www/creative-testing/css
             cp -r ../docs/css/* /var/www/creative-testing/css/
+
+            echo "📦 Deploying JS files..."
+            mkdir -p /var/www/creative-testing/js
+            cp -r ../docs/js/* /var/www/creative-testing/js/
 
             echo "🌍 Deploying i18n files..."
             mkdir -p /var/www/creative-testing/i18n
