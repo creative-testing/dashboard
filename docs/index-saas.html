@@ -958,9 +958,10 @@
                                 }
                             }
                             
-                            // Add a warning if data is old
-                            const dataDate = new Date(actualDataDate);
+                            // Add a warning if data is old (use noon to avoid timezone shift)
+                            const dataDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), 12, 0, 0);
                             const today = new Date();
+                            today.setHours(12, 0, 0, 0);
                             const daysDiff = Math.floor((today - dataDate) / (1000 * 60 * 60 * 24));
                             if (daysDiff > 1) {
                                 displayText += ` ⚠️ (${daysDiff} días de retraso)`;
