@@ -24,19 +24,42 @@
         </div>
     </div>
 
-    <!-- 🆕 First-time User Overlay (BASELINE = longue attente) -->
+    <!-- 🆕 First-time User Overlay with Video (Wait Marketing) -->
     <div id="firstload-overlay">
-        <div class="loading-spinner"></div>
-        <div class="firstload-title" id="firstload-title">¡Bienvenido! 🎉</div>
-        <div class="firstload-text" id="firstload-text">Conectando con Meta Ads...</div>
-        <div class="firstload-subtext" id="firstload-subtext">
-            Primera vez aquí: estamos descargando 90 días de datos publicitarios.
-        </div>
-        <div class="firstload-progress">
-            <div class="firstload-progress-bar" id="firstload-progress-bar"></div>
-        </div>
-        <div class="firstload-tip" id="firstload-tip">
-            💡 Tip: Este proceso solo ocurre la primera vez
+        <div class="firstload-content">
+            <div class="firstload-title" id="firstload-title">¡Bienvenido! 🎉</div>
+            <div class="firstload-subtitle" id="firstload-subtitle">Mientras preparamos tus datos, aprende a usar el dashboard</div>
+
+            <!-- Video Container -->
+            <div class="firstload-video-container" id="firstload-video-container">
+                <iframe
+                    id="firstload-video"
+                    src="https://www.loom.com/embed/88a9ee75f47145dd9f79ff74ffc1b2f4?autoplay=1&hide_owner=true&hide_share=true&hide_title=true"
+                    frameborder="0"
+                    webkitallowfullscreen
+                    mozallowfullscreen
+                    allowfullscreen
+                    allow="autoplay"
+                ></iframe>
+            </div>
+
+            <!-- Progress Section -->
+            <div class="firstload-progress-section">
+                <div class="firstload-progress">
+                    <div class="firstload-progress-bar" id="firstload-progress-bar"></div>
+                </div>
+                <div class="firstload-text" id="firstload-text">Conectando con Meta Ads...</div>
+            </div>
+
+            <!-- Skip Button (visible during loading) -->
+            <button class="firstload-skip-btn" id="firstload-skip-btn" style="display: none;">
+                Saltar video ⏭️
+            </button>
+
+            <!-- Ready Button (visible when data ready) -->
+            <button class="firstload-ready-btn" id="firstload-ready-btn" style="display: none;">
+                🚀 Ir al Dashboard
+            </button>
         </div>
     </div>
 
@@ -773,9 +796,9 @@
             }
         }
 
-        // 🆕 Premium UI for first-time users (BASELINE = long wait)
+        // 🆕 Premium UI for first-time users with Video (Wait Marketing)
         async function showDataPendingUI() {
-            console.log('🆕 First-time user: showing premium waiting UI');
+            console.log('🎬 First-time user: showing Wait Marketing video UI');
 
             // Show the overlay
             const overlay = document.getElementById('firstload-overlay');
@@ -783,37 +806,40 @@
 
             // UI elements
             const titleEl = document.getElementById('firstload-title');
+            const subtitleEl = document.getElementById('firstload-subtitle');
             const textEl = document.getElementById('firstload-text');
-            const subtextEl = document.getElementById('firstload-subtext');
             const progressBar = document.getElementById('firstload-progress-bar');
-            const tipEl = document.getElementById('firstload-tip');
+            const skipBtn = document.getElementById('firstload-skip-btn');
+            const readyBtn = document.getElementById('firstload-ready-btn');
 
-            // Messages progressifs (rassurants, variés)
+            // Show skip button after 5 seconds
+            setTimeout(() => {
+                if (skipBtn) skipBtn.style.display = 'inline-block';
+            }, 5000);
+
+            // Skip button just continues watching but shows we're still loading
+            if (skipBtn) {
+                skipBtn.onclick = () => {
+                    skipBtn.style.display = 'none';
+                    if (subtitleEl) subtitleEl.textContent = 'Sigue viendo mientras cargamos tus datos...';
+                };
+            }
+
+            // Progress messages (simpler, shown below video)
             const messages = [
-                { text: 'Conectando con Meta Ads...', sub: 'Estableciendo conexión segura con tu cuenta', progress: 5 },
-                { text: 'Descargando campañas...', sub: 'Recuperando información de tus campañas activas', progress: 15 },
-                { text: 'Analizando anuncios...', sub: 'Procesando creativos y configuraciones', progress: 25 },
-                { text: 'Calculando métricas...', sub: 'ROAS, CPA, CTR y más indicadores', progress: 35 },
-                { text: 'Procesando datos históricos...', sub: '90 días de rendimiento publicitario', progress: 45 },
-                { text: 'Organizando información...', sub: 'Preparando visualizaciones del dashboard', progress: 55 },
-                { text: 'Optimizando datos...', sub: 'Calculando tendencias y comparativas', progress: 65 },
-                { text: 'Finalizando análisis...', sub: 'Últimos ajustes antes de mostrar resultados', progress: 75 },
-                { text: 'Casi listo...', sub: 'Tu dashboard estará disponible en un momento', progress: 85 },
-                { text: 'Últimos detalles...', sub: 'Verificando que todo esté perfecto', progress: 90 },
-            ];
-
-            // Tips variés (changent toutes les 20s)
-            const tips = [
-                '💡 Tip: Este proceso solo ocurre la primera vez',
-                '📊 Tip: Podrás ver 90 días de datos históricos',
-                '🚀 Tip: Las próximas visitas cargarán en segundos',
-                '🎯 Tip: Analiza qué creativos funcionan mejor',
-                '📈 Tip: Compara rendimiento por período',
-                '⚡ Tip: Los datos se actualizan automáticamente',
+                { text: 'Conectando con Meta Ads...', progress: 5 },
+                { text: 'Descargando campañas...', progress: 15 },
+                { text: 'Analizando anuncios...', progress: 25 },
+                { text: 'Calculando métricas...', progress: 35 },
+                { text: 'Procesando datos históricos...', progress: 45 },
+                { text: 'Organizando información...', progress: 55 },
+                { text: 'Optimizando datos...', progress: 65 },
+                { text: 'Finalizando análisis...', progress: 75 },
+                { text: 'Casi listo...', progress: 85 },
+                { text: 'Últimos detalles...', progress: 90 },
             ];
 
             let messageIndex = 0;
-            let tipIndex = 0;
             const startTime = Date.now();
 
             // Update messages every 8 seconds
@@ -821,15 +847,8 @@
                 messageIndex = Math.min(messageIndex + 1, messages.length - 1);
                 const msg = messages[messageIndex];
                 if (textEl) textEl.textContent = msg.text;
-                if (subtextEl) subtextEl.textContent = msg.sub;
                 if (progressBar) progressBar.style.width = msg.progress + '%';
             }, 8000);
-
-            // Update tips every 20 seconds
-            const tipInterval = setInterval(() => {
-                tipIndex = (tipIndex + 1) % tips.length;
-                if (tipEl) tipEl.textContent = tips[tipIndex];
-            }, 20000);
 
             // Trigger refresh for all accounts
             console.log('🔄 Triggering BASELINE refresh for all accounts...');
@@ -841,17 +860,13 @@
                 } else {
                     console.error('❌ Failed to trigger refresh:', refreshResult.error);
                     clearInterval(messageInterval);
-                    clearInterval(tipInterval);
-                    if (textEl) textEl.textContent = 'Error al iniciar';
-                    if (subtextEl) subtextEl.textContent = refreshResult.error || 'Por favor, recarga la página';
+                    if (textEl) textEl.textContent = refreshResult.error || 'Error - recarga la página';
                     return;
                 }
             } catch (error) {
                 console.error('❌ Refresh error:', error);
                 clearInterval(messageInterval);
-                clearInterval(tipInterval);
                 if (textEl) textEl.textContent = 'Error de conexión';
-                if (subtextEl) subtextEl.textContent = 'Verifica tu conexión e intenta de nuevo';
                 return;
             }
 
@@ -868,19 +883,20 @@
                 try {
                     const ready = await checkDataReady();
                     if (ready) {
-                        console.log(`✅ Data ready after ${elapsed}s! Reloading...`);
+                        console.log(`✅ Data ready after ${elapsed}s!`);
                         clearInterval(pollTimer);
                         clearInterval(messageInterval);
-                        clearInterval(tipInterval);
 
-                        // Success animation
-                        if (titleEl) titleEl.textContent = '¡Listo! 🎉';
-                        if (textEl) textEl.textContent = '¡Tus datos están listos!';
-                        if (subtextEl) subtextEl.textContent = 'Cargando tu dashboard...';
+                        // Success state - show button, let user continue watching
+                        if (titleEl) titleEl.textContent = '¡Tus datos están listos! 🎉';
+                        if (subtitleEl) subtitleEl.textContent = 'Puedes seguir viendo el tutorial o ir al dashboard';
+                        if (textEl) textEl.textContent = `✅ Completado en ${elapsed} segundos`;
                         if (progressBar) progressBar.style.width = '100%';
-                        if (tipEl) tipEl.textContent = `⏱️ Completado en ${elapsed} segundos`;
-
-                        setTimeout(() => window.location.reload(), 1500);
+                        if (skipBtn) skipBtn.style.display = 'none';
+                        if (readyBtn) {
+                            readyBtn.style.display = 'inline-block';
+                            readyBtn.onclick = () => window.location.reload();
+                        }
                         return;
                     }
                 } catch (error) {
@@ -891,19 +907,17 @@
                 if (pollCount >= maxPolls) {
                     clearInterval(pollTimer);
                     clearInterval(messageInterval);
-                    clearInterval(tipInterval);
                     console.warn('⏱️ Polling timeout reached');
 
                     if (titleEl) titleEl.textContent = 'Tomando más tiempo...';
-                    if (textEl) textEl.textContent = 'El proceso sigue en curso';
-                    if (subtextEl) {
-                        subtextEl.innerHTML = `
-                            Puedes esperar o volver en unos minutos.<br><br>
-                            <button onclick="window.location.reload()" style="
-                                background: white; color: #059669; border: none; padding: 12px 24px;
-                                border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;
-                            ">Verificar de nuevo</button>
-                        `;
+                    if (textEl) textEl.textContent = 'El proceso sigue en curso - vuelve en unos minutos';
+                    if (progressBar) progressBar.style.width = '95%';
+                    if (skipBtn) skipBtn.style.display = 'none';
+                    // Show reload button for timeout case
+                    if (readyBtn) {
+                        readyBtn.textContent = '🔄 Verificar de nuevo';
+                        readyBtn.style.display = 'inline-block';
+                        readyBtn.onclick = () => window.location.reload();
                     }
                 }
             }, pollInterval);
