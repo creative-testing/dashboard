@@ -2771,7 +2771,9 @@
                     <div class="nomenclature-alert-icon">📋</div>
                     <h4>¡Desbloquea insights más potentes!</h4>
                     <p>
-                        Solo el <strong>${coverage.toFixed(0)}%</strong> de tus anuncios siguen la nomenclatura.
+                        ${coverage === 0
+                            ? 'Ninguno de tus anuncios sigue la nomenclatura.'
+                            : `Solo el <strong>${coverage.toFixed(0)}%</strong> de tus anuncios siguen la nomenclatura.`}
                         Con una buena nomenclatura podrás ver análisis por ángulo, creador y hook.
                     </p>
                     <div class="nomenclature-alert-format">
