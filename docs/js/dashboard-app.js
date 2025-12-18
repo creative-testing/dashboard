@@ -406,7 +406,11 @@
                         if (skipBtn) skipBtn.style.display = 'none';
                         if (readyBtn) {
                             readyBtn.style.display = 'inline-block';
-                            readyBtn.onclick = () => window.location.reload();
+                            readyBtn.onclick = () => {
+                                // Mark welcome as seen to avoid duplicate modal after Wait Marketing
+                                localStorage.setItem('saas_welcome_seen_v1', Date.now().toString());
+                                window.location.reload();
+                            };
                         }
                         return;
                     }
@@ -428,7 +432,11 @@
                     if (readyBtn) {
                         readyBtn.textContent = '🔄 Verificar de nuevo';
                         readyBtn.style.display = 'inline-block';
-                        readyBtn.onclick = () => window.location.reload();
+                        readyBtn.onclick = () => {
+                            // Mark welcome as seen to avoid duplicate modal after Wait Marketing
+                            localStorage.setItem('saas_welcome_seen_v1', Date.now().toString());
+                            window.location.reload();
+                        };
                     }
                 }
             }, pollInterval);
