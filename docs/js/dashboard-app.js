@@ -407,8 +407,9 @@
                         if (readyBtn) {
                             readyBtn.style.display = 'inline-block';
                             readyBtn.onclick = () => {
-                                // Mark welcome as seen to avoid duplicate modal after Wait Marketing
+                                // Mark welcome AND tutorial as seen (same 19min video)
                                 localStorage.setItem('saas_welcome_seen_v1', Date.now().toString());
+                                localStorage.setItem('saas_tutorial_clicked', Date.now().toString());
                                 window.location.reload();
                             };
                         }
@@ -433,8 +434,9 @@
                         readyBtn.textContent = '🔄 Verificar de nuevo';
                         readyBtn.style.display = 'inline-block';
                         readyBtn.onclick = () => {
-                            // Mark welcome as seen to avoid duplicate modal after Wait Marketing
+                            // Mark welcome AND tutorial as seen (same 19min video)
                             localStorage.setItem('saas_welcome_seen_v1', Date.now().toString());
+                            localStorage.setItem('saas_tutorial_clicked', Date.now().toString());
                             window.location.reload();
                         };
                     }
