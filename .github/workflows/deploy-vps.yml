@@ -13,6 +13,7 @@ on:
       - 'docs/css/**'
       - 'docs/js/**'
       - 'docs/i18n/**'
+      - 'scripts/ops/**'
       - '.github/workflows/deploy-vps.yml'
   workflow_dispatch:
 
@@ -62,6 +63,10 @@ jobs:
 
             echo "🔧 Setting permissions..."
             chown -R www-data:www-data /var/www/creative-testing/
+
+            echo "📊 Syncing ops scripts..."
+            mkdir -p /root/scripts
+            cp scripts/ops/weekly_pulse.py /root/scripts/
 
             echo "✅ Deployment complete!"
             echo "🔍 Container status:"
