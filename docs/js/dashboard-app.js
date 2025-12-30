@@ -2750,11 +2750,11 @@
                 const tutorials = {
                     intro: {
                         title: 'Tutorial: Cómo usar el Dashboard',
-                        url: 'https://www.loom.com/embed/88a9ee75f47145dd9f79ff74ffc1b2f4?autoplay=1'
+                        url: 'https://www.loom.com/embed/4ecbc5cb11144dec931d5285a6e70cb7?autoplay=1'
                     },
                     nomenclature: {
                         title: 'Tutorial: Cómo nomenclaturar tus ads',
-                        url: 'https://www.loom.com/embed/50e1a7d7a4b743f3b0a1ad34f15dbdd8?autoplay=1'
+                        url: 'https://www.loom.com/embed/c368e56148ce49b3b3735f7617d6c883?autoplay=1'
                     }
                 };
 
