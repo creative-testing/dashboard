@@ -117,7 +117,7 @@
         <div id="error-message" class="error-message">
             <strong data-i18n="oauth.error_title">⚠️ Error de Autenticación</strong>
             <p id="error-text"></p>
-            <button class="btn" onclick="window.location.href='index-landing.html'" data-i18n="oauth.back_home">Volver al Inicio</button>
+            <button class="btn" onclick="window.location.href='/index-landing.html'" data-i18n="oauth.back_home">Volver al Inicio</button>
         </div>
 
         <!-- Dashboard Section -->
@@ -246,7 +246,7 @@
             // No OAuth callback params → This page should not be accessed directly
             if (!token || !tenantId) {
                 console.log('⚠️ No OAuth params detected, redirecting to landing...');
-                window.location.href = 'index-landing.html';
+                window.location.href = '/index-landing.html';
                 return;
             }
 
@@ -301,7 +301,7 @@
                         });
                         if (lang) params.set('lang', lang);
                         setTimeout(() => {
-                            window.location.href = `index-saas.html?${params.toString()}`;
+                            window.location.href = `/index-saas.html?${params.toString()}`;
                         }, 500);
                         return;
                     }
@@ -335,7 +335,7 @@
                     });
                     if (lang) params.set('lang', lang);
                     setTimeout(() => {
-                        window.location.href = `index-saas.html?${params.toString()}`;
+                        window.location.href = `/index-saas.html?${params.toString()}`;
                     }, 300);
                     return;
                 } else {
@@ -355,7 +355,7 @@
                     // Toujours rediriger vers le dashboard
                     // Le dashboard affichera l'overlay vert si les données ne sont pas encore prêtes
                     console.log('🚀 Redirect vers dashboard (all accounts)');
-                    const url = lang ? `index-saas.html?lang=${lang}` : 'index-saas.html';
+                    const url = lang ? `/index-saas.html?lang=${lang}` : '/index-saas.html';
                     window.location.href = url;
                 }
 
