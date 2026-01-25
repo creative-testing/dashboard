@@ -6,16 +6,72 @@
 
 | Composant | Où | Accès |
 |-----------|-----|-------|
-| **API SaaS** | VPS (via GitHub Secrets `VPS_HOST`) | `https://creative-testing.theaipipe.com` |
+| **API SaaS** | VPS Docker (port 10002) | `https://insights.theaipipe.com` |
 | **Database** | PostgreSQL sur le même VPS | `DATABASE_URL` env var |
 | **Storage** | Cloudflare R2 | `STORAGE_*` env vars |
-| **Frontend** | VPS (même que API) | `https://creative-testing.theaipipe.com` |
+| **Frontend** | VPS (même que API) | `https://insights.theaipipe.com` |
 | **CI/CD** | GitHub Actions | `.github/workflows/deploy-vps.yml` |
 
 **✅ VPS Vultr 66.135.5.31** - Même serveur que dental-portal/agente (SSH: `root@66.135.5.31`)
 **⚠️ Ce n'est PAS Supabase** (celui du MCP c'est agente-creativo-ia)
 
 **Logs cron** : `docker logs creative-testing-cron` sur le VPS
+
+### 🔧 Configuration Nginx (Jan 2026)
+
+Fichier: `/etc/nginx/sites-available/insights.theaipipe.com`
+
+```nginx
+server {
+    listen 80;
+    server_name insights.theaipipe.com;
+    client_max_body_size 50M;
+
+    # Static files (landing, dashboard, oauth-callback)
+    location / {
+        root /var/www/creative-testing;
+        index index-landing.html index.html;
+        try_files $uri $uri/ /index-landing.html;
+    }
+
+    # OAuth callback - Facebook redirige ici (sans /api)
+    location /auth/facebook/callback {
+        proxy_pass http://127.0.0.1:10002/auth/facebook/callback;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Auth routes: /api/auth/* -> /auth/* (frontend appelle /api/auth mais backend a /auth)
+    location /api/auth/ {
+        proxy_pass http://127.0.0.1:10002/auth/;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # API routes: /api/* -> /api/* (accounts, data, billing ont le préfixe /api)
+    location /api/ {
+        proxy_pass http://127.0.0.1:10002/api/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_connect_timeout 120s;
+        proxy_send_timeout 120s;
+        proxy_read_timeout 120s;
+    }
+}
+```
+
+**⚠️ Piège routes auth vs api** : Le backend FastAPI monte les routes auth sous `/auth` (pas `/api/auth`), mais les routes accounts/data sous `/api/accounts` et `/api/data`. Nginx doit donc faire le mapping.
 
 ---
 
@@ -34,22 +90,22 @@ Toute modification doit être faite en local puis pushée sur master (sinon écr
 
 ---
 
-## 🏗️ ARCHITECTURE SAAS (Nov 2025)
+## 🏗️ ARCHITECTURE SAAS (Jan 2026)
 
 ```
-Frontend (VPS - https://creative-testing.theaipipe.com)
+Frontend (VPS - https://insights.theaipipe.com)
 ├── index-landing.html          # Landing page (page d'accueil)
 ├── index-saas.html             # Dashboard SaaS
 ├── oauth-callback.html         # OAuth callback
 ├── data_loader_saas.js         # Chargement données API
 └── data_adapter.js             # Conversion format columnar
 
-API VPS (FastAPI + Docker)
-├── /api/auth/facebook/*        # OAuth Facebook
+API VPS (FastAPI + Docker sur port 10002)
+├── /auth/facebook/*            # OAuth Facebook (⚠️ PAS /api/auth)
 ├── /api/accounts/*             # Gestion comptes Meta
 ├── /api/data/*                 # Données (proxy R2)
 ├── /api/data/demographics/*    # Données démographiques
-└── /api/health                 # Health check
+└── /health                     # Health check
 
 Storage R2 (Cloudflare)
 └── tenants/{tenant_id}/accounts/{act_id}/

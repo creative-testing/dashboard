@@ -1173,7 +1173,7 @@
                 // Pass lang parameter to force Facebook popup in English if needed
                 const urlParams = new URLSearchParams(window.location.search);
                 const lang = urlParams.get('lang');
-                const oauthUrl = lang ? `${API_URL}/auth/facebook/login?lang=${lang}` : `${API_URL}/auth/facebook/login`;
+                const oauthUrl = lang ? `${API_URL}/api/auth/facebook/login?lang=${lang}` : `${API_URL}/api/auth/facebook/login`;
                 window.location.href = oauthUrl;
             }
         }
@@ -1194,7 +1194,7 @@
 
                     if (accounts.length === 0) {
                         // No accounts → Redirect to OAuth to link accounts
-                        window.location.href = `${API_URL}/auth/facebook/login`;
+                        window.location.href = `${API_URL}/api/auth/facebook/login`;
                     } else if (accounts.length === 1) {
                         // Single account → Redirect to that account (NO locked mode!)
                         const account = accounts[0];
@@ -1210,12 +1210,12 @@
                     // Invalid token → Clear and redirect to OAuth
                     localStorage.removeItem('auth_token');
                     localStorage.removeItem('tenant_id');
-                    window.location.href = `${API_URL}/auth/facebook/login`;
+                    window.location.href = `${API_URL}/api/auth/facebook/login`;
                 }
             } catch (error) {
                 // Error checking auth → Redirect to OAuth
                 console.error('Auth check failed:', error);
-                window.location.href = `${API_URL}/auth/facebook/login`;
+                window.location.href = `${API_URL}/api/auth/facebook/login`;
             }
         }
 
