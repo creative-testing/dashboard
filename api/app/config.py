@@ -57,10 +57,10 @@ class Settings(BaseSettings):
     COOKIE_DOMAIN: str = ""  # ".yourdomain.com" for subdomain sharing
 
     # CORS
-    ALLOWED_ORIGINS: str = "http://localhost:3000,https://creative-testing.theaipipe.com"
+    ALLOWED_ORIGINS: str = "http://localhost:3000,https://insights.theaipipe.com"
 
     # Dashboard URL (for OAuth redirect after success)
-    DASHBOARD_URL: str = "https://creative-testing.theaipipe.com/oauth-callback.html"
+    DASHBOARD_URL: str = "https://insights.theaipipe.com/oauth-callback.html"
 
     @property
     def allowed_origins_list(self) -> List[str]:

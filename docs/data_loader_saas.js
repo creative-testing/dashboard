@@ -12,7 +12,7 @@
 // Import DataAdapter class from data_adapter.js (will be loaded separately)
 // This file only overrides the loadOptimizedData function
 
-const API_URL = 'https://creative-testing.theaipipe.com';
+const API_URL = 'https://insights.theaipipe.com';
 
 /**
  * Get auth token from localStorage (source of truth)
