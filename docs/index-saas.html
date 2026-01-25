@@ -30,11 +30,11 @@
             <div class="firstload-title" id="firstload-title">¡Bienvenido! 🎉</div>
             <div class="firstload-subtitle" id="firstload-subtitle">Mientras preparamos tus datos, aprende a usar el dashboard</div>
 
-            <!-- Video Container -->
+            <!-- Video Container - src is set dynamically by showDataPendingUI() to prevent autoplay on every page load -->
             <div class="firstload-video-container" id="firstload-video-container">
                 <iframe
                     id="firstload-video"
-                    src="https://www.loom.com/embed/4ecbc5cb11144dec931d5285a6e70cb7?autoplay=1&hide_owner=true&hide_share=true&hide_title=true"
+                    data-src="https://www.loom.com/embed/4ecbc5cb11144dec931d5285a6e70cb7?autoplay=1&hide_owner=true&hide_share=true&hide_title=true"
                     frameborder="0"
                     webkitallowfullscreen
                     mozallowfullscreen

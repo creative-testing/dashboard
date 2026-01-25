@@ -315,6 +315,13 @@
             const overlay = document.getElementById('firstload-overlay');
             if (overlay) overlay.classList.add('visible');
 
+            // Load video only when overlay is shown (prevent autoplay on every page load)
+            const videoIframe = document.getElementById('firstload-video');
+            if (videoIframe && videoIframe.dataset.src && !videoIframe.src) {
+                videoIframe.src = videoIframe.dataset.src;
+                console.log('🎥 Video loaded for first-time user');
+            }
+
             // UI elements
             const titleEl = document.getElementById('firstload-title');
             const subtitleEl = document.getElementById('firstload-subtitle');
