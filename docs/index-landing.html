@@ -1216,6 +1216,10 @@
                         // Multiple accounts → Redirect to aggregated view (all accounts)
                         window.location.href = 'index-saas.html';
                     }
+                } else if (response.status === 412) {
+                    // 412 Precondition Failed → User authenticated but missing Facebook link
+                    console.log('⚠️ User authenticated but Facebook not linked');
+                    showLinkFacebookModal();
                 } else {
                     // Invalid token → Clear and redirect to OAuth
                     localStorage.removeItem('auth_token');
@@ -1228,6 +1232,57 @@
                 window.location.href = `${API_URL}/api/auth/facebook/login`;
             }
         }
+
+        /**
+         * Show modal to link Facebook account
+         * Used when user is authenticated (e.g., via Google) but missing Facebook link
+         */
+        function showLinkFacebookModal() {
+            const modalHtml = `
+                <div id="link-facebook-modal" style="position:fixed; inset:0; background:rgba(15, 23, 42, 0.9); z-index:9999; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(5px);">
+                    <div style="background:white; padding:40px; border-radius:24px; max-width:480px; text-align:center; box-shadow:0 25px 50px -12px rgba(0,0,0,0.5); margin:20px;">
+                        <div style="width:64px; height:64px; background:#eff6ff; color:#3b82f6; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 24px;">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                        </div>
+                        <h2 style="color:#0f172a; font-size:24px; font-weight:800; margin-bottom:12px;">Conexión Requerida</h2>
+                        <p style="color:#64748b; font-size:16px; line-height:1.6; margin-bottom:32px;">
+                            Estás conectado con tu cuenta unificada. Para usar <strong>Insights</strong>, necesitamos conectar tu cuenta de <strong>Facebook Ads</strong> para acceder a tus datos publicitarios.
+                        </p>
+                        <button onclick="handleLinkFacebook()"
+                                style="background:linear-gradient(135deg, #1877F2 0%, #0d6efd 100%); color:white; border:none; padding:16px 32px; border-radius:12px; font-weight:600; font-size:16px; cursor:pointer; width:100%; transition:transform 0.2s; box-shadow:0 4px 12px rgba(24, 119, 242, 0.3);"
+                                onmouseover="this.style.transform='translateY(-2px)'"
+                                onmouseout="this.style.transform='translateY(0)'">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle; margin-right:8px;"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                            Vincular cuenta de Facebook
+                        </button>
+                        <p style="color:#94a3b8; font-size:13px; margin-top:16px;">
+                            Esto vinculará tu cuenta de Facebook a tu perfil existente.
+                        </p>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+        }
+
+        function handleLinkFacebook() {
+            if (window.SupabaseAuth && typeof window.SupabaseAuth.linkFacebook === 'function') {
+                window.SupabaseAuth.linkFacebook();
+            } else {
+                // Fallback: Direct Facebook OAuth
+                window.location.href = `${API_URL}/api/auth/facebook/login`;
+            }
+        }
+
+        // Check for action=link_facebook parameter on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('action') === 'link_facebook') {
+                // Clean the URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+                // Show the linking modal
+                showLinkFacebookModal();
+            }
+        });
 
         // i18n Dynamic Content Generation
         document.addEventListener('i18n:ready', (e) => {

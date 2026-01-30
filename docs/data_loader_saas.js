@@ -60,16 +60,21 @@ function handleSessionExpired() {
 /**
  * Handle zombie user detection (412 Precondition Failed)
  * This happens when user is authenticated in Supabase but sync to local DB failed
+ *
+ * Instead of forcing logout, redirect to landing with action=link_facebook
+ * This allows users who logged in with Google to link their Facebook account
  */
 function handleZombieUser() {
-    console.error('🧟 Zombie user detected (auth OK but data missing). Forcing re-login...');
+    console.warn('🔗 Account incomplete (auth OK but Facebook link missing). Redirecting to link...');
+
+    // Clear local tokens but DON'T clear Supabase session
+    // The user is still authenticated, just missing Facebook link
     localStorage.removeItem('auth_token');
     localStorage.removeItem('tenant_id');
-    localStorage.removeItem('supabase_user_id');
+    // Keep supabase_user_id - we need it for linking
 
-    // Show user-friendly message before redirect
-    alert('Tu cuenta necesita ser sincronizada de nuevo. Por favor, vuelve a conectarte.');
-    window.location.href = 'index-landing.html';
+    // Redirect to landing with special action to show linking modal
+    window.location.href = 'index-landing.html?action=link_facebook';
 }
 
 // Global function to load optimized data from API

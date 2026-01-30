@@ -237,6 +237,46 @@ async function getAccounts() {
     }
 }
 
+/**
+ * Link Facebook identity to existing Supabase account
+ * Used when user logged in with Google but needs Facebook for Meta Ads API
+ *
+ * This uses Supabase's linkIdentity() which adds Facebook as a second provider
+ * to the existing account (instead of creating a new account)
+ */
+async function linkFacebookIdentity() {
+    if (!_supabaseClient && !initSupabase()) {
+        console.error('Cannot link: Supabase not initialized');
+        // Fallback to regular login
+        window.location.href = `${INSIGHTS_API_URL}/api/auth/facebook/login`;
+        return;
+    }
+
+    try {
+        console.log('🔗 Starting Facebook identity linking...');
+
+        const { data, error } = await _supabaseClient.auth.linkIdentity({
+            provider: 'facebook',
+            options: {
+                scopes: 'email,ads_read,public_profile',
+                redirectTo: `${window.location.origin}/oauth-callback.html`
+            }
+        });
+
+        if (error) {
+            console.error('Link identity error:', error);
+            alert('Error al vincular cuenta Facebook: ' + error.message);
+            return;
+        }
+
+        // User is redirected to Facebook for authorization...
+        // After success, they'll return to oauth-callback.html with the Facebook token
+    } catch (err) {
+        console.error('Link identity exception:', err);
+        alert('Error al vincular cuenta Facebook: ' + err.message);
+    }
+}
+
 // Initialize on load
 document.addEventListener('DOMContentLoaded', () => {
     // Try to initialize Supabase if SDK is loaded
@@ -248,6 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Export for use in other scripts
 window.SupabaseAuth = {
     login: loginWithFacebook,
+    linkFacebook: linkFacebookIdentity,
     handleCallback: handleSupabaseCallback,
     checkAuth,
     logout,
