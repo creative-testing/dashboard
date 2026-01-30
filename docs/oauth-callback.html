@@ -6,6 +6,10 @@
     <title>Conectando...</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <script src="i18n/i18n.js"></script>
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Supabase Auth Integration (cache-busted) -->
+    <script src="js/supabase-auth.js?v=2.0.0"></script>
     <style>
         * {
             margin: 0;
@@ -243,6 +247,16 @@
             const tenantId = urlParams.get('tenant_id');
             const lang = urlParams.get('lang'); // Preserve language parameter
 
+            // Check if this is a Supabase callback (has hash with access_token)
+            const hashParams = new URLSearchParams(window.location.hash.substring(1));
+            const isSupabaseCallback = hashParams.has('access_token') || hashParams.has('error');
+
+            if (isSupabaseCallback) {
+                console.log('🔄 Supabase callback detected, handling...');
+                await handleSupabaseOAuthCallback();
+                return;
+            }
+
             // No OAuth callback params → This page should not be accessed directly
             if (!token || !tenantId) {
                 console.log('⚠️ No OAuth params detected, redirecting to landing...');
@@ -362,6 +376,107 @@
             } catch (error) {
                 console.error('OAuth callback error:', error);
                 showError(error.message || t('oauth.errors.generic'));
+            }
+        }
+
+        /**
+         * Handle Supabase OAuth callback
+         * Syncs Facebook token with Insights backend and redirects to dashboard
+         */
+        async function handleSupabaseOAuthCallback() {
+            updateSpinner(t('oauth.connecting') || 'Conectando...', t('oauth.wait') || 'Espera un momento');
+
+            // Wait for Supabase Auth module to be ready
+            if (!window.SupabaseAuth) {
+                console.error('SupabaseAuth module not loaded');
+                showError('Error: Auth module not loaded. Please refresh.');
+                return;
+            }
+
+            // Initialize Supabase if needed
+            window.SupabaseAuth.initSupabase();
+
+            // Handle the callback (exchange tokens)
+            const result = await window.SupabaseAuth.handleCallback();
+
+            if (!result.success) {
+                console.error('Supabase callback failed:', result.error);
+                showError(result.error || 'Authentication failed. Please try again.');
+                return;
+            }
+
+            console.log('✅ Supabase auth successful, fetching accounts...');
+            updateSpinner(t('oauth.loading_accounts') || 'Cargando cuentas...', '');
+
+            // Get accounts to determine redirect
+            const accounts = await window.SupabaseAuth.getAccounts();
+
+            if (accounts.length === 0) {
+                showError(t('oauth.no_accounts') || 'No ad accounts found. Please connect a Facebook account with ad accounts.');
+                return;
+            }
+
+            // Clean URL (remove hash)
+            window.history.replaceState({}, document.title, window.location.pathname);
+
+            // Redirect based on account count
+            if (accounts.length === 1) {
+                const account = accounts[0];
+                console.log(`🚀 Single account: ${account.name}, redirecting...`);
+
+                // Check if data exists
+                if (await dataExists(account.fb_account_id, result.token)) {
+                    console.log('✅ Data available, redirecting to dashboard...');
+                    const params = new URLSearchParams({
+                        account_id: account.fb_account_id,
+                        account: account.name
+                    });
+                    window.location.href = `/index-saas.html?${params.toString()}`;
+                } else {
+                    // Trigger refresh and wait
+                    console.log('⏳ No data, triggering refresh...');
+                    updateSpinner(
+                        t('oauth.preparing_data', { account: account.name }) || `Preparing ${account.name}...`,
+                        t('oauth.eta') || 'This may take a moment'
+                    );
+
+                    try {
+                        const { job_id } = await triggerRefresh(account.fb_account_id, result.token);
+                        await waitUntilReady(job_id, result.token, (status) => {
+                            if (status.status === 'running') {
+                                updateSpinner(
+                                    t('oauth.processing', { account: account.name }) || `Processing ${account.name}...`,
+                                    t('oauth.keep_open') || 'Keep this page open'
+                                );
+                            }
+                        });
+
+                        const params = new URLSearchParams({
+                            account_id: account.fb_account_id,
+                            account: account.name
+                        });
+                        window.location.href = `/index-saas.html?${params.toString()}`;
+                    } catch (err) {
+                        console.error('Refresh error:', err);
+                        // Redirect anyway, dashboard will show loading state
+                        const params = new URLSearchParams({
+                            account_id: account.fb_account_id,
+                            account: account.name
+                        });
+                        window.location.href = `/index-saas.html?${params.toString()}`;
+                    }
+                }
+            } else {
+                // Multiple accounts → go to aggregated view
+                console.log(`🚀 Multiple accounts (${accounts.length}), redirecting to dashboard...`);
+
+                // Check if tenant data exists, trigger refresh if not
+                if (!await tenantDataExists(result.token)) {
+                    console.log('⏳ First login, triggering account refresh...');
+                    await triggerTenantAccountsRefresh(result.token);
+                }
+
+                window.location.href = '/index-saas.html';
             }
         }
 
