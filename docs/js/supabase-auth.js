@@ -68,35 +68,33 @@ async function loginWithFacebook() {
 /**
  * Handle OAuth callback - sync Facebook token with Insights backend
  * Called from oauth-callback.html after Supabase redirects back
+ *
+ * Note: We parse tokens directly from URL hash instead of using getSession()
+ * because getSession() doesn't always work reliably with hash-based redirects.
  */
 async function handleSupabaseCallback() {
-    if (!_supabaseClient && !initSupabase()) {
-        console.error('Cannot handle callback: Supabase not initialized');
-        return { success: false, error: 'Supabase not initialized' };
+    // Parse tokens directly from URL hash (more reliable than getSession)
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const supabaseToken = hashParams.get('access_token');
+    const providerToken = hashParams.get('provider_token');
+
+    // Check for error in hash
+    if (hashParams.has('error')) {
+        const error = hashParams.get('error_description') || hashParams.get('error');
+        console.error('OAuth error in callback:', error);
+        return { success: false, error };
     }
 
+    if (!supabaseToken || !providerToken) {
+        console.error('Missing tokens in callback URL');
+        console.log('Available hash params:', [...hashParams.keys()]);
+        return { success: false, error: 'Missing tokens in callback' };
+    }
+
+    console.log('✅ Tokens parsed from URL hash');
+    console.log('🔄 Syncing Facebook token with Insights backend...');
+
     try {
-        // Get the session from URL hash (Supabase puts tokens there)
-        const { data: { session }, error: sessionError } = await _supabaseClient.auth.getSession();
-
-        if (sessionError || !session) {
-            console.error('No session found:', sessionError);
-            return { success: false, error: 'No session found' };
-        }
-
-        console.log('Supabase session obtained');
-
-        // Get the provider token (Facebook access token)
-        const providerToken = session.provider_token;
-        const supabaseToken = session.access_token;
-
-        if (!providerToken) {
-            console.error('No provider_token in session');
-            return { success: false, error: 'No Facebook token in session' };
-        }
-
-        console.log('Syncing Facebook token with Insights backend...');
-
         // Call our backend to sync the Facebook token
         const response = await fetch(`${INSIGHTS_API_URL}/api/auth/facebook/sync-facebook`, {
             method: 'POST',
@@ -116,7 +114,7 @@ async function handleSupabaseCallback() {
         }
 
         const result = await response.json();
-        console.log('Sync successful:', result);
+        console.log('✅ Sync successful:', result);
 
         // Store Insights token for API calls
         localStorage.setItem('auth_token', result.access_token);
