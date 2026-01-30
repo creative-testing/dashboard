@@ -241,39 +241,56 @@ async function getAccounts() {
  * Link Facebook identity to existing Supabase account
  * Used when user logged in with Google but needs Facebook for Meta Ads API
  *
- * This uses Supabase's linkIdentity() which adds Facebook as a second provider
- * to the existing account (instead of creating a new account)
+ * Strategy:
+ * 1. Check if there's an active Supabase session
+ * 2. If YES → use linkIdentity() to add Facebook as second provider
+ * 3. If NO → fallback to regular Facebook login via signInWithOAuth()
+ *
+ * Note: linkIdentity() only works with an active session, otherwise it fails
+ * with "Invalid API key" error.
  */
 async function linkFacebookIdentity() {
     if (!_supabaseClient && !initSupabase()) {
         console.error('Cannot link: Supabase not initialized');
-        // Fallback to regular login
+        // Fallback to direct OAuth
         window.location.href = `${INSIGHTS_API_URL}/api/auth/facebook/login`;
         return;
     }
 
     try {
-        console.log('🔗 Starting Facebook identity linking...');
+        // Check if there's an active Supabase session
+        const { data: { session } } = await _supabaseClient.auth.getSession();
 
-        const { data, error } = await _supabaseClient.auth.linkIdentity({
-            provider: 'facebook',
-            options: {
-                scopes: 'email,ads_read,public_profile',
-                redirectTo: `${window.location.origin}/oauth-callback.html`
+        if (session) {
+            // User has active session → use linkIdentity to add Facebook
+            console.log('🔗 Active session found. Using linkIdentity to add Facebook...');
+
+            const { data, error } = await _supabaseClient.auth.linkIdentity({
+                provider: 'facebook',
+                options: {
+                    scopes: 'email,ads_read,public_profile',
+                    redirectTo: `${window.location.origin}/oauth-callback.html`
+                }
+            });
+
+            if (error) {
+                console.error('Link identity error:', error);
+                // Fallback to regular login if linking fails
+                console.log('⚠️ Falling back to regular Facebook login...');
+                await loginWithFacebook();
+                return;
             }
-        });
-
-        if (error) {
-            console.error('Link identity error:', error);
-            alert('Error al vincular cuenta Facebook: ' + error.message);
-            return;
+            // User is redirected to Facebook for authorization...
+        } else {
+            // No active session → use regular Facebook login
+            console.log('📱 No active session. Using regular Facebook login...');
+            await loginWithFacebook();
         }
-
-        // User is redirected to Facebook for authorization...
-        // After success, they'll return to oauth-callback.html with the Facebook token
     } catch (err) {
         console.error('Link identity exception:', err);
-        alert('Error al vincular cuenta Facebook: ' + err.message);
+        // Fallback to regular login on any error
+        console.log('⚠️ Falling back to regular Facebook login...');
+        await loginWithFacebook();
     }
 }
 
