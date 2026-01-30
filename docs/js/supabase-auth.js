@@ -15,11 +15,15 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const API_URL = 'https://insights.theaipipe.com';
 
 // Initialize Supabase client (loaded via CDN)
-let supabase = null;
+// Note: window.supabase is the SDK, _supabaseClient is our instance
+let _supabaseClient = null;
 
 function initSupabase() {
+    if (_supabaseClient) {
+        return true; // Already initialized
+    }
     if (typeof window.supabase !== 'undefined' && window.supabase.createClient) {
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        _supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         console.log('Supabase client initialized');
         return true;
     }
@@ -32,7 +36,7 @@ function initSupabase() {
  * Requests ads_read scope for Meta Ads API access
  */
 async function loginWithFacebook() {
-    if (!supabase && !initSupabase()) {
+    if (!_supabaseClient && !initSupabase()) {
         console.error('Cannot login: Supabase not initialized');
         // Fallback to direct OAuth
         window.location.href = `${API_URL}/api/auth/facebook/login`;
@@ -40,7 +44,7 @@ async function loginWithFacebook() {
     }
 
     try {
-        const { data, error } = await supabase.auth.signInWithOAuth({
+        const { data, error } = await _supabaseClient.auth.signInWithOAuth({
             provider: 'facebook',
             options: {
                 scopes: 'email,ads_read,public_profile',
@@ -66,14 +70,14 @@ async function loginWithFacebook() {
  * Called from oauth-callback.html after Supabase redirects back
  */
 async function handleSupabaseCallback() {
-    if (!supabase && !initSupabase()) {
+    if (!_supabaseClient && !initSupabase()) {
         console.error('Cannot handle callback: Supabase not initialized');
         return { success: false, error: 'Supabase not initialized' };
     }
 
     try {
         // Get the session from URL hash (Supabase puts tokens there)
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        const { data: { session }, error: sessionError } = await _supabaseClient.auth.getSession();
 
         if (sessionError || !session) {
             console.error('No session found:', sessionError);
@@ -172,8 +176,8 @@ async function logout() {
     localStorage.removeItem('supabase_user_id');
 
     // Sign out from Supabase
-    if (supabase) {
-        await supabase.auth.signOut();
+    if (_supabaseClient) {
+        await _supabaseClient.auth.signOut();
     }
 
     // Redirect to landing
