@@ -12,7 +12,7 @@
 // Supabase Configuration
 const SUPABASE_URL = 'https://romjdysjrgyzhlnrduro.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJvbWpkeXNqcmd5emhsbnJkdXJvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjQzMzc2NzMsImV4cCI6MjAzOTkxMzY3M30.qjCoEYFqFmGPO8V4k4sessNgHZLqoRU7OI2WG6NJPWE';
-const API_URL = 'https://insights.theaipipe.com';
+const INSIGHTS_API_URL = 'https://insights.theaipipe.com';
 
 // Initialize Supabase client (loaded via CDN)
 // Note: window.supabase is the SDK, _supabaseClient is our instance
@@ -39,7 +39,7 @@ async function loginWithFacebook() {
     if (!_supabaseClient && !initSupabase()) {
         console.error('Cannot login: Supabase not initialized');
         // Fallback to direct OAuth
-        window.location.href = `${API_URL}/api/auth/facebook/login`;
+        window.location.href = `${INSIGHTS_API_URL}/api/auth/facebook/login`;
         return;
     }
 
@@ -55,13 +55,13 @@ async function loginWithFacebook() {
         if (error) {
             console.error('Supabase OAuth error:', error);
             // Fallback to direct OAuth
-            window.location.href = `${API_URL}/api/auth/facebook/login`;
+            window.location.href = `${INSIGHTS_API_URL}/api/auth/facebook/login`;
         }
         // If successful, user is redirected to Facebook login
     } catch (err) {
         console.error('Login error:', err);
         // Fallback to direct OAuth
-        window.location.href = `${API_URL}/api/auth/facebook/login`;
+        window.location.href = `${INSIGHTS_API_URL}/api/auth/facebook/login`;
     }
 }
 
@@ -98,7 +98,7 @@ async function handleSupabaseCallback() {
         console.log('Syncing Facebook token with Insights backend...');
 
         // Call our backend to sync the Facebook token
-        const response = await fetch(`${API_URL}/api/auth/facebook/sync-facebook`, {
+        const response = await fetch(`${INSIGHTS_API_URL}/api/auth/facebook/sync-facebook`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -148,7 +148,7 @@ async function checkAuth() {
     }
 
     try {
-        const response = await fetch(`${API_URL}/api/accounts/me`, {
+        const response = await fetch(`${INSIGHTS_API_URL}/api/accounts/me`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -192,7 +192,7 @@ async function getAccounts() {
     if (!token) return [];
 
     try {
-        const response = await fetch(`${API_URL}/api/accounts/`, {
+        const response = await fetch(`${INSIGHTS_API_URL}/api/accounts/`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
 
