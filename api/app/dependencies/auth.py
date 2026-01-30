@@ -2,14 +2,21 @@
 Authentication dependencies for FastAPI endpoints
 Provides JWT-based tenant isolation
 Supports both Bearer token (header) and HttpOnly cookie
+
+SECURITY: Includes "Gatekeeper" pattern to detect zombie users
+(authenticated in Supabase but not synced to local PostgreSQL)
 """
 from typing import Optional
 from uuid import UUID
 from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError
+from sqlalchemy.orm import Session
+from sqlalchemy import select
 
 from ..utils.jwt import verify_token
+from ..database import get_db
+from ..models.tenant import Tenant
 
 # HTTPBearer scheme for extracting "Bearer <token>" from Authorization header
 # auto_error=False allows us to fallback to cookie if header is missing
@@ -41,7 +48,8 @@ def _extract_token(
 
 def get_current_tenant_id(
     request: Request,
-    credentials: Optional[HTTPAuthorizationCredentials] = Depends(http_bearer)
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(http_bearer),
+    db: Session = Depends(get_db)
 ) -> UUID:
     """
     Extract and validate JWT, return tenant_id for multi-tenant isolation
@@ -49,10 +57,12 @@ def get_current_tenant_id(
     This dependency:
     1. Extracts JWT from Authorization header OR cookie
     2. Verifies signature, expiration, audience
-    3. Returns tenant_id (UUID) for filtering queries
+    3. GATEKEEPER: Verifies tenant actually exists in PostgreSQL
+    4. Returns tenant_id (UUID) for filtering queries
 
     Raises:
-        HTTPException 403: If token is missing, invalid, or expired
+        HTTPException 401: If token is missing, invalid, or expired
+        HTTPException 412: If tenant doesn't exist (zombie user - auth OK but sync failed)
     """
     token = _extract_token(request, credentials)
 
@@ -66,6 +76,21 @@ def get_current_tenant_id(
     try:
         payload = verify_token(token)
         tenant_id = UUID(payload["tid"])
+
+        # GATEKEEPER: Verify tenant actually exists in PostgreSQL
+        # This catches "zombie users" who authenticated via Supabase
+        # but whose sync to local DB failed
+        tenant_exists = db.execute(
+            select(Tenant.id).where(Tenant.id == tenant_id)
+        ).scalar()
+
+        if not tenant_exists:
+            raise HTTPException(
+                status_code=status.HTTP_412_PRECONDITION_FAILED,
+                detail="Account not synchronized. Please login again.",
+                headers={"X-Sync-Status": "missing"}
+            )
+
         return tenant_id
 
     except JWTError as e:

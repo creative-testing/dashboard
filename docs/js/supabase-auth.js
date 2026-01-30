@@ -71,6 +71,9 @@ async function loginWithFacebook() {
  *
  * Note: We parse tokens directly from URL hash instead of using getSession()
  * because getSession() doesn't always work reliably with hash-based redirects.
+ *
+ * SECURITY: Implements retry loop + rollback to prevent "zombie users"
+ * (authenticated in Supabase but not synced to local PostgreSQL)
  */
 async function handleSupabaseCallback() {
     // Parse tokens directly from URL hash (more reliable than getSession)
@@ -94,44 +97,73 @@ async function handleSupabaseCallback() {
     console.log('✅ Tokens parsed from URL hash');
     console.log('🔄 Syncing Facebook token with Insights backend...');
 
-    try {
-        // Call our backend to sync the Facebook token
-        const response = await fetch(`${INSIGHTS_API_URL}/api/auth/facebook/sync-facebook`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${supabaseToken}`
-            },
-            body: JSON.stringify({
-                provider_token: providerToken
-            })
-        });
+    // RETRY LOOP (3 attempts) to handle transient failures
+    const MAX_RETRIES = 3;
+    let attempt = 0;
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            console.error('Sync failed:', errorData);
-            return { success: false, error: errorData.detail || 'Sync failed' };
+    while (attempt < MAX_RETRIES) {
+        attempt++;
+        try {
+            const response = await fetch(`${INSIGHTS_API_URL}/api/auth/facebook/sync-facebook`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${supabaseToken}`
+                },
+                body: JSON.stringify({
+                    provider_token: providerToken
+                })
+            });
+
+            // SUCCESS: Store tokens and return
+            if (response.ok) {
+                const result = await response.json();
+                console.log('✅ Sync successful:', result);
+
+                localStorage.setItem('auth_token', result.access_token);
+                localStorage.setItem('tenant_id', result.tenant_id);
+                localStorage.setItem('supabase_user_id', result.supabase_user_id);
+
+                return {
+                    success: true,
+                    token: result.access_token,
+                    tenantId: result.tenant_id,
+                    adAccountsCount: result.ad_accounts_count
+                };
+            }
+
+            // Client error (4xx): Don't retry, token is invalid
+            if (response.status < 500) {
+                const errorData = await response.json();
+                console.error('Sync client error:', errorData);
+                throw new Error(errorData.detail || `Error ${response.status}`);
+            }
+
+            // Server error (5xx): Wait and retry
+            console.warn(`⚠️ Sync server error (attempt ${attempt}/${MAX_RETRIES}), retrying...`);
+            await new Promise(r => setTimeout(r, 1500));
+
+        } catch (err) {
+            console.warn(`⚠️ Sync error (attempt ${attempt}/${MAX_RETRIES}):`, err.message);
+
+            // If last attempt, break and rollback
+            if (attempt === MAX_RETRIES) break;
+
+            await new Promise(r => setTimeout(r, 1500));
         }
-
-        const result = await response.json();
-        console.log('✅ Sync successful:', result);
-
-        // Store Insights token for API calls
-        localStorage.setItem('auth_token', result.access_token);
-        localStorage.setItem('tenant_id', result.tenant_id);
-        localStorage.setItem('supabase_user_id', result.supabase_user_id);
-
-        return {
-            success: true,
-            token: result.access_token,
-            tenantId: result.tenant_id,
-            adAccountsCount: result.ad_accounts_count
-        };
-
-    } catch (err) {
-        console.error('Callback handling error:', err);
-        return { success: false, error: err.message };
     }
+
+    // ROLLBACK: Sync failed definitively - logout from Supabase to prevent zombie user
+    console.error('❌ Sync failed after all retries. Rolling back Supabase session.');
+
+    if (_supabaseClient) {
+        await _supabaseClient.auth.signOut();
+    }
+
+    return {
+        success: false,
+        error: 'La sincronización falló después de varios intentos. Por favor, intenta conectarte de nuevo.'
+    };
 }
 
 /**

@@ -53,6 +53,22 @@ function handleSessionExpired() {
     console.warn('🔒 Session expired, redirecting to login...');
     localStorage.removeItem('auth_token');
     localStorage.removeItem('tenant_id');
+    localStorage.removeItem('supabase_user_id');
+    window.location.href = 'index-landing.html';
+}
+
+/**
+ * Handle zombie user detection (412 Precondition Failed)
+ * This happens when user is authenticated in Supabase but sync to local DB failed
+ */
+function handleZombieUser() {
+    console.error('🧟 Zombie user detected (auth OK but data missing). Forcing re-login...');
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('tenant_id');
+    localStorage.removeItem('supabase_user_id');
+
+    // Show user-friendly message before redirect
+    alert('Tu cuenta necesita ser sincronizada de nuevo. Por favor, vuelve a conectarte.');
     window.location.href = 'index-landing.html';
 }
 
@@ -87,6 +103,10 @@ async function loadOptimizedData() {
             if (response.status === 401) {
                 handleSessionExpired();
                 return { success: false, noData: false, error: 'Session expired' };
+            } else if (response.status === 412) {
+                // Zombie user: authenticated but not synced to local DB
+                handleZombieUser();
+                return { success: false, noData: false, error: 'Account not synchronized' };
             } else if (response.status === 404) {
                 console.warn('⚠️ No data available yet (404) - first time user?');
                 is404 = true;
@@ -114,6 +134,10 @@ async function loadOptimizedData() {
             if (metaResponse.status === 401) {
                 handleSessionExpired();
                 return { success: false, noData: false, error: 'Session expired' };
+            } else if (metaResponse.status === 412) {
+                // Zombie user: authenticated but not synced to local DB
+                handleZombieUser();
+                return { success: false, noData: false, error: 'Account not synchronized' };
             } else if (metaResponse.status === 404) {
                 console.warn(`⚠️ No data for account ${accountId} (404) - needs refresh`);
                 is404 = true;
