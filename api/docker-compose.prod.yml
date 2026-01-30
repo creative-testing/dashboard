@@ -39,6 +39,8 @@ services:
       - JWT_ISSUER=${JWT_ISSUER}
       - RATE_LIMIT_PER_MINUTE=${RATE_LIMIT_PER_MINUTE}
       - DEBUG=${DEBUG}
+      - SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET}
+      - SUPABASE_URL=${SUPABASE_URL}
     volumes:
       - /mnt/data:/mnt/data  # Volume pour les données locales
       - ./app:/app/app       # Code source (pour debug si besoin)

@@ -14,6 +14,9 @@ from sqlalchemy import select, func
 from sqlalchemy.dialects.postgresql import insert
 from cryptography.fernet import Fernet
 
+from jose import jwt, JWTError
+from pydantic import BaseModel
+
 from ..database import get_db
 from ..config import settings
 from ..services.meta_client import meta_client, MetaAPIError
@@ -21,6 +24,44 @@ from ..utils.jwt import create_access_token
 from .. import models
 
 router = APIRouter(prefix="/facebook", tags=["auth"])
+
+
+# === Supabase Auth Integration ===
+
+class SyncFacebookRequest(BaseModel):
+    """Request body for /auth/sync-facebook endpoint"""
+    provider_token: str  # Facebook short-lived token from Supabase OAuth
+
+
+def verify_supabase_token(token: str) -> dict:
+    """
+    Verify and decode a Supabase JWT token
+
+    Returns:
+        Decoded payload with 'sub' (user_id), 'email', etc.
+
+    Raises:
+        HTTPException if token is invalid
+    """
+    if not settings.SUPABASE_JWT_SECRET:
+        raise HTTPException(
+            status_code=500,
+            detail="Supabase JWT secret not configured"
+        )
+
+    try:
+        payload = jwt.decode(
+            token,
+            settings.SUPABASE_JWT_SECRET,
+            algorithms=["HS256"],
+            audience="authenticated"
+        )
+        return payload
+    except JWTError as e:
+        raise HTTPException(
+            status_code=401,
+            detail=f"Invalid Supabase token: {str(e)}"
+        )
 
 # Fernet pour chiffrement des tokens
 fernet = Fernet(settings.TOKEN_ENCRYPTION_KEY.encode())
@@ -408,3 +449,203 @@ def test_token(tenant_id: str, db: Session = Depends(get_db)):
         "user_id": str(user.id),
         "message": "TEMPORARY test token - DELETE this endpoint after testing!"
     }
+
+
+# === Supabase Auth Sync Endpoint ===
+
+@router.post("/sync-facebook")
+async def sync_facebook_token(
+    request: Request,
+    body: SyncFacebookRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Sync Facebook OAuth token from Supabase Auth to Insights backend.
+
+    This endpoint bridges Supabase Auth (frontend) with Insights (backend):
+    1. Validates the Supabase JWT to get supabase_user_id
+    2. Exchanges the short-lived Facebook token for a long-lived one (60 days)
+    3. Creates/updates user in Insights DB with supabase_user_id link
+    4. Returns Insights JWT for subsequent API calls
+
+    Headers:
+        Authorization: Bearer <supabase_jwt>
+
+    Body:
+        provider_token: Facebook access token from Supabase session.provider_token
+    """
+    # 1. Extract and validate Supabase JWT
+    auth_header = request.headers.get("Authorization", "")
+    if not auth_header.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing Authorization header")
+
+    supabase_token = auth_header.replace("Bearer ", "")
+    supabase_payload = verify_supabase_token(supabase_token)
+
+    supabase_user_id = supabase_payload.get("sub")
+    user_email = supabase_payload.get("email")
+
+    if not supabase_user_id:
+        raise HTTPException(status_code=401, detail="Invalid Supabase token: missing user ID")
+
+    try:
+        # 2. Exchange short-lived Facebook token for long-lived (60 days)
+        token_data = await meta_client.exchange_short_to_long_token(body.provider_token)
+        access_token = token_data["access_token"]
+        expires_in = token_data.get("expires_in") or 5184000  # ~60 days
+
+        # 3. Debug token to get meta_user_id and verify scopes
+        token_info = await meta_client.debug_token(access_token)
+        meta_user_id = token_info["user_id"]
+        scopes = token_info.get("scopes", [])
+
+        # Verify required scope
+        if "ads_read" not in scopes:
+            raise HTTPException(
+                status_code=403,
+                detail="Missing required scope: ads_read. Please re-authorize with Facebook."
+            )
+
+        # 4. Get user info from Meta
+        user_info = await meta_client.get_user_info(access_token, fields="id,name,email")
+        user_name = user_info.get("name", "Unknown")
+        meta_email = user_info.get("email")
+
+        # Use Supabase email if Meta doesn't provide one
+        final_email = meta_email or user_email or f"{meta_user_id}@noemail.facebook"
+        if final_email:
+            final_email = final_email.strip().lower()
+
+        # 5. Get ad accounts
+        ad_accounts = await meta_client.get_ad_accounts(
+            access_token,
+            fields="id,name,currency,timezone_name,account_status"
+        )
+
+        # Encrypt token
+        token_encrypted = fernet.encrypt(access_token.encode()).decode()
+        expires_at = datetime.utcnow() + timedelta(seconds=expires_in)
+
+        # 6. Transaction: create/update tenant, user, token, ad accounts
+        with db.begin_nested():
+            # 6a. Upsert tenant (keyed by meta_user_id)
+            stmt = insert(models.Tenant).values(
+                meta_user_id=meta_user_id,
+                name=f"{user_name}'s Workspace",
+            )
+            stmt = stmt.on_conflict_do_update(
+                index_elements=["meta_user_id"],
+                set_={"name": stmt.excluded.name, "updated_at": func.now()},
+            )
+            db.execute(stmt)
+            db.flush()
+
+            tenant = db.execute(
+                select(models.Tenant).where(models.Tenant.meta_user_id == meta_user_id)
+            ).scalar_one()
+
+            # 6b. Upsert user WITH supabase_user_id link
+            stmt = insert(models.User).values(
+                tenant_id=tenant.id,
+                meta_user_id=meta_user_id,
+                supabase_user_id=supabase_user_id,  # <-- The key link!
+                email=final_email,
+                name=user_name,
+            )
+            stmt = stmt.on_conflict_do_update(
+                index_elements=["tenant_id", "meta_user_id"],
+                set_={
+                    "email": stmt.excluded.email,
+                    "name": stmt.excluded.name,
+                    "supabase_user_id": stmt.excluded.supabase_user_id,
+                    "updated_at": func.now(),
+                },
+            )
+            db.execute(stmt)
+            db.flush()
+
+            user = db.execute(
+                select(models.User).where(
+                    models.User.tenant_id == tenant.id,
+                    models.User.meta_user_id == meta_user_id
+                )
+            ).scalar_one()
+
+            # 6c. Upsert OAuth token
+            stmt = insert(models.OAuthToken).values(
+                tenant_id=tenant.id,
+                user_id=user.id,
+                provider="meta",
+                fb_user_id=meta_user_id,
+                access_token=token_encrypted.encode(),
+                expires_at=expires_at,
+                scopes=scopes if isinstance(scopes, list) else [scopes],
+            )
+            stmt = stmt.on_conflict_do_update(
+                index_elements=["user_id", "provider"],
+                set_={
+                    "access_token": stmt.excluded.access_token,
+                    "expires_at": stmt.excluded.expires_at,
+                    "scopes": stmt.excluded.scopes,
+                    "fb_user_id": stmt.excluded.fb_user_id,
+                },
+            )
+            db.execute(stmt)
+
+            # 6d. Upsert ad accounts
+            for account in ad_accounts:
+                fb_account_id = account["id"]
+                account_name = account.get("name", "Unknown")
+                account_currency = account.get("currency")
+
+                stmt = insert(models.AdAccount).values(
+                    tenant_id=tenant.id,
+                    fb_account_id=fb_account_id,
+                    name=account_name,
+                    currency=account_currency,
+                )
+                stmt = stmt.on_conflict_do_update(
+                    index_elements=["tenant_id", "fb_account_id"],
+                    set_={"name": stmt.excluded.name, "currency": stmt.excluded.currency},
+                )
+                db.execute(stmt)
+
+            # 6e. Ensure subscription exists
+            existing_subscription = db.execute(
+                select(models.Subscription).where(models.Subscription.tenant_id == tenant.id)
+            ).scalar_one_or_none()
+
+            if not existing_subscription:
+                subscription = models.Subscription(
+                    tenant_id=tenant.id,
+                    plan="free",
+                    status="active",
+                    quota_accounts=3,
+                    quota_refresh_per_day=1,
+                )
+                db.add(subscription)
+
+        db.commit()
+
+        # 7. Generate Insights JWT
+        insights_token = create_access_token(
+            user_id=user.id,
+            tenant_id=tenant.id
+        )
+
+        return JSONResponse({
+            "success": True,
+            "access_token": insights_token,
+            "tenant_id": str(tenant.id),
+            "user_id": str(user.id),
+            "supabase_user_id": supabase_user_id,
+            "meta_user_id": meta_user_id,
+            "ad_accounts_count": len(ad_accounts),
+            "message": "Facebook token synced successfully"
+        })
+
+    except MetaAPIError as e:
+        raise HTTPException(status_code=502, detail=f"Meta API error: {str(e)}")
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Internal error: {str(e)}")

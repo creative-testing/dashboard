@@ -52,6 +52,10 @@ class Settings(BaseSettings):
     TOKEN_ENCRYPTION_KEY: str
     JWT_ISSUER: str = "creative-testing-api"  # JWT issuer claim
 
+    # Supabase Auth Integration (pour unification auth)
+    SUPABASE_JWT_SECRET: str = ""  # JWT secret pour valider les tokens Supabase
+    SUPABASE_URL: str = ""  # URL du projet Supabase (ex: https://xxx.supabase.co)
+
     # Cookie settings (cross-site compatibility)
     COOKIE_SAMESITE: str = "lax"  # "none" if dashboard and API on different eTLD+1
     COOKIE_DOMAIN: str = ""  # ".yourdomain.com" for subdomain sharing

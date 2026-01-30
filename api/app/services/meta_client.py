@@ -322,6 +322,39 @@ class MetaClient:
             "expires_in": long_token_data.get("expires_in"),  # ~5184000 sec
         }
 
+    async def exchange_short_to_long_token(self, short_lived_token: str) -> Dict[str, Any]:
+        """
+        Échange un short-lived token (de Supabase OAuth) contre un long-lived token (60 jours)
+
+        Args:
+            short_lived_token: Token court (~1-2h) obtenu via Supabase provider_token
+
+        Returns:
+            {
+                "access_token": str (long-lived, ~60 jours),
+                "token_type": "bearer",
+                "expires_in": int (secondes, ~5184000 = 60 jours)
+            }
+        """
+        token_url = f"{self.base_url}/oauth/access_token"
+
+        long_token_data = await self._request_with_retry(
+            "GET",
+            token_url,
+            params={
+                "grant_type": "fb_exchange_token",
+                "client_id": self.app_id,
+                "client_secret": self.app_secret,
+                "fb_exchange_token": short_lived_token,
+            }
+        )
+
+        return {
+            "access_token": long_token_data["access_token"],
+            "token_type": long_token_data.get("token_type", "bearer"),
+            "expires_in": long_token_data.get("expires_in"),  # ~5184000 sec
+        }
+
     async def debug_token(self, access_token: str) -> Dict[str, Any]:
         """
         Récupère les métadonnées d'un token (user_id, scopes, expiration)

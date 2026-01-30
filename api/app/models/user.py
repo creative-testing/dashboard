@@ -32,6 +32,7 @@ class User(Base):
     name = Column(String(255), nullable=True)  # User display name (from OAuth)
     role = Column(Enum(UserRole), nullable=False, default=UserRole.VIEWER)
     meta_user_id = Column(String(64), nullable=True)  # Meta/Facebook User ID (pour OAuth)
+    supabase_user_id = Column(String(36), nullable=True, unique=True, index=True)  # Supabase Auth user UUID (pour unification auth)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
