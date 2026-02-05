@@ -3,9 +3,11 @@
  * Supports ES (default) and EN via ?lang=en query parameter
  */
 
-// Detect language from URL parameter only (fallback to 'es')
-// Note: We don't use localStorage to avoid persistence issues
-const LANG = new URLSearchParams(window.location.search).get('lang') || 'es';
+// Detect language: URL param > Navigator language > 'es' (default)
+const urlLang = new URLSearchParams(window.location.search).get('lang');
+const navLang = navigator.language.split('-')[0]; // 'nl-NL' -> 'nl'
+const supportedLangs = ['es', 'en', 'nl', 'da'];
+const LANG = urlLang || (supportedLangs.includes(navLang) ? navLang : 'es');
 
 // Translation cache
 let translations = {};
@@ -101,10 +103,16 @@ function applyTranslations() {
 
 /**
  * Get current locale for date/number formatting
- * @returns {string} Locale code (e.g., 'es-MX' or 'en-US')
+ * @returns {string} Locale code (e.g., 'es-MX', 'en-US', 'nl-NL')
  */
 function getLocale() {
-    return LANG === 'en' ? 'en-US' : 'es-MX';
+    const localeMap = {
+        'en': 'en-US',
+        'nl': 'nl-NL',
+        'da': 'da-DK',
+        'es': 'es-MX'
+    };
+    return localeMap[LANG] || 'es-MX';
 }
 
 /**

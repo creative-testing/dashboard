@@ -127,6 +127,27 @@
                 </svg>
             </div>
             <h1 data-i18n="dashboard.header_title">Creative Testing Dashboard</h1>
+            <!-- Language Selector -->
+            <div id="lang-selector" style="position: relative; margin-left: 12px;">
+                <button id="lang-btn" onclick="toggleLangMenu()" style="padding: 6px 10px; border-radius: 6px; border: none; background: rgba(255,255,255,0.15); cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background 0.2s; color: white; font-size: 13px;" onmouseenter="this.style.background='rgba(255,255,255,0.25)'" onmouseleave="this.style.background=document.getElementById('lang-menu').style.display==='block'?'rgba(255,255,255,0.25)':'rgba(255,255,255,0.15)'">
+                    <span id="current-lang-flag">🇪🇸</span>
+                    <span id="current-lang-code" style="text-transform: uppercase;">ES</span>
+                </button>
+                <div id="lang-menu" style="display: none; position: absolute; top: 100%; right: 0; margin-top: 6px; width: 140px; background: white; border-radius: 8px; box-shadow: 0 8px 30px rgba(0,0,0,0.15); border: 1px solid #e2e8f0; z-index: 1000; text-align: left; overflow: hidden;">
+                    <button onclick="switchLang('es')" style="width: 100%; padding: 10px 14px; border: none; background: transparent; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 14px; color: #334155; transition: background 0.15s;" onmouseenter="this.style.background='#f1f5f9'" onmouseleave="this.style.background='transparent'">
+                        <span>🇪🇸</span> Español
+                    </button>
+                    <button onclick="switchLang('en')" style="width: 100%; padding: 10px 14px; border: none; background: transparent; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 14px; color: #334155; transition: background 0.15s;" onmouseenter="this.style.background='#f1f5f9'" onmouseleave="this.style.background='transparent'">
+                        <span>🇬🇧</span> English
+                    </button>
+                    <button onclick="switchLang('nl')" style="width: 100%; padding: 10px 14px; border: none; background: transparent; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 14px; color: #334155; transition: background 0.15s;" onmouseenter="this.style.background='#f1f5f9'" onmouseleave="this.style.background='transparent'">
+                        <span>🇳🇱</span> Nederlands
+                    </button>
+                    <button onclick="switchLang('da')" style="width: 100%; padding: 10px 14px; border: none; background: transparent; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 14px; color: #334155; transition: background 0.15s;" onmouseenter="this.style.background='#f1f5f9'" onmouseleave="this.style.background='transparent'">
+                        <span>🇩🇰</span> Dansk
+                    </button>
+                </div>
+            </div>
         </div>
         <p><span data-i18n="dashboard.header_subtitle">Análisis de rendimiento creativo • Última actualización:</span> <span id="data-date" data-i18n="dashboard.loading">Cargando...</span></p>
         
@@ -643,6 +664,35 @@
                 menu.style.display = 'none';
                 document.getElementById('app-switcher-btn').style.background = 'rgba(255,255,255,0.15)';
             }
+            // Also close language menu
+            const langSelector = document.getElementById('lang-selector');
+            const langMenu = document.getElementById('lang-menu');
+            if (langSelector && langMenu && !langSelector.contains(event.target)) {
+                langMenu.style.display = 'none';
+            }
+        });
+
+        // Language Selector Functions
+        function toggleLangMenu() {
+            const menu = document.getElementById('lang-menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function switchLang(lang) {
+            const url = new URL(window.location);
+            url.searchParams.set('lang', lang);
+            window.location.href = url.toString();
+        }
+
+        // Update language selector display on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const currentLang = urlParams.get('lang') || 'es';
+            const langFlags = { es: '🇪🇸', en: '🇬🇧', nl: '🇳🇱', da: '🇩🇰' };
+            const flagEl = document.getElementById('current-lang-flag');
+            const codeEl = document.getElementById('current-lang-code');
+            if (flagEl) flagEl.textContent = langFlags[currentLang] || '🇪🇸';
+            if (codeEl) codeEl.textContent = currentLang.toUpperCase();
         });
     </script>
 </body>

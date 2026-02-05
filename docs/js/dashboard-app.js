@@ -189,10 +189,10 @@
         // ⏳ Loading Overlay Controller
         const loadingOverlay = {
             messages: [
-                { text: 'Conectando con tus datos...', sub: 'Esto puede tomar unos segundos', progress: 10 },
-                { text: 'Cargando cuentas publicitarias...', sub: 'Recuperando información de Meta Ads', progress: 30 },
-                { text: 'Procesando métricas...', sub: 'Calculando ROAS, CPA y más', progress: 60 },
-                { text: 'Preparando visualización...', sub: 'Ya casi está listo', progress: 85 },
+                { textKey: 'dashboard.loading_messages.connecting', subKey: 'dashboard.loading_messages.connecting_sub', progress: 10 },
+                { textKey: 'dashboard.loading_messages.loading_accounts', subKey: 'dashboard.loading_messages.loading_accounts_sub', progress: 30 },
+                { textKey: 'dashboard.loading_messages.processing_metrics', subKey: 'dashboard.loading_messages.processing_metrics_sub', progress: 60 },
+                { textKey: 'dashboard.loading_messages.preparing_view', subKey: 'dashboard.loading_messages.preparing_view_sub', progress: 85 },
             ],
             currentIndex: 0,
             interval: null,
@@ -216,8 +216,8 @@
                 const textEl = document.getElementById('loading-text');
                 const subEl = document.getElementById('loading-subtext');
                 const progressEl = document.getElementById('loading-progress-bar');
-                if (textEl) textEl.textContent = msg.text;
-                if (subEl) subEl.textContent = msg.sub;
+                if (textEl) textEl.textContent = t(msg.textKey);
+                if (subEl) subEl.textContent = t(msg.subKey);
                 if (progressEl) progressEl.style.width = msg.progress + '%';
             },
 
@@ -339,22 +339,22 @@
             if (skipBtn) {
                 skipBtn.onclick = () => {
                     skipBtn.style.display = 'none';
-                    if (subtitleEl) subtitleEl.textContent = 'Sigue viendo mientras cargamos tus datos...';
+                    if (subtitleEl) subtitleEl.textContent = t('dashboard.first_load.keep_watching');
                 };
             }
 
             // Progress messages (simpler, shown below video)
             const messages = [
-                { text: 'Conectando con Meta Ads...', progress: 5 },
-                { text: 'Descargando campañas...', progress: 15 },
-                { text: 'Analizando anuncios...', progress: 25 },
-                { text: 'Calculando métricas...', progress: 35 },
-                { text: 'Procesando datos históricos...', progress: 45 },
-                { text: 'Organizando información...', progress: 55 },
-                { text: 'Optimizando datos...', progress: 65 },
-                { text: 'Finalizando análisis...', progress: 75 },
-                { text: 'Casi listo...', progress: 85 },
-                { text: 'Últimos detalles...', progress: 90 },
+                { textKey: 'dashboard.loading_messages.connecting_meta', progress: 5 },
+                { textKey: 'dashboard.loading_messages.downloading_campaigns', progress: 15 },
+                { textKey: 'dashboard.loading_messages.analyzing_ads', progress: 25 },
+                { textKey: 'dashboard.loading_messages.calculating_metrics', progress: 35 },
+                { textKey: 'dashboard.loading_messages.processing_historical', progress: 45 },
+                { textKey: 'dashboard.loading_messages.organizing_info', progress: 55 },
+                { textKey: 'dashboard.loading_messages.optimizing_data', progress: 65 },
+                { textKey: 'dashboard.loading_messages.finalizing', progress: 75 },
+                { textKey: 'dashboard.loading_messages.almost_ready', progress: 85 },
+                { textKey: 'dashboard.loading_messages.final_details', progress: 90 },
             ];
 
             let messageIndex = 0;
@@ -364,7 +364,7 @@
             const messageInterval = setInterval(() => {
                 messageIndex = Math.min(messageIndex + 1, messages.length - 1);
                 const msg = messages[messageIndex];
-                if (textEl) textEl.textContent = msg.text;
+                if (textEl) textEl.textContent = t(msg.textKey);
                 if (progressBar) progressBar.style.width = msg.progress + '%';
             }, 8000);
 
@@ -378,13 +378,13 @@
                 } else {
                     console.error('❌ Failed to trigger refresh:', refreshResult.error);
                     clearInterval(messageInterval);
-                    if (textEl) textEl.textContent = refreshResult.error || 'Error - recarga la página';
+                    if (textEl) textEl.textContent = refreshResult.error || t('dashboard.errors.connection_error');
                     return;
                 }
             } catch (error) {
                 console.error('❌ Refresh error:', error);
                 clearInterval(messageInterval);
-                if (textEl) textEl.textContent = 'Error de conexión';
+                if (textEl) textEl.textContent = t('dashboard.errors.connection_error');
                 return;
             }
 
@@ -406,9 +406,9 @@
                         clearInterval(messageInterval);
 
                         // Success state - show button, let user continue watching
-                        if (titleEl) titleEl.textContent = '¡Tus datos están listos! 🎉';
-                        if (subtitleEl) subtitleEl.textContent = 'Puedes seguir viendo el tutorial o ir al dashboard';
-                        if (textEl) textEl.textContent = `✅ Completado en ${elapsed} segundos`;
+                        if (titleEl) titleEl.textContent = t('dashboard.first_load.data_ready');
+                        if (subtitleEl) subtitleEl.textContent = t('dashboard.first_load.data_ready_sub');
+                        if (textEl) textEl.textContent = t('dashboard.first_load.completed_in', { seconds: elapsed });
                         if (progressBar) progressBar.style.width = '100%';
                         if (skipBtn) skipBtn.style.display = 'none';
                         if (readyBtn) {
@@ -432,13 +432,13 @@
                     clearInterval(messageInterval);
                     console.warn('⏱️ Polling timeout reached');
 
-                    if (titleEl) titleEl.textContent = 'Tomando más tiempo...';
-                    if (textEl) textEl.textContent = 'El proceso sigue en curso - vuelve en unos minutos';
+                    if (titleEl) titleEl.textContent = t('dashboard.first_load.taking_longer');
+                    if (textEl) textEl.textContent = t('dashboard.first_load.process_continues');
                     if (progressBar) progressBar.style.width = '95%';
                     if (skipBtn) skipBtn.style.display = 'none';
                     // Show reload button for timeout case
                     if (readyBtn) {
-                        readyBtn.textContent = '🔄 Verificar de nuevo';
+                        readyBtn.textContent = t('dashboard.first_load.verify_again');
                         readyBtn.style.display = 'inline-block';
                         readyBtn.onclick = () => {
                             // Mark welcome AND tutorial as seen (same 19min video)
@@ -458,14 +458,14 @@
                 mainContent.innerHTML = `
                     <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
                         <div style="font-size: 64px; margin-bottom: 20px;">❌</div>
-                        <h2 style="color: #1d1d1f; margin-bottom: 16px;">Error al cargar datos</h2>
+                        <h2 style="color: #1d1d1f; margin-bottom: 16px;">${t('dashboard.errors.load_failed')}</h2>
                         <p style="color: #86868b; margin-bottom: 24px; max-width: 500px; margin-left: auto; margin-right: auto;">
-                            ${errorMessage || 'No pudimos cargar tus datos publicitarios. Por favor intenta de nuevo.'}
+                            ${errorMessage || t('dashboard.errors.could_not_load')}
                         </p>
                         <button onclick="window.location.reload()" style="
                             background: #007AFF; color: white; border: none; padding: 12px 24px;
                             border-radius: 8px; cursor: pointer; font-size: 14px;
-                        ">Reintentar</button>
+                        ">${t('dashboard.errors.retry')}</button>
                     </div>
                 `;
             }
@@ -478,7 +478,7 @@
             
             if (dateElement) {
                 try {
-                    let displayText = 'Cargando...';
+                    let displayText = t('dashboard.loading');
                     let actualDataDate = null;
                     let referenceDate;
                     
@@ -3046,7 +3046,7 @@
             const tableBody = document.getElementById('demographics-table');
             
             if (segmentsDiv) {
-                segmentsDiv.innerHTML = '<div style="padding: 20px; text-align: center;"><span style="color: #86868b;">⏳ Cargando datos demográficos...</span></div>';
+                segmentsDiv.innerHTML = '<div style="padding: 20px; text-align: center;"><span style="color: #86868b;">⏳ ' + t('dashboard.loading_messages.loading_demographics') + '</span></div>';
             }
             
             try {
