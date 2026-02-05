@@ -31,7 +31,7 @@ jobs:
           script: |
             set -e
             echo "📥 Pulling latest code from GitHub..."
-            cd /root/creative-testing-backend
+            cd /root/insights-backend
             git fetch origin master
             git reset --hard origin/master
 
@@ -43,26 +43,26 @@ jobs:
             sleep 15
 
             echo "🌐 Deploying frontend files..."
-            cp ../docs/index-landing.html /var/www/creative-testing/
-            cp ../docs/oauth-callback.html /var/www/creative-testing/
-            cp ../docs/index-saas.html /var/www/creative-testing/
-            cp ../docs/data_loader_saas.js /var/www/creative-testing/
-            cp ../docs/data_adapter.js /var/www/creative-testing/
+            cp ../docs/index-landing.html /var/www/insights/
+            cp ../docs/oauth-callback.html /var/www/insights/
+            cp ../docs/index-saas.html /var/www/insights/
+            cp ../docs/data_loader_saas.js /var/www/insights/
+            cp ../docs/data_adapter.js /var/www/insights/
 
             echo "🎨 Deploying CSS files..."
-            mkdir -p /var/www/creative-testing/css
-            cp -r ../docs/css/* /var/www/creative-testing/css/
+            mkdir -p /var/www/insights/css
+            cp -r ../docs/css/* /var/www/insights/css/
 
             echo "📦 Deploying JS files..."
-            mkdir -p /var/www/creative-testing/js
-            cp -r ../docs/js/* /var/www/creative-testing/js/
+            mkdir -p /var/www/insights/js
+            cp -r ../docs/js/* /var/www/insights/js/
 
             echo "🌍 Deploying i18n files..."
-            mkdir -p /var/www/creative-testing/i18n
-            cp -r ../docs/i18n/* /var/www/creative-testing/i18n/
+            mkdir -p /var/www/insights/i18n
+            cp -r ../docs/i18n/* /var/www/insights/i18n/
 
             echo "🔧 Setting permissions..."
-            chown -R www-data:www-data /var/www/creative-testing/
+            chown -R www-data:www-data /var/www/insights/
 
             echo "📊 Syncing ops scripts..."
             mkdir -p /root/scripts
@@ -70,7 +70,7 @@ jobs:
 
             echo "✅ Deployment complete!"
             echo "🔍 Container status:"
-            docker ps --filter "name=creative-testing" --format "table {{.Names}}\t{{.Status}}"
+            docker ps --filter "name=insights" --format "table {{.Names}}\t{{.Status}}"
 
             echo ""
             echo "🧪 Running smoke tests..."
